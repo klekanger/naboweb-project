@@ -1,3 +1,18 @@
 {
-	"space": true
+  "rules": {
+    "import/extensions": [
+      1,
+      "never"
+    ],
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "selector": "variable",
+        "format": [
+          "camelCase",
+          "UPPER_CASE"
+        ]
+      }
+    ]
+  }
 }
