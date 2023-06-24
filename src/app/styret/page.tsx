@@ -1,6 +1,6 @@
 export default function Page() {
   return (
-    <div className="pt-40">
+    <div>
       <h1>Styret</h1>
     </div>
   );
