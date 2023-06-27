@@ -36,18 +36,18 @@ export default function Navbar() {
         <Image src={logo} alt="Gartnerihagen-logo" />
       </Link>
       <div>
-        <div className="flex items-center justify-end">
-          <p className="mr-8 text-xl font-light transition duration-300 hover:text-green-200">
+        <div className="flex">
+          <p className="m-auto mr-8 text-xl font-light transition duration-300 hover:text-green-200">
             <Link href="/informasjon" className="cursor-pointer">
               For beboere
             </Link>
           </p>
-          <p className="mr-8 text-xl font-light transition duration-300 hover:text-green-200">
+          <p className="m-auto mr-8 text-xl font-light transition duration-300 hover:text-green-200">
             <Link href="/blog" className="cursor-pointer">
               Blogg
             </Link>
           </p>
-          <p className="mr-8 text-xl font-light transition duration-300 hover:text-green-200">
+          <p className="m-auto mr-8 text-xl font-light transition duration-300 hover:text-green-200">
             <Link
               href="/om-boligsameiet-gartnerihagen"
               className="cursor-pointer"
@@ -55,12 +55,12 @@ export default function Navbar() {
               Om oss
             </Link>
           </p>
-          <p className="text-xl font-light transition duration-300 hover:text-green-200">
+          <p className="m-auto text-xl font-light transition duration-300 hover:text-green-200">
             <Link href="/styret" className="cursor-pointer">
               Styret
             </Link>
           </p>
-          <button className="ml-8 flex h-10 w-32 cursor-pointer items-center justify-center rounded-md bg-emerald-400 px-4 text-center align-middle font-semibold text-slate-950 transition duration-300 hover:bg-emerald-200">
+          <button className="m-auto ml-8 flex h-10 w-32 cursor-pointer items-center justify-center rounded-md bg-emerald-400 px-4 text-center align-middle font-semibold text-slate-950 transition duration-300 hover:bg-emerald-200">
             <span className="flex-grow">Logg inn</span>
           </button>
         </div>
