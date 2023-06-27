@@ -1,5 +1,5 @@
 import HeroWide from '@/components/hero-wide';
-import { TypeForsidetekstSkeleton } from '@/types/contentful-types';
+import type { TypeForsidetekstSkeleton } from '@/types/contentful-types';
 import * as contentful from 'contentful';
 
 async function getFrontPageData() {
@@ -22,7 +22,7 @@ export default async function Home() {
   const { pageTitle, excerpt, pageImage } = frontPageData.items[0].fields;
 
   return (
-    <div>
+    <section>
       <HeroWide
         pageTitle={pageTitle}
         excerpt={excerpt ?? ''}
@@ -32,6 +32,6 @@ export default async function Home() {
       <h2>dfsdfsdf</h2>
       <h3>dfsdfsdf</h3>
       <h4>dfsdfsdf</h4>
-    </div>
+    </section>
   );
 }
