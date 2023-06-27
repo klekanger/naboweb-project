@@ -19,7 +19,7 @@ export default async function Page() {
   const { createdAt, updatedAt } = pageData.sys;
 
   return (
-    <div>
+    <>
       <Article
         title={pageTitle}
         bodyText={pageText}
@@ -28,6 +28,6 @@ export default async function Page() {
         MainImage={pageImage}
         buttonLink="/"
       ></Article>
-    </div>
+    </>
   );
 }

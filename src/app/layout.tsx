@@ -1,3 +1,7 @@
+/**
+ * Root layout - for all pages
+ */
+
 import Navbar from '@/components/navbar';
 import './globals.css';
 
