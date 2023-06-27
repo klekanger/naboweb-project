@@ -1,5 +1,5 @@
 import Article from '@/components/article';
-import { TypePageSkeleton } from '@/types/contentful-types';
+import type { TypePageSkeleton } from '@/types/contentful-types';
 import * as contentful from 'contentful';
 
 async function getPageData() {

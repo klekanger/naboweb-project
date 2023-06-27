@@ -1,7 +1,7 @@
-import { BLOCKS, Block, Inline, MARKS } from '@contentful/rich-text-types';
+import type { EmbeddedAsset } from '@/types/types';
+import { BLOCKS, MARKS, type Block } from '@contentful/rich-text-types';
 import Image from 'next/image';
-import { ReactNode } from 'react';
-import dummyImg from '/public/gartnerihagen_solnedgang.jpg';
+import type { ReactNode } from 'react';
 
 export const renderRichTextOptions = {
   renderMark: {
@@ -41,16 +41,15 @@ export const renderRichTextOptions = {
     [BLOCKS.LIST_ITEM]: (node: Block, children: ReactNode) => (
       <li>{children}</li>
     ),
+    // eslint-disable-next-line object-shorthand
     [BLOCKS.EMBEDDED_ASSET]: (node: Block) => {
-      const width = node.data.target.fields.file.details.image.width;
-      const height = node.data.target.fields.file.details.image.height;
-      const url = node.data.target.fields.file.url;
-      const description = node.data.target.fields.description;
-
-      console.log(description);
+      const data = node.data.target.fields as EmbeddedAsset;
+      const { width, height } = data.file.details.image;
+      const url = data.file.url;
+      const description = data.description;
 
       return (
-        <div>
+        <>
           <Image
             src={`https://${url}`}
             alt={description}
@@ -60,7 +59,7 @@ export const renderRichTextOptions = {
           <p className="rich-image-caption">
             <em>{description}</em>
           </p>
-        </div>
+        </>
       );
     },
   },

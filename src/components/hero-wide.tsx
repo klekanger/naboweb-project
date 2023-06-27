@@ -1,12 +1,12 @@
-import { Asset } from 'contentful';
+import type { Asset } from 'contentful';
 import Image from 'next/image';
 import Link from 'next/link';
 
-interface HeroWideProps {
+type HeroWideProps = {
   pageTitle: string;
   excerpt: string;
-  pageImage: Asset<'WITHOUT_UNRESOLVABLE_LINKS', string> | undefined;
-}
+  pageImage: Asset<'WITHOUT_UNRESOLVABLE_LINKS'> | undefined;
+};
 
 export default function HeroWide({
   pageTitle,
@@ -22,7 +22,7 @@ export default function HeroWide({
     <div className="-mt-32 w-screen max-w-full overflow-hidden">
       <div className="img-zoom ">
         <Image
-          src={`https:${pageImage?.fields?.file?.url}`}
+          src={`https:${pageImage?.fields?.file?.url ?? ''}`}
           width={width}
           height={height}
           alt={pageTitle}
