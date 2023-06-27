@@ -1,9 +1,5 @@
 {
   "rules": {
-    "import/extensions": [
-      1,
-      "never"
-    ],
     "@typescript-eslint/naming-convention": [
       "error",
       {
@@ -13,6 +9,20 @@
           "UPPER_CASE"
         ]
       }
+    ],
+    "import/extensions": [
+      "error",
+      "never",
+      {
+        "svg": "always"
+      }
+    ],
+    "import/order": [
+      "off",
+      {}
+    ],
+    "n/prefer-global/process": [
+      "off"
     ]
   }
 }
