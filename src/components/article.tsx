@@ -1,20 +1,11 @@
 import { formatDate } from '@/lib/format-date';
 import { renderRichTextOptions } from '@/lib/render-rich-text-options';
+import type { ArticleProps } from '@/types/types';
 import {
   documentToReactComponents,
   type Options,
 } from '@contentful/rich-text-react-renderer';
 import type { Document } from '@contentful/rich-text-types';
-import type { EntryFields, EntryFieldTypes } from 'contentful';
-
-type ArticleProps = {
-  title: string;
-  bodyText: EntryFieldTypes.RichText;
-  createdAt: EntryFields.Date;
-  updatedAt: EntryFields.Date;
-  MainImage: EntryFieldTypes.AssetLink;
-  buttonLink: string;
-};
 
 export default function Article({
   title,

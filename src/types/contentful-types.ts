@@ -1,3 +1,8 @@
+/**
+ * This file is generated automatically by `cf-content-types-generator-app`.
+ * https://github.com/marcolink/cf-content-types-generator-app
+ */
+
 import type {
   ChainModifiers,
   Entry,

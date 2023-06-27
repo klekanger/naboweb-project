@@ -1,12 +1,6 @@
-import type { Asset } from 'contentful';
+import { HeroWideProps } from '@/types/types';
 import Image from 'next/image';
 import Link from 'next/link';
-
-type HeroWideProps = {
-  pageTitle: string;
-  excerpt: string;
-  pageImage: Asset<'WITHOUT_UNRESOLVABLE_LINKS'> | undefined;
-};
 
 export default function HeroWide({
   pageTitle,
