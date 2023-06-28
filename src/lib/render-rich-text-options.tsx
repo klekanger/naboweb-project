@@ -55,6 +55,7 @@ export const renderRichTextOptions = {
             alt={description}
             height={height}
             width={width}
+            sizes="100vw"
           />
           <p className="rich-image-caption">
             <em>{description}</em>

@@ -19,13 +19,14 @@ export default function HeroWide({
           src={`https:${pageImage?.fields?.file?.url ?? ''}`}
           width={width}
           height={height}
+          sizes="100vw"
           alt={pageTitle}
           priority={true}
           className="h-screen w-screen object-cover object-center"
         />
       </div>
       <div className="absolute left-24 top-1/3 w-3/4 break-words rounded-md bg-neutral-950/60 px-5 text-gray-900 lg:w-2/5">
-        <h1 className="p-8 font-semibold text-slate-50">
+        <h1 className="p-8 text-slate-50">
           {pageTitle}
           <p className="mb-5 mt-3 font-normal">{excerpt}</p>
           <Link
