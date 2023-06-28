@@ -9,13 +9,13 @@
 }
 
 :root {
-  @apply bg-slate-100;
-  @apply text-slate-900;
+  @apply bg-slate-50;
+  @apply text-slate-800;
 }
 
 @layer base {
   h1 {
-    @apply text-4xl sm:text-5xl;
+    @apply pb-8 text-4xl font-semibold sm:text-5xl;
   }
 
   h2 {
@@ -40,13 +40,6 @@
 
   a {
     @apply no-underline;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    @apply bg-slate-900;
-    @apply text-slate-100;
   }
 }
 
@@ -111,4 +104,11 @@
 
 .rich-image-caption {
   @apply mb-0 bg-slate-700 px-4 py-2 text-left text-sm md:mb-4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    @apply bg-slate-900;
+    @apply text-slate-100;
+  }
 }
