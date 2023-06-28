@@ -5,7 +5,7 @@
 * {
   @apply box-border;
   @apply text-base;
-  @apply font-sans;
+  @apply font-body;
 }
 
 :root {
@@ -14,6 +14,14 @@
 }
 
 @layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    @apply font-title;
+  }
+
   h1 {
     @apply pb-8 text-4xl font-semibold sm:text-5xl;
   }

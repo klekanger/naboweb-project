@@ -27,7 +27,11 @@ module.exports = {
         hoverButtonDangerColor: '#FF6666',
         danger: '#ff3333',
       },
+      fontFamily: {
+        title: ['var(--font-open-sans)'],
+        body: ['var(--font-montserrat)'],
+      },
     },
+    plugins: [],
   },
-  plugins: [],
 };
