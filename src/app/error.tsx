@@ -1,0 +1,35 @@
+'use client'; // Error components must be Client Components
+
+import { useEffect } from 'react';
+
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error;
+  reset: () => void;
+}) {
+  useEffect(() => {
+    // Log the error to an error reporting service
+    console.error('FEIL: ', error);
+  }, [error]);
+
+  return (
+    <div className="mx-auto mt-32 flex flex-col items-center text-center">
+      <h2>Noe gikk galt!</h2>
+      <p className="pt-4">
+        Ta kontakt med webadministrator eller styret hvis problemet vedvarer.
+      </p>
+      <p className="pt-4 italic">(Nerdete feilmelding: '{error.message}')</p>
+      <button
+        className="mt-8 rounded-md border-2 border-black bg-slate-500 p-2"
+        onClick={
+          // Attempt to recover by trying to re-render the segment
+          () => reset()
+        }
+      >
+        Prøv igjen
+      </button>
+    </div>
+  );
+}
