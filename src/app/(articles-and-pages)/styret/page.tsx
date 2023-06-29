@@ -29,7 +29,7 @@ export default async function Page() {
         updatedAt={updatedAt}
         MainImage={pageImage}
         buttonLink="/"
-      ></Article>
+      />
     </>
   );
 }
