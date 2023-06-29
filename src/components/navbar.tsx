@@ -60,7 +60,7 @@ export default function Navbar() {
               Styret
             </Link>
           </p>
-          <button className="m-auto ml-8 flex h-10 w-32 cursor-pointer items-center justify-center rounded-md bg-emerald-400 px-4 text-center align-middle font-semibold text-slate-950 transition duration-300 hover:bg-emerald-200">
+          <button className="m-auto ml-8 flex h-10 w-32 cursor-pointer items-center justify-center rounded-md bg-primaryButton px-4 text-center align-middle font-semibold text-slate-950 transition duration-300 hover:bg-emerald-200">
             <span className="flex-grow">Logg inn</span>
           </button>
         </div>
