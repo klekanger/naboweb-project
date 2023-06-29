@@ -75,7 +75,7 @@
  Styles for custom rich text rendering 
 */
 .rich-p {
-  @apply text-left text-base  md:text-lg;
+  @apply text-left text-base md:text-lg;
 }
 
 .rich-h1 {
