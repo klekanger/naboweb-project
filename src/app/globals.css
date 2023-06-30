@@ -13,6 +13,10 @@
   @apply text-slate-800;
 }
 
+body {
+  @apply flex min-h-screen flex-col;
+}
+
 @layer base {
   h1,
   h2,
