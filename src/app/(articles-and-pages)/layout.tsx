@@ -1,7 +1,6 @@
 /**
  * Layout for all pages and articles - including blog posts
  */
-
 import '@/app/globals.css';
 
 export const metadata = {
