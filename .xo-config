@@ -14,7 +14,8 @@
       "error",
       "never",
       {
-        "svg": "always"
+        "svg": "always",
+        "css": "always"
       }
     ],
     "import/order": [
