@@ -11,7 +11,7 @@ export default function Error({
 }) {
   useEffect(() => {
     // Log the error to an error reporting service
-    console.error('FEIL: ', error);
+    console.error('FEIL:', error);
   }, [error]);
 
   return (
@@ -20,12 +20,16 @@ export default function Error({
       <p className="pt-4">
         Ta kontakt med webadministrator eller styret hvis problemet vedvarer.
       </p>
-      <p className="pt-4 italic">(Nerdete feilmelding: '{error.message}')</p>
+      <p className="pt-4 italic">
+        (Nerdete feilmelding: &lsquo;{error.message}&rsquo;)
+      </p>
       <button
         className="mt-8 rounded-md border-2 border-black bg-slate-500 p-2"
         onClick={
           // Attempt to recover by trying to re-render the segment
-          () => reset()
+          () => {
+            reset();
+          }
         }
       >
         Prøv igjen
