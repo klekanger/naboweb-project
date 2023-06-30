@@ -1,22 +1,13 @@
 import Article from '@/components/article';
-import type { TypePageSkeleton } from '@/types/contentful-types';
-import * as contentful from 'contentful';
-
-async function getPageData() {
-  const client = contentful.createClient({
-    space: process.env.CONTENTFUL_SPACE_ID!,
-    accessToken: process.env.CONTENTFUL_ACCESS_TOKEN!,
-  });
-
-  const data = await client.getEntry<TypePageSkeleton>('7PSsSBGU8MnlNvPIem8ij');
-
-  return data;
-}
+import { getPageData } from '@/lib/api';
+import { parseContentfulImage } from '@/lib/parse-contentful-image';
+import type { EntryFieldTypes } from 'contentful';
 
 export default async function Page() {
-  const pageData = await getPageData();
-  const { pageTitle, excerpt, pageText, pageImage } = pageData.fields;
-  const { createdAt, updatedAt } = pageData.sys;
+  const data = await getPageData('7PSsSBGU8MnlNvPIem8ij');
+  const { pageTitle, createdAt, updatedAt, pageImage } = data;
+  const parsedImage = parseContentfulImage(pageImage);
+  const pageText = data.pageText as unknown as EntryFieldTypes.RichText;
 
   return (
     <>
@@ -25,7 +16,7 @@ export default async function Page() {
         bodyText={pageText}
         createdAt={createdAt}
         updatedAt={updatedAt}
-        MainImage={pageImage}
+        mainImage={parsedImage}
         buttonLink="/"
       ></Article>
     </>

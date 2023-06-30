@@ -1,4 +1,4 @@
-import { HeroWideProps } from '@/types/types';
+import type { HeroWideProps } from '@/types/types';
 import Image from 'next/image';
 import Link from 'next/link';
 
