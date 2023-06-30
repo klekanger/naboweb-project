@@ -1,7 +1,8 @@
 import Article from '@/components/article';
-import { TypeBlogPostSkeleton } from '@/types/contentful-types';
+import { parseContentfulImage } from '@/lib/parse-contentful-image';
+import type { TypeBlogPostSkeleton } from '@/types/contentful-types';
 import * as contentful from 'contentful';
-import { Metadata, ResolvingMetadata } from 'next';
+import type { Metadata, ResolvingMetadata } from 'next';
 
 type Props = {
   params: { slug: string };
@@ -21,7 +22,7 @@ export async function generateStaticParams() {
   });
 
   return posts.items.map((post) => ({
-    slug: post.fields.slug,
+    slug: post.fields?.slug ?? '',
   }));
 }
 
@@ -32,10 +33,7 @@ export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  // read route params
   const slug = params.slug;
-
-  // fetch data
   const post =
     await client.withoutUnresolvableLinks.getEntries<TypeBlogPostSkeleton>({
       content_type: 'blogPost',
@@ -44,9 +42,10 @@ export async function generateMetadata(
       'fields.privatePost': false,
     });
 
-  // optionally access and extend (rather than replace) parent metadata
-  const previousImages = (await parent).openGraph?.images || [];
-  const ogImage = post?.items[0]?.fields?.featuredImage?.fields.file?.url || '';
+  // Optionally access and extend (rather than replace) parent metadata
+  const previousImages = (await parent).openGraph?.images ?? [];
+
+  const ogImage = post?.items[0]?.fields?.featuredImage?.fields.file?.url ?? '';
 
   return {
     title: post?.items[0]?.fields.title,
@@ -54,8 +53,8 @@ export async function generateMetadata(
     openGraph: {
       images: [`https://${ogImage}?w=1200&h=630&fit=fill`, ...previousImages],
       type: 'article',
-      title: post?.items[0]?.fields.title,
-      description: post?.items[0]?.fields.excerpt,
+      title: post?.items[0]?.fields.title ?? '',
+      description: post?.items[0]?.fields.excerpt ?? '',
       locale: 'nb_NO',
       siteName: 'Boligsameiet Gartnerihagen',
       url: `https://gartnerihagen-askim.no/blog/${slug}`,
@@ -66,29 +65,36 @@ export async function generateMetadata(
 //
 // Generate the blog page
 //
-export default async function BlogPage({ params }: Props) {
-  const post = await client.getEntries<TypeBlogPostSkeleton>({
-    content_type: 'blogPost',
-    limit: 1,
-    'fields.slug': params.slug,
-    'fields.privatePost': false,
-  });
+export default async function Page({ params }: Props) {
+  const post =
+    await client.withoutUnresolvableLinks.getEntries<TypeBlogPostSkeleton>({
+      content_type: 'blogPost',
+      limit: 1,
+      'fields.slug': params.slug,
+      'fields.privatePost': false,
+    });
 
-  const { title, bodyText, author, featuredImage } = post?.items[0]?.fields;
+  const { title, author, featuredImage } = post.items[0]?.fields ?? {};
+  const bodyText = post.items[0]?.fields
+    .bodyText as unknown as contentful.EntryFieldTypes.RichText;
+  const { createdAt, updatedAt } = post.items[0]?.sys ?? {};
 
-  // console.log(post?.items[0]?.fields);
+  const parsedImage = parseContentfulImage(featuredImage);
+
+  if (!title || !bodyText || !createdAt || !updatedAt || !parsedImage) {
+    return <div>404</div>;
+  }
 
   return (
     <div>
-      <h1>{title}</h1>
-      {/*     <Article
+      <Article
         title={title}
         bodyText={bodyText}
         createdAt={createdAt}
         updatedAt={updatedAt}
-        MainImage={pageImage}
-        buttonLink="/"
-      /> */}
+        mainImage={parsedImage}
+        buttonLink="/blog"
+      />
     </div>
   );
 }
