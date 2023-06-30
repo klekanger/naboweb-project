@@ -1,12 +1,31 @@
 import type { Asset, EntryFieldTypes, EntryFields } from 'contentful';
 
+export type ContentImage = {
+  src: string;
+  description: string;
+  width: number;
+  height: number;
+};
+
 export type ArticleProps = {
   title: string;
+  authors?: string[];
   bodyText: EntryFieldTypes.RichText;
   createdAt: EntryFields.Date;
   updatedAt: EntryFields.Date;
-  MainImage: EntryFieldTypes.AssetLink;
+  mainImage: ContentImage | undefined;
   buttonLink: string;
+};
+
+export type getPageDataReturnTypes = {
+  pageTitle: string;
+  excerpt?: string;
+  pageText: EntryFieldTypes.RichText;
+  slug: string;
+  id: string;
+  pageImage?: EntryFieldTypes.AssetLink;
+  createdAt: EntryFields.Date;
+  updatedAt: EntryFields.Date;
 };
 
 export type EmbeddedAsset = {
