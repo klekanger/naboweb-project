@@ -6,13 +6,15 @@ import {
   type Options,
 } from '@contentful/rich-text-react-renderer';
 import type { Document } from '@contentful/rich-text-types';
+import Image from 'next/image';
 
 export default function Article({
   title,
+  authors,
   bodyText,
   createdAt,
   updatedAt,
-  MainImage,
+  mainImage,
   buttonLink,
 }: ArticleProps) {
   // Format the dates shown at the bottom of every article page
@@ -26,12 +28,25 @@ export default function Article({
   return (
     <article>
       <h1>{title}</h1>
+      {mainImage && (
+        <div className="relative aspect-video">
+          <Image
+            src={mainImage.src}
+            alt={mainImage.description}
+            sizes="100vw"
+            priority
+            fill={true}
+            className="rounded-md object-cover shadow-md"
+          />
+        </div>
+      )}
       <div>
         {documentToReactComponents(
           bodyText as unknown as Document,
           renderRichTextOptions as Options
         )}
       </div>
+
       <p>
         <em className="font-extralight">{publishDate}</em>
       </p>
