@@ -43,7 +43,7 @@ export default function Navbar() {
             </Link>
           </p>
           <p className="m-auto mr-8 text-xl font-light transition duration-300 hover:text-green-200">
-            <Link href="/blog" className="cursor-pointer">
+            <Link href="/blog-collection" className="cursor-pointer">
               Blogg
             </Link>
           </p>

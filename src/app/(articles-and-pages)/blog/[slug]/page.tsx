@@ -74,6 +74,15 @@ export default async function Page({ params }: Props) {
       'fields.privatePost': false,
     });
 
+  if (!post.items[0]) {
+    return (
+      <>
+        <h1>404</h1>
+        <p>Det finnes ingen blogginnlegg her...</p>
+      </>
+    );
+  }
+
   const { title, author, featuredImage } = post.items[0]?.fields ?? {};
   const bodyText = post.items[0]?.fields
     .bodyText as unknown as contentful.EntryFieldTypes.RichText;
@@ -82,7 +91,7 @@ export default async function Page({ params }: Props) {
   const parsedImage = parseContentfulImage(featuredImage);
 
   if (!title || !bodyText || !createdAt || !updatedAt || !parsedImage) {
-    return <div>404</div>;
+    throw new Error('Missing data');
   }
 
   return (
