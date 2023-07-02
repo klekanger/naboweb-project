@@ -25,6 +25,15 @@ export default function Article({
           updatedAt
         )})`;
 
+  let blurDataURL: string;
+
+  if (mainImage && 'src' in mainImage) {
+    blurDataURL = mainImage.src + '?w=10&h=10&fit=fill';
+  } else {
+    blurDataURL =
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mOsWDvtPwAGHAK8KBlg/wAAAABJRU5ErkJggg==';
+  }
+
   return (
     <article>
       <h1>{title}</h1>
@@ -35,7 +44,9 @@ export default function Article({
             alt={mainImage.description}
             sizes="100vw"
             priority
-            fill={true}
+            fill
+            blurDataURL={blurDataURL}
+            placeholder="blur"
             className="rounded-md object-cover shadow-md"
           />
         </div>

@@ -1,7 +1,7 @@
 import type { EmbeddedAsset } from '@/types/types';
 import { BLOCKS, MARKS, type Block } from '@contentful/rich-text-types';
 import Image from 'next/image';
-import type { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 export const renderRichTextOptions = {
   renderMark: {
@@ -48,6 +48,8 @@ export const renderRichTextOptions = {
       const url = data.file.url;
       const description = data.description;
 
+      const blurDataURL = data.file.url + '?w=10&h=10&fit=fill';
+
       return (
         <>
           <Image
@@ -56,6 +58,8 @@ export const renderRichTextOptions = {
             height={height}
             width={width}
             sizes="100vw"
+            blurDataURL={blurDataURL}
+            placeholder="blur"
           />
           <p className="rich-image-caption">
             <em>{description}</em>
