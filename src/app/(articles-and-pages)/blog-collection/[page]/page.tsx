@@ -1,3 +1,4 @@
+import BlogPostList from '@/components/blog-post-list';
 import Pagination from '@/components/pagination';
 import type { TypeBlogPostSkeleton } from '@/types/contentful-types';
 import * as contentful from 'contentful';
@@ -78,14 +79,15 @@ export default async function Page({ params }: Props) {
 
   return (
     <>
-      <h1>Siste blogg­innlegg - {`${pageNumber}`}</h1>
-      <ul>
+      <h1>Siste blogg­innlegg - {`${pageNumber} / ${totalPages}`}</h1>
+      {/* <ul>
         {posts.items.map((post) => (
           <li key={post.sys.id}>
             <a href={`/blog/${post.fields.slug}`}>{post.fields.title}</a>
           </li>
         ))}
-      </ul>
+      </ul> */}
+      <BlogPostList posts={posts.items} />
       <Pagination totalPages={totalPages} pageNumber={pageNumber} />
     </>
   );
