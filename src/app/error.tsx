@@ -15,7 +15,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="mx-auto mt-32 flex flex-col items-center text-center">
+    <div className="mx-auto mt-32 flex h-screen flex-col items-center text-center">
       <h2>Noe gikk galt!</h2>
       <p className="pt-4">
         Ta kontakt med webadministrator eller styret hvis problemet vedvarer.
@@ -24,7 +24,7 @@ export default function Error({
         (Nerdete feilmelding: &lsquo;{error.message}&rsquo;)
       </p>
       <button
-        className="mt-8 rounded-md border-2 border-black bg-slate-500 p-2"
+        className="mt-8 rounded-md border-2 border-black bg-primaryButton p-2"
         onClick={
           // Attempt to recover by trying to re-render the segment
           () => {
