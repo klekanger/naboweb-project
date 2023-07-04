@@ -17,6 +17,43 @@ export type ArticleProps = {
   buttonLink: string;
 };
 
+export type BlogPostItemProps = {
+  sys: {
+    id: string;
+    createdAt: EntryFields.Date;
+    updatedAt: EntryFields.Date;
+  };
+  fields: {
+    privatePost: true;
+    title: string;
+    excerpt: string;
+    featuredImage: {
+      fields: {
+        title: string;
+        description: string;
+        file: {
+          url: string;
+          details: {
+            size: number;
+            image: {
+              width: number;
+              height: number;
+            };
+          };
+        };
+      };
+    };
+    slug: string;
+  };
+};
+
+export type BlogPostListProps = {
+  sys: {
+    id: string;
+  };
+  posts: BlogPostItemProps[];
+};
+
 export type getPageDataReturnTypes = {
   pageTitle: string;
   excerpt?: string;

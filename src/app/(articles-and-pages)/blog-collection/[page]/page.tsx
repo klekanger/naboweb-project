@@ -1,8 +1,8 @@
 import BlogPostList from '@/components/blog-post-list';
 import Pagination from '@/components/pagination';
 import type { TypeBlogPostSkeleton } from '@/types/contentful-types';
+import type { BlogPostItemProps } from '@/types/types';
 import * as contentful from 'contentful';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 const POSTS_PER_PAGE = 3;
@@ -55,12 +55,14 @@ export default async function Page({ params }: Props) {
     );
   }
 
-  const posts = await client.getEntries<TypeBlogPostSkeleton>({
-    content_type: 'blogPost',
-    limit: 3,
-    skip: (pageNumber - 1) * POSTS_PER_PAGE,
-    /* 'fields.privatePost': false, */
-  });
+  const posts =
+    await client.withoutUnresolvableLinks.getEntries<TypeBlogPostSkeleton>({
+      content_type: 'blogPost',
+      limit: 3,
+      skip: (pageNumber - 1) * POSTS_PER_PAGE,
+      // @ts-expect-error
+      'fields.privatePost': false,
+    });
 
   const totalPages = Math.ceil(posts.total / POSTS_PER_PAGE);
 
@@ -77,18 +79,30 @@ export default async function Page({ params }: Props) {
     );
   }
 
+  const postItems: BlogPostItemProps[] = posts.items.map((post) => ({
+    sys: {
+      id: post.sys.id,
+      createdAt: post.sys.createdAt,
+      updatedAt: post.sys.updatedAt,
+    },
+    fields: {
+      privatePost: post.fields.privatePost,
+      title: post.fields.title,
+      slug: post.fields.slug,
+      excerpt: post.fields.excerpt,
+      featuredImage: post.fields
+        .featuredImage as BlogPostItemProps['fields']['featuredImage'],
+    },
+  }));
+
   return (
     <>
-      <h1>Siste blogg­innlegg - {`${pageNumber} / ${totalPages}`}</h1>
-      {/* <ul>
-        {posts.items.map((post) => (
-          <li key={post.sys.id}>
-            <a href={`/blog/${post.fields.slug}`}>{post.fields.title}</a>
-          </li>
-        ))}
-      </ul> */}
-      <BlogPostList posts={posts.items} />
+      <h1>Siste blogg­innlegg</h1>
+      <BlogPostList posts={postItems} />
       <Pagination totalPages={totalPages} pageNumber={pageNumber} />
+      <p className="pb-4 text-center">
+        side {`${pageNumber} av ${totalPages}`}
+      </p>
     </>
   );
 }

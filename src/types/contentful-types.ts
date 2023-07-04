@@ -36,7 +36,7 @@ export function isTypeAuthors<
 }
 
 export interface TypeBlogPostFields {
-  privatePost: EntryFieldTypes.Boolean;
+  privatePost: boolean;
   title: EntryFieldTypes.Symbol;
   excerpt: EntryFieldTypes.Text;
   featuredImage?: EntryFieldTypes.AssetLink;
