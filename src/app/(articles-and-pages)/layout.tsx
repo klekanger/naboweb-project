@@ -8,7 +8,11 @@ export const metadata = {
   description: 'Askims hyggeligste nabolag',
 };
 
-export default function Page({ children }: { children: React.ReactNode }) {
+export default function ArticlePageLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <section className="mx-auto max-w-6xl overflow-hidden px-2 md:px-5">
       {children}
