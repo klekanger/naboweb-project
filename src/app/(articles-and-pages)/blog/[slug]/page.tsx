@@ -39,7 +39,6 @@ export async function generateMetadata(
       content_type: 'blogPost',
       limit: 1,
       'fields.slug': slug,
-      'fields.privatePost': false,
     });
 
   // Optionally access and extend (rather than replace) parent metadata
@@ -71,7 +70,6 @@ export default async function Page({ params }: Props) {
       content_type: 'blogPost',
       limit: 1,
       'fields.slug': params.slug,
-      'fields.privatePost': false,
     });
 
   if (!post.items[0]) {
