@@ -2,6 +2,7 @@
  * Root layout - for all pages
  */
 
+import { Providers } from '@/app/providers';
 import Footer from '@/components/footer';
 import Navbar from '@/components/navbar';
 import { Montserrat, Open_Sans } from 'next/font/google';
@@ -35,9 +36,11 @@ export default function RootLayout({
   return (
     <html lang="no" className={`${openSans.variable} ${montserrat.variable}`}>
       <body>
-        <Navbar />
-        <main className="pt-32">{children}</main>
-        <Footer />
+        <Providers>
+          <Navbar />
+          <main className="pt-32">{children}</main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

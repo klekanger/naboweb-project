@@ -9,12 +9,13 @@
 }
 
 :root {
-  @apply bg-slate-50;
   @apply text-slate-800;
 }
 
 body {
   @apply flex min-h-screen flex-col;
+  @apply bg-slate-50 dark:bg-slate-800;
+  @apply text-slate-800 dark:text-slate-100;
 }
 
 @layer base {
@@ -181,14 +182,14 @@ body {
 .rich-image-caption {
   @apply mb-0 bg-slate-700 px-4 py-2 text-left text-sm md:mb-4;
 }
-
+/* 
 @media (prefers-color-scheme: dark) {
   :root {
     @apply bg-slate-900;
     @apply text-slate-100;
   }
 }
-
+ */
 @layer base {
   * {
     @apply border-border;

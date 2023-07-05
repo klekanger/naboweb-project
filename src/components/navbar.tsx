@@ -1,13 +1,18 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+import { LogIn, Moon, Sun } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import Link from 'next/link';
 import gartnerihagenLogo from 'public/gartnerihagen.svg';
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function Navbar() {
+  const [mounted, setMounted] = useState(false);
   const [isMenuHidden, setIsMenuHidden] = useState(false);
   const logo = gartnerihagenLogo as string;
+  const { theme, setTheme } = useTheme();
 
   const handleScroll = () => {
     if (typeof window !== 'undefined') {
@@ -20,11 +25,14 @@ export default function Navbar() {
   };
 
   useEffect(() => {
+    setMounted(true);
     window.addEventListener('scroll', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  if (!mounted) return null;
 
   return (
     <nav
@@ -60,9 +68,27 @@ export default function Navbar() {
               Styret
             </Link>
           </p>
-          <button className="m-auto ml-8 flex h-10 w-32 cursor-pointer items-center justify-center rounded-md bg-brand-primaryButton px-4 text-center align-middle font-semibold text-slate-950 transition duration-300 hover:bg-emerald-200">
-            <span className="flex-grow">Logg inn</span>
-          </button>
+          <div>
+            <Button className="ml-8 cursor-pointer self-end bg-brand-primaryButton  text-brand-black transition duration-300 hover:bg-emerald-200">
+              <LogIn className="mr-2" /> Logg inn
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="ml-2"
+              onClick={() => {
+                if (theme === 'dark') {
+                  setTheme('light');
+                  console.log('light');
+                } else {
+                  setTheme('dark');
+                  console.log('dark');
+                }
+              }}
+            >
+              {theme === 'light' ? <Sun /> : <Moon />}
+            </Button>
+          </div>
         </div>
       </div>
     </nav>
