@@ -1,37 +1,97 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: ['class'],
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
-    extend: {
-      colors: {
-        black: '#090A24',
-        white: '#F6F7FD',
-        dark: '#0a0a0a',
-        primaryLight: '#78ad96',
-        logoDarkGreen: '#43A889',
-        logoLightGreen: '#C8DD80',
-        darkTransparent: 'rgba(10, 10, 10,0.7)',
-        primary: '#628CF6',
-        secondary: '#457bac',
-        light: '#cfe9ff',
-        light2: '#d9edff',
-        accent: '#007D57',
-        primaryButton: '#43A889',
-        secondaryButton: '#C8DD80',
-        tertiaryButton: '#c7c7c7',
-        hoverButtonColor: '#ddd',
-        hoverButtonDangerColor: '#FF6666',
-        danger: '#ff3333',
-      },
-      fontFamily: {
-        title: ['var(--font-open-sans)'],
-        body: ['var(--font-montserrat)'],
+    container: {
+      center: true,
+      padding: '2rem',
+      screens: {
+        '2xl': '1400px',
       },
     },
-    plugins: [],
+    extend: {
+      colors: {
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
+        },
+        'brand-black': '#090A24',
+        'brand-white': '#F6F7FD',
+        'brand-dark': '#0a0a0a',
+        'brand-primaryLight': '#78ad96',
+        'brand-logoDarkGreen': '#43A889',
+        'brand-logoLightGreen': '#C8DD80',
+        'brand-darkTransparent': 'rgba(10, 10, 10,0.7)',
+        'brand-primary': '#628CF6',
+        'brand-secondary': '#457bac',
+        'brand-light': '#cfe9ff',
+        'brand-light2': '#d9edff',
+        'brand-accent': '#007D57',
+        'brand-primaryButton': '#43A889',
+        'brand-secondaryButton': '#C8DD80',
+        'brand-tertiaryButton': '#c7c7c7',
+        'brand-hoverButtonColor': '#ddd',
+        'brand-hoverButtonDangerColor': '#FF6666',
+        'brand-danger': '#ff3333',
+      },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
+      },
+      keyframes: {
+        'accordion-down': {
+          from: { height: 0 },
+          to: { height: 'var(--radix-accordion-content-height)' },
+        },
+        'accordion-up': {
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: 0 },
+        },
+      },
+      animation: {
+        'accordion-down': 'accordion-down 0.2s ease-out',
+        'accordion-up': 'accordion-up 0.2s ease-out',
+      },
+    },
+    fontFamily: {
+      title: ['var(--font-open-sans)'],
+      body: ['var(--font-montserrat)'],
+    },
   },
+  plugins: [require('tailwindcss-animate')],
 };
