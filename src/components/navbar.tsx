@@ -38,38 +38,43 @@ export default function Navbar() {
     <nav
       className={`${
         isMenuHidden ? 'hide-on-scroll' : ''
-      } fixed z-50 flex w-full flex-wrap items-center justify-between break-words bg-neutral-950 px-8 py-3 text-slate-50`}
+      } fixed z-50 flex w-full flex-wrap items-center justify-between break-words bg-brand-dark px-8 py-3 text-slate-50 dark:bg-brand-darkTransparent`}
     >
       <Link href="/" className="cursor-pointer">
         <Image src={logo} alt="Gartnerihagen-logo" />
       </Link>
       <div>
         <div className="flex">
-          <p className="m-auto mr-8 text-xl font-light transition duration-300 hover:text-green-200">
-            <Link href="/informasjon" className="cursor-pointer">
-              For beboere
-            </Link>
-          </p>
-          <p className="m-auto mr-8 text-xl font-light transition duration-300 hover:text-green-200">
-            <Link href="/blog-collection" className="cursor-pointer">
-              Blogg
-            </Link>
-          </p>
-          <p className="m-auto mr-8 text-xl font-light transition duration-300 hover:text-green-200">
-            <Link
-              href="/om-boligsameiet-gartnerihagen"
-              className="cursor-pointer"
-            >
-              Om oss
-            </Link>
-          </p>
-          <p className="m-auto text-xl font-light transition duration-300 hover:text-green-200">
-            <Link href="/styret" className="cursor-pointer">
-              Styret
-            </Link>
-          </p>
+          <Link
+            href="/informasjon"
+            className="m-auto mr-8 cursor-pointer font-light transition duration-300 hover:text-green-200"
+          >
+            For beboere
+          </Link>
+
+          <Link
+            href="/blog-collection"
+            className="m-auto mr-8 cursor-pointer  font-light transition duration-300 hover:text-green-200"
+          >
+            Blogg
+          </Link>
+
+          <Link
+            href="/om-boligsameiet-gartnerihagen"
+            className="m-auto mr-8 cursor-pointer  font-light transition duration-300 hover:text-green-200"
+          >
+            Om oss
+          </Link>
+
+          <Link
+            href="/styret"
+            className="m-auto cursor-pointer  font-light transition duration-300 hover:text-green-200"
+          >
+            Styret
+          </Link>
+
           <div>
-            <Button className="ml-8 cursor-pointer self-end bg-brand-primaryButton  text-brand-black transition duration-300 hover:bg-emerald-200">
+            <Button className="ml-8 cursor-pointer self-end">
               <LogIn className="mr-2" /> Logg inn
             </Button>
             <Button
@@ -79,10 +84,8 @@ export default function Navbar() {
               onClick={() => {
                 if (theme === 'dark') {
                   setTheme('light');
-                  console.log('light');
                 } else {
                   setTheme('dark');
-                  console.log('dark');
                 }
               }}
             >

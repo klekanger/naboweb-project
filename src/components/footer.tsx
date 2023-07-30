@@ -1,24 +1,41 @@
+import Link from 'next/link';
+
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="mt-auto flex h-64 w-full flex-col items-center justify-center bg-neutral-950">
-      <div className="flex h-full w-full flex-col items-center justify-center">
-        <p className="text-center text-2xl font-bold text-slate-50">
-          Boligsameiet Gartnerihagen
-        </p>
-        <p className="text-center text-xl font-light text-slate-50">
-          Askims hyggeligste nabolag
+    <footer className="footer">
+      <div>
+        <p>
+          &copy; {currentYear} Boligsameiet Gartnerihagen <br />
+          <Link
+            href="/cookies-og-personvern-gdpr"
+            className="cursor-pointer text-xs"
+          >
+            Personvernerklæring
+          </Link>
         </p>
       </div>
-      <div className="flex h-full w-full flex-col items-center justify-center">
-        <p className="text-center text-xl font-light text-slate-50">
-          <a
-            href="https://www.facebook.com/groups/askimgartnerihagen"
-            target="_blank"
-            rel="noreferrer"
-            className="transition duration-300 hover:text-green-200"
-          >
-            Facebook
+      <div>
+        <p>
+          Epost:{' '}
+          <a href="mailto:post@gartnerihagen-askim.no">
+            post@gartnerihagen-askim.no
           </a>
+          <br />
+          Telefon: +47 - 4021 0140 <br />
+        </p>
+        <br />
+        <p className="text-brand-logoLightGreen">
+          Vil du ha en nettside som dette? <br />
+          Ta kontakt med <a href="mailto:kurt@lekanger.no">kurt@lekanger.no</a>
+        </p>
+      </div>
+      <div>
+        <p>
+          Webdesign: <a href="https://www.lekanger.no">Kurt Lekanger</a>
+          <br />
+          Bygget med Next.js og Tailwind CSS
         </p>
       </div>
     </footer>

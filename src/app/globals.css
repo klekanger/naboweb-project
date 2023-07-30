@@ -35,10 +35,10 @@ body {
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 157 29% 60%;
+    --primary-foreground: 222.2 47.4% 11.2%;
 
-    --secondary: 210 40% 96.1%;
+    --secondary: 0 0% 78%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
     --accent: 210 40% 96.1%;
@@ -120,6 +120,18 @@ body {
   }
 }
 
+.footer {
+  @apply mt-16 flex w-full flex-col flex-wrap items-center justify-between break-words bg-brand-dark px-10 py-16 text-center text-xs font-extralight text-slate-300 opacity-90 dark:bg-brand-dark md:flex-row md:items-start lg:text-sm;
+}
+
+.footer p {
+  @apply text-xs lg:text-sm;
+}
+
+.footer a {
+  @apply cursor-pointer text-xs transition-all duration-200 hover:text-brand-primary lg:text-sm;
+}
+
 .img-zoom {
   animation: 30s ease-in-out 0s infinite alternate zoom;
 }
@@ -180,18 +192,5 @@ body {
 }
 
 .rich-image-caption {
-  @apply mb-0 bg-slate-700 px-4 py-2 text-left text-sm md:mb-4;
-}
-/* 
-@media (prefers-color-scheme: dark) {
-  :root {
-    @apply bg-slate-900;
-    @apply text-slate-100;
-  }
-}
- */
-@layer base {
-  * {
-    @apply border-border;
-  }
+  @apply mb-0 rounded-b-md bg-slate-200 px-4 py-2 text-left text-sm text-brand-black dark:bg-slate-700 dark:text-brand-white md:mb-4;
 }
