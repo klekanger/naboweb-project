@@ -9,7 +9,12 @@ export type ContentImage = {
 
 export type ArticleProps = {
   title: string;
-  authors?: string[];
+  authors?: {
+    fields: {
+      firstName: string;
+      lastName: string;
+    };
+  }[];
   bodyText: EntryFieldTypes.RichText;
   createdAt: EntryFields.Date;
   updatedAt: EntryFields.Date;
