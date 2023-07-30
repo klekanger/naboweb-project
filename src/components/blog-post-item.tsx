@@ -3,9 +3,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export default function BlogPostItem(post: BlogPostItemProps) {
-  const { title, excerpt, featuredImage, slug } = post?.fields;
-  const { description } = featuredImage?.fields;
-  const { url } = featuredImage?.fields?.file;
+  const { title, excerpt, featuredImage, slug } = post.fields;
+  const { description } = featuredImage.fields;
+  const { url } = featuredImage.fields.file;
+
+  if (!title || !excerpt || !featuredImage || !slug || !description || !url) {
+    console.warn(
+      '[blog-post.item.tsx] Missing data in post prop. Should provide title, excerpt, featuredImage, slug, description and url.'
+    );
+    return null;
+  }
 
   return (
     <div key={post.sys.id}>
