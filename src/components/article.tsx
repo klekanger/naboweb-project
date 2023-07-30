@@ -7,6 +7,8 @@ import {
 } from '@contentful/rich-text-react-renderer';
 import type { Document } from '@contentful/rich-text-types';
 import Image from 'next/image';
+import Link from 'next/link';
+import { buttonVariants } from './ui/button';
 
 export default function Article({
   title,
@@ -17,7 +19,6 @@ export default function Article({
   mainImage,
   buttonLink,
 }: ArticleProps) {
-  // Format the dates shown at the bottom of every article page
   const publishDate: string =
     updatedAt === createdAt
       ? `Publisert: ${formatDate(createdAt)}`
@@ -58,9 +59,35 @@ export default function Article({
         )}
       </div>
 
-      <p>
-        <em className="font-extralight">{publishDate}</em>
-      </p>
+      <section className="py-8">
+        <em className="text-sm">{publishDate}</em>
+        <br />
+        {authors && (
+          <em className="text-sm">
+            Av{' '}
+            {authors.map((author, index) => {
+              const isLastAuthor = index === authors.length - 1;
+              return (
+                <span
+                  className="text-sm"
+                  key={`${author.fields.firstName}-${author.fields.lastName}`}
+                >
+                  {author.fields.firstName} {author.fields.lastName}
+                  {!isLastAuthor && ', '}
+                </span>
+              );
+            })}
+          </em>
+        )}
+      </section>
+      <Link
+        href={buttonLink}
+        className={buttonVariants({
+          variant: 'secondary',
+        })}
+      >
+        Gå tilbake
+      </Link>
     </article>
   );
 }
