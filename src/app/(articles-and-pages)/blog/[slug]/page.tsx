@@ -1,6 +1,7 @@
 import Article from '@/components/article';
 import { parseContentfulImage } from '@/lib/parse-contentful-image';
 import type { TypeBlogPostSkeleton } from '@/types/contentful-types';
+import type { ArticleProps } from '@/types/types';
 import * as contentful from 'contentful';
 import type { Metadata, ResolvingMetadata } from 'next';
 
@@ -100,6 +101,7 @@ export default async function Page({ params }: Props) {
         createdAt={createdAt}
         updatedAt={updatedAt}
         mainImage={parsedImage}
+        authors={author as ArticleProps['authors']}
         buttonLink="/blog"
       />
     </div>
