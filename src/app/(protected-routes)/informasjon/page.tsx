@@ -1,7 +1,10 @@
+import ServiceBox from '@/components/servicebox';
+
 export default function Page() {
   return (
     <>
-      <div className="break-words rounded-md bg-primaryLight px-4 pb-12 pt-8 text-gray-900">
+      <ServiceBox />
+      <div className="bg-primaryLight break-words rounded-md px-4 pb-12 pt-8 text-gray-900">
         <h1 className="mb-6 text-5xl font-bold text-slate-950">
           Informasjon fra styret
         </h1>
