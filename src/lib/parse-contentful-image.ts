@@ -6,7 +6,7 @@ import type { Asset, EntryFieldTypes } from 'contentful';
  * into a more usable format with only the properties we need.
  *
  * @param asset - The Contentful image asset to parse
- * @returns A parsed Contentful image asset
+ * @returns - A parsed Contentful image asset
  *
  * @example
  * // const parsedImage = parseContentfulImage(image);
