@@ -1,5 +1,5 @@
 /**
- * Layout for protedted routes
+ * Layout for protected routes
  */
 import '@/app/globals.css';
 
