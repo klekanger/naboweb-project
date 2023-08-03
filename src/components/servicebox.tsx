@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export default function ServiceBox() {
   return (
-    <div className="my-16 grid grid-cols-1 gap-4 md:grid-cols-3">
+    <div className="my-8 grid grid-cols-1 gap-4 md:grid-cols-3">
       <Link
         className={`${buttonVariants({
           variant: 'secondary',
