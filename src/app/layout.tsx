@@ -5,6 +5,7 @@
 import { Providers } from '@/app/providers';
 import Footer from '@/components/footer';
 import Navbar from '@/components/navbar';
+import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { Montserrat, Open_Sans } from 'next/font/google';
 import './globals.css';
 
@@ -35,13 +36,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="no" className={`${openSans.variable} ${montserrat.variable}`}>
-      <body>
-        <Providers>
-          <Navbar />
-          <main className="pt-48">{children}</main>
-          <Footer />
-        </Providers>
-      </body>
+      <UserProvider>
+        <body>
+          <Providers>
+            <Navbar />
+            <main className="flex min-h-screen flex-col pt-48">{children}</main>
+            <Footer />
+          </Providers>
+        </body>
+      </UserProvider>
     </html>
   );
 }

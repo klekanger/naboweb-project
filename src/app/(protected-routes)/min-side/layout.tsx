@@ -1,12 +1,7 @@
-/**
- * Layout for protected routes
- */
-import '@/app/globals.css';
+'use client';
 
-export const metadata = {
-  title: 'Boligsameiet Gartnerihagen',
-  description: 'Askims hyggeligste nabolag',
-};
+import '@/app/globals.css';
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 export default function MyPageLayout({
   login,
@@ -15,10 +10,14 @@ export default function MyPageLayout({
   login: React.ReactNode;
   mypage: React.ReactNode;
 }) {
-  // TODO: Replace this with a real check
-  const isLoggedIn = false;
+  const { user, error, isLoading } = useUser();
 
-  return isLoggedIn ? (
+  console.log('[MyPageLayout] user: ', user);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>{error.message}</div>;
+
+  return user ? (
     <section className="mx-auto max-w-6xl overflow-hidden px-2 md:px-5">
       {mypage}
     </section>

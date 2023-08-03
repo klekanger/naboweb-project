@@ -1,18 +1,24 @@
 'use client';
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { LogIn, Moon, Sun } from 'lucide-react';
+import { useUser } from '@auth0/nextjs-auth0/client';
+import { LogIn, Moon, RefreshCw, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { redirect } from 'next/dist/server/api-utils';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import gartnerihagenLogo from 'public/gartnerihagen.svg';
 import { useEffect, useState } from 'react';
 
 export default function Navbar() {
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [isMenuHidden, setIsMenuHidden] = useState(false);
   const logo = gartnerihagenLogo as string;
   const { theme, setTheme } = useTheme();
+  const { user, error, isLoading } = useUser();
 
   const handleScroll = () => {
     if (typeof window !== 'undefined') {
@@ -33,6 +39,7 @@ export default function Navbar() {
   }, []);
 
   if (!mounted) return null;
+  if (error) return <div>{error.message}</div>;
 
   return (
     <nav
@@ -74,9 +81,31 @@ export default function Navbar() {
           </Link>
 
           <div>
-            <Button className="ml-8 cursor-pointer self-end">
-              <LogIn className="mr-2" /> Logg inn
-            </Button>
+            {user ? (
+              <Button
+                className="ml-8 cursor-pointer self-end"
+                onClick={() => router.push('/api/auth/logout')}
+              >
+                <Avatar className="-translate-x-2 scale-75">
+                  <AvatarImage src={user?.picture || ''} />
+                  <AvatarFallback>xx</AvatarFallback>
+                </Avatar>
+                Logg ut
+              </Button>
+            ) : (
+              <Button
+                className="ml-8 cursor-pointer self-end"
+                onClick={() => router.push('/api/auth/login')}
+              >
+                {isLoading ? (
+                  <RefreshCw className="mr-2 animate-spin" />
+                ) : (
+                  <LogIn className="mr-2" />
+                )}
+                Logg inn
+              </Button>
+            )}
+
             <Button
               variant="ghost"
               size="icon"
