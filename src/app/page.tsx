@@ -1,5 +1,6 @@
 import HeroWide from '@/components/hero-wide';
 import type { TypeForsidetekstSkeleton } from '@/types/contentful-types';
+
 import * as contentful from 'contentful';
 
 async function getFrontPageData() {
