@@ -53,7 +53,7 @@ export default function App() {
   return (
     <NextUINavbar
       classNames={{
-        base: 'dark:bg-black/80 bg-brand-white/30',
+        base: 'dark:bg-black/80 bg-brand-black/10',
         item: 'text-brand-black dark:text-brand-white',
       }}
       onMenuOpenChange={() => setIsMenuOpen(!isMenuOpen)}
@@ -80,26 +80,19 @@ export default function App() {
       </NavbarContent>
 
       <NavbarContent className="hidden gap-8 sm:flex" justify="end">
-        <NavbarItem isActive={pathname === '/informasjon'}>
-          <Link color="foreground" href="/informasjon">
-            For beboere
-          </Link>
-        </NavbarItem>
-        <NavbarItem isActive={pathname.startsWith('/blog-collection')}>
-          <Link href="/blog-collection" aria-current="page">
-            Blogg
-          </Link>
-        </NavbarItem>
-        <NavbarItem isActive={pathname === '/om-boligsameiet-gartnerihagen'}>
-          <Link color="foreground" href="/om-boligsameiet-gartnerihagen">
-            Om oss
-          </Link>
-        </NavbarItem>
-        <NavbarItem isActive={pathname === '/styret'}>
-          <Link color="foreground" href="/styret">
-            Styret
-          </Link>
-        </NavbarItem>
+        {menuItems.map((item, index) => {
+          if (item.protected && !user) return null;
+
+          return (
+            <NavbarItem
+              key={index}
+              isActive={pathname.startsWith(item.href)}
+              className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
+            >
+              <Link href={item.href}>{item.title}</Link>
+            </NavbarItem>
+          );
+        })}
 
         <ButtonGroup>
           <NavbarItem>
@@ -143,12 +136,16 @@ export default function App() {
           </NavbarItem>
         </ButtonGroup>
       </NavbarContent>
+
       <NavbarMenu>
         {menuItems.map((item, index) => {
           if (item.protected && !user) return null;
 
           return (
-            <NavbarMenuItem key={`${item}-${index}`}>
+            <NavbarMenuItem
+              key={`${item}-${index}`}
+              className="duration-100 transition hover:text-brand-hoverButtonColor"
+            >
               <Link
                 color={
                   index === 2
@@ -165,6 +162,45 @@ export default function App() {
             </NavbarMenuItem>
           );
         })}
+
+        <ButtonGroup className="mt-8">
+          <NavbarMenuItem>
+            {user ? (
+              <Button
+                color="primary"
+                onClick={() => router.push('/api/auth/logout')}
+                variant="flat"
+                startContent={<LogOut />}
+              >
+                Logg ut
+              </Button>
+            ) : (
+              <Button
+                color="primary"
+                onClick={() => router.push('/api/auth/login')}
+                variant="flat"
+                startContent={<LogIn />}
+              >
+                Logg inn
+              </Button>
+            )}
+          </NavbarMenuItem>
+          <NavbarMenuItem>
+            <Button
+              variant="light"
+              onClick={() => {
+                if (theme === 'dark') {
+                  setTheme('light');
+                } else {
+                  setTheme('dark');
+                }
+              }}
+              isIconOnly
+            >
+              {theme === 'light' ? <Sun /> : <Moon />}
+            </Button>
+          </NavbarMenuItem>
+        </ButtonGroup>
       </NavbarMenu>
     </NextUINavbar>
   );
