@@ -9,55 +9,16 @@ module.exports = {
     './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    container: {
-      center: true,
-      padding: '2rem',
-      screens: {
-        '2xl': '1400px',
-      },
-    },
     extend: {
       colors: {
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
-        primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
-        },
-        secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
-        },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
-        },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
-        },
-        accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
-        },
-        popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
-        },
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
-        },
         'brand-black': '#090A24',
         'brand-white': '#F6F7FD',
-        'brand-dark': '#0a0a0a',
+        'brand-dark': '#1e1e1e',
         'brand-primaryLight': '#78ad96',
         'brand-logoDarkGreen': '#43A889',
         'brand-logoLightGreen': '#C8DD80',
         'brand-darkTransparent': 'rgba(10, 10, 10,0.7)',
+        'brand-lightTransparent': 'rgba(10, 10, 10,0.7)',
         'brand-primary': '#628CF6',
         'brand-secondary': '#457bac',
         'brand-light': '#cfe9ff',
@@ -70,30 +31,89 @@ module.exports = {
         'brand-hoverButtonDangerColor': '#FF6666',
         'brand-danger': '#ff3333',
       },
-      borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
-      },
-      keyframes: {
-        'accordion-down': {
-          from: { height: 0 },
-          to: { height: 'var(--radix-accordion-content-height)' },
-        },
-        'accordion-up': {
-          from: { height: 'var(--radix-accordion-content-height)' },
-          to: { height: 0 },
-        },
-      },
-      animation: {
-        'accordion-down': 'accordion-down 0.2s ease-out',
-        'accordion-up': 'accordion-up 0.2s ease-out',
-      },
-    },
-    fontFamily: {
-      title: ['var(--font-open-sans)'],
-      body: ['var(--font-montserrat)'],
     },
   },
-  plugins: [require('tailwindcss-animate'), nextui()],
+  plugins: [
+    nextui({
+      themes: {
+        dark: {
+          colors: {
+            background: '#000',
+
+            default: {
+              DEFAULT: '#3B5AF7',
+              50: '#e3eaff',
+              100: '#b3c1ff',
+              200: '#8398fc',
+              300: '#536ff9',
+              400: '#2245f6',
+              500: '#092cdd',
+              600: '#0322ad',
+              700: '#00187d',
+              800: '#000e4e',
+              900: '#000420',
+            },
+            primary: {
+              DEFAULT: '#43A889',
+              50: '#e2fbf2',
+              100: '#c2ebde',
+              200: '#a1dcca',
+              300: '#7dccb5',
+              400: '#5bbe9f',
+              500: '#41a486',
+              600: '#318068',
+              700: '#1f5b4a',
+              800: '#0e382c',
+              900: '#00150e',
+            },
+            success: {
+              DEFAULT: '#42C134',
+              50: '#e5fce4',
+              100: '#c4f0bf',
+              200: '#a0e499',
+              300: '#7cd971',
+              400: '#57ce4a',
+              500: '#3eb531',
+              600: '#2e8d25',
+              700: '#1f6419',
+              800: '#103d0c',
+              900: '#001600',
+            },
+            warning: {
+              DEFAULT: '#E5DE09',
+              50: '#fffedb',
+              100: '#fcfaaf',
+              200: '#faf681',
+              300: '#f8f351',
+              400: '#f6f022',
+              500: '#ddd609',
+              600: '#aca601',
+              700: '#7b7700',
+              800: '#4a4700',
+              900: '#1a1800',
+            },
+            danger: {
+              DEFAULT: '#E04F16',
+              50: '#ffebe0',
+              100: '#fdcab5',
+              200: '#f6a789',
+              300: '#f0865b',
+              400: '#ea632e',
+              500: '#d14a15',
+              600: '#a4380f',
+              700: '#752809',
+              800: '#481702',
+              900: '#1e0400',
+            },
+          },
+        },
+        light: {
+          colors: {
+            background: '#bbb',
+            primary: {},
+          },
+        },
+      },
+    }),
+  ],
 };
