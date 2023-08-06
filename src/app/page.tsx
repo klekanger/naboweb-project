@@ -29,7 +29,7 @@ export default async function Home() {
         excerpt={excerpt ?? ''}
         pageImage={pageImage}
       />
-      <h1>dfsdfsdf</h1>
+
       <h2>dfsdfsdf</h2>
       <h3>dfsdfsdf</h3>
       <h4>dfsdfsdf</h4>

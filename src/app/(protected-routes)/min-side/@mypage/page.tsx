@@ -1,6 +1,6 @@
 'use client';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { UserProfile, useUser } from '@auth0/nextjs-auth0/client';
+import { Avatar, AvatarGroup, AvatarIcon } from '@nextui-org/react';
 import { User as UserImg } from 'lucide-react';
 
 type User = UserProfile & {
@@ -24,19 +24,14 @@ export default function MyPage() {
     <div className="flex  flex-col justify-center text-center align-middle">
       <h1>Min side</h1>
 
-      <Avatar className="m-auto h-32 w-32">
-        <AvatarImage src={user?.picture || ''} />
-        <AvatarFallback>
-          <UserImg />
-        </AvatarFallback>
-      </Avatar>
-      <p>
+      <div className="m-auto mb-8">
+        <Avatar src={user?.picture || ''} fallback={<UserImg />} size="lg" />
+      </div>
+      <p className="font-extralight">
         <b>Du er innlogget som:</b> {user?.name || ''}
-      </p>
-      <p>
+        <br />
         <b>Epost:</b> {user?.email || ''}
-      </p>
-      <p>
+        <br />
         <b>Roller:</b> {userRoles.join(', ')}
       </p>
     </div>

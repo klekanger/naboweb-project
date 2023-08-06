@@ -8,7 +8,6 @@ import {
 import type { Document } from '@contentful/rich-text-types';
 import Image from 'next/image';
 import Link from 'next/link';
-import { buttonVariants } from './ui/button';
 
 export default function Article({
   title,
@@ -80,14 +79,7 @@ export default function Article({
           </em>
         )}
       </section>
-      <Link
-        href={buttonLink}
-        className={buttonVariants({
-          variant: 'secondary',
-        })}
-      >
-        Gå tilbake
-      </Link>
+      <Link href={buttonLink}>Gå tilbake</Link>
     </article>
   );
 }

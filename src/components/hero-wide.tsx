@@ -13,7 +13,7 @@ export default function HeroWide({
   };
 
   return (
-    <div className="-mt-32 w-screen max-w-full overflow-hidden">
+    <div className="-mt-72 w-screen max-w-full overflow-hidden">
       <div className="img-zoom ">
         <Image
           src={`https:${pageImage?.fields?.file?.url ?? ''}`}

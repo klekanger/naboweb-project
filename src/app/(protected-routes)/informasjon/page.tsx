@@ -1,7 +1,6 @@
 'use client';
 
 import ServiceBox from '@/components/servicebox';
-import { buttonVariants } from '@/components/ui/button';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { RefreshCw } from 'lucide-react';
 import Link from 'next/link';
@@ -27,13 +26,7 @@ export default function Page() {
           )}
         </p>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <Link
-            className={`${buttonVariants({
-              variant: 'default',
-              size: 'lg',
-            })} h-16 font-semibold`}
-            href="/min-side"
-          >
+          <Link className={` h-16 font-semibold`} href="/min-side">
             Gå til Min side
           </Link>
         </div>

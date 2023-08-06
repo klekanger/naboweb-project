@@ -1,115 +1,133 @@
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import {
+  Button,
+  ButtonGroup,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+  NavbarMenu,
+  NavbarMenuItem,
+  NavbarMenuToggle,
+  Navbar as NextUINavbar,
+} from '@nextui-org/react';
+
 import { useUser } from '@auth0/nextjs-auth0/client';
-import { LogIn, Moon, RefreshCw, Sun } from 'lucide-react';
+import { LogIn, LogOut, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { redirect } from 'next/dist/server/api-utils';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import gartnerihagenLogo from 'public/gartnerihagen.svg';
+import { usePathname, useRouter } from 'next/navigation';
+import logoDark from 'public/logo-dark.svg';
+import logoLight from 'public/logo-light.svg';
 import { useEffect, useState } from 'react';
 
-export default function Navbar() {
-  const router = useRouter();
+export default function App() {
+  const menuItems = [
+    { title: 'For beboere', href: '/informasjon', protected: false },
+    { title: 'Blogg', href: '/blog-collection' },
+    {
+      title: 'Om oss',
+      href: '/om-boligsameiet-gartnerihagen',
+      protected: false,
+    },
+    { title: 'Styret', href: '/styret', protected: false },
+    { title: 'Min side', href: '/min-side', protected: true },
+  ];
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [isMenuHidden, setIsMenuHidden] = useState(false);
-  const logo = gartnerihagenLogo as string;
+
+  const router = useRouter();
+  const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const { user, error, isLoading } = useUser();
 
-  const handleScroll = () => {
-    if (typeof window !== 'undefined') {
-      if (window.scrollY > window.innerHeight * 0.15) {
-        setIsMenuHidden(true);
-      } else {
-        setIsMenuHidden(false);
-      }
-    }
-  };
-
   useEffect(() => {
     setMounted(true);
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
   }, []);
 
   if (!mounted) return null;
   if (error) return <div>{error.message}</div>;
 
   return (
-    <nav
-      className={`${
-        isMenuHidden ? 'hide-on-scroll' : ''
-      } fixed z-50 flex w-full flex-wrap items-center justify-between break-words bg-brand-dark px-8 py-3 text-slate-50 dark:bg-brand-darkTransparent`}
+    <NextUINavbar
+      classNames={{
+        base: 'dark:bg-black/80 bg-brand-white/30',
+        item: 'text-brand-black dark:text-brand-white',
+      }}
+      onMenuOpenChange={() => setIsMenuOpen(!isMenuOpen)}
+      isMenuOpen={isMenuOpen}
+      shouldHideOnScroll
+      maxWidth="full"
+      height="5rem"
+      isBlurred
     >
-      <Link href="/" className="cursor-pointer">
-        <Image src={logo} alt="Gartnerihagen-logo" />
-      </Link>
-      <div>
-        <div className="flex">
-          <Link
-            href="/informasjon"
-            className="m-auto mr-8 cursor-pointer font-light transition duration-300 hover:text-green-200"
-          >
+      <NavbarContent justify="start">
+        <NavbarMenuToggle
+          aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+          className="sm:hidden"
+        />
+        <NavbarBrand>
+          <Link href="/" className="cursor-pointer">
+            <Image
+              src={theme === 'light' ? logoLight : logoDark}
+              alt="Gartnerihagen-logo"
+              className="h-16 pr-8"
+            />
+          </Link>
+        </NavbarBrand>
+      </NavbarContent>
+
+      <NavbarContent className="hidden gap-8 sm:flex" justify="end">
+        <NavbarItem isActive={pathname === '/informasjon'}>
+          <Link color="foreground" href="/informasjon">
             For beboere
           </Link>
-
-          <Link
-            href="/blog-collection"
-            className="m-auto mr-8 cursor-pointer  font-light transition duration-300 hover:text-green-200"
-          >
+        </NavbarItem>
+        <NavbarItem isActive={pathname.startsWith('/blog-collection')}>
+          <Link href="/blog-collection" aria-current="page">
             Blogg
           </Link>
-
-          <Link
-            href="/om-boligsameiet-gartnerihagen"
-            className="m-auto mr-8 cursor-pointer  font-light transition duration-300 hover:text-green-200"
-          >
+        </NavbarItem>
+        <NavbarItem isActive={pathname === '/om-boligsameiet-gartnerihagen'}>
+          <Link color="foreground" href="/om-boligsameiet-gartnerihagen">
             Om oss
           </Link>
-
-          <Link
-            href="/styret"
-            className="m-auto cursor-pointer  font-light transition duration-300 hover:text-green-200"
-          >
+        </NavbarItem>
+        <NavbarItem isActive={pathname === '/styret'}>
+          <Link color="foreground" href="/styret">
             Styret
           </Link>
+        </NavbarItem>
 
-          <div>
+        <ButtonGroup>
+          <NavbarItem>
             {user ? (
               <Button
-                className="ml-8 cursor-pointer self-end"
+                color="primary"
                 onClick={() => router.push('/api/auth/logout')}
+                variant="flat"
+                className="ml-8"
+                startContent={<LogOut />}
               >
-                <Avatar className="-translate-x-2 scale-75">
-                  <AvatarImage src={user?.picture || ''} />
-                  <AvatarFallback>xx</AvatarFallback>
-                </Avatar>
                 Logg ut
               </Button>
             ) : (
               <Button
-                className="ml-8 cursor-pointer self-end"
+                color="primary"
                 onClick={() => router.push('/api/auth/login')}
+                variant="flat"
+                className="ml-8"
+                startContent={<LogIn />}
               >
-                {isLoading ? (
-                  <RefreshCw className="mr-2 animate-spin" />
-                ) : (
-                  <LogIn className="mr-2" />
-                )}
                 Logg inn
               </Button>
             )}
-
+          </NavbarItem>
+          <NavbarItem>
             <Button
-              variant="ghost"
-              size="icon"
-              className="ml-2"
+              variant="light"
               onClick={() => {
                 if (theme === 'dark') {
                   setTheme('light');
@@ -117,12 +135,37 @@ export default function Navbar() {
                   setTheme('dark');
                 }
               }}
+              isIconOnly
+              className="ml-2"
             >
               {theme === 'light' ? <Sun /> : <Moon />}
             </Button>
-          </div>
-        </div>
-      </div>
-    </nav>
+          </NavbarItem>
+        </ButtonGroup>
+      </NavbarContent>
+      <NavbarMenu>
+        {menuItems.map((item, index) => {
+          if (item.protected && !user) return null;
+
+          return (
+            <NavbarMenuItem key={`${item}-${index}`}>
+              <Link
+                color={
+                  index === 2
+                    ? 'primary'
+                    : index === menuItems.length - 1
+                    ? 'danger'
+                    : 'foreground'
+                }
+                className="w-full"
+                href={item.href}
+              >
+                {item.title}
+              </Link>
+            </NavbarMenuItem>
+          );
+        })}
+      </NavbarMenu>
+    </NextUINavbar>
   );
 }
