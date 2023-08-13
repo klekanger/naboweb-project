@@ -12,8 +12,6 @@ export default function MyPageLayout({
 }) {
   const { user, error, isLoading } = useUser();
 
-  console.log('[MyPageLayout] user: ', user);
-
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
 

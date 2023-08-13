@@ -47,6 +47,11 @@ export default function App() {
     setMounted(true);
   }, []);
 
+  // When the user navigates to a new page, always close the hamburger menu
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [pathname]);
+
   if (!mounted) return null;
   if (error) return <div>{error.message}</div>;
 
@@ -60,26 +65,27 @@ export default function App() {
       isMenuOpen={isMenuOpen}
       shouldHideOnScroll
       maxWidth="full"
-      height="5rem"
+      height="4.5rem"
       isBlurred
     >
       <NavbarContent justify="start">
         <NavbarMenuToggle
           aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-          className="sm:hidden"
+          className="z-50 lg:hidden"
         />
         <NavbarBrand>
           <Link href="/" className="cursor-pointer">
             <Image
               src={theme === 'light' ? logoLight : logoDark}
               alt="Gartnerihagen-logo"
-              className="h-16 pr-8"
+              className="-mt-3 sm:-ml-12 sm:h-16 lg:ml-0"
+              priority
             />
           </Link>
         </NavbarBrand>
       </NavbarContent>
 
-      <NavbarContent className="hidden gap-8 sm:flex" justify="end">
+      <NavbarContent className="hidden gap-8 lg:flex" justify="end">
         {menuItems.map((item, index) => {
           if (item.protected && !user) return null;
 
@@ -89,7 +95,9 @@ export default function App() {
               isActive={pathname.startsWith(item.href)}
               className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
             >
-              <Link href={item.href}>{item.title}</Link>
+              <Link href={item.href} className="">
+                {item.title}
+              </Link>
             </NavbarItem>
           );
         })}
@@ -137,7 +145,7 @@ export default function App() {
         </ButtonGroup>
       </NavbarContent>
 
-      <NavbarMenu>
+      <NavbarMenu className="pt-8">
         {menuItems.map((item, index) => {
           if (item.protected && !user) return null;
 
@@ -162,7 +170,6 @@ export default function App() {
             </NavbarMenuItem>
           );
         })}
-
         <ButtonGroup className="mt-8">
           <NavbarMenuItem>
             {user ? (

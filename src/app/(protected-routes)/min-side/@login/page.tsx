@@ -1,11 +1,8 @@
 import AlertUser from '@/components/alert-user';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function Login() {
   return (
     <div>
-      <h1>Min side – vennligst logg inn</h1>
-
       <AlertUser
         alertTitle="Du er ikke logget inn"
         alertMessage={`

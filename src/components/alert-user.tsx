@@ -1,4 +1,13 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+'use client';
+
+import {
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Divider,
+} from '@nextui-org/react';
 import { AlertCircle } from 'lucide-react';
 
 type AlertUserProps = {
@@ -13,14 +22,15 @@ export default function AlertUser({
   if (!alertMessage || !alertTitle) return null;
 
   return (
-    <div className="mt-16 w-full md:w-1/2">
-      <Alert variant={'destructive'}>
-        <AlertCircle className="h-5 w-4" />
-        <AlertTitle>{alertTitle}</AlertTitle>
-        <AlertDescription className="pt-4 leading-normal">
-          {alertMessage}
-        </AlertDescription>
-      </Alert>
-    </div>
+    <Card className="max-w-[400px]">
+      <CardHeader className="flex gap-3 text-brand-primaryLight">
+        <AlertCircle size={24} />
+        <h3>{alertTitle}</h3>
+      </CardHeader>
+      <Divider />
+      <CardBody>
+        <p className="">{alertMessage}</p>
+      </CardBody>
+    </Card>
   );
 }

@@ -27,8 +27,11 @@ export default function Page() {
           )}
         </p>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <Link className={`h-16 font-semibold`} href="/min-side">
-            Gå til Min side
+          <Link
+            className="animate h-16 pl-1 font-semibold duration-100 hover:text-brand-black/70"
+            href="/min-side"
+          >
+            Gå til Min side »
           </Link>
         </div>
         <ServiceBox />
