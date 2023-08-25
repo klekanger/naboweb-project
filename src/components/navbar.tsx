@@ -10,6 +10,7 @@ import {
   NavbarMenuItem,
   NavbarMenuToggle,
   Navbar as NextUINavbar,
+  semanticColors,
 } from '@nextui-org/react';
 
 import { useUser } from '@auth0/nextjs-auth0/client';
@@ -49,6 +50,7 @@ export default function App() {
 
   // When the user navigates to a new page, always close the hamburger menu
   useEffect(() => {
+    console.log(semanticColors);
     setIsMenuOpen(false);
   }, [pathname]);
 
@@ -78,7 +80,7 @@ export default function App() {
             <Image
               src={theme === 'light' ? logoLight : logoDark}
               alt="Gartnerihagen-logo"
-              className="-mt-3 sm:-ml-12 sm:h-16 lg:ml-0"
+              className="-mt-3  sm:-ml-12 sm:h-16 lg:ml-0"
               priority
             />
           </Link>
@@ -106,20 +108,18 @@ export default function App() {
           <NavbarItem>
             {user ? (
               <Button
-                color="primary"
                 onClick={() => router.push('/api/auth/logout')}
                 variant="flat"
-                className="ml-8"
+                className="ml-8 bg-secondary"
                 startContent={<LogOut />}
               >
                 Logg ut
               </Button>
             ) : (
               <Button
-                color="primary"
                 onClick={() => router.push('/api/auth/login')}
                 variant="flat"
-                className="ml-8"
+                className="ml-8 bg-secondary"
                 startContent={<LogIn />}
               >
                 Logg inn
@@ -152,7 +152,7 @@ export default function App() {
           return (
             <NavbarMenuItem
               key={`${item}-${index}`}
-              className="duration-100 transition hover:text-brand-hoverButtonColor"
+              className="hover:text-brand-hoverButtonColor duration-100 transition"
             >
               <Link
                 color={
@@ -202,6 +202,7 @@ export default function App() {
                   setTheme('dark');
                 }
               }}
+              className="ml-2"
               isIconOnly
             >
               {theme === 'light' ? <Sun /> : <Moon />}
