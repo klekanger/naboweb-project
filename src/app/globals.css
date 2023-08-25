@@ -7,16 +7,20 @@
   @apply text-base;
 }
 
-:root {
-  @apply text-slate-800;
-}
-
 body {
-  @apply bg-slate-50 dark:bg-brand-dark;
-  @apply text-slate-800 dark:text-slate-100;
+  font-family: var(--font-open-sans);
 }
 
 @layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-montserrat);
+  }
+
   h1 {
     @apply pb-8 text-4xl font-semibold sm:text-5xl;
   }
@@ -47,7 +51,7 @@ body {
 }
 
 .footer {
-  @apply mt-16 flex w-full flex-col flex-wrap items-center justify-between break-words bg-brand-dark px-10 py-16 text-center text-xs font-extralight text-slate-300 opacity-90 dark:bg-brand-dark md:flex-row md:items-start lg:text-sm;
+  @apply mt-16 flex w-full flex-col flex-wrap items-center justify-between break-words bg-brand-black px-10 py-16 text-center text-xs font-extralight text-slate-300 opacity-90 dark:bg-brand-black md:flex-row md:items-start lg:text-sm;
 }
 
 .footer p {
