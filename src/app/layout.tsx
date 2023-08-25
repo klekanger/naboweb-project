@@ -9,14 +9,12 @@ import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { Montserrat, Open_Sans } from 'next/font/google';
 import './globals.css';
 
-// eslint-disable-next-line new-cap
 const openSans = Open_Sans({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-open-sans',
 });
 
-// eslint-disable-next-line new-cap
 const montserrat = Montserrat({
   subsets: ['latin'],
   display: 'swap',
@@ -39,9 +37,9 @@ export default function RootLayout({
       <UserProvider>
         <body>
           <Providers>
-            <Navbar />
-            <main className="flex min-h-screen flex-col pt-16 sm:pt-32">
-              {children}
+            <main className="flex min-h-screen flex-col">
+              <Navbar />
+              <section className="mt-16 sm:mt-32">{children}</section>
             </main>
             <Footer />
           </Providers>

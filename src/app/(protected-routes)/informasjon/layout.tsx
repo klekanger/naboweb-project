@@ -16,13 +16,5 @@ export default function InfoPageLayout({
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
 
-  return user ? (
-    <section className="mx-auto max-w-6xl overflow-hidden px-2 md:px-5">
-      {loggedin}
-    </section>
-  ) : (
-    <section className="mx-auto max-w-6xl overflow-hidden px-2 md:px-5">
-      {notloggedin}
-    </section>
-  );
+  return user ? <>{loggedin}</> : <>{notloggedin}</>;
 }
