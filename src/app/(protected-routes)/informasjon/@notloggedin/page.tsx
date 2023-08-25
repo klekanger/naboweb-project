@@ -2,11 +2,9 @@ import AlertUser from '@/components/alert-user';
 
 export default function Login() {
   return (
-    <div className="bg-primaryLight break-words rounded-md px-4 pb-12 pt-8 text-gray-900">
-      <h1 className="mb-6 text-5xl font-bold text-slate-950">
-        Informasjon fra styret
-      </h1>
-      <p className="text-lg text-gray-700">
+    <div className="break-words rounded-md  px-4 pb-12 pt-8">
+      <h1 className="mb-6 text-5xl font-bold">Informasjon fra styret</h1>
+      <p className="text-lg">
         På denne siden finner du nyttig informasjon fra styret. Ta kontakt hvis
         det er noe du savner, eller har tilbakemeldinger.
       </p>

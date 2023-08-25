@@ -1,5 +1,6 @@
 'use client';
 
+import InfoBox from '@/components/info-box';
 import ServiceBox from '@/components/servicebox';
 
 import { useUser } from '@auth0/nextjs-auth0/client';
@@ -11,7 +12,7 @@ export default function Page() {
 
   return (
     <>
-      <div className="rounded-md border border-dashed border-brand-black border-opacity-60 p-4 pt-8">
+      <div className="mb-16 rounded-md border border-dashed border-brand-black border-opacity-60 p-4 pt-8 dark:border-brand-white">
         <p className="h-10 pl-1 font-light">
           {user ? (
             <>
@@ -22,7 +23,7 @@ export default function Page() {
             </>
           ) : (
             <span>
-              <RefreshCw className="animate-spin text-brand-primaryLight" />
+              <RefreshCw className="animate-spin text-brand-default" />
             </span>
           )}
         </p>
@@ -36,15 +37,11 @@ export default function Page() {
         </div>
         <ServiceBox />
       </div>
-      <div className="bg-primaryLight break-words rounded-md px-4 pb-12 pt-8 text-gray-900">
-        <h1 className="mb-6 text-5xl font-bold text-slate-950">
-          Informasjon fra styret
-        </h1>
-        <p className="text-lg text-gray-700">
-          På denne siden finner du nyttig informasjon fra styret. Ta kontakt
-          hvis det er noe du savner, eller har tilbakemeldinger.
-        </p>
-      </div>
+      <InfoBox
+        title="Informasjon fra styret"
+        message="På denne siden finner du nyttig informasjon fra styret. Ta kontakt hvis
+        det er noe du savner, eller har tilbakemeldinger."
+      />
     </>
   );
 }
