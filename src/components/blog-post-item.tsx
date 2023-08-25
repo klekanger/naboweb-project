@@ -15,12 +15,12 @@ export default function BlogPostItem(post: BlogPostItemProps) {
   }
 
   return (
-    <div key={post.sys.id}>
+    <section key={post.sys.id}>
       <div className="grid-cols-12 gap-2 pb-2 md:grid md:pb-8 lg:gap-8">
         <div className="relative order-last cursor-pointer rounded-md md:col-span-5  lg:col-span-6">
           <Link href={`/blog/${slug}`} passHref>
             <Image
-              className="aspect-video rounded-md object-cover transition duration-200 hover:scale-[102%]"
+              className="aspect-video rounded-md object-cover duration-200 transition hover:scale-[102%]"
               src={`https://${url}`}
               alt={description}
               width={featuredImage.fields.file.details.image.width}
@@ -33,7 +33,7 @@ export default function BlogPostItem(post: BlogPostItemProps) {
         <div className="md:col-span-7 md:pr-8 lg:col-span-6">
           <Link href={`/blog/${slug}`} passHref>
             <h2
-              className="m4-4 transform cursor-pointer pb-2 pt-0 text-2xl transition duration-500 hover:text-brand-secondary md:mt-0 "
+              className="m4-4 transform cursor-pointer pb-2 pt-0 text-2xl duration-500 transition hover:text-brand-secondary md:mt-0 "
               tabIndex={0}
             >
               {title}
@@ -49,6 +49,6 @@ export default function BlogPostItem(post: BlogPostItemProps) {
         </div>
       </div>
       <hr className="border-dashed border-slate-300 dark:border-slate-700" />
-    </div>
+    </section>
   );
 }
