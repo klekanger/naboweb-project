@@ -1,14 +1,7 @@
 'use client';
-import UserCard from '@/components/user-card';
-import { UserProfile, useUser } from '@auth0/nextjs-auth0/client';
-import { Avatar, Chip, ChipProps } from '@nextui-org/react';
-import { User as UserImg } from 'lucide-react';
 
-type FriendlyUserRole = {
-  role: string;
-  friendlyName: string;
-  color: ChipProps['color'];
-};
+import UserCard from '@/components/user-card';
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 export default function MyPage() {
   const { user, error, isLoading } = useUser();

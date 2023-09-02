@@ -10,5 +10,7 @@ export async function GET(): Promise<NextResponse> {
   const data = await res.json();
   const { value } = data;
 
+  console.log('data is', data);
+
   return NextResponse.json({ data });
 }

@@ -12,6 +12,7 @@ import {
 } from '@nextui-org/react';
 import { User as UserImg } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 type FriendlyUserRole = {
   role: string;
@@ -20,6 +21,7 @@ type FriendlyUserRole = {
 };
 
 export default function UserCard({ user }: { user: UserProfile }) {
+  const router = useRouter();
   if (!user) {
     console.warn('No user');
     return null;
@@ -66,11 +68,7 @@ export default function UserCard({ user }: { user: UserProfile }) {
       >
         <CardHeader className="justify-between ">
           <div className="flex gap-5">
-            <Avatar
-              src={user?.picture || ''}
-              fallback={<UserImg />}
-              size="lg"
-            />
+            <Avatar src={picture || ''} fallback={<UserImg />} size="lg" />
             <div className="flex flex-col items-start justify-center gap-1">
               <div>
                 <b>{name}</b>
@@ -95,23 +93,52 @@ export default function UserCard({ user }: { user: UserProfile }) {
           <Divider className="mb-8 mt-4" />
 
           <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-3">
-            <Button as={Link} href="/" size="lg" color="primary">
+            <Button
+              as={Link}
+              href="/"
+              size="lg"
+              color="primary"
+              className="bg-primary duration-100 transition hover:bg-primary-600"
+            >
               Logg ut
             </Button>
-            <Button as={Link} href="/" size="lg" color="primary">
+            <Button
+              as={Link}
+              href="/"
+              size="lg"
+              color="primary"
+              className="bg-primary duration-100 transition hover:bg-primary-600"
+            >
               Bytt passord
             </Button>
             {isAdmin && (
-              <Button as={Link} href="/" size="lg" color="primary">
+              <Button
+                onClick={() => router.push('/user-admin-page')}
+                size="lg"
+                color="primary"
+                className="bg-primary duration-100 transition hover:bg-primary-600"
+              >
                 Brukeradmin
               </Button>
             )}
             {isEditor && (
-              <Button as={Link} href="/" size="lg" color="primary">
+              <Button
+                as={Link}
+                href="/"
+                size="lg"
+                color="primary"
+                className="bg-primary duration-100 transition hover:bg-primary-600"
+              >
                 Rediger innhold
               </Button>
             )}
-            <Button as={Link} href="/" size="lg" color="primary">
+            <Button
+              as={Link}
+              href="/"
+              size="lg"
+              color="primary"
+              className="bg-primary duration-100 transition hover:bg-primary-600"
+            >
               Slå av e-post-varsling
             </Button>
           </div>
