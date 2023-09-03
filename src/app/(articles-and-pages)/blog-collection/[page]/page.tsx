@@ -1,5 +1,5 @@
-import BlogPostList from '@/components/blog-post-list';
-import Pagination from '@/components/pagination';
+import BlogPostList from '@/components/BlogPostList';
+import Pagination from '@/components/Pagination';
 import type { TypeBlogPostSkeleton } from '@/types/contentful-types';
 import type { BlogPostItemProps } from '@/types/types';
 import * as contentful from 'contentful';

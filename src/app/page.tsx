@@ -1,4 +1,4 @@
-import HeroWide from '@/components/hero-wide';
+import HeroWide from '@/components/HeroWide';
 import type { TypeForsidetekstSkeleton } from '@/types/contentful-types';
 
 import * as contentful from 'contentful';

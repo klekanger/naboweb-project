@@ -124,3 +124,13 @@ body {
 .rich-image-caption {
   @apply mb-0 rounded-b-md bg-slate-200 px-4 py-2 text-left text-sm text-brand-black dark:bg-slate-700 dark:text-brand-white md:mb-4;
 }
+
+/* Clerk classes */
+
+.cl-formButtonPrimary {
+  @apply bg-primary duration-100 transition hover:bg-primary-600;
+}
+
+.cl-internal-b3fm6y {
+  @apply bg-brand-primary;
+}

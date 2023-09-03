@@ -1,4 +1,4 @@
-import BlogPostItem from '@/components/blog-post-item';
+import BlogPostItem from '@/components/BlogPostItem';
 import type { BlogPostItemProps, BlogPostListProps } from '@/types/types';
 
 export default function BlogPostList({

@@ -31,6 +31,9 @@ module.exports = {
         'brand-dark-danger': '#E43131',
       },
     },
+    container: {
+      center: true,
+    },
   },
   plugins: [
     nextui({

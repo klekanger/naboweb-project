@@ -3,9 +3,10 @@
  */
 
 import { Providers } from '@/app/providers';
-import Footer from '@/components/footer';
-import Navbar from '@/components/navbar';
-import { UserProvider } from '@auth0/nextjs-auth0/client';
+import Footer from '@/components/Footer';
+import Navbar from '@/components/Navbar';
+import { nbNO } from '@clerk/localizations';
+import { ClerkProvider } from '@clerk/nextjs';
 import { Montserrat, Open_Sans } from 'next/font/google';
 import './globals.css';
 
@@ -34,7 +35,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="no" className={`${openSans.variable} ${montserrat.variable}`}>
-      <UserProvider>
+      <ClerkProvider localization={nbNO}>
         <body>
           <Providers>
             <main className="flex min-h-screen flex-col">
@@ -44,7 +45,7 @@ export default function RootLayout({
             <Footer />
           </Providers>
         </body>
-      </UserProvider>
+      </ClerkProvider>
     </html>
   );
 }
