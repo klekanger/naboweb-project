@@ -2,6 +2,7 @@
 
 import UserCard from '@/components/UserCard';
 import { UserProfile, useUser } from '@clerk/nextjs';
+import { Spinner } from '@nextui-org/react';
 
 export default function MyPage() {
   const { isSignedIn, user, isLoaded } = useUser();
@@ -16,9 +17,14 @@ export default function MyPage() {
     <div className="flex  flex-col items-center">
       <h1 className="text-center">Min side</h1>
 
-      <UserCard user={user} className="mb-16" />
-
-      <UserProfile />
+      {isSignedIn ? (
+        <>
+          <UserCard user={user} className="mb-16" />
+          <UserProfile />
+        </>
+      ) : (
+        <Spinner />
+      )}
     </div>
   );
 }
