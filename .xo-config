@@ -10,6 +10,15 @@
         ]
       }
     ],
+    "unicorn/filename-case": [
+      "error",
+      {
+        "cases": {
+          "pascalCase": true,
+          "kebabCase": true
+        }
+      }
+    ],
     "import/extensions": [
       "error",
       "never",
