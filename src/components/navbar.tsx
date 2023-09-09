@@ -43,15 +43,12 @@ export default function Navbar() {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
 
-  console.log(user);
-
   useEffect(() => {
     setMounted(true);
   }, []);
 
   // When the user navigates to a new page, always close the hamburger menu
   useEffect(() => {
-    console.log(semanticColors);
     setIsMenuOpen(false);
   }, [pathname]);
 
@@ -75,7 +72,7 @@ export default function Navbar() {
           aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
           className="z-50 lg:hidden"
         />
-        <NavbarBrand>
+        <NavbarBrand aria-label="Gartnerihagen-logo">
           <Link href="/" className="cursor-pointer">
             <Image
               src={theme === 'light' ? logoLight : logoDark}
@@ -140,6 +137,7 @@ export default function Navbar() {
               }}
               isIconOnly
               className="ml-2"
+              aria-label="Bytt mellom mørk og lys modus"
             >
               {theme === 'light' ? <Sun /> : <Moon />}
             </Button>
