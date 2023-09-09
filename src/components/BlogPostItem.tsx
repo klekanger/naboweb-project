@@ -6,6 +6,7 @@ export default function BlogPostItem(post: BlogPostItemProps) {
   const { title, excerpt, featuredImage, slug } = post.fields;
   const { description } = featuredImage.fields;
   const { url } = featuredImage.fields.file;
+  const { width, height } = featuredImage.fields.file.details.image;
 
   if (!title || !excerpt || !featuredImage || !slug || !description || !url) {
     console.warn(
@@ -15,16 +16,16 @@ export default function BlogPostItem(post: BlogPostItemProps) {
   }
 
   return (
-    <section key={post.sys.id}>
+    <article key={post.sys.id}>
       <div className="grid-cols-12 gap-2 pb-2 md:grid md:pb-8 lg:gap-8">
-        <div className="relative order-last cursor-pointer rounded-md md:col-span-5  lg:col-span-6">
+        <div className="relative order-last overflow-hidden rounded-md md:col-span-5 lg:col-span-6">
           <Link href={`/blog/${slug}`} passHref>
             <Image
-              className="aspect-video rounded-md object-cover duration-200 transition hover:scale-[102%]"
-              src={`https://${url}`}
+              className="aspect-[16/10] rounded-md object-cover duration-200 transition hover:scale-[102%]"
+              src={`https:${url}`}
               alt={description}
-              width={featuredImage.fields.file.details.image.width}
-              height={featuredImage.fields.file.details.image.height}
+              width={width}
+              height={height}
               sizes="(min-width: 768px) 40vw, (min-width: 1024px) 50vw,100vw"
             />
           </Link>
@@ -48,7 +49,6 @@ export default function BlogPostItem(post: BlogPostItemProps) {
           </p>
         </div>
       </div>
-      <hr className="border-dashed border-slate-300 dark:border-slate-700" />
-    </section>
+    </article>
   );
 }
