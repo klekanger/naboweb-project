@@ -27,6 +27,8 @@ export default async function ArticleGrid() {
     <section className="container mt-32 grid gap-16 px-1 md:grid-cols-2">
       {articles.items.map((article) => {
         const { url } = article.fields.featuredImage?.fields.file || {};
+        const { width, height } =
+          article.fields.featuredImage?.fields.file?.details?.image || {};
 
         if (!url) {
           console.error(`Missing featured image for article ${article.sys.id}`);
@@ -37,18 +39,16 @@ export default async function ArticleGrid() {
           <article>
             <div
               key={article.sys.id}
-              className="relative aspect-[16/10] overflow-hidden rounded-md "
+              className="relative overflow-hidden rounded-md "
             >
               <Link href={`/blog/${article.fields.slug}`} passHref>
                 <Image
                   src={`https:${url}`}
-                  sizes="50vw"
-                  fill
-                  style={{
-                    objectFit: 'cover',
-                  }}
-                  alt="sdfs"
-                  className="rounded-md duration-75 transition hover:scale-105"
+                  width={width}
+                  height={height}
+                  sizes="(min-width: 768px) 40vw, (min-width: 1024px) 50vw,100vw"
+                  alt={article.fields.title}
+                  className="aspect-[16/10] rounded-md object-cover duration-200 transition hover:scale-[102%]"
                 />
               </Link>
             </div>
@@ -66,6 +66,12 @@ export default async function ArticleGrid() {
           </article>
         );
       })}
+      <Link
+        href="http://localhost:3000/blog-collection"
+        className="text-brand-secondary dark:text-brand-dark-secondary"
+      >
+        <em>Gå til bloggarkivet »</em>
+      </Link>
     </section>
   );
 }
