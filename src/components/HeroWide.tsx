@@ -12,11 +12,17 @@ export default function HeroWide({
     height: number;
   };
 
+  const { url } = pageImage?.fields?.file || {};
+  if (!url) {
+    console.error(`Missing featured image for hero section`);
+    return null;
+  }
+
   return (
-    <div className="-mt-72 w-screen max-w-full overflow-hidden">
+    <section className="-mt-52 w-screen max-w-full overflow-hidden">
       <div className="img-zoom ">
         <Image
-          src={`https:${pageImage?.fields?.file?.url ?? ''}`}
+          src={`https:${url}`}
           width={width}
           height={height}
           sizes="100vw"
@@ -25,15 +31,41 @@ export default function HeroWide({
           className="h-screen w-screen object-cover object-center"
         />
       </div>
-      <div className="absolute left-24 top-1/3 w-3/4 break-words rounded-md bg-neutral-950/60 px-5 py-8 text-brand-white lg:w-2/5">
-        <h1 className=" text-4xl">{pageTitle} </h1>
-        <p className="mb-5 mt-3 font-normal ">{excerpt}</p>
+      <article
+        className="
+          absolute
+          top-44
+          mx-2 
+          w-full 
+          max-w-fit
+          break-words 
+          rounded-md
+          bg-black/60
+          px-2
+          py-8 
+          text-center 
+          text-brand-white
+          dark:bg-black/80 
+          dark:text-brand-white 
+          md:top-1/3 
+          md:mx-32 
+          md:w-8/12 
+          md:px-10 
+          lg:w-7/12
+          xl:w-6/12
+          2xl:w-4/12
+          "
+      >
+        <h1 className="text-3xl lg:text-4xl xl:text-5xl">{pageTitle} </h1>
+        <p className="mb-5 text-sm font-normal md:text-base xl:text-lg">
+          {excerpt}
+        </p>
         <Link href="/om-boligsameiet-gartnerihagen" className="cursor-pointer">
-          <button className="mb-4 inline-flex h-14 w-28 items-center justify-center rounded-lg bg-emerald-400 py-7 text-center align-middle text-[1.25rem] text-slate-950">
+          <button className="my-4 inline-flex h-14 w-28 items-center justify-center rounded-lg bg-emerald-400 py-7 text-center align-middle text-slate-950 md:text-lg">
             Les mer
           </button>
         </Link>
-      </div>
-    </div>
+      </article>
+    </section>
   );
 }
