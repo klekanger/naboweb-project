@@ -1,4 +1,4 @@
-import Article from '@/components/article';
+import Article from '@/components/Article';
 import { getPageData } from '@/lib/api';
 import { parseContentfulImage } from '@/lib/parse-contentful-image';
 import type { EntryFieldTypes } from 'contentful';

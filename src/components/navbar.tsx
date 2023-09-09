@@ -1,5 +1,6 @@
 'use client';
 
+import { SignInButton, SignOutButton, useUser } from '@clerk/nextjs';
 import {
   Button,
   ButtonGroup,
@@ -12,8 +13,6 @@ import {
   Navbar as NextUINavbar,
   semanticColors,
 } from '@nextui-org/react';
-
-import { useUser } from '@auth0/nextjs-auth0/client';
 import { LogIn, LogOut, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
@@ -23,10 +22,11 @@ import logoDark from 'public/logo-dark.svg';
 import logoLight from 'public/logo-light.svg';
 import { useEffect, useState } from 'react';
 
-export default function App() {
+export default function Navbar() {
+  const { isSignedIn, user, isLoaded } = useUser();
   const menuItems = [
-    { title: 'For beboere', href: '/informasjon', protected: false },
-    { title: 'Blogg', href: '/blog-collection' },
+    { title: 'For beboere', href: '/informasjon', protected: true },
+    { title: 'Blogg', href: '/blog-collection', protected: false },
     {
       title: 'Om oss',
       href: '/om-boligsameiet-gartnerihagen',
@@ -42,7 +42,6 @@ export default function App() {
   const router = useRouter();
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
-  const { user, error, isLoading } = useUser();
 
   useEffect(() => {
     setMounted(true);
@@ -50,12 +49,10 @@ export default function App() {
 
   // When the user navigates to a new page, always close the hamburger menu
   useEffect(() => {
-    console.log(semanticColors);
     setIsMenuOpen(false);
   }, [pathname]);
 
   if (!mounted) return null;
-  if (error) return <div>{error.message}</div>;
 
   return (
     <NextUINavbar
@@ -75,7 +72,7 @@ export default function App() {
           aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
           className="z-50 lg:hidden"
         />
-        <NavbarBrand>
+        <NavbarBrand aria-label="Gartnerihagen-logo">
           <Link href="/" className="cursor-pointer">
             <Image
               src={theme === 'light' ? logoLight : logoDark}
@@ -107,23 +104,25 @@ export default function App() {
         <ButtonGroup>
           <NavbarItem>
             {user ? (
-              <Button
-                onClick={() => router.push('/api/auth/logout')}
-                variant="flat"
-                className="ml-8 bg-secondary"
-                startContent={<LogOut />}
-              >
-                Logg ut
-              </Button>
+              <SignOutButton>
+                <Button
+                  variant="flat"
+                  className="ml-8 bg-secondary"
+                  startContent={<LogOut />}
+                >
+                  Logg ut
+                </Button>
+              </SignOutButton>
             ) : (
-              <Button
-                onClick={() => router.push('/api/auth/login')}
-                variant="flat"
-                className="ml-8 bg-secondary"
-                startContent={<LogIn />}
-              >
-                Logg inn
-              </Button>
+              <SignInButton>
+                <Button
+                  variant="flat"
+                  className="ml-8 bg-secondary"
+                  startContent={<LogIn />}
+                >
+                  Logg inn
+                </Button>
+              </SignInButton>
             )}
           </NavbarItem>
           <NavbarItem>
@@ -138,6 +137,7 @@ export default function App() {
               }}
               isIconOnly
               className="ml-2"
+              aria-label="Bytt mellom mørk og lys modus"
             >
               {theme === 'light' ? <Sun /> : <Moon />}
             </Button>
@@ -173,23 +173,21 @@ export default function App() {
         <ButtonGroup className="mt-8">
           <NavbarMenuItem>
             {user ? (
-              <Button
-                color="primary"
-                onClick={() => router.push('/api/auth/logout')}
-                variant="flat"
-                startContent={<LogOut />}
-              >
-                Logg ut
-              </Button>
+              <SignOutButton>
+                <Button
+                  color="primary"
+                  variant="flat"
+                  startContent={<LogOut />}
+                >
+                  Logg ut
+                </Button>
+              </SignOutButton>
             ) : (
-              <Button
-                color="primary"
-                onClick={() => router.push('/api/auth/login')}
-                variant="flat"
-                startContent={<LogIn />}
-              >
-                Logg inn
-              </Button>
+              <SignInButton>
+                <Button color="primary" variant="flat" startContent={<LogIn />}>
+                  Logg inn
+                </Button>
+              </SignInButton>
             )}
           </NavbarMenuItem>
           <NavbarMenuItem>

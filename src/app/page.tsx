@@ -1,6 +1,6 @@
-import HeroWide from '@/components/hero-wide';
+import ArticleGrid from '@/components/ArticleGrid';
+import HeroWide from '@/components/HeroWide';
 import type { TypeForsidetekstSkeleton } from '@/types/contentful-types';
-
 import * as contentful from 'contentful';
 
 async function getFrontPageData() {
@@ -29,10 +29,7 @@ export default async function Home() {
         excerpt={excerpt ?? ''}
         pageImage={pageImage}
       />
-
-      <h2>dfsdfsdf</h2>
-      <h3>dfsdfsdf</h3>
-      <h4>dfsdfsdf</h4>
+      <ArticleGrid />
     </>
   );
 }

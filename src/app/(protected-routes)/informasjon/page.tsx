@@ -1,25 +1,28 @@
 'use client';
 
-import InfoBox from '@/components/info-box';
-import ServiceBox from '@/components/servicebox';
-
-import { useUser } from '@auth0/nextjs-auth0/client';
+import InfoBox from '@/components/InfoBox';
+import ServiceBox from '@/components/ServiceBox';
+import { useUser } from '@clerk/nextjs';
 import { RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Page() {
-  const { user, isLoading } = useUser();
+  const { user, isSignedIn, isLoaded } = useUser();
+
+  if (!isLoaded) {
+    return null;
+  }
 
   return (
     <>
       <div className="mb-16 rounded-md border border-dashed border-brand-black border-opacity-60 p-4 pt-8 dark:border-brand-white">
         <p className="h-10 pl-1 font-light">
-          {user ? (
+          {isSignedIn ? (
             <>
               <span>
                 <b>Du er innlogget som: </b>
               </span>
-              {user?.name || ''}
+              {user?.fullName || ''}
             </>
           ) : (
             <span>

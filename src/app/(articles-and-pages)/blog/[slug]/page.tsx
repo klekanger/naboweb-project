@@ -1,4 +1,4 @@
-import Article from '@/components/article';
+import Article from '@/components/Article';
 import { parseContentfulImage } from '@/lib/parse-contentful-image';
 import type { TypeBlogPostSkeleton } from '@/types/contentful-types';
 import type { ArticleProps } from '@/types/types';
