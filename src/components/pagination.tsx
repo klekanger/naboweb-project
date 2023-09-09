@@ -19,14 +19,14 @@ export default function Pagination({
     >
       <ul className="flex justify-between">
         {pageNumber > 1 && (
-          <li className="mr-2 rounded-md bg-brand-primaryButton px-8 py-2 shadow-md">
+          <li className="mr-2 rounded-md bg-brand-primary px-8 py-2 shadow-md dark:bg-brand-dark-primary">
             <Link href={`/blog-collection/${pageNumber - 1}`}>
               ← Forrige side
             </Link>
           </li>
         )}
         {pageNumber < totalPages && (
-          <li className="ml-2 rounded-md bg-brand-primaryButton px-8 py-2 shadow-md">
+          <li className="ml-2 rounded-md bg-brand-primary px-8 py-2 shadow-md dark:bg-brand-dark-primary">
             <Link href={`/blog-collection/${pageNumber + 1}`}>
               Neste side →
             </Link>
