@@ -1,3 +1,4 @@
+import { UserResource } from '@clerk/types';
 import {
   Avatar,
   Button,
@@ -6,10 +7,9 @@ import {
   CardFooter,
   CardHeader,
   Chip,
-  ChipProps,
   Divider,
+  type ChipProps,
 } from '@nextui-org/react';
-import { User as UserImg } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -19,15 +19,19 @@ type FriendlyUserRole = {
   color: ChipProps['color'];
 };
 
-export default function UserCard({ user, ...rest }) {
-  console.log(rest);
+type UserCardProps = {
+  user: UserResource;
+  className?: string;
+};
+
+export default function UserCard({ user, ...rest }: UserCardProps) {
   const router = useRouter();
   if (!user) {
     console.warn('No user');
     return null;
   }
 
-  const { emailAddresses, fullName, profileImageUrl } = user;
+  const { emailAddresses, fullName } = user;
   const email = emailAddresses[0].emailAddress;
   const roles = user?.publicMetadata?.roles;
   const isAdmin = roles.includes('admin');
@@ -65,7 +69,8 @@ export default function UserCard({ user, ...rest }) {
       <div className={rest?.className}>
         <Card
           classNames={{
-            base: 'md:mx-24',
+            /* base: 'md:mx-24', */
+            base: 'mypage-card',
           }}
         >
           <CardHeader className="justify-between ">
