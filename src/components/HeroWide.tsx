@@ -61,7 +61,7 @@ export default function HeroWide({
           {excerpt}
         </p>
         <Link href="/om-boligsameiet-gartnerihagen" className="cursor-pointer">
-          <button className="my-4 inline-flex h-14 w-28 items-center justify-center rounded-lg bg-emerald-400 py-7 text-center align-middle text-slate-950 md:text-lg">
+          <button className="my-4 inline-flex h-14 w-28 items-center justify-center rounded-lg bg-brand-primary py-7 text-center align-middle text-slate-950 dark:bg-brand-dark-primary md:text-lg">
             Les mer
           </button>
         </Link>
