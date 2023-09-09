@@ -34,7 +34,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="no" className={`${openSans.variable} ${montserrat.variable}`}>
+    <html
+      lang="no"
+      className={`${openSans.variable} ${montserrat.variable}`}
+      suppressHydrationWarning
+    >
       <ClerkProvider localization={nbNO}>
         <body>
           <Providers>
