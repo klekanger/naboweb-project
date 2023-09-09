@@ -5,7 +5,7 @@ import type { BlogPostItemProps } from '@/types/types';
 import * as contentful from 'contentful';
 import { redirect } from 'next/navigation';
 
-const POSTS_PER_PAGE = 3;
+const POSTS_PER_PAGE = 5;
 
 type Props = {
   params: { page: number | undefined };
@@ -34,6 +34,8 @@ export const metadata = {
 export async function generateStaticParams() {
   const posts = await client.getEntries<TypeBlogPostSkeleton>({
     content_type: 'blogPost',
+    // @ts-expect-error
+    'fields.privatePost': false,
   });
 
   const totalPages = Math.ceil(posts.total / POSTS_PER_PAGE);
@@ -58,7 +60,7 @@ export default async function Page({ params }: Props) {
   const posts =
     await client.withoutUnresolvableLinks.getEntries<TypeBlogPostSkeleton>({
       content_type: 'blogPost',
-      limit: 3,
+      limit: POSTS_PER_PAGE,
       skip: (pageNumber - 1) * POSTS_PER_PAGE,
       // @ts-expect-error
       'fields.privatePost': false,
