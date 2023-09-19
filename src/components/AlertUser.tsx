@@ -22,8 +22,8 @@ export default function AlertUser({
   if (!alertMessage || !alertTitle) return null;
 
   return (
-    <Card className="max-w-[400px]">
-      <CardHeader className="flex gap-3 text-brand-primaryLight">
+    <Card className="max-w-[400px] bg-brand-dark-warning text-brand-black dark:bg-brand-dark-warning">
+      <CardHeader className="text-brand-primaryLight flex gap-3">
         <AlertCircle size={24} />
         <h3>{alertTitle}</h3>
       </CardHeader>

@@ -36,11 +36,8 @@ export default async function ArticleGrid() {
         }
 
         return (
-          <article>
-            <div
-              key={article.sys.id}
-              className="relative overflow-hidden rounded-md "
-            >
+          <article key={article.sys.id}>
+            <div className="relative overflow-hidden rounded-md ">
               <Link href={`/blog/${article.fields.slug}`} passHref>
                 <Image
                   src={`https:${url}`}

@@ -33,6 +33,21 @@
     ],
     "n/prefer-global/process": [
       "off"
+    ],
+    "unicorn/no-negated-condition": [
+      "off"
+    ],
+    "unicorn/prevent-abbreviations": [
+      "error",
+      {
+        "allowList": {
+          "generateStaticParams": true,
+          "req": true,
+          "InfoBoxProps": true,
+          "props": true,
+          "AlertUserProps": true
+        }
+      }
     ]
   }
 }

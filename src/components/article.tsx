@@ -5,7 +5,6 @@ import {
   documentToReactComponents,
   type Options,
 } from '@contentful/rich-text-react-renderer';
-import type { Document } from '@contentful/rich-text-types';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -13,11 +12,16 @@ export default function Article({
   title,
   authors,
   bodyText,
-  createdAt,
-  updatedAt,
+  firstPublishedAt: createdAt,
+  publishedAt: updatedAt,
   mainImage,
   buttonLink,
 }: ArticleProps) {
+  // Put the rich text JSON and the linked entries into separate constants
+  // that should be passed into documentToReactComponents
+  const { json: richTextJson } = bodyText;
+  const { links } = bodyText;
+
   const publishDate: string =
     updatedAt === createdAt
       ? `Publisert: ${formatDate(createdAt)}`
@@ -28,7 +32,7 @@ export default function Article({
   let blurDataURL: string;
 
   if (mainImage && 'src' in mainImage) {
-    blurDataURL = mainImage.src + '?w=10&h=10&fit=fill';
+    blurDataURL = mainImage.url + '?w=10&h=10&fit=fill';
   } else {
     blurDataURL =
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mOsWDvtPwAGHAK8KBlg/wAAAABJRU5ErkJggg==';
@@ -40,7 +44,7 @@ export default function Article({
       {mainImage && (
         <div className="relative aspect-video">
           <Image
-            src={mainImage.src}
+            src={mainImage.url}
             alt={mainImage.description}
             sizes="100vw"
             priority
@@ -53,8 +57,8 @@ export default function Article({
       )}
       <div>
         {documentToReactComponents(
-          bodyText as unknown as Document,
-          renderRichTextOptions as Options
+          richTextJson,
+          renderRichTextOptions(links) as Options
         )}
       </div>
 

@@ -1,3 +1,5 @@
+'use client';
+
 import { Button, ButtonGroup } from '@nextui-org/react';
 import { Paperclip } from 'lucide-react';
 import Link from 'next/link';
@@ -39,7 +41,7 @@ export default function ServiceBox() {
       </Button>{' '}
       <Button
         as={Link}
-        href="/"
+        href="/informasjon/referater"
         startContent={<Paperclip className="absolute left-6" />}
         size="lg"
       >
@@ -47,7 +49,7 @@ export default function ServiceBox() {
       </Button>{' '}
       <Button
         as={Link}
-        href="/"
+        href="/informasjon/dokumenter"
         startContent={<Paperclip className="absolute left-6" />}
         size="lg"
       >

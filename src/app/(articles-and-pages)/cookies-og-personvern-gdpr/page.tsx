@@ -15,8 +15,8 @@ export default async function Page() {
       <Article
         title={pageTitle}
         bodyText={pageText}
-        createdAt={createdAt}
-        updatedAt={updatedAt}
+        firstPublishedAt={createdAt}
+        publishedAt={updatedAt}
         mainImage={parsedImage}
         buttonLink="/"
       ></Article>

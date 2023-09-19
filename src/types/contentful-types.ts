@@ -10,6 +10,7 @@ import type {
   EntrySkeletonType,
   LocaleCode,
 } from 'contentful';
+import { ContentImage } from './types';
 
 export interface TypeAuthorsFields {
   firstName: EntryFieldTypes.Symbol;
@@ -138,10 +139,26 @@ export function isTypeOffice<
 }
 
 export interface TypePageFields {
-  pageTitle: EntryFieldTypes.Symbol;
+  pageTitle: string;
   excerpt?: EntryFieldTypes.Text;
-  pageImage?: EntryFieldTypes.AssetLink;
-  pageText: EntryFieldTypes.RichText;
+  pageImage?: ContentImage;
+  pageText: EntryFieldTypes.RichText & {
+    json: any;
+    links: {
+      assets: {
+        block: {
+          sys: {
+            id: string;
+          };
+          url: string;
+          description: string;
+          title: string;
+          width: number;
+          height: number;
+        };
+      };
+    };
+  };
   slug: EntryFieldTypes.Symbol;
 }
 

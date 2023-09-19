@@ -98,8 +98,8 @@ export default async function Page({ params }: Props) {
       <Article
         title={title}
         bodyText={bodyText}
-        createdAt={createdAt}
-        updatedAt={updatedAt}
+        firstPublishedAt={createdAt}
+        publishedAt={updatedAt}
         mainImage={parsedImage}
         authors={author as ArticleProps['authors']}
         buttonLink="/blog"

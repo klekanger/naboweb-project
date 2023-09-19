@@ -1,7 +1,9 @@
 import type { Asset, EntryFieldTypes, EntryFields } from 'contentful';
+import { TypeBlogPostFields, TypePageFields } from './contentful-types';
 
 export type ContentImage = {
-  src: string;
+  title: string;
+  url: string;
   description: string;
   width: number;
   height: number;
@@ -15,10 +17,10 @@ export type ArticleProps = {
       lastName: string;
     };
   }[];
-  bodyText: EntryFieldTypes.RichText;
-  createdAt: EntryFields.Date;
-  updatedAt: EntryFields.Date;
-  mainImage: ContentImage | undefined;
+  bodyText: TypePageFields['pageText'];
+  firstPublishedAt: EntryFields.Date;
+  publishedAt: EntryFields.Date;
+  mainImage?: ContentImage;
   buttonLink: string;
 };
 
@@ -29,25 +31,10 @@ export type BlogPostItemProps = {
     updatedAt: EntryFields.Date;
   };
   fields: {
-    privatePost: true;
+    privatePost: boolean;
     title: string;
     excerpt: string;
-    featuredImage: {
-      fields: {
-        title: string;
-        description: string;
-        file: {
-          url: string;
-          details: {
-            size: number;
-            image: {
-              width: number;
-              height: number;
-            };
-          };
-        };
-      };
-    };
+    featuredImage: EntryFieldTypes.AssetLink | undefined;
     slug: string;
   };
 };
@@ -57,6 +44,44 @@ export type BlogPostListProps = {
     id: string;
   };
   posts: BlogPostItemProps[];
+};
+
+export type fetchGraphQLReturnTypeForPage = {
+  data: {
+    page: TypePageFields & {
+      sys: {
+        id: string;
+        publishedAt: EntryFields.Date;
+        firstPublishedAt: EntryFields.Date;
+      };
+    };
+  };
+};
+
+export type fetchGraphQLReturnTypeForBlogPosts = {
+  data: {
+    blogPostCollection: {
+      total: number;
+      items: {
+        sys: {
+          id: string;
+          publishedAt: `${number}-${number}-${number}T${number}:${number}:${number}Z`;
+          firstPublishedAt: `${number}-${number}-${number}T${number}:${number}:${number}Z`;
+        };
+        privatePost: boolean;
+        title: string;
+        excerpt: string;
+        featuredImage?: EntryFieldTypes.AssetLink;
+        bodyText: EntryFieldTypes.RichText;
+        author?: {
+          firstName: string;
+          lastName: string;
+          authorImage?: EntryFieldTypes.AssetLink;
+        };
+        slug: string;
+      }[];
+    };
+  };
 };
 
 export type getPageDataReturnTypes = {

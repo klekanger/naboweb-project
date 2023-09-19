@@ -12,7 +12,7 @@ export default function HeroWide({
     height: number;
   };
 
-  const { url } = pageImage?.fields?.file || {};
+  const { url } = pageImage?.fields?.file ?? {};
   if (!url) {
     console.error(`Missing featured image for hero section`);
     return null;

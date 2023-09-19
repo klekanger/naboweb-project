@@ -1,10 +1,8 @@
 import { UserResource } from '@clerk/types';
 import {
-  Avatar,
   Button,
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
   Chip,
   Divider,
@@ -31,11 +29,11 @@ export default function UserCard({ user, ...rest }: UserCardProps) {
     return null;
   }
 
-  const { emailAddresses, fullName } = user;
-  const email = emailAddresses[0].emailAddress;
-  const roles = user?.publicMetadata?.roles;
-  const isAdmin = roles.includes('admin');
-  const isEditor = roles.includes('editor');
+  const { fullName } = user;
+  const roles = (user?.publicMetadata?.roles as string[]) || [];
+
+  const isAdmin = roles.includes('admin') || false;
+  const isEditor = roles.includes('editor') || false;
 
   const friendlyUserRoles: FriendlyUserRole[] = [
     {
@@ -91,11 +89,17 @@ export default function UserCard({ user, ...rest }: UserCardProps) {
                 <b className="text-lg">Roller:</b>
               </div>
               <div className="flex flex-row flex-wrap items-center justify-start gap-2">
-                {friendlyUserRoleNames.map((role, i) => (
-                  <Chip key={`chip-${i}`} size="sm" color={role.color}>
-                    {role.name}
+                {roles.length === 0 ? (
+                  <Chip size="sm" color="primary">
+                    Ingen roller
                   </Chip>
-                ))}
+                ) : (
+                  friendlyUserRoleNames.map((role, i) => (
+                    <Chip key={`chip-${i}`} size="sm" color={role.color}>
+                      {role.name}
+                    </Chip>
+                  ))
+                )}
               </div>
             </div>
             <Divider className="mb-8 mt-4" />

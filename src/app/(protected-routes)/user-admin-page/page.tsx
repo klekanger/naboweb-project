@@ -1,5 +1,6 @@
 'use client';
 
+import type { UserWithRoles } from '@/lib/types';
 import { useAuth } from '@clerk/clerk-react';
 import type { Invitation, User } from '@clerk/nextjs/dist/types/server';
 import {
@@ -23,10 +24,14 @@ const statusToNorwegian = {
 export default function UserAdmin() {
   const [invitations, setInvitations] = useState<Invitation[]>();
   const [users, setUsers] = useState<User[]>();
-  const [errorMsg, setErrorMsg] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
-  // get the access token
+  // Get the access token
   const { getToken, isSignedIn } = useAuth();
+
+  useEffect(() => {
+    void fetchData();
+  }, []);
 
   if (!isSignedIn) {
     return <h1>Du har ikke tilgang</h1>;
@@ -35,38 +40,48 @@ export default function UserAdmin() {
   const fetchData = async () => {
     const token = await getToken({ template: 'gartnerihagen' });
 
+    // Fetch the users
     try {
-      const res = await fetch('/api/invitations', {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) {
-        setErrorMsg(res.statusText);
+      const result = await fetch('/api/get-users');
+      if (!result.ok) {
+        setErrorMessage(result.statusText);
         throw new Error(
-          `Failed to fetch users (status: ${res.status} ${res.statusText})`
+          `Failed to fetch users (status: ${result.status} ${result.statusText})`
         );
       } else {
-        setErrorMsg('');
+        setErrorMessage('');
       }
 
-      const data = await res.json();
-      setInvitations(data.invitations);
-      setUsers(data.users);
+      const data: UserWithRoles[] = await result.json();
+      setUsers(data);
+    } catch (error) {
+      // Handle the error here
+      console.error(error);
+    }
+
+    // Fetch the invitations
+    try {
+      const res = await fetch('/api/get-invitations');
+
+      if (!res.ok) {
+        setErrorMessage(res.statusText);
+        throw new Error(
+          `Failed to fetch invitations (status: ${res.status} ${res.statusText})`
+        );
+      } else {
+        setErrorMessage('');
+      }
+
+      const data: Invitation[] = await res.json();
+      setInvitations(data);
     } catch (error) {
       // Handle the error here
       console.error(error);
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  if (errorMsg !== '') {
-    return <h1>{errorMsg}</h1>;
+  if (errorMessage !== '') {
+    return <h1>{errorMessage}</h1>;
   }
 
   if (!invitations || !users) {

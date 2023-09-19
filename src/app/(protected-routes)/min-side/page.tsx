@@ -14,7 +14,7 @@ export default function MyPage() {
   if (!user) return <div>Not authenticated</div>;
 
   return (
-    <div className="flex  flex-col items-center">
+    <div className="flex flex-col items-center">
       <h1 className="text-center">Min side</h1>
 
       {isSignedIn ? (

@@ -1,11 +1,12 @@
 import BlogPostList from '@/components/BlogPostList';
 import Pagination from '@/components/Pagination';
+import { getBlogPostCollection } from '@/lib/api';
 import type { TypeBlogPostSkeleton } from '@/types/contentful-types';
 import type { BlogPostItemProps } from '@/types/types';
 import * as contentful from 'contentful';
 import { redirect } from 'next/navigation';
 
-const POSTS_PER_PAGE = 5;
+const POSTS_PER_PAGE = 3;
 
 type Props = {
   params: { page: number | undefined };
@@ -28,13 +29,17 @@ export const metadata = {
   },
 };
 
+type CustomEntriesQueries = TypeBlogPostSkeleton & {
+  'fields.privatePost': boolean;
+};
+
 //
 // Generate all possible routes
 //
 export async function generateStaticParams() {
   const posts = await client.getEntries<TypeBlogPostSkeleton>({
     content_type: 'blogPost',
-    // @ts-expect-error
+    // @ts-ignore
     'fields.privatePost': false,
   });
 
@@ -51,28 +56,26 @@ export default async function Page({ params }: Props) {
   if (Number.isNaN(pageNumber)) {
     return (
       <>
-        <h1>Siste blogginnlegg</h1>
         <p>Det er ingen blogginnlegg å vise.</p>
       </>
     );
   }
 
-  const posts =
-    await client.withoutUnresolvableLinks.getEntries<TypeBlogPostSkeleton>({
-      content_type: 'blogPost',
-      limit: POSTS_PER_PAGE,
-      skip: (pageNumber - 1) * POSTS_PER_PAGE,
-      // @ts-expect-error
-      'fields.privatePost': false,
-    });
+  const data = await getBlogPostCollection({
+    pageNumber,
+    postsPerPage: POSTS_PER_PAGE,
+    isPrivate: false,
+  });
+  const { total, items } = data || {};
 
-  const totalPages = Math.ceil(posts.total / POSTS_PER_PAGE);
+  const totalPages = Math.ceil(total / POSTS_PER_PAGE);
+  const numberOfBlogPosts = items.length;
 
   if (pageNumber > totalPages) {
     redirect('/blog-collection/1');
   }
 
-  if (posts.items.length === 0) {
+  if (numberOfBlogPosts === 0) {
     return (
       <>
         <h1>Siste blogginnlegg</h1>
@@ -81,19 +84,18 @@ export default async function Page({ params }: Props) {
     );
   }
 
-  const postItems: BlogPostItemProps[] = posts.items.map((post) => ({
+  const postItems: BlogPostItemProps[] = items.map((post) => ({
     sys: {
       id: post.sys.id,
-      createdAt: post.sys.createdAt,
-      updatedAt: post.sys.updatedAt,
+      createdAt: post.sys.firstPublishedAt,
+      updatedAt: post.sys.publishedAt,
     },
     fields: {
-      privatePost: post.fields.privatePost,
-      title: post.fields.title,
-      slug: post.fields.slug,
-      excerpt: post.fields.excerpt,
-      featuredImage: post.fields
-        .featuredImage as BlogPostItemProps['fields']['featuredImage'],
+      privatePost: post.privatePost,
+      title: post.title,
+      slug: post.slug,
+      excerpt: post.excerpt,
+      featuredImage: post.featuredImage,
     },
   }));
 
@@ -101,7 +103,11 @@ export default async function Page({ params }: Props) {
     <>
       <h1>Siste blogg­innlegg</h1>
       <BlogPostList posts={postItems} />
-      <Pagination totalPages={totalPages} pageNumber={pageNumber} />
+      <Pagination
+        totalPages={totalPages}
+        pageNumber={pageNumber}
+        url={`blog-collection`}
+      />
       <p className="pb-4 text-center">
         side {`${pageNumber} av ${totalPages}`}
       </p>

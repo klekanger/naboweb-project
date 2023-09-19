@@ -1,0 +1,173 @@
+import AlertUser from '@/components/AlertUser';
+import BlogPostList from '@/components/BlogPostList';
+import InfoBox from '@/components/InfoBox';
+import Pagination from '@/components/Pagination';
+import ServiceBox from '@/components/ServiceBox';
+import type { UserWithRoles } from '@/lib/types';
+import type { TypeBlogPostSkeleton } from '@/types/contentful-types';
+import type { BlogPostItemProps } from '@/types/types';
+import { currentUser } from '@clerk/nextjs';
+import * as contentful from 'contentful';
+import { RefreshCw } from 'lucide-react';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+
+type Props = {
+  params: { page: number | undefined };
+};
+
+const POSTS_PER_PAGE = 5;
+
+const client = contentful.createClient({
+  space: process.env.CONTENTFUL_SPACE_ID!,
+  accessToken: process.env.CONTENTFUL_ACCESS_TOKEN!,
+});
+
+export const metadata = {
+  title: 'Boligsameiet Gartnerihagen',
+  description: 'Informasjon for beboere',
+  openGraph: {
+    type: 'website',
+    title: 'Boligsameiet Gartnerihagen',
+    description: 'Informasjon for beboere',
+    locale: 'nb_NO',
+    siteName: 'Boligsameiet Gartnerihagen',
+  },
+};
+
+//
+// Generate all possible routes
+//
+export async function generateStaticParams() {
+  const posts = await client.getEntries<TypeBlogPostSkeleton>({
+    content_type: 'blogPost',
+    // @ts-expect-error
+    'fields.privatePost': true,
+  });
+
+  const totalPages = Math.ceil(posts.total / POSTS_PER_PAGE);
+
+  return Array.from({ length: totalPages }, (_, i) => ({
+    page: `${i + 1}`,
+  }));
+}
+
+export default async function Page({ params }: Props) {
+  const pageNumber = Number(params.page);
+
+  if (Number.isNaN(pageNumber)) {
+    return (
+      <>
+        <p>Det er ingen blogginnlegg å vise.</p>
+      </>
+    );
+  }
+
+  const user: UserWithRoles | null = await currentUser();
+
+  const haveAccess =
+    user?.publicMetadata?.roles && Array.isArray(user.publicMetadata.roles)
+      ? user.publicMetadata.roles.includes('user')
+      : false;
+
+  if (!haveAccess) {
+    return (
+      <div className="container flex justify-center">
+        <AlertUser
+          alertTitle="Du har ikke tilgang"
+          alertMessage={`
+            På denne siden vil du finne nyttig informasjon fra styret,
+            som vedtekter, referater, klippelister og mye mer.
+            Ta kontakt med styret for å få tilgang.
+          `}
+        />
+      </div>
+    );
+  }
+
+  const posts =
+    await client.withoutUnresolvableLinks.getEntries<TypeBlogPostSkeleton>({
+      content_type: 'blogPost',
+      limit: POSTS_PER_PAGE,
+      skip: (pageNumber - 1) * POSTS_PER_PAGE,
+      // @ts-expect-error
+      'fields.privatePost': true,
+    });
+
+  const totalPages = Math.ceil(posts.total / POSTS_PER_PAGE);
+
+  if (pageNumber > totalPages) {
+    redirect('/informasjon/1');
+  }
+
+  if (posts.items.length === 0) {
+    return (
+      <>
+        <h1>Siste blogginnlegg</h1>
+        <p>Det er ingen blogginnlegg å vise.</p>
+      </>
+    );
+  }
+
+  const postItems: BlogPostItemProps[] = posts.items.map((post) => ({
+    sys: {
+      id: post.sys.id,
+      createdAt: post.sys.createdAt,
+      updatedAt: post.sys.updatedAt,
+    },
+    fields: {
+      privatePost: post.fields.privatePost,
+      title: post.fields.title,
+      slug: post.fields.slug,
+      excerpt: post.fields.excerpt,
+      featuredImage: post.fields
+        .featuredImage as BlogPostItemProps['fields']['featuredImage'],
+    },
+  }));
+
+  return (
+    <>
+      <div className="mb-16 rounded-md border border-dashed border-brand-black border-opacity-60 p-4 pt-8 dark:border-brand-white">
+        <p className="h-10 pl-1 font-light">
+          {user ? (
+            <>
+              <span>
+                <b>Du er innlogget som: </b>
+              </span>
+              {`${user?.firstName} ${user?.lastName}`}
+            </>
+          ) : (
+            <span>
+              <RefreshCw className="animate-spin text-brand-default" />
+            </span>
+          )}
+        </p>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <Link
+            className="animate h-16 pl-1 font-semibold duration-100 hover:text-brand-black/70"
+            href="/min-side"
+          >
+            Gå til Min side »
+          </Link>
+        </div>
+        <ServiceBox />
+      </div>
+      {pageNumber === 1 && (
+        <InfoBox
+          title="Informasjon fra styret"
+          message="På denne siden finner du nyttig informasjon fra styret. Ta kontakt hvis
+        det er noe du savner, eller har tilbakemeldinger."
+        />
+      )}
+      <BlogPostList posts={postItems} className="mt-8 md:mt-32" />
+      <Pagination
+        totalPages={totalPages}
+        pageNumber={pageNumber}
+        url="/informasjon/"
+      />
+      <p className="pb-4 text-center">
+        side {`${pageNumber} av ${totalPages}`}
+      </p>
+    </>
+  );
+}

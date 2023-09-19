@@ -10,6 +10,7 @@
     "test": "xo --space --prettier"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^4.24.2",
     "@clerk/localizations": "^1.25.0",
     "@clerk/nextjs": "^4.23.3",
     "@contentful/rich-text-react-renderer": "^15.17.0",

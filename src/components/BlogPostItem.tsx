@@ -4,9 +4,7 @@ import Link from 'next/link';
 
 export default function BlogPostItem(post: BlogPostItemProps) {
   const { title, excerpt, featuredImage, slug } = post.fields;
-  const { description } = featuredImage.fields;
-  const { url } = featuredImage.fields.file;
-  const { width, height } = featuredImage.fields.file.details.image;
+  const { description, url, width, height } = featuredImage;
 
   if (!title || !excerpt || !featuredImage || !slug || !description || !url) {
     console.warn(
@@ -22,7 +20,7 @@ export default function BlogPostItem(post: BlogPostItemProps) {
           <Link href={`/blog/${slug}`} passHref>
             <Image
               className="aspect-[16/10] rounded-md object-cover duration-200 transition hover:scale-[102%]"
-              src={`https:${url}`}
+              src={`${url}`}
               alt={description}
               width={width}
               height={height}

@@ -24,7 +24,7 @@ export default function Error({
         (Nerdete feilmelding: &lsquo;{error.message}&rsquo;)
       </p>
       <button
-        className="mt-8 rounded-md border-2 border-black bg-primaryButton p-2"
+        className="bg-primaryButton mt-8 rounded-md border-2 border-black p-2"
         onClick={
           // Attempt to recover by trying to re-render the segment
           () => {
