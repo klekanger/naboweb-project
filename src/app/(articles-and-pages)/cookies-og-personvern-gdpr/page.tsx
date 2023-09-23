@@ -1,23 +1,25 @@
 import Article from '@/components/Article';
-import { getPageData } from '@/lib/api';
-import { parseContentfulImage } from '@/lib/parse-contentful-image';
-import type { EntryFieldTypes } from 'contentful';
+import { getPageWithId } from '@/lib/api';
 
 export default async function Page() {
-  const data = await getPageData('1pHKpZ9olO41ThivHkP3Iu');
+  const pageContent = await getPageWithId('1pHKpZ9olO41ThivHkP3Iu');
 
-  const { pageTitle, createdAt, updatedAt, pageImage } = data;
-  const pageText = data.pageText as unknown as EntryFieldTypes.RichText;
-  const parsedImage = parseContentfulImage(pageImage);
+  const {
+    pageTitle,
+    pageImage,
+    sys: { publishedAt, firstPublishedAt },
+  } = pageContent.data.page;
+
+  const pageText = pageContent.data.page.pageText;
 
   return (
     <>
       <Article
         title={pageTitle}
         bodyText={pageText}
-        firstPublishedAt={createdAt}
-        publishedAt={updatedAt}
-        mainImage={parsedImage}
+        firstPublishedAt={firstPublishedAt}
+        publishedAt={publishedAt}
+        mainImage={pageImage}
         buttonLink="/"
       ></Article>
     </>

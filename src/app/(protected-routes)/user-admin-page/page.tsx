@@ -21,67 +21,44 @@ const statusToNorwegian = {
   revoked: 'Tilbakekalt',
 };
 
+async function fetchData() {
+  let users, invitations;
+
+  // Fetch the users
+  try {
+    const userData = await fetch('/api/get-users');
+    users = await userData.json();
+  } catch (error) {
+    console.error(error);
+  }
+
+  // Fetch the invitations
+  try {
+    const invitationsData = await fetch('/api/get-invitations');
+    invitations = await invitationsData.json();
+  } catch (error) {
+    console.error(error);
+  }
+
+  return { users, invitations };
+}
+
 export default function UserAdmin() {
   const [invitations, setInvitations] = useState<Invitation[]>();
   const [users, setUsers] = useState<User[]>();
-  const [errorMessage, setErrorMessage] = useState<string>('');
 
   // Get the access token
-  const { getToken, isSignedIn } = useAuth();
+  const { isSignedIn } = useAuth();
 
   useEffect(() => {
-    void fetchData();
+    fetchData().then(({ users, invitations }) => {
+      setUsers(users);
+      setInvitations(invitations);
+    });
   }, []);
 
   if (!isSignedIn) {
     return <h1>Du har ikke tilgang</h1>;
-  }
-
-  const fetchData = async () => {
-    const token = await getToken({ template: 'gartnerihagen' });
-
-    // Fetch the users
-    try {
-      const result = await fetch('/api/get-users');
-      if (!result.ok) {
-        setErrorMessage(result.statusText);
-        throw new Error(
-          `Failed to fetch users (status: ${result.status} ${result.statusText})`
-        );
-      } else {
-        setErrorMessage('');
-      }
-
-      const data: UserWithRoles[] = await result.json();
-      setUsers(data);
-    } catch (error) {
-      // Handle the error here
-      console.error(error);
-    }
-
-    // Fetch the invitations
-    try {
-      const res = await fetch('/api/get-invitations');
-
-      if (!res.ok) {
-        setErrorMessage(res.statusText);
-        throw new Error(
-          `Failed to fetch invitations (status: ${res.status} ${res.statusText})`
-        );
-      } else {
-        setErrorMessage('');
-      }
-
-      const data: Invitation[] = await res.json();
-      setInvitations(data);
-    } catch (error) {
-      // Handle the error here
-      console.error(error);
-    }
-  };
-
-  if (errorMessage !== '') {
-    return <h1>{errorMessage}</h1>;
   }
 
   if (!invitations || !users) {

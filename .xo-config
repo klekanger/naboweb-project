@@ -27,6 +27,17 @@
         "css": "always"
       }
     ],
+    "n/file-extension-in-import": [
+      "error",
+      "always",
+      {
+        ".js": "never",
+        ".ts": "never",
+        ".tsx": "never",
+        ".mts": "never",
+        ".cts": "never"
+      }
+    ],
     "import/order": [
       "off",
       {}
@@ -45,7 +56,11 @@
           "req": true,
           "InfoBoxProps": true,
           "props": true,
-          "AlertUserProps": true
+          "Props": true,
+          "AlertUserProps": true,
+          "BlogCollectionParams": true,
+          "BlogParams": true,
+          "param": true
         }
       }
     ]

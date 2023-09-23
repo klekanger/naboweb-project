@@ -1,11 +1,12 @@
 import Article from '@/components/Article';
+import { getPageWithSlug } from '@/lib/api';
 import { parseContentfulImage } from '@/lib/parse-contentful-image';
 import type { TypeBlogPostSkeleton } from '@/types/contentful-types';
 import type { ArticleProps } from '@/types/types';
 import * as contentful from 'contentful';
 import type { Metadata, ResolvingMetadata } from 'next';
 
-type Props = {
+type BlogParams = {
   params: { slug: string };
 };
 
@@ -31,7 +32,7 @@ export async function generateStaticParams() {
 // Generate metadata for the current page
 //
 export async function generateMetadata(
-  { params }: Props,
+  { params }: BlogParams,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const slug = params.slug;
@@ -43,9 +44,10 @@ export async function generateMetadata(
     });
 
   // Optionally access and extend (rather than replace) parent metadata
-  const previousImages = (await parent).openGraph?.images ?? [];
+  const parentResult = await parent;
+  const previousImages = parentResult.openGraph?.images ?? [];
 
-  const ogImage = post?.items[0]?.fields?.featuredImage?.fields.file?.url ?? '';
+  const ogImage = post?.items[0]?.fields?.featuredImage?.fields?.file.url ?? '';
 
   return {
     title: post?.items[0]?.fields.title,
@@ -65,14 +67,16 @@ export async function generateMetadata(
 //
 // Generate the blog page
 //
-export default async function Page({ params }: Props) {
-  const post =
+export default async function Page({ params }: BlogParams) {
+  const post = await getPageWithSlug(params.slug);
+
+  /*   const post =
     await client.withoutUnresolvableLinks.getEntries<TypeBlogPostSkeleton>({
       content_type: 'blogPost',
       limit: 1,
       'fields.slug': params.slug,
     });
-
+ */
   if (!post.items[0]) {
     return (
       <>
@@ -83,8 +87,7 @@ export default async function Page({ params }: Props) {
   }
 
   const { title, author, featuredImage } = post.items[0]?.fields ?? {};
-  const bodyText = post.items[0]?.fields
-    .bodyText as unknown as contentful.EntryFieldTypes.RichText;
+  const bodyText = post.items[0]?.fields.bodyText;
   const { createdAt, updatedAt } = post.items[0]?.sys ?? {};
 
   const parsedImage = parseContentfulImage(featuredImage);

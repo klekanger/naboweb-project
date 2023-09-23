@@ -3,11 +3,10 @@ import BlogPostList from '@/components/BlogPostList';
 import InfoBox from '@/components/InfoBox';
 import Pagination from '@/components/Pagination';
 import ServiceBox from '@/components/ServiceBox';
+import { getBlogPostCollection, getBlogPostRoutes } from '@/lib/api';
 import type { UserWithRoles } from '@/lib/types';
-import type { TypeBlogPostSkeleton } from '@/types/contentful-types';
-import type { BlogPostItemProps } from '@/types/types';
+import { BlogPostItemProps } from '@/types/types';
 import { currentUser } from '@clerk/nextjs';
-import * as contentful from 'contentful';
 import { RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -17,11 +16,6 @@ type Props = {
 };
 
 const POSTS_PER_PAGE = 5;
-
-const client = contentful.createClient({
-  space: process.env.CONTENTFUL_SPACE_ID!,
-  accessToken: process.env.CONTENTFUL_ACCESS_TOKEN!,
-});
 
 export const metadata = {
   title: 'Boligsameiet Gartnerihagen',
@@ -38,18 +32,16 @@ export const metadata = {
 //
 // Generate all possible routes
 //
+
 export async function generateStaticParams() {
-  const posts = await client.getEntries<TypeBlogPostSkeleton>({
-    content_type: 'blogPost',
-    // @ts-expect-error
-    'fields.privatePost': true,
-  });
+  const pagesToRender = await getBlogPostRoutes({ isPrivate: true });
+  const totalPages = Math.ceil(pagesToRender / POSTS_PER_PAGE);
 
-  const totalPages = Math.ceil(posts.total / POSTS_PER_PAGE);
-
-  return Array.from({ length: totalPages }, (_, i) => ({
-    page: `${i + 1}`,
+  const blogPages = Array.from({ length: totalPages }, (_, i) => ({
+    blogPage: `${i + 1}`,
   }));
+
+  return blogPages;
 }
 
 export default async function Page({ params }: Props) {
@@ -85,22 +77,21 @@ export default async function Page({ params }: Props) {
     );
   }
 
-  const posts =
-    await client.withoutUnresolvableLinks.getEntries<TypeBlogPostSkeleton>({
-      content_type: 'blogPost',
-      limit: POSTS_PER_PAGE,
-      skip: (pageNumber - 1) * POSTS_PER_PAGE,
-      // @ts-expect-error
-      'fields.privatePost': true,
-    });
+  const posts = await getBlogPostCollection({
+    pageNumber,
+    postsPerPage: POSTS_PER_PAGE,
+    isPrivate: true,
+  });
+  const { total, items } = posts || {};
 
-  const totalPages = Math.ceil(posts.total / POSTS_PER_PAGE);
+  const totalPages = Math.ceil(total / POSTS_PER_PAGE);
+  const numberOfBlogPosts = items.length;
 
   if (pageNumber > totalPages) {
     redirect('/informasjon/1');
   }
 
-  if (posts.items.length === 0) {
+  if (numberOfBlogPosts === 0) {
     return (
       <>
         <h1>Siste blogginnlegg</h1>
@@ -112,16 +103,15 @@ export default async function Page({ params }: Props) {
   const postItems: BlogPostItemProps[] = posts.items.map((post) => ({
     sys: {
       id: post.sys.id,
-      createdAt: post.sys.createdAt,
-      updatedAt: post.sys.updatedAt,
+      createdAt: post.sys.firstPublishedAt,
+      updatedAt: post.sys.publishedAt,
     },
     fields: {
-      privatePost: post.fields.privatePost,
-      title: post.fields.title,
-      slug: post.fields.slug,
-      excerpt: post.fields.excerpt,
-      featuredImage: post.fields
-        .featuredImage as BlogPostItemProps['fields']['featuredImage'],
+      privatePost: post.privatePost,
+      title: post.title,
+      slug: post.slug,
+      excerpt: post.excerpt,
+      featuredImage: post.featuredImage,
     },
   }));
 
@@ -134,7 +124,7 @@ export default async function Page({ params }: Props) {
               <span>
                 <b>Du er innlogget som: </b>
               </span>
-              {`${user?.firstName} ${user?.lastName}`}
+              {`${user?.firstName ?? ''} ${user?.lastName ?? ''}`}
             </>
           ) : (
             <span>

@@ -3,6 +3,7 @@
  * https://github.com/marcolink/cf-content-types-generator-app
  */
 
+import type { Document } from '@contentful/rich-text-types';
 import type {
   ChainModifiers,
   Entry,
@@ -15,7 +16,7 @@ import { ContentImage } from './types';
 export interface TypeAuthorsFields {
   firstName: EntryFieldTypes.Symbol;
   lastName: EntryFieldTypes.Symbol;
-  authorImage?: EntryFieldTypes.AssetLink;
+  authorImage?: ContentImage;
 }
 
 export type TypeAuthorsSkeleton = EntrySkeletonType<
@@ -27,21 +28,12 @@ export type TypeAuthors<
   Locales extends LocaleCode
 > = Entry<TypeAuthorsSkeleton, Modifiers, Locales>;
 
-export function isTypeAuthors<
-  Modifiers extends ChainModifiers,
-  Locales extends LocaleCode
->(
-  entry: Entry<EntrySkeletonType, Modifiers, Locales>
-): entry is TypeAuthors<Modifiers, Locales> {
-  return entry.sys.contentType.sys.id === 'authors';
-}
-
 export interface TypeBlogPostFields {
   privatePost: boolean;
   title: EntryFieldTypes.Symbol;
   excerpt: EntryFieldTypes.Text;
-  featuredImage?: EntryFieldTypes.AssetLink;
-  bodyText: EntryFieldTypes.RichText;
+  featuredImage?: ContentImage;
+  bodyText: Document;
   author?: EntryFieldTypes.Array<
     EntryFieldTypes.EntryLink<TypeAuthorsSkeleton>
   >;
@@ -52,73 +44,22 @@ export type TypeBlogPostSkeleton = EntrySkeletonType<
   TypeBlogPostFields,
   'blogPost'
 >;
-export type TypeBlogPost<
-  Modifiers extends ChainModifiers,
-  Locales extends LocaleCode
-> = Entry<TypeBlogPostSkeleton, Modifiers, Locales>;
-
-export function isTypeBlogPost<
-  Modifiers extends ChainModifiers,
-  Locales extends LocaleCode
->(
-  entry: Entry<EntrySkeletonType, Modifiers, Locales>
-): entry is TypeBlogPost<Modifiers, Locales> {
-  return entry.sys.contentType.sys.id === 'blogPost';
-}
-
-export interface TypeEmployeeFields {
-  name?: EntryFieldTypes.Symbol;
-  photo?: EntryFieldTypes.AssetLink;
-  startDate?: EntryFieldTypes.Date;
-  jobTitle?: EntryFieldTypes.Symbol;
-}
-
-export type TypeEmployeeSkeleton = EntrySkeletonType<
-  TypeEmployeeFields,
-  'employee'
->;
-export type TypeEmployee<
-  Modifiers extends ChainModifiers,
-  Locales extends LocaleCode
-> = Entry<TypeEmployeeSkeleton, Modifiers, Locales>;
-
-export function isTypeEmployee<
-  Modifiers extends ChainModifiers,
-  Locales extends LocaleCode
->(
-  entry: Entry<EntrySkeletonType, Modifiers, Locales>
-): entry is TypeEmployee<Modifiers, Locales> {
-  return entry.sys.contentType.sys.id === 'employee';
-}
 
 export interface TypeForsidetekstFields {
   pageTitle: EntryFieldTypes.Symbol;
   excerpt?: EntryFieldTypes.Text;
-  pageImage?: EntryFieldTypes.AssetLink;
+  pageImage?: ContentImage;
 }
 
 export type TypeForsidetekstSkeleton = EntrySkeletonType<
   TypeForsidetekstFields,
   'forsidetekst'
 >;
-export type TypeForsidetekst<
-  Modifiers extends ChainModifiers,
-  Locales extends LocaleCode
-> = Entry<TypeForsidetekstSkeleton, Modifiers, Locales>;
-
-export function isTypeForsidetekst<
-  Modifiers extends ChainModifiers,
-  Locales extends LocaleCode
->(
-  entry: Entry<EntrySkeletonType, Modifiers, Locales>
-): entry is TypeForsidetekst<Modifiers, Locales> {
-  return entry.sys.contentType.sys.id === 'forsidetekst';
-}
 
 export interface TypeOfficeFields {
   name?: EntryFieldTypes.Symbol;
   location?: EntryFieldTypes.Location;
-  photo?: EntryFieldTypes.AssetLink;
+  photo?: ContentImage;
   slug?: EntryFieldTypes.Symbol;
   description?: EntryFieldTypes.RichText;
 }
@@ -129,21 +70,12 @@ export type TypeOffice<
   Locales extends LocaleCode
 > = Entry<TypeOfficeSkeleton, Modifiers, Locales>;
 
-export function isTypeOffice<
-  Modifiers extends ChainModifiers,
-  Locales extends LocaleCode
->(
-  entry: Entry<EntrySkeletonType, Modifiers, Locales>
-): entry is TypeOffice<Modifiers, Locales> {
-  return entry.sys.contentType.sys.id === 'office';
-}
-
 export interface TypePageFields {
   pageTitle: string;
   excerpt?: EntryFieldTypes.Text;
   pageImage?: ContentImage;
   pageText: EntryFieldTypes.RichText & {
-    json: any;
+    json: Document;
     links: {
       assets: {
         block: {
@@ -167,15 +99,6 @@ export type TypePage<
   Modifiers extends ChainModifiers,
   Locales extends LocaleCode
 > = Entry<TypePageSkeleton, Modifiers, Locales>;
-
-export function isTypePage<
-  Modifiers extends ChainModifiers,
-  Locales extends LocaleCode
->(
-  entry: Entry<EntrySkeletonType, Modifiers, Locales>
-): entry is TypePage<Modifiers, Locales> {
-  return entry.sys.contentType.sys.id === 'page';
-}
 
 export interface TypeServiceMenuFields {
   serviceMenuTitle: EntryFieldTypes.Symbol<'infomeny'>;
@@ -201,12 +124,3 @@ export type TypeServiceMenu<
   Modifiers extends ChainModifiers,
   Locales extends LocaleCode
 > = Entry<TypeServiceMenuSkeleton, Modifiers, Locales>;
-
-export function isTypeServiceMenu<
-  Modifiers extends ChainModifiers,
-  Locales extends LocaleCode
->(
-  entry: Entry<EntrySkeletonType, Modifiers, Locales>
-): entry is TypeServiceMenu<Modifiers, Locales> {
-  return entry.sys.contentType.sys.id === 'serviceMenu';
-}

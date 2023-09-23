@@ -1,21 +1,14 @@
 import BlogPostList from '@/components/BlogPostList';
 import Pagination from '@/components/Pagination';
-import { getBlogPostCollection } from '@/lib/api';
-import type { TypeBlogPostSkeleton } from '@/types/contentful-types';
+import { getBlogPostCollection, getBlogPostRoutes } from '@/lib/api';
 import type { BlogPostItemProps } from '@/types/types';
-import * as contentful from 'contentful';
 import { redirect } from 'next/navigation';
 
 const POSTS_PER_PAGE = 3;
 
-type Props = {
-  params: { page: number | undefined };
+type BlogCollectionParams = {
+  params: { blogPage: number | undefined };
 };
-
-const client = contentful.createClient({
-  space: process.env.CONTENTFUL_SPACE_ID!,
-  accessToken: process.env.CONTENTFUL_ACCESS_TOKEN!,
-});
 
 export const metadata = {
   title: 'Boligsameiet Gartnerihagen',
@@ -29,29 +22,23 @@ export const metadata = {
   },
 };
 
-type CustomEntriesQueries = TypeBlogPostSkeleton & {
-  'fields.privatePost': boolean;
-};
-
 //
 // Generate all possible routes
 //
 export async function generateStaticParams() {
-  const posts = await client.getEntries<TypeBlogPostSkeleton>({
-    content_type: 'blogPost',
-    // @ts-ignore
-    'fields.privatePost': false,
-  });
+  const pagesToRender = await getBlogPostRoutes({ isPrivate: false });
+  const totalPages = Math.ceil(pagesToRender / POSTS_PER_PAGE);
 
-  const totalPages = Math.ceil(posts.total / POSTS_PER_PAGE);
-
-  return Array.from({ length: totalPages }, (_, i) => ({
-    page: `${i + 1}`,
+  const blogPages = Array.from({ length: totalPages }, (_, i) => ({
+    blogPage: `${i + 1}`,
+    extra: 'hei',
   }));
+
+  return blogPages;
 }
 
-export default async function Page({ params }: Props) {
-  const pageNumber = Number(params.page);
+export default async function Page({ params }: BlogCollectionParams) {
+  const pageNumber = Number(params.blogPage);
 
   if (Number.isNaN(pageNumber)) {
     return (

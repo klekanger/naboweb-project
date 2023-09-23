@@ -1,4 +1,4 @@
-import { UserResource } from '@clerk/types';
+import type { UserResource } from '@clerk/types';
 import {
   Button,
   Card,
@@ -57,8 +57,8 @@ export default function UserCard({ user, ...rest }: UserCardProps) {
     const friendlyRole = friendlyUserRoles.find((r) => r.role === role);
 
     return {
-      name: friendlyRole?.friendlyName || 'Bruker',
-      color: friendlyRole?.color || 'primary',
+      name: friendlyRole?.friendlyName ?? 'Bruker',
+      color: friendlyRole?.color ?? 'primary',
     };
   });
 
@@ -67,7 +67,6 @@ export default function UserCard({ user, ...rest }: UserCardProps) {
       <div className={rest?.className}>
         <Card
           classNames={{
-            /* base: 'md:mx-24', */
             base: 'mypage-card',
           }}
         >
@@ -107,7 +106,9 @@ export default function UserCard({ user, ...rest }: UserCardProps) {
             <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-3">
               {isAdmin && (
                 <Button
-                  onClick={() => router.push('/user-admin-page')}
+                  onClick={() => {
+                    router.push('/user-admin-page');
+                  }}
                   size="lg"
                   color="primary"
                   className="bg-primary duration-100 transition hover:bg-primary-600"

@@ -1,8 +1,5 @@
 import Article from '@/components/Article';
 import { getPageWithId } from '@/lib/api';
-import { parseContentfulImage } from '@/lib/parse-contentful-image';
-import type { EntryFieldTypes } from 'contentful';
-import { MailOpenIcon } from 'lucide-react';
 
 export default async function Page() {
   const pageContent = await getPageWithId('7PSsSBGU8MnlNvPIem8ij');

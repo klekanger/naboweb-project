@@ -13,7 +13,7 @@ async function getArticleGridData() {
     await client.withoutUnresolvableLinks.getEntries<TypeBlogPostSkeleton>({
       content_type: 'blogPost',
       limit: 4,
-      // @ts-expect-error
+      // @ts-expect-error: Ignore type mismatch on this one.
       'fields.privatePost': false,
     });
 
@@ -26,9 +26,9 @@ export default async function ArticleGrid() {
   return (
     <section className="container mt-32 grid gap-16 px-1 md:grid-cols-2">
       {articles.items.map((article) => {
-        const { url } = article.fields.featuredImage?.fields.file || {};
+        const { url } = article.fields.featuredImage?.fields.file ?? {};
         const { width, height } =
-          article.fields.featuredImage?.fields.file?.details?.image || {};
+          article.fields.featuredImage?.fields.file?.details?.image ?? {};
 
         if (!url) {
           console.error(`Missing featured image for article ${article.sys.id}`);

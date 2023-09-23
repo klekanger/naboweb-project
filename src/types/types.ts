@@ -1,5 +1,5 @@
 import type { Asset, EntryFieldTypes, EntryFields } from 'contentful';
-import { TypeBlogPostFields, TypePageFields } from './contentful-types';
+import type { TypePageFields } from './contentful-types';
 
 export type ContentImage = {
   title: string;
@@ -11,17 +11,50 @@ export type ContentImage = {
 
 export type ArticleProps = {
   title: string;
-  authors?: {
+  authors?: Array<{
     fields: {
       firstName: string;
       lastName: string;
     };
-  }[];
+  }>;
   bodyText: TypePageFields['pageText'];
   firstPublishedAt: EntryFields.Date;
   publishedAt: EntryFields.Date;
   mainImage?: ContentImage;
   buttonLink: string;
+};
+
+export type ContentfulFile = {
+  sys: {
+    id: string;
+    firstPublishedAt: `${number}-${number}-${number}T${number}:${number}:${number}Z`;
+    publishedAt: `${number}-${number}-${number}T${number}:${number}:${number}Z`;
+  };
+  title: string;
+  description: string;
+  contentType: string;
+  fileName: string;
+  size: number;
+  url: string;
+};
+
+export type DocumentCollection = {
+  data: {
+    serviceMenu: {
+      menu6FilesCollection: {
+        total: number;
+        items: ContentfulFile[];
+      };
+    };
+  };
+};
+
+export type ReturnTypeForGetBlogPostRoutes = {
+  data: {
+    blogPostCollection: {
+      total: number;
+    };
+  };
 };
 
 export type BlogPostItemProps = {
@@ -34,7 +67,7 @@ export type BlogPostItemProps = {
     privatePost: boolean;
     title: string;
     excerpt: string;
-    featuredImage: EntryFieldTypes.AssetLink | undefined;
+    featuredImage: ContentImage | undefined;
     slug: string;
   };
 };
@@ -62,7 +95,7 @@ export type fetchGraphQLReturnTypeForBlogPosts = {
   data: {
     blogPostCollection: {
       total: number;
-      items: {
+      items: Array<{
         sys: {
           id: string;
           publishedAt: `${number}-${number}-${number}T${number}:${number}:${number}Z`;
@@ -71,15 +104,15 @@ export type fetchGraphQLReturnTypeForBlogPosts = {
         privatePost: boolean;
         title: string;
         excerpt: string;
-        featuredImage?: EntryFieldTypes.AssetLink;
+        featuredImage?: ContentImage;
         bodyText: EntryFieldTypes.RichText;
         author?: {
           firstName: string;
           lastName: string;
-          authorImage?: EntryFieldTypes.AssetLink;
+          authorImage?: ContentImage;
         };
         slug: string;
-      }[];
+      }>;
     };
   };
 };
@@ -90,7 +123,7 @@ export type getPageDataReturnTypes = {
   pageText: EntryFieldTypes.RichText;
   slug: string;
   id: string;
-  pageImage?: EntryFieldTypes.AssetLink;
+  pageImage?: ContentImage;
   createdAt: EntryFields.Date;
   updatedAt: EntryFields.Date;
 };

@@ -60,7 +60,9 @@ export default function Navbar() {
         base: 'dark:bg-black/80 bg-brand-black/10',
         item: 'text-brand-black dark:text-brand-white',
       }}
-      onMenuOpenChange={() => setIsMenuOpen(!isMenuOpen)}
+      onMenuOpenChange={() => {
+        setIsMenuOpen(!isMenuOpen);
+      }}
       isMenuOpen={isMenuOpen}
       shouldHideOnScroll
       maxWidth="full"
@@ -151,7 +153,7 @@ export default function Navbar() {
 
           return (
             <NavbarMenuItem
-              key={`${item}-${index}`}
+              key={index}
               className="hover:text-brand-hoverButtonColor duration-100 transition"
             >
               <Link

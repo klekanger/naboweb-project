@@ -1,10 +1,10 @@
-import type { BlogPostItemProps } from '@/types/types';
+import type { BlogPostItemProps, ContentImage } from '@/types/types';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default function BlogPostItem(post: BlogPostItemProps) {
   const { title, excerpt, featuredImage, slug } = post.fields;
-  const { description, url, width, height } = featuredImage;
+  const { description, url, width, height } = featuredImage!;
 
   if (!title || !excerpt || !featuredImage || !slug || !description || !url) {
     console.warn(

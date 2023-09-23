@@ -1,7 +1,7 @@
 import type { UserWithRoles } from '@/lib/types';
 import { clerkClient, currentUser } from '@clerk/nextjs';
 import { getAuth } from '@clerk/nextjs/server';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 
 export async function GET(req: NextRequest) {
   const { userId } = getAuth(req);
@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
     publicMetadata: { roles },
   }: UserWithRoles = (await currentUser()) as UserWithRoles;
 
-  if (!roles || !roles.includes('admin')) {
+  if (!roles?.includes('admin')) {
     return NextResponse.json(
       { message: 'Uautorisert - du er ikke admin' },
       {

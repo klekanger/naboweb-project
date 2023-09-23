@@ -5,7 +5,7 @@ import { SignUp } from '@clerk/nextjs';
 import { Spinner } from '@nextui-org/react';
 import { useEffect } from 'react';
 
-export default function SignUpUser() {
+export default function SignMeUp() {
   const { signUp, isLoaded } = useSignUp();
 
   if (!isLoaded || !signUp) {
@@ -19,14 +19,14 @@ export default function SignUpUser() {
 
   // Get the token from the query parameter
   const param = '__clerk_ticket';
-  let ticket: string = '';
+  let ticket = '';
 
   if (typeof window !== 'undefined') {
-    ticket = new URL(window.location.href).searchParams.get(param) || '';
+    ticket = new URL(window.location.href).searchParams.get(param) ?? '';
   }
 
   useEffect(() => {
-    signUpUser();
+    void signUpUser();
   }, []);
 
   async function signUpUser() {

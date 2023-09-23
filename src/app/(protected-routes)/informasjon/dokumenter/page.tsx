@@ -1,6 +1,6 @@
 import AlertUser from '@/components/AlertUser';
 import DocumentTable from '@/components/DocumentTable';
-import { getPageWithId } from '@/lib/api';
+import { getDocuments } from '@/lib/api';
 import { currentUser } from '@clerk/nextjs';
 
 import Link from 'next/link';
@@ -10,10 +10,9 @@ export default async function Page() {
 
   if (!user) return <div>Not authenticated</div>;
 
-  const data = await getPageWithId('7PSsSBGU8MnlNvPIem8ij');
+  const { total, items } = await getDocuments();
 
-  let documents;
-  if (!documents) {
+  if (!items) {
     return (
       <section className="container flex flex-col justify-center align-middle">
         <AlertUser
@@ -30,7 +29,7 @@ export default async function Page() {
   return (
     <section>
       <h1>Dokumenter</h1>
-      <DocumentTable documents={documents} />
+      <DocumentTable documents={items} />
     </section>
   );
 }

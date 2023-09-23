@@ -23,8 +23,6 @@ export const BLOGPOSTCOLLECTION_GRAPHQL_FIELDS = `
 
 export const BLOGPOSTROUTES_GRAPHQL_FIELDS = `
   total
-}
-
 `;
 
 export const PAGE_GRAPHQL_FIELDS = `
@@ -61,4 +59,25 @@ export const PAGE_GRAPHQL_FIELDS = `
           }
         }
       }
+    `;
+
+export const DOCUMENTS_GRAPHQL_FIELDS = `
+      serviceMenu(id: "3ZMDi88bv5KLPFanE7JxPa") {
+        menu6FilesCollection {
+          total
+          items {
+            sys {
+              id
+              firstPublishedAt
+              publishedAt
+            }
+            title
+            description
+            contentType
+            fileName
+            size
+            url
+          }
+        }
+      }    
     `;

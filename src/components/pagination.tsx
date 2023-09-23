@@ -18,7 +18,8 @@ export default function Pagination({
   if (!url) {
     return null;
   }
-  const urlWithSlash = `/${url.replace(/^\//, '').replace(/\/$/, '')}/`; // add slash before and after url if missing
+
+  const urlWithSlash = `/${url.replace(/^\//, '').replace(/\/$/, '')}/`; // Add slash before and after url if missing
 
   return (
     <nav
