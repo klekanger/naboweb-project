@@ -1,6 +1,6 @@
 import BlogPostList from '@/components/BlogPostList';
 import Pagination from '@/components/Pagination';
-import { getBlogPostCollection, getBlogPostRoutes } from '@/lib/api';
+import { getBlogPostCollection } from '@/lib/api';
 import type { BlogPostItemProps } from '@/types/types';
 import { redirect } from 'next/navigation';
 
@@ -22,19 +22,18 @@ export const metadata = {
   },
 };
 
-//
-// Generate all possible routes
-//
 export async function generateStaticParams() {
-  const pagesToRender = await getBlogPostRoutes({ isPrivate: false });
-  const totalPages = Math.ceil(pagesToRender / POSTS_PER_PAGE);
+  const data = await getBlogPostCollection({
+    pageNumber: 1,
+    postsPerPage: POSTS_PER_PAGE,
+    isPrivate: false,
+  });
 
-  const blogPages = Array.from({ length: totalPages }, (_, i) => ({
+  const { total } = data || {};
+
+  return Array.from({ length: total }).map((_, i) => ({
     blogPage: `${i + 1}`,
-    extra: 'hei',
   }));
-
-  return blogPages;
 }
 
 export default async function Page({ params }: BlogCollectionParams) {
@@ -58,7 +57,7 @@ export default async function Page({ params }: BlogCollectionParams) {
   const totalPages = Math.ceil(total / POSTS_PER_PAGE);
   const numberOfBlogPosts = items.length;
 
-  if (pageNumber > totalPages) {
+  if (pageNumber > totalPages || pageNumber < 1) {
     redirect('/blog-collection/1');
   }
 

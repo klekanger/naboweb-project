@@ -1,14 +1,17 @@
 import {
   BLOGPOSTCOLLECTION_GRAPHQL_FIELDS,
   BLOGPOSTROUTES_GRAPHQL_FIELDS,
+  BLOGPOST_GRAPHQL_FIELDS,
   DOCUMENTS_GRAPHQL_FIELDS,
   PAGE_GRAPHQL_FIELDS,
 } from '@/lib/graphql-fields';
 import type {
   DocumentCollection,
-  fetchGraphQLReturnTypeForBlogPosts as ReturnTypeForBlogPosts,
+  ReturnTypeForBlogPosts,
   ReturnTypeForGetBlogPostRoutes,
-  fetchGraphQLReturnTypeForPage as ReturnTypeForPage,
+  ReturnTypeForGetSlugsForBlogPosts,
+  ReturnTypeForPage,
+  ReturnTypeForSingleBlogPost,
 } from '@/types/types';
 
 /**
@@ -74,24 +77,37 @@ export async function getPageWithId(id: string): Promise<ReturnTypeForPage> {
 }
 
 /**
- * Retrieves a page with the specified slug.
+ * Retrieves a blog post with the specified slug.
  *
- * @param  slug - The slug of the page to retrieve.
+ * @param  slug - The slug of the post to retrieve.
  * @return - A promise that resolves to the fetched page data.
  */
-export async function getPageWithSlug(
-  slug: string
-): Promise<ReturnTypeForPage> {
-  console.log('api - slug is: ', slug);
+export async function getBlogPostWithSlug({
+  slug,
+  isPrivate,
+}: {
+  slug: string;
+  isPrivate: boolean;
+}) {
+  if (!slug) {
+    throw new Error('Missing slug');
+  }
+
   try {
     const query = `query {
-      page(where: {slug: "${slug}"}) {
-          ${PAGE_GRAPHQL_FIELDS}
+      blogPostCollection(limit: 1, where: {privatePost: ${isPrivate}, slug: "${slug}"}) {     
+          ${BLOGPOST_GRAPHQL_FIELDS}
       }
     }`;
-    const pageData = await fetchGraphQL<ReturnTypeForPage>(query, true);
+    const blogPostData = await fetchGraphQL<ReturnTypeForSingleBlogPost>(query);
 
-    return pageData;
+    const {
+      data: {
+        blogPostCollection: { total, items },
+      },
+    } = blogPostData;
+
+    return { total, items, isPrivate };
   } catch (error) {
     console.error(error);
     throw new Error('Failed to fetch page data');
@@ -129,7 +145,7 @@ export async function getBlogPostCollection({
         blogPostCollection: { total, items },
       },
     } = await blogPostCollectionData;
-    return { total, items };
+    return { total, items, isPrivate };
   } catch (error) {
     console.error(error);
     throw new Error('Failed to fetch blog post collection data');
@@ -152,6 +168,28 @@ export async function getBlogPostRoutes({ isPrivate = false }) {
     const total = blogPostRoutes.data.blogPostCollection.total;
 
     return total;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to fetch blog post routes');
+  }
+}
+
+// Retrieves all possible slugs for blog posts
+export async function getSlugsForBlogPost({ isPrivate = false }) {
+  try {
+    const query = `query {
+      blogPostCollection (where: {privatePost: ${isPrivate}}) {
+        items {
+          slug
+        }
+      }
+    }
+    `;
+
+    const blogPostRoutes =
+      await fetchGraphQL<ReturnTypeForGetSlugsForBlogPosts>(query);
+
+    return blogPostRoutes;
   } catch (error) {
     console.error(error);
     throw new Error('Failed to fetch blog post routes');

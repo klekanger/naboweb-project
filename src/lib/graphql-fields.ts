@@ -21,6 +21,47 @@ export const BLOGPOSTCOLLECTION_GRAPHQL_FIELDS = `
   
 `;
 
+export const BLOGPOST_GRAPHQL_FIELDS = `
+    total
+    items {
+      privatePost
+      sys {
+        id
+        publishedAt
+        firstPublishedAt
+      }
+      slug
+      title
+      excerpt
+      bodyText {
+        json
+        json
+        links {
+          assets {
+            block {
+              sys {
+                id
+              }
+              url
+              description
+              title
+              width
+              height
+            }
+          }
+        }
+      }
+      featuredImage {
+        title
+        description
+        url(transform: {format: AVIF})
+        width
+        height
+      }
+    }
+
+`;
+
 export const BLOGPOSTROUTES_GRAPHQL_FIELDS = `
   total
 `;

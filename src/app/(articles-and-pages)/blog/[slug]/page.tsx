@@ -1,30 +1,21 @@
+import AlertUser from '@/components/AlertUser';
 import Article from '@/components/Article';
-import { getPageWithSlug } from '@/lib/api';
-import { parseContentfulImage } from '@/lib/parse-contentful-image';
-import type { TypeBlogPostSkeleton } from '@/types/contentful-types';
+import { getBlogPostWithSlug, getSlugsForBlogPost } from '@/lib/api';
 import type { ArticleProps } from '@/types/types';
-import * as contentful from 'contentful';
 import type { Metadata, ResolvingMetadata } from 'next';
 
 type BlogParams = {
   params: { slug: string };
 };
 
-const client = contentful.createClient({
-  space: process.env.CONTENTFUL_SPACE_ID!,
-  accessToken: process.env.CONTENTFUL_ACCESS_TOKEN!,
-});
-
 //
 // Generate all possible routes
 //
 export async function generateStaticParams() {
-  const posts = await client.getEntries<TypeBlogPostSkeleton>({
-    content_type: 'blogPost',
-  });
+  const posts = await getSlugsForBlogPost({ isPrivate: false });
 
-  return posts.items.map((post) => ({
-    slug: post.fields?.slug ?? '',
+  return posts.data.blogPostCollection.items.map((post) => ({
+    slug: post.slug,
   }));
 }
 
@@ -36,27 +27,33 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const slug = params.slug;
-  const post =
-    await client.withoutUnresolvableLinks.getEntries<TypeBlogPostSkeleton>({
-      content_type: 'blogPost',
-      limit: 1,
-      'fields.slug': slug,
-    });
+
+  const data = await getBlogPostWithSlug({
+    slug: params.slug,
+    isPrivate: false,
+  });
+  const post = data.items[0]; // We're fetching only one post
+
+  if (!post) {
+    return {};
+  }
+
+  const { title, excerpt, author, featuredImage } = post;
 
   // Optionally access and extend (rather than replace) parent metadata
   const parentResult = await parent;
   const previousImages = parentResult.openGraph?.images ?? [];
 
-  const ogImage = post?.items[0]?.fields?.featuredImage?.fields?.file.url ?? '';
+  const ogImage = featuredImage?.url ?? '';
 
   return {
-    title: post?.items[0]?.fields.title,
-    description: post?.items[0]?.fields.excerpt,
+    title: title,
+    description: excerpt,
     openGraph: {
-      images: [`https://${ogImage}?w=1200&h=630&fit=fill`, ...previousImages],
+      images: [`${ogImage}?w=1200&h=630&fit=fill`, ...previousImages],
       type: 'article',
-      title: post?.items[0]?.fields.title ?? '',
-      description: post?.items[0]?.fields.excerpt ?? '',
+      title: title ?? '',
+      description: excerpt ?? '',
       locale: 'nb_NO',
       siteName: 'Boligsameiet Gartnerihagen',
       url: `https://gartnerihagen-askim.no/blog/${slug}`,
@@ -68,31 +65,32 @@ export async function generateMetadata(
 // Generate the blog page
 //
 export default async function Page({ params }: BlogParams) {
-  const post = await getPageWithSlug(params.slug);
+  const data = await getBlogPostWithSlug({
+    slug: params.slug,
+    isPrivate: false,
+  });
+  const post = data.items[0]; // We're fetching only one post
 
-  /*   const post =
-    await client.withoutUnresolvableLinks.getEntries<TypeBlogPostSkeleton>({
-      content_type: 'blogPost',
-      limit: 1,
-      'fields.slug': params.slug,
-    });
- */
-  if (!post.items[0]) {
+  if (!post) {
     return (
       <>
-        <h1>404</h1>
-        <p>Det finnes ingen blogginnlegg her...</p>
+        <AlertUser
+          alertTitle="404"
+          alertMessage="Det finnes ingen blogginnlegg her..."
+        />
       </>
     );
   }
 
-  const { title, author, featuredImage } = post.items[0]?.fields ?? {};
-  const bodyText = post.items[0]?.fields.bodyText;
-  const { createdAt, updatedAt } = post.items[0]?.sys ?? {};
+  const {
+    title,
+    bodyText,
+    author,
+    featuredImage,
+    sys: { firstPublishedAt, publishedAt },
+  } = post;
 
-  const parsedImage = parseContentfulImage(featuredImage);
-
-  if (!title || !bodyText || !createdAt || !updatedAt || !parsedImage) {
+  if (!title || !bodyText) {
     throw new Error('Missing data');
   }
 
@@ -101,12 +99,15 @@ export default async function Page({ params }: BlogParams) {
       <Article
         title={title}
         bodyText={bodyText}
-        firstPublishedAt={createdAt}
-        publishedAt={updatedAt}
-        mainImage={parsedImage}
+        firstPublishedAt={firstPublishedAt}
+        publishedAt={publishedAt}
+        mainImage={featuredImage}
         authors={author as ArticleProps['authors']}
         buttonLink="/blog"
       />
     </div>
   );
 }
+
+// TODO Generate only public posts
+// private posts should be on another route under (protected-routes)
