@@ -81,6 +81,7 @@ export default function Navbar() {
               alt="Gartnerihagen-logo"
               className="-mt-3  sm:-ml-12 sm:h-16 lg:ml-0"
               priority
+              style={{ width: 'auto' }}
             />
           </Link>
         </NavbarBrand>
