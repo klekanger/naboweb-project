@@ -38,7 +38,7 @@ export async function generateStaticParams() {
   const totalPages = Math.ceil(pagesToRender / POSTS_PER_PAGE);
 
   const blogPages = Array.from({ length: totalPages }, (_, i) => ({
-    blogPage: `${i + 1}`,
+    page: `${i + 1}`,
   }));
 
   return blogPages;
@@ -87,7 +87,7 @@ export default async function Page({ params }: Props) {
   const totalPages = Math.ceil(total / POSTS_PER_PAGE);
   const numberOfBlogPosts = items.length;
 
-  if (pageNumber > totalPages) {
+  if (pageNumber > totalPages || pageNumber < 1) {
     redirect('/informasjon/1');
   }
 
