@@ -4,7 +4,7 @@ import { getBlogPostCollection } from '@/lib/api';
 import type { BlogPostItemProps } from '@/types/types';
 import { redirect } from 'next/navigation';
 
-const POSTS_PER_PAGE = 3;
+const POSTS_PER_PAGE = 5;
 
 type BlogCollectionParams = {
   params: { blogPage: number | undefined };
@@ -22,6 +22,10 @@ export const metadata = {
   },
 };
 
+//
+// Generate all possible routes
+//
+
 export async function generateStaticParams() {
   const data = await getBlogPostCollection({
     pageNumber: 1,
@@ -30,8 +34,9 @@ export async function generateStaticParams() {
   });
 
   const { total } = data || {};
+  const totalPages = Math.ceil(total / POSTS_PER_PAGE);
 
-  return Array.from({ length: total }).map((_, i) => ({
+  return Array.from({ length: totalPages }).map((_, i) => ({
     blogPage: `${i + 1}`,
   }));
 }
