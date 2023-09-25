@@ -32,10 +32,11 @@ export const metadata = {
 //
 // Generate all possible routes
 //
-
 export async function generateStaticParams() {
-  const pagesToRender = await getBlogPostRoutes({ isPrivate: true });
-  const totalPages = Math.ceil(pagesToRender / POSTS_PER_PAGE);
+  const data = await getBlogPostRoutes({ isPrivate: true });
+  const { total } = data || {};
+
+  const totalPages = Math.ceil(total / POSTS_PER_PAGE);
 
   const blogPages = Array.from({ length: totalPages }, (_, i) => ({
     page: `${i + 1}`,

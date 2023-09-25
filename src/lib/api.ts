@@ -165,9 +165,8 @@ export async function getBlogPostRoutes({ isPrivate = false }) {
     const blogPostRoutes = await fetchGraphQL<ReturnTypeForGetBlogPostRoutes>(
       query
     );
-    const total = blogPostRoutes.data.blogPostCollection.total;
 
-    return total;
+    return { total: blogPostRoutes.data.blogPostCollection.total };
   } catch (error) {
     console.error(error);
     throw new Error('Failed to fetch blog post routes');
