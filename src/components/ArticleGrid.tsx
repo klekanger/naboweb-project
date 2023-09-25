@@ -26,8 +26,10 @@ export default async function ArticleGrid() {
   return (
     <section className="container mt-32 grid gap-16 px-1 md:grid-cols-2">
       {articles.items.map((article) => {
+        // @ts-expect-error Ignore type mismatch
         const { url } = article.fields.featuredImage?.fields.file ?? {};
         const { width, height } =
+          // @ts-expect-error Ignore type mismatch
           article.fields.featuredImage?.fields.file?.details?.image ?? {};
 
         if (!url) {
