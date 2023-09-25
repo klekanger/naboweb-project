@@ -57,6 +57,16 @@ export type ReturnTypeForGetBlogPostRoutes = {
   };
 };
 
+export type ReturnTypeForGetSlugsForBlogPosts = {
+  data: {
+    blogPostCollection: {
+      items: Array<{
+        slug: string;
+      }>;
+    };
+  };
+};
+
 export type BlogPostItemProps = {
   sys: {
     id: string;
@@ -79,7 +89,7 @@ export type BlogPostListProps = {
   posts: BlogPostItemProps[];
 };
 
-export type fetchGraphQLReturnTypeForPage = {
+export type ReturnTypeForPage = {
   data: {
     page: TypePageFields & {
       sys: {
@@ -91,28 +101,39 @@ export type fetchGraphQLReturnTypeForPage = {
   };
 };
 
-export type fetchGraphQLReturnTypeForBlogPosts = {
+type SingleBlogPostItem = {
+  sys: {
+    id: string;
+    publishedAt: `${number}-${number}-${number}T${number}:${number}:${number}Z`;
+    firstPublishedAt: `${number}-${number}-${number}T${number}:${number}:${number}Z`;
+  };
+  privatePost: boolean;
+  title: string;
+  excerpt: string;
+  featuredImage?: ContentImage;
+  bodyText: TypePageFields['pageText'];
+  author?: {
+    firstName: string;
+    lastName: string;
+    authorImage?: ContentImage;
+  };
+  slug: string;
+};
+
+export type ReturnTypeForSingleBlogPost = {
   data: {
     blogPostCollection: {
       total: number;
-      items: Array<{
-        sys: {
-          id: string;
-          publishedAt: `${number}-${number}-${number}T${number}:${number}:${number}Z`;
-          firstPublishedAt: `${number}-${number}-${number}T${number}:${number}:${number}Z`;
-        };
-        privatePost: boolean;
-        title: string;
-        excerpt: string;
-        featuredImage?: ContentImage;
-        bodyText: EntryFieldTypes.RichText;
-        author?: {
-          firstName: string;
-          lastName: string;
-          authorImage?: ContentImage;
-        };
-        slug: string;
-      }>;
+      items: Array<SingleBlogPostItem>;
+    };
+  };
+};
+
+export type ReturnTypeForBlogPosts = {
+  data: {
+    blogPostCollection: {
+      total: number;
+      items: Array<SingleBlogPostItem>;
     };
   };
 };
