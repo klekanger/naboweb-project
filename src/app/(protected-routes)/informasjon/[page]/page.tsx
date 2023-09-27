@@ -1,11 +1,14 @@
 import AlertUser from '@/components/AlertUser';
 import BlogPostList from '@/components/BlogPostList';
+import DocumentBox from '@/components/DocumentBox';
 import InfoBox from '@/components/InfoBox';
 import Pagination from '@/components/Pagination';
-import ServiceBox from '@/components/ServiceBox';
-import { getBlogPostCollection, getBlogPostRoutes } from '@/lib/api';
-import type { UserWithRoles } from '@/lib/types';
-import { BlogPostItemProps } from '@/types/types';
+import {
+  getBlogPostCollection,
+  getBlogPostRoutes,
+  getDocumentBoxFields,
+} from '@/lib/api';
+import { BlogPostItemProps, UserWithRoles } from '@/types/types';
 import { currentUser } from '@clerk/nextjs';
 import { RefreshCw } from 'lucide-react';
 import Link from 'next/link';
@@ -78,6 +81,11 @@ export default async function Page({ params }: Props) {
     );
   }
 
+  const serviceMenuFields = await getDocumentBoxFields();
+  const {
+    data: { serviceMenu },
+  } = serviceMenuFields;
+
   const posts = await getBlogPostCollection({
     pageNumber,
     postsPerPage: POSTS_PER_PAGE,
@@ -141,7 +149,7 @@ export default async function Page({ params }: Props) {
             Gå til Min side »
           </Link>
         </div>
-        <ServiceBox />
+        <DocumentBox documentBoxLinks={serviceMenu} />
       </div>
       {pageNumber === 1 && (
         <InfoBox

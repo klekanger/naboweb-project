@@ -1,43 +1,57 @@
 'use client';
 
-import { Button, ButtonGroup } from '@nextui-org/react';
+import type { DocumentBoxProps } from '@/types/types';
+import { Button } from '@nextui-org/react';
 import { Paperclip } from 'lucide-react';
 import Link from 'next/link';
 
-export default function ServiceBox() {
+export default function DocumentBox({ documentBoxLinks }: DocumentBoxProps) {
+  const {
+    menu1Name,
+    menu2Name,
+    menu3Name,
+    menu4Name,
+    menu5Name,
+    menu6Name,
+    menu1File,
+    menu2File,
+    menu3File,
+    menu4File,
+  } = documentBoxLinks;
+
   return (
     <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-3">
       <Button
         as={Link}
-        href="/"
+        href={menu1File.url}
         startContent={<Paperclip className="absolute left-6" />}
         size="lg"
       >
-        Vedtekter
+        {menu1Name}
       </Button>
       <Button
         as={Link}
-        href="/"
+        href={menu2File.url}
         startContent={<Paperclip className="absolute left-6" />}
         size="lg"
       >
-        Retningslinjer
+        {menu2Name}
       </Button>{' '}
       <Button
         as={Link}
-        href="/"
+        href={menu3File.url}
         startContent={<Paperclip className="absolute left-6" />}
         size="lg"
       >
-        Klippeliste 2023
+        {menu3Name}
       </Button>{' '}
       <Button
         as={Link}
-        href="/"
+        href={menu4File.url}
         startContent={<Paperclip className="absolute left-6" />}
         size="lg"
       >
-        Oversikt over beboere
+        {menu4Name}
       </Button>{' '}
       <Button
         as={Link}
@@ -45,7 +59,7 @@ export default function ServiceBox() {
         startContent={<Paperclip className="absolute left-6" />}
         size="lg"
       >
-        Dokumenter fra årsmøter
+        {menu5Name}
       </Button>{' '}
       <Button
         as={Link}
@@ -53,28 +67,8 @@ export default function ServiceBox() {
         startContent={<Paperclip className="absolute left-6" />}
         size="lg"
       >
-        Diverse dokumenter
+        {menu6Name}
       </Button>
     </div>
   );
 }
-
-/* 
-<Link className={`h-16 font-semibold`} href="/">
-Vedtekter
-</Link>
-<Link className={`h-16 font-semibold`} href="/">
-Retningslinjer
-</Link>
-<Link className={`h-16 font-semibold`} href="/">
-Klippeliste 2023
-</Link>
-<Link className={`h-16 font-semibold`} href="/">
-Oversikt over beboere
-</Link>
-<Link className={`h-16 font-semibold`} href="/">
-Dokumenter fra årsmøter
-</Link>
-<Link className={`h-16 font-semibold`} href="/">
-Diverse dokumenter
-</Link> */

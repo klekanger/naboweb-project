@@ -1,5 +1,14 @@
+import type { User } from '@clerk/nextjs/dist/types/server';
 import type { Asset, EntryFieldTypes, EntryFields } from 'contentful';
 import type { TypePageFields } from './contentful-types';
+
+export type UserRoles = 'admin' | 'editor' | 'user';
+
+export type UserWithRoles = User & {
+  publicMetadata: {
+    roles?: UserRoles[];
+  };
+};
 
 export type ContentImage = {
   title: string;
@@ -41,12 +50,25 @@ export type ContentfulFile = {
 export type DocumentCollection = {
   data: {
     serviceMenu: {
-      menu6FilesCollection: {
+      menu5FilesCollection?: {
+        total: number;
+        items: ContentfulFile[];
+      };
+      menu6FilesCollection?: {
         total: number;
         items: ContentfulFile[];
       };
     };
   };
+};
+
+export type DocumentTableProps = {
+  documents: {
+    total: number;
+    items: ContentfulFile[];
+  };
+  rowsPerPage?: number;
+  startPage?: number;
 };
 
 export type ReturnTypeForGetBlogPostRoutes = {
@@ -170,4 +192,35 @@ export type HeroWideProps = {
   pageTitle: string;
   excerpt: string;
   pageImage: Asset<'WITHOUT_UNRESOLVABLE_LINKS'> | undefined;
+};
+
+type DocumentBoxFields = {
+  menu1Name: string;
+  menu2Name: string;
+  menu3Name: string;
+  menu4Name: string;
+  menu5Name: string;
+  menu6Name: string;
+  menu1File: {
+    url: string;
+  };
+  menu2File: {
+    url: string;
+  };
+  menu3File: {
+    url: string;
+  };
+  menu4File: {
+    url: string;
+  };
+};
+
+export type ReturnTypeForDocumentBox = {
+  data: {
+    serviceMenu: DocumentBoxFields;
+  };
+};
+
+export type DocumentBoxProps = {
+  documentBoxLinks: DocumentBoxFields;
 };

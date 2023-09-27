@@ -2,12 +2,13 @@ import {
   BLOGPOSTCOLLECTION_GRAPHQL_FIELDS,
   BLOGPOSTROUTES_GRAPHQL_FIELDS,
   BLOGPOST_GRAPHQL_FIELDS,
-  DOCUMENTS_GRAPHQL_FIELDS,
   PAGE_GRAPHQL_FIELDS,
+  SERVICEMENU_GRAPHQL_FIELDS,
 } from '@/lib/graphql-fields';
 import type {
   DocumentCollection,
   ReturnTypeForBlogPosts,
+  ReturnTypeForDocumentBox,
   ReturnTypeForGetBlogPostRoutes,
   ReturnTypeForGetSlugsForBlogPosts,
   ReturnTypeForPage,
@@ -195,27 +196,48 @@ export async function getSlugsForBlogPost({ isPrivate = false }) {
   }
 }
 
+// ***********************
 // Retrieves all documents
-export async function getDocuments() {
+// ***********************
+export async function getDocuments({
+  getDocumentsQuery,
+}: {
+  getDocumentsQuery: string;
+}) {
+  if (!getDocumentsQuery) {
+    throw new Error('Missing getDocumentsQuery');
+  }
+
   const pageNumber = 1;
   const postsPerPage = 5;
   try {
     const query = `query {
-        ${DOCUMENTS_GRAPHQL_FIELDS}
+        ${getDocumentsQuery}
     }
     `;
 
-    const documentCollectionData = fetchGraphQL<DocumentCollection>(query);
+    const documentCollection = await fetchGraphQL<DocumentCollection>(query);
+    console.log('documentCollection, ', documentCollection);
 
-    const {
-      data: {
-        serviceMenu: { menu6FilesCollection: files },
-      },
-    } = await documentCollectionData;
-
-    return files;
+    return documentCollection;
   } catch (error) {
     console.error(error);
     throw new Error(`Something went wrong – ${error}`);
   }
 }
+
+// ***************************************
+// Retrives text and files for DocumentBox
+// ***************************************
+export async function getDocumentBoxFields() {
+  const query = `query {
+    ${SERVICEMENU_GRAPHQL_FIELDS}
+  }
+  `;
+
+  const serviceMenuFields = await fetchGraphQL<ReturnTypeForDocumentBox>(query);
+
+  return serviceMenuFields;
+}
+
+// TODO Add pagination to getDocuments

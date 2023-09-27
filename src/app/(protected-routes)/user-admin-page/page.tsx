@@ -1,6 +1,5 @@
 'use client';
 
-import type { UserWithRoles } from '@/lib/types';
 import { useAuth } from '@clerk/clerk-react';
 import type { Invitation, User } from '@clerk/nextjs/dist/types/server';
 import {

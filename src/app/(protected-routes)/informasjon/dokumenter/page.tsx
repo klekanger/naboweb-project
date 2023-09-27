@@ -1,8 +1,8 @@
 import AlertUser from '@/components/AlertUser';
 import DocumentTable from '@/components/DocumentTable';
 import { getDocuments } from '@/lib/api';
+import { DOCUMENTS_MENU6_GRAPHQL_FIELDS } from '@/lib/graphql-fields';
 import { currentUser } from '@clerk/nextjs';
-
 import Link from 'next/link';
 
 export default async function Page() {
@@ -10,7 +10,13 @@ export default async function Page() {
 
   if (!user) return <div>Not authenticated</div>;
 
-  const { total, items } = await getDocuments();
+  const {
+    data: {
+      serviceMenu: { menu6FilesCollection: items },
+    },
+  } = await getDocuments({
+    getDocumentsQuery: DOCUMENTS_MENU6_GRAPHQL_FIELDS,
+  });
 
   if (!items) {
     return (
@@ -28,7 +34,7 @@ export default async function Page() {
 
   return (
     <section>
-      <h1>Dokumenter</h1>
+      <h1>Diverse dokumenter</h1>
       <DocumentTable documents={items} />
     </section>
   );

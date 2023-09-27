@@ -1,4 +1,4 @@
-import type { UserWithRoles } from '@/lib/types';
+import type { UserWithRoles } from '@/types/types';
 import { clerkClient, currentUser } from '@clerk/nextjs';
 import { getAuth } from '@clerk/nextjs/server';
 import { NextResponse, type NextRequest } from 'next/server';
