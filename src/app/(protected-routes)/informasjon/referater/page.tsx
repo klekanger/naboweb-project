@@ -1,8 +1,8 @@
 import AlertUser from '@/components/AlertUser';
 import DocumentTable from '@/components/DocumentTable';
 import { getDocuments } from '@/lib/api';
+import { DOCUMENTS_MENU5_GRAPHQL_FIELDS } from '@/lib/graphql-fields';
 import { currentUser } from '@clerk/nextjs';
-
 import Link from 'next/link';
 
 export default async function Page() {
@@ -10,7 +10,13 @@ export default async function Page() {
 
   if (!user) return <div>Not authenticated</div>;
 
-  const { total, items } = await getDocuments();
+  const {
+    data: {
+      serviceMenu: { menu5FilesCollection: items },
+    },
+  } = await getDocuments({
+    getDocumentsQuery: DOCUMENTS_MENU5_GRAPHQL_FIELDS,
+  });
 
   if (!items) {
     return (
@@ -29,6 +35,9 @@ export default async function Page() {
   return (
     <section>
       <h1>Dokumenter fra årsmøter</h1>
+      <DocumentTable documents={items} rowsPerPage={10} startPage={1} />
     </section>
   );
 }
+
+// TODO Add pagination
