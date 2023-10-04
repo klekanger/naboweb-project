@@ -79,9 +79,8 @@ export default function Navbar() {
             <Image
               src={theme === 'light' ? logoLight : logoDark}
               alt="Gartnerihagen-logo"
-              className="-mt-3  sm:-ml-12 sm:h-16 lg:ml-0"
+              className="-mt-3 sm:-ml-12 sm:h-16 lg:ml-0 lg:w-auto"
               priority
-              style={{ width: 'auto' }}
             />
           </Link>
         </NavbarBrand>
