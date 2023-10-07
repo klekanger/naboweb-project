@@ -1,9 +1,17 @@
 'use client';
 
+import {
+  DocumentIcon,
+  ExcelIcon,
+  PdfIcon,
+  PowerPointIcon,
+  WordIcon,
+} from '@/components/icons';
 import { formatDate } from '@/lib/format-date';
 import type { DocumentTableProps } from '@/types/types';
 import {
   Button,
+  Input,
   Pagination,
   Table,
   TableBody,
@@ -11,10 +19,31 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
+  Tooltip,
 } from '@nextui-org/react';
-import { ArrowBigLeft } from 'lucide-react';
+import { ArrowBigLeft, SearchIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+
+import { useCallback, useMemo, useState } from 'react';
+import BackButton from './BackButton';
+
+type FileTypes = {
+  [key: string]:
+    | typeof WordIcon
+    | typeof ExcelIcon
+    | typeof PdfIcon
+    | typeof PowerPointIcon;
+};
+
+const fileTypes: FileTypes = {
+  '.pdf': PdfIcon,
+  '.doc': WordIcon,
+  '.docx': WordIcon,
+  '.xls': ExcelIcon,
+  '.xlsx': ExcelIcon,
+  '.ppt': PowerPointIcon,
+  '.pptx': PowerPointIcon,
+};
 
 export default function DocumentTable({
   documents,
@@ -22,6 +51,8 @@ export default function DocumentTable({
   startPage = 1,
 }: DocumentTableProps) {
   const [page, setPage] = useState(startPage);
+  const [filterValue, setFilterValue] = useState('');
+  const hasSearchFilter = Boolean(filterValue);
   const { items } = documents || {};
 
   if (!documents || !documents.items) {
@@ -37,23 +68,90 @@ export default function DocumentTable({
 
   const pages = Math.ceil(documents.total / rowsPerPage);
 
+  const filteredItems = useMemo(() => {
+    let filteredItems = [...items];
+
+    if (hasSearchFilter) {
+      filteredItems = filteredItems.filter(
+        (item) =>
+          (item.title &&
+            item.title.toLowerCase().includes(filterValue.toLowerCase())) ||
+          (item.description &&
+            item.description.toLowerCase().includes(filterValue.toLowerCase()))
+      );
+    }
+
+    return filteredItems;
+  }, [items, filterValue]);
+
   const itemsToRender = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
 
-    return items.slice(start, end);
-  }, [page, items]);
+    return filteredItems.slice(start, end);
+  }, [page, filteredItems, rowsPerPage]);
+
+  const onSearchChange = useCallback((value?: string) => {
+    if (value) {
+      setFilterValue(value);
+      setPage(1);
+    } else {
+      setFilterValue('');
+    }
+  }, []);
+
+  const topContent = useMemo(() => {
+    return (
+      <div>
+        <Input
+          isClearable
+          className="w-full sm:max-w-[44%]"
+          placeholder="Søk i dokumentnavn eller beskrivelse"
+          startContent={<SearchIcon />}
+          value={filterValue}
+          onClear={() => setFilterValue('')}
+          onValueChange={onSearchChange}
+        />
+        <div className="pl-2 pt-4">
+          <span className="font-semibold">Antall dokumenter:</span>{' '}
+          {filteredItems.length.toString()}
+        </div>
+      </div>
+    );
+  }, [
+    filterValue,
+    onSearchChange,
+    filteredItems.length,
+    hasSearchFilter,
+    rowsPerPage,
+  ]);
+
+  // helper function to get the file extension from item.filename
+  const returnIconFromFileType = (fileName: string) => {
+    const fileExtension = fileName.split('.').pop();
+    const fileType = fileTypes[`.${fileExtension}`];
+    console.log('fileExtension', fileExtension);
+
+    if (fileType === undefined) {
+      return DocumentIcon;
+    } else {
+      return fileType;
+    }
+  };
 
   return (
     <>
       <Table
         className="mb-16"
         isStriped
+        aria-label="Tabell med oversikt over dokumenter"
+        topContent={topContent}
         bottomContent={
           pages > 1 && (
             <div className="flex w-full justify-center">
               <Pagination
                 isCompact
+                isDisabled={hasSearchFilter}
                 showControls
                 showShadow
                 color="secondary"
@@ -67,17 +165,12 @@ export default function DocumentTable({
       >
         <TableHeader>
           <TableColumn
-            className="bg-brand-primary/20 text-sm font-bold md:text-lg"
+            className="bg-brand-primary/20 text-sm font-bold md:text-base"
             width={'60%'}
           >
-            Filnavn
+            Dokumentnavn
           </TableColumn>
-          <TableColumn
-            className="bg-brand-primary/20 text-sm font-bold md:text-lg"
-            width={'20%'}
-          >
-            Opprettet
-          </TableColumn>
+
           <TableColumn
             className="bg-brand-primary/20 text-sm font-bold md:text-lg"
             width={'20%'}
@@ -87,29 +180,55 @@ export default function DocumentTable({
         </TableHeader>
         <TableBody emptyContent={'Ingen elementer å vise'}>
           {(itemsToRender
-            ? itemsToRender.map((item) => (
-                <TableRow key={item.sys.id} className="text-left">
-                  <TableCell>
-                    <Link
-                      href={item.url}
-                      className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80"
-                    >
-                      {item.title}
-                    </Link>
-                  </TableCell>
-                  <TableCell>{formatDate(item.sys.firstPublishedAt)}</TableCell>
-                  <TableCell>{formatDate(item.sys.publishedAt)}</TableCell>
-                </TableRow>
-              ))
+            ? itemsToRender.map((item) => {
+                const FileIcon = returnIconFromFileType(item.fileName);
+
+                return (
+                  <TableRow key={item.sys.id} className="text-left">
+                    <TableCell>
+                      <Tooltip
+                        content={
+                          <span className="flex flex-row items-center gap-2 py-2 text-xs md:text-sm">
+                            <FileIcon
+                              fill="#fff"
+                              height={2}
+                              width={2}
+                              className="md:mx-4"
+                            />
+                            <div>
+                              {item.description && (
+                                <>
+                                  <span className="">{item.description}</span>
+                                  <hr className="my-2" />
+                                </>
+                              )}
+                              <span className="font-semibold">
+                                <strong>Filnavn:</strong> {item.fileName}
+                              </span>
+                            </div>
+                          </span>
+                        }
+                        placement="top-start"
+                        delay={1000}
+                        color="secondary"
+                        size="lg"
+                      >
+                        <Link
+                          href={item.url}
+                          className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80 "
+                        >
+                          {item.title}
+                        </Link>
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell>{formatDate(item.sys.publishedAt)}</TableCell>
+                  </TableRow>
+                );
+              })
             : null) ?? []}
         </TableBody>
       </Table>
-      <Button as={Link} href="/informasjon/1" startContent={<ArrowBigLeft />}>
-        Gå tilbake
-      </Button>
+      <BackButton buttonLink="/informasjon" />
     </>
   );
 }
-
-// TODO: Add sorting of table
-// TODO: Add infinate pagination: https://nextui.org/docs/components/table#infinite-pagination
