@@ -75,6 +75,7 @@ export const renderRichTextOptions = (links?: any) => {
               sizes="100vw"
               blurDataURL={blurDataURL}
               placeholder="blur"
+              className="rich-image"
             />
             <p className="rich-image-caption">
               <em>{description}</em>
