@@ -1,3 +1,4 @@
+import BackButton from '@/components/BackButton';
 import { formatDate } from '@/lib/format-date';
 import { renderRichTextOptions } from '@/lib/render-rich-text-options';
 import type { ArticleProps } from '@/types/types';
@@ -5,6 +6,7 @@ import {
   documentToReactComponents,
   type Options,
 } from '@contentful/rich-text-react-renderer';
+
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -42,7 +44,7 @@ export default function Article({
     <article>
       <h1>{title}</h1>
       {mainImage && (
-        <div className="relative aspect-video">
+        <div className="image relative mb-8 aspect-video md:mb-16">
           <Image
             src={mainImage.url}
             alt={mainImage.description}
@@ -83,7 +85,8 @@ export default function Article({
           </em>
         )}
       </section>
-      <Link href={buttonLink}>Gå tilbake</Link>
+
+      <BackButton buttonLink={buttonLink} />
     </article>
   );
 }

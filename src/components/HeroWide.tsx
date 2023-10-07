@@ -1,4 +1,6 @@
+import CustomButton from '@/components/CustomButton';
 import type { HeroWideProps } from '@/types/types';
+import { Button } from '@nextui-org/react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -57,14 +59,12 @@ export default function HeroWide({
           "
       >
         <h1 className="text-3xl lg:text-4xl xl:text-5xl">{pageTitle} </h1>
-        <p className="mb-5 text-sm font-normal md:text-base xl:text-lg">
-          {excerpt}
-        </p>
-        <Link href="/om-boligsameiet-gartnerihagen" className="cursor-pointer">
-          <button className="my-4 inline-flex h-14 w-28 items-center justify-center rounded-lg bg-brand-primary py-7 text-center align-middle text-slate-950 dark:bg-brand-dark-primary md:text-lg">
-            Les mer
-          </button>
-        </Link>
+        <p className="mb-5 text-sm  md:text-base xl:text-lg">{excerpt}</p>
+
+        <CustomButton
+          href="/om-boligsameiet-gartnerihagen"
+          buttonText="Les mer"
+        />
       </article>
     </section>
   );
