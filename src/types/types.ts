@@ -224,3 +224,11 @@ export type ReturnTypeForDocumentBox = {
 export type DocumentBoxProps = {
   documentBoxLinks: DocumentBoxFields;
 };
+
+export type IconProps = {
+  fill?: string;
+  stroke?: string;
+  width?: number;
+  height?: number;
+  className?: string;
+};
