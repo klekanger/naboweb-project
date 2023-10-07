@@ -95,7 +95,7 @@ export default async function Page({ params }: BlogParams) {
   }
 
   return (
-    <div>
+    <div className="container">
       <Article
         title={title}
         bodyText={bodyText}
@@ -108,6 +108,3 @@ export default async function Page({ params }: BlogParams) {
     </div>
   );
 }
-
-// TODO Generate only public posts
-// private posts should be on another route under (protected-routes)
