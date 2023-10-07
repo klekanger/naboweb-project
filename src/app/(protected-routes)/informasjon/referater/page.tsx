@@ -34,10 +34,10 @@ export default async function Page() {
 
   return (
     <section>
-      <h1>Dokumenter fra årsmøter</h1>
+      <h1 className="text-center text-2xl md:text-left md:text-4xl ">
+        Dokumenter fra årsmøter
+      </h1>
       <DocumentTable documents={items} rowsPerPage={10} startPage={1} />
     </section>
   );
 }
-
-// TODO Add pagination
