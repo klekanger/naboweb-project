@@ -6,47 +6,69 @@
   @apply box-border;
 }
 
-body {
-  font-family: var(--font-open-sans);
+html {
+  font-size: 100%;
 }
 
-@layer base {
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: var(--font-montserrat);
-  }
+body {
+  font-family: var(--font-open-sans);
+  font-weight: 400;
+  line-height: 1.75;
+  /* Background and text colors are set in the NextUI theme in tailwind.config.js */
+}
 
-  h1 {
-    @apply pb-8 text-4xl font-semibold sm:text-5xl;
-  }
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.rich-h1,
+.rich-h2,
+.rich-h3,
+.rich-h4,
+.rich-h5,
+.rich-h6 {
+  font-family: var(--font-montserrat);
+  @apply mx-0 mb-[1.38rem] mt-[3rem] pt-4 font-normal leading-[1.3];
+}
 
-  h2 {
-    @apply text-3xl sm:text-4xl;
-  }
+h1,
+.rich-h1 {
+  @apply mt-0 pb-8 text-4xl font-semibold sm:text-5xl;
+}
 
-  h3 {
-    @apply text-2xl sm:text-3xl;
-  }
+h2,
+.rich-h2 {
+  @apply text-3xl sm:text-4xl;
+}
 
-  h4 {
-    @apply text-xl sm:text-2xl;
-  }
+h3,
+.rich-h3 {
+  @apply text-2xl sm:text-3xl;
+}
 
-  h5 {
-    @apply text-lg sm:text-xl;
-  }
+h4,
+.rich-h4 {
+  @apply text-xl sm:text-2xl;
+}
 
-  p {
-    @apply mb-4  leading-relaxed;
-  }
+h5,
+.rich-h5 {
+  @apply text-lg sm:text-xl;
+}
 
-  a {
-    @apply no-underline;
-  }
+p:not(.rich-image-caption),
+.rich-p {
+  @apply mb-[1rem];
+}
+
+.rich-image {
+  @apply mt-8  border border-slate-300 md:mt-16;
+}
+
+a:not(.btn-link) {
+  @apply no-underline hover:text-brand-secondary hover:underline dark:hover:text-brand-dark-primary;
 }
 
 .footer {
@@ -84,34 +106,6 @@ body {
 /*
  Styles for custom rich text rendering 
 */
-.rich-p {
-  @apply text-left text-base md:text-lg;
-}
-
-.rich-h1 {
-  @apply text-left text-4xl;
-}
-
-.rich-h2 {
-  @apply text-left text-3xl;
-}
-
-.rich-h3 {
-  @apply pt-8 text-left text-2xl;
-}
-
-.rich-h4 {
-  @apply pt-8 text-left text-xl;
-}
-
-.rich-h5 {
-  @apply pt-8 text-left text-lg;
-}
-
-.rich-h6 {
-  @apply pt-8 text-left text-base;
-}
-
 .rich-ul {
   @apply my-8 text-left;
 }
@@ -125,7 +119,6 @@ body {
 }
 
 /* Clerk classes */
-
 .cl-formButtonPrimary {
   @apply bg-primary duration-100 transition hover:bg-primary-600;
 }

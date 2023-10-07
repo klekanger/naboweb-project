@@ -1,5 +1,6 @@
 const { nextui } = require('@nextui-org/react');
 
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ['class'],
   content: [
@@ -8,6 +9,7 @@ module.exports = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
     './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
   ],
+
   theme: {
     extend: {
       colors: {
@@ -33,10 +35,31 @@ module.exports = {
     },
     container: {
       center: true,
+      padding: {
+        DEFAULT: '1rem',
+        sm: '2rem',
+        lg: '4rem',
+        xl: '5rem',
+        '2xl': '6rem',
+      },
     },
   },
   plugins: [
     nextui({
+      layout: {
+        fontSize: {
+          tiny: '0.75rem', // text-tiny
+          small: '0.875rem', // text-small
+          medium: '1rem', // text-medium
+          large: '1.125rem', // text-large
+        },
+        lineHeight: {
+          tiny: '1rem', // text-tiny
+          small: '1.25rem', // text-small
+          medium: '1.5rem', // text-medium
+          large: '1.75rem', // text-large
+        },
+      },
       themes: {
         dark: {
           colors: {
