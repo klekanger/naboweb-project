@@ -131,6 +131,7 @@ export async function getBlogPostCollection({
   try {
     const query = `query {
       blogPostCollection(
+        order: sys_firstPublishedAt_DESC
         limit:${postsPerPage}, 
         skip: ${(pageNumber - 1) * postsPerPage},
         where:{privatePost: ${isPrivate}}) {
