@@ -1,15 +1,9 @@
-'use client';
-
 import UserCard from '@/components/UserCard';
-import { UserProfile, useUser } from '@clerk/nextjs';
-import { Spinner } from '@nextui-org/react';
+import { UserProfile, currentUser } from '@clerk/nextjs';
+import { Spinner } from '@nextui-org/spinner';
 
-export default function MyPage() {
-  const { isSignedIn, user, isLoaded } = useUser();
-
-  if (!isLoaded) {
-    return null;
-  }
+export default async function Page() {
+  const user = await currentUser();
 
   if (!user) return <div>Not authenticated</div>;
 
@@ -17,7 +11,7 @@ export default function MyPage() {
     <div className="flex flex-col items-center">
       <h1 className="text-center">Min side</h1>
 
-      {isSignedIn ? (
+      {user ? (
         <>
           <UserCard user={user} className="mb-16" />
           <UserProfile />
