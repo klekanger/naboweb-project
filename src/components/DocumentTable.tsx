@@ -130,7 +130,6 @@ export default function DocumentTable({
   const returnIconFromFileType = (fileName: string) => {
     const fileExtension = fileName.split('.').pop();
     const fileType = fileTypes[`.${fileExtension}`];
-    console.log('fileExtension', fileExtension);
 
     if (fileType === undefined) {
       return DocumentIcon;
@@ -143,7 +142,6 @@ export default function DocumentTable({
     <>
       <Table
         className="mb-16"
-        isStriped
         aria-label="Tabell med oversikt over dokumenter"
         topContent={topContent}
         bottomContent={
