@@ -218,7 +218,6 @@ export async function getDocuments({
     `;
 
     const documentCollection = await fetchGraphQL<DocumentCollection>(query);
-    console.log('documentCollection, ', documentCollection);
 
     return documentCollection;
   } catch (error) {

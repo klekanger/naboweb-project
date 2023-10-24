@@ -1,11 +1,13 @@
 import type { User } from '@clerk/nextjs/dist/types/server';
+import type { UserResource } from '@clerk/types';
 import type { Asset, EntryFieldTypes, EntryFields } from 'contentful';
 import type { TypePageFields } from './contentful-types';
 
 export type UserRoles = 'admin' | 'editor' | 'user';
 
 export type UserWithRoles = User & {
-  publicMetadata: {
+  email?: string;
+  publicMetadata?: {
     roles?: UserRoles[];
   };
 };
@@ -232,3 +234,13 @@ export type IconProps = {
   height?: number;
   className?: string;
 };
+
+export type UserCardProps = {
+  user: UserWithRoles;
+  className?: string;
+};
+
+export type UsersWithEmails = Pick<
+  UserWithRoles,
+  'id' | 'createdAt' | 'firstName' | 'lastName' | 'email'
+>;

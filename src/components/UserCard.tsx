@@ -1,15 +1,9 @@
-import type { UserResource } from '@clerk/types';
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Chip,
-  Divider,
-  type ChipProps,
-} from '@nextui-org/react';
+import { type UserCardProps } from '@/types/types';
+import { Button } from '@nextui-org/button';
+import { Card, CardBody, CardHeader } from '@nextui-org/card';
+import { Chip, type ChipProps } from '@nextui-org/chip';
+import { Divider } from '@nextui-org/divider';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
 type FriendlyUserRole = {
   role: string;
@@ -17,19 +11,14 @@ type FriendlyUserRole = {
   color: ChipProps['color'];
 };
 
-type UserCardProps = {
-  user: UserResource;
-  className?: string;
-};
-
 export default function UserCard({ user, ...rest }: UserCardProps) {
-  const router = useRouter();
   if (!user) {
     console.warn('No user');
     return null;
   }
 
-  const { fullName } = user;
+  const { firstName, lastName } = user;
+
   const roles = (user?.publicMetadata?.roles as string[]) || [];
 
   const isAdmin = roles.includes('admin') || false;
@@ -73,7 +62,7 @@ export default function UserCard({ user, ...rest }: UserCardProps) {
           <CardHeader className="justify-between ">
             <div className="mx-2 flex flex-col items-start justify-center gap-1">
               <p>
-                <b>Velkommen, {fullName}!</b>
+                <b>Velkommen, {`${firstName} ${lastName}`}!</b>
               </p>
               <p>
                 På denne siden kan du administrere kontoen din. Hvis du er
@@ -106,9 +95,8 @@ export default function UserCard({ user, ...rest }: UserCardProps) {
             <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-3">
               {isAdmin && (
                 <Button
-                  onClick={() => {
-                    router.push('/user-admin-page');
-                  }}
+                  as={Link}
+                  href="/user-admin-page"
                   size="lg"
                   color="primary"
                   className="bg-primary duration-100 transition hover:bg-primary-600"
