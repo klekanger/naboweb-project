@@ -1,4 +1,4 @@
-import type { IconProps } from '@/types/types';
+import type { IconProps } from "@/types/types";
 
 export default function WordIcon({
   fill,
@@ -13,7 +13,7 @@ export default function WordIcon({
       height={`${height}em`}
       viewBox="0 0 512 512"
       xmlns="http://www.w3.org/2000/svg"
-      className={`${rest?.className ?? ''}`}
+      className={`${rest?.className ?? ""}`}
     >
       <path
         stroke={stroke}

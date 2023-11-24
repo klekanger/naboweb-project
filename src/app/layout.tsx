@@ -2,30 +2,30 @@
  * Root layout - for all pages
  */
 
-import { Providers } from '@/app/providers';
-import Footer from '@/components/Footer';
-import Navbar from '@/components/Navbar';
-import { nbNO } from '@clerk/localizations';
-import { ClerkProvider } from '@clerk/nextjs';
-import { Montserrat, Open_Sans } from 'next/font/google';
-import './globals.css';
+import { Providers } from "@/app/providers";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
+import { nbNO } from "@clerk/localizations";
+import { ClerkProvider } from "@clerk/nextjs";
+import { Montserrat, Open_Sans } from "next/font/google";
+import "./globals.css";
 
 const openSans = Open_Sans({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-open-sans',
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-open-sans",
 });
 
 const montserrat = Montserrat({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-montserrat',
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-montserrat",
 });
 
 export const metadata = {
-  metadataBase: new URL('https://gartnerihagen-askim.no'),
-  title: 'Boligsameiet Gartnerihagen',
-  description: 'Askims hyggeligste nabolag',
+  metadataBase: new URL("https://gartnerihagen-askim.no"),
+  title: "Boligsameiet Gartnerihagen",
+  description: "Askims hyggeligste nabolag",
 };
 
 export default function RootLayout({

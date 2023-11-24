@@ -1,8 +1,8 @@
-import CustomButton from '@/components/CustomButton';
-import type { HeroWideProps } from '@/types/types';
-import { Button } from '@nextui-org/react';
-import Image from 'next/image';
-import Link from 'next/link';
+import CustomButton from "@/components/CustomButton";
+import type { HeroWideProps } from "@/types/types";
+import { Button } from "@nextui-org/react";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function HeroWide({
   pageTitle,

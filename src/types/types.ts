@@ -1,9 +1,9 @@
-import type { User } from '@clerk/nextjs/dist/types/server';
-import type { UserResource } from '@clerk/types';
-import type { Asset, EntryFieldTypes, EntryFields } from 'contentful';
-import type { TypePageFields } from './contentful-types';
+import type { User } from "@clerk/nextjs/dist/types/server";
+import type { UserResource } from "@clerk/types";
+import type { Asset, EntryFieldTypes, EntryFields } from "contentful";
+import type { TypePageFields } from "./contentful-types";
 
-export type UserRoles = 'admin' | 'editor' | 'user';
+export type UserRoles = "admin" | "editor" | "user";
 
 export type UserWithRoles = User & {
   email?: string;
@@ -28,7 +28,7 @@ export type ArticleProps = {
       lastName: string;
     };
   }>;
-  bodyText: TypePageFields['pageText'];
+  bodyText: TypePageFields["pageText"];
   firstPublishedAt: EntryFields.Date;
   publishedAt: EntryFields.Date;
   mainImage?: ContentImage;
@@ -135,7 +135,7 @@ type SingleBlogPostItem = {
   title: string;
   excerpt: string;
   featuredImage?: ContentImage;
-  bodyText: TypePageFields['pageText'];
+  bodyText: TypePageFields["pageText"];
   author?: {
     firstName: string;
     lastName: string;
@@ -193,7 +193,7 @@ export type EmbeddedAsset = {
 export type HeroWideProps = {
   pageTitle: string;
   excerpt: string;
-  pageImage: Asset<'WITHOUT_UNRESOLVABLE_LINKS'> | undefined;
+  pageImage: Asset<"WITHOUT_UNRESOLVABLE_LINKS"> | undefined;
 };
 
 type DocumentBoxFields = {
@@ -235,6 +235,13 @@ export type IconProps = {
   className?: string;
 };
 
+export type NewUser = {
+  email: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+};
+
 export type UserCardProps = {
   user: UserWithRoles;
   className?: string;
@@ -242,5 +249,5 @@ export type UserCardProps = {
 
 export type UsersWithEmails = Pick<
   UserWithRoles,
-  'id' | 'createdAt' | 'firstName' | 'lastName' | 'email'
+  "id" | "createdAt" | "firstName" | "lastName" | "email"
 >;

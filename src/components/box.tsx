@@ -7,7 +7,7 @@ export default function Box({
 }) {
   return (
     <div
-      className={`break-words rounded-xl border p-3 ${props?.className ?? ''}`}
+      className={`break-words rounded-xl border p-3 ${props?.className ?? ""}`}
     >
       {children}
     </div>

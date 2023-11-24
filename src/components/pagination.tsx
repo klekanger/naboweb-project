@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from "next/link";
 
 /**
  * Pagination buttons for navigating between pages of blog posts
@@ -19,7 +19,7 @@ export default function Pagination({
     return null;
   }
 
-  const urlWithSlash = `/${url.replace(/^\//, '').replace(/\/$/, '')}/`; // Add slash before and after url if missing
+  const urlWithSlash = `/${url.replace(/^\//, "").replace(/\/$/, "")}/`; // Add slash before and after url if missing
 
   return (
     <nav

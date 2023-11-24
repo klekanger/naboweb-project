@@ -1,18 +1,18 @@
-import AlertUser from '@/components/AlertUser';
-import BlogPostList from '@/components/BlogPostList';
-import DocumentBox from '@/components/DocumentBox';
-import InfoBox from '@/components/InfoBox';
-import Pagination from '@/components/Pagination';
+import AlertUser from "@/components/AlertUser";
+import BlogPostList from "@/components/BlogPostList";
+import DocumentBox from "@/components/DocumentBox";
+import InfoBox from "@/components/InfoBox";
+import Pagination from "@/components/Pagination";
 import {
   getBlogPostCollection,
   getBlogPostRoutes,
   getDocumentBoxFields,
-} from '@/lib/api';
-import { BlogPostItemProps, UserWithRoles } from '@/types/types';
-import { currentUser } from '@clerk/nextjs';
-import { RefreshCw } from 'lucide-react';
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
+} from "@/lib/api";
+import { BlogPostItemProps, UserWithRoles } from "@/types/types";
+import { currentUser } from "@clerk/nextjs";
+import { RefreshCw } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
 type Props = {
   params: { page: number | undefined };
@@ -21,14 +21,14 @@ type Props = {
 const POSTS_PER_PAGE = 5;
 
 export const metadata = {
-  title: 'Boligsameiet Gartnerihagen',
-  description: 'Informasjon for beboere',
+  title: "Boligsameiet Gartnerihagen",
+  description: "Informasjon for beboere",
   openGraph: {
-    type: 'website',
-    title: 'Boligsameiet Gartnerihagen',
-    description: 'Informasjon for beboere',
-    locale: 'nb_NO',
-    siteName: 'Boligsameiet Gartnerihagen',
+    type: "website",
+    title: "Boligsameiet Gartnerihagen",
+    description: "Informasjon for beboere",
+    locale: "nb_NO",
+    siteName: "Boligsameiet Gartnerihagen",
   },
 };
 
@@ -63,7 +63,7 @@ export default async function Page({ params }: Props) {
 
   const haveAccess =
     user?.publicMetadata?.roles && Array.isArray(user.publicMetadata.roles)
-      ? user.publicMetadata.roles.includes('user')
+      ? user.publicMetadata.roles.includes("user")
       : false;
 
   if (!haveAccess) {
@@ -97,7 +97,7 @@ export default async function Page({ params }: Props) {
   const numberOfBlogPosts = items.length;
 
   if (pageNumber > totalPages || pageNumber < 1) {
-    redirect('/informasjon/1');
+    redirect("/informasjon/1");
   }
 
   if (numberOfBlogPosts === 0) {
@@ -133,7 +133,7 @@ export default async function Page({ params }: Props) {
               <span>
                 <b>Du er innlogget som: </b>
               </span>
-              {`${user?.firstName ?? ''} ${user?.lastName ?? ''}`}
+              {`${user?.firstName ?? ""} ${user?.lastName ?? ""}`}
             </>
           ) : (
             <span>

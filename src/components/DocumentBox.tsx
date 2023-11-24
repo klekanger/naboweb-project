@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import type { DocumentBoxProps } from '@/types/types';
-import { Button } from '@nextui-org/react';
-import Link from 'next/link';
+import type { DocumentBoxProps } from "@/types/types";
+import { Button } from "@nextui-org/react";
+import Link from "next/link";
 
 export default function DocumentBox({ documentBoxLinks }: DocumentBoxProps) {
   const {
@@ -25,16 +25,16 @@ export default function DocumentBox({ documentBoxLinks }: DocumentBoxProps) {
       </Button>
       <Button as={Link} href={menu2File.url} size="lg">
         {menu2Name}
-      </Button>{' '}
+      </Button>{" "}
       <Button as={Link} href={menu3File.url} size="lg">
         {menu3Name}
-      </Button>{' '}
+      </Button>{" "}
       <Button as={Link} href={menu4File.url} size="lg">
         {menu4Name}
-      </Button>{' '}
+      </Button>{" "}
       <Button as={Link} href="/informasjon/referater" size="lg">
         {menu5Name}
-      </Button>{' '}
+      </Button>{" "}
       <Button as={Link} href="/informasjon/dokumenter" size="lg">
         {menu6Name}
       </Button>

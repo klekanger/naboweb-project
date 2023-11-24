@@ -1,19 +1,19 @@
-import { type UserCardProps } from '@/types/types';
-import { Button } from '@nextui-org/button';
-import { Card, CardBody, CardHeader } from '@nextui-org/card';
-import { Chip, type ChipProps } from '@nextui-org/chip';
-import { Divider } from '@nextui-org/divider';
-import Link from 'next/link';
+import { type UserCardProps } from "@/types/types";
+import { Button } from "@nextui-org/button";
+import { Card, CardBody, CardHeader } from "@nextui-org/card";
+import { Chip, type ChipProps } from "@nextui-org/chip";
+import { Divider } from "@nextui-org/divider";
+import Link from "next/link";
 
 type FriendlyUserRole = {
   role: string;
   friendlyName: string;
-  color: ChipProps['color'];
+  color: ChipProps["color"];
 };
 
 export default function UserCard({ user, ...rest }: UserCardProps) {
   if (!user) {
-    console.warn('No user');
+    console.warn("No user");
     return null;
   }
 
@@ -21,24 +21,24 @@ export default function UserCard({ user, ...rest }: UserCardProps) {
 
   const roles = (user?.publicMetadata?.roles as string[]) || [];
 
-  const isAdmin = roles.includes('admin') || false;
-  const isEditor = roles.includes('editor') || false;
+  const isAdmin = roles.includes("admin") || false;
+  const isEditor = roles.includes("editor") || false;
 
   const friendlyUserRoles: FriendlyUserRole[] = [
     {
-      role: 'admin',
-      friendlyName: 'Administrator',
-      color: 'danger',
+      role: "admin",
+      friendlyName: "Administrator",
+      color: "danger",
     },
     {
-      role: 'editor',
-      friendlyName: 'Redaktør',
-      color: 'warning',
+      role: "editor",
+      friendlyName: "Redaktør",
+      color: "warning",
     },
     {
-      role: 'user',
-      friendlyName: 'Bruker',
-      color: 'success',
+      role: "user",
+      friendlyName: "Bruker",
+      color: "success",
     },
   ];
 
@@ -46,8 +46,8 @@ export default function UserCard({ user, ...rest }: UserCardProps) {
     const friendlyRole = friendlyUserRoles.find((r) => r.role === role);
 
     return {
-      name: friendlyRole?.friendlyName ?? 'Bruker',
-      color: friendlyRole?.color ?? 'primary',
+      name: friendlyRole?.friendlyName ?? "Bruker",
+      color: friendlyRole?.color ?? "primary",
     };
   });
 
@@ -56,7 +56,7 @@ export default function UserCard({ user, ...rest }: UserCardProps) {
       <div className={rest?.className}>
         <Card
           classNames={{
-            base: 'mypage-card',
+            base: "mypage-card",
           }}
         >
           <CardHeader className="justify-between ">

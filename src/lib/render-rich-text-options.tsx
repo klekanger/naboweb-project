@@ -1,7 +1,7 @@
-import type { EmbeddedAsset } from '@/types/types';
-import { BLOCKS, MARKS, type Block } from '@contentful/rich-text-types';
-import Image from 'next/image';
-import { type ReactNode } from 'react';
+import type { EmbeddedAsset } from "@/types/types";
+import { BLOCKS, MARKS, type Block } from "@contentful/rich-text-types";
+import Image from "next/image";
+import { type ReactNode } from "react";
 
 export const renderRichTextOptions = (links?: any) => {
   const assetBlockMap = new Map();
@@ -63,7 +63,7 @@ export const renderRichTextOptions = (links?: any) => {
         if (!width || !height || !url) return null;
 
         const description = asset.description;
-        const blurDataURL = asset.url + '?w=10&h=10&fit=fill' || '';
+        const blurDataURL = asset.url + "?w=10&h=10&fit=fill" || "";
 
         return (
           <>

@@ -1,6 +1,6 @@
-import type { BlogPostItemProps, ContentImage } from '@/types/types';
-import Image from 'next/image';
-import Link from 'next/link';
+import type { BlogPostItemProps, ContentImage } from "@/types/types";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function BlogPostItem(post: BlogPostItemProps) {
   const { title, excerpt, featuredImage, slug, privatePost } = post.fields;
@@ -8,14 +8,14 @@ export default function BlogPostItem(post: BlogPostItemProps) {
 
   if (!width || !height) {
     console.warn(
-      '[blog-post.item.tsx] Missing data in featuredImage prop. Should provide width and height.'
+      "[blog-post.item.tsx] Missing data in featuredImage prop. Should provide width and height.",
     );
     return null;
   }
 
   if (!title || !excerpt || !featuredImage || !slug || !url) {
     console.warn(
-      '[blog-post.item.tsx] Missing data in post prop. Should provide title, excerpt, featuredImage, slug and url. Ideally also description.'
+      "[blog-post.item.tsx] Missing data in post prop. Should provide title, excerpt, featuredImage, slug and url. Ideally also description.",
     );
     return null;
   }
@@ -49,7 +49,7 @@ export default function BlogPostItem(post: BlogPostItemProps) {
           </Link>
           <p className="mt-2">
             {excerpt &&
-              `${excerpt.slice(0, 500)}${excerpt.length > 500 ? '...' : ''}`}
+              `${excerpt.slice(0, 500)}${excerpt.length > 500 ? "..." : ""}`}
             <Link href={urlToPost} className="pt-4 no-underline md:block">
               Les&nbsp;mer »
             </Link>

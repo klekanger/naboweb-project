@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   DocumentIcon,
@@ -6,9 +6,9 @@ import {
   PdfIcon,
   PowerPointIcon,
   WordIcon,
-} from '@/components/icons';
-import { formatDate } from '@/lib/format-date';
-import type { DocumentTableProps } from '@/types/types';
+} from "@/components/icons";
+import { formatDate } from "@/lib/format-date";
+import type { DocumentTableProps } from "@/types/types";
 import {
   Button,
   Input,
@@ -20,12 +20,12 @@ import {
   TableHeader,
   TableRow,
   Tooltip,
-} from '@nextui-org/react';
-import { ArrowBigLeft, SearchIcon } from 'lucide-react';
-import Link from 'next/link';
+} from "@nextui-org/react";
+import { ArrowBigLeft, SearchIcon } from "lucide-react";
+import Link from "next/link";
 
-import { useCallback, useMemo, useState } from 'react';
-import BackButton from './BackButton';
+import { useCallback, useMemo, useState } from "react";
+import BackButton from "./BackButton";
 
 type FileTypes = {
   [key: string]:
@@ -36,13 +36,13 @@ type FileTypes = {
 };
 
 const fileTypes: FileTypes = {
-  '.pdf': PdfIcon,
-  '.doc': WordIcon,
-  '.docx': WordIcon,
-  '.xls': ExcelIcon,
-  '.xlsx': ExcelIcon,
-  '.ppt': PowerPointIcon,
-  '.pptx': PowerPointIcon,
+  ".pdf": PdfIcon,
+  ".doc": WordIcon,
+  ".docx": WordIcon,
+  ".xls": ExcelIcon,
+  ".xlsx": ExcelIcon,
+  ".ppt": PowerPointIcon,
+  ".pptx": PowerPointIcon,
 };
 
 export default function DocumentTable({
@@ -51,7 +51,7 @@ export default function DocumentTable({
   startPage = 1,
 }: DocumentTableProps) {
   const [page, setPage] = useState(startPage);
-  const [filterValue, setFilterValue] = useState('');
+  const [filterValue, setFilterValue] = useState("");
   const hasSearchFilter = Boolean(filterValue);
   const { items } = documents || {};
 
@@ -77,7 +77,7 @@ export default function DocumentTable({
           (item.title &&
             item.title.toLowerCase().includes(filterValue.toLowerCase())) ||
           (item.description &&
-            item.description.toLowerCase().includes(filterValue.toLowerCase()))
+            item.description.toLowerCase().includes(filterValue.toLowerCase())),
       );
     }
 
@@ -96,7 +96,7 @@ export default function DocumentTable({
       setFilterValue(value);
       setPage(1);
     } else {
-      setFilterValue('');
+      setFilterValue("");
     }
   }, []);
 
@@ -109,11 +109,11 @@ export default function DocumentTable({
           placeholder="Søk i dokumentnavn eller beskrivelse"
           startContent={<SearchIcon />}
           value={filterValue}
-          onClear={() => setFilterValue('')}
+          onClear={() => setFilterValue("")}
           onValueChange={onSearchChange}
         />
         <div className="pl-2 pt-4">
-          <span className="font-semibold">Antall dokumenter:</span>{' '}
+          <span className="font-semibold">Antall dokumenter:</span>{" "}
           {filteredItems.length.toString()}
         </div>
       </div>
@@ -128,7 +128,7 @@ export default function DocumentTable({
 
   // helper function to get the file extension from item.filename
   const returnIconFromFileType = (fileName: string) => {
-    const fileExtension = fileName.split('.').pop();
+    const fileExtension = fileName.split(".").pop();
     const fileType = fileTypes[`.${fileExtension}`];
 
     if (fileType === undefined) {
@@ -164,19 +164,19 @@ export default function DocumentTable({
         <TableHeader>
           <TableColumn
             className="bg-brand-primary/20 text-sm font-bold md:text-base"
-            width={'60%'}
+            width={"60%"}
           >
             Dokumentnavn
           </TableColumn>
 
           <TableColumn
             className="bg-brand-primary/20 text-sm font-bold md:text-lg"
-            width={'20%'}
+            width={"20%"}
           >
             Oppdatert
           </TableColumn>
         </TableHeader>
-        <TableBody emptyContent={'Ingen elementer å vise'}>
+        <TableBody emptyContent={"Ingen elementer å vise"}>
           {(itemsToRender
             ? itemsToRender.map((item) => {
                 const FileIcon = returnIconFromFileType(item.fileName);

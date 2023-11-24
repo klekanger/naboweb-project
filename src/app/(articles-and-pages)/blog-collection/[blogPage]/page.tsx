@@ -1,8 +1,8 @@
-import BlogPostList from '@/components/BlogPostList';
-import Pagination from '@/components/Pagination';
-import { getBlogPostCollection } from '@/lib/api';
-import type { BlogPostItemProps } from '@/types/types';
-import { redirect } from 'next/navigation';
+import BlogPostList from "@/components/BlogPostList";
+import Pagination from "@/components/Pagination";
+import { getBlogPostCollection } from "@/lib/api";
+import type { BlogPostItemProps } from "@/types/types";
+import { redirect } from "next/navigation";
 
 const POSTS_PER_PAGE = 5;
 
@@ -11,14 +11,14 @@ type BlogCollectionParams = {
 };
 
 export const metadata = {
-  title: 'Boligsameiet Gartnerihagen',
-  description: 'Siste blogginnlegg',
+  title: "Boligsameiet Gartnerihagen",
+  description: "Siste blogginnlegg",
   openGraph: {
-    type: 'website',
-    title: 'Boligsameiet Gartnerihagen',
-    description: 'Siste blogginnlegg',
-    locale: 'nb_NO',
-    siteName: 'Boligsameiet Gartnerihagen',
+    type: "website",
+    title: "Boligsameiet Gartnerihagen",
+    description: "Siste blogginnlegg",
+    locale: "nb_NO",
+    siteName: "Boligsameiet Gartnerihagen",
   },
 };
 
@@ -63,7 +63,7 @@ export default async function Page({ params }: BlogCollectionParams) {
   const numberOfBlogPosts = items.length;
 
   if (pageNumber > totalPages || pageNumber < 1) {
-    redirect('/blog-collection/1');
+    redirect("/blog-collection/1");
   }
 
   if (numberOfBlogPosts === 0) {

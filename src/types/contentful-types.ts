@@ -3,15 +3,15 @@
  * https://github.com/marcolink/cf-content-types-generator-app
  */
 
-import type { Document } from '@contentful/rich-text-types';
+import type { Document } from "@contentful/rich-text-types";
 import type {
   ChainModifiers,
   Entry,
   EntryFieldTypes,
   EntrySkeletonType,
   LocaleCode,
-} from 'contentful';
-import { ContentImage } from './types';
+} from "contentful";
+import { ContentImage } from "./types";
 
 export interface TypeAuthorsFields {
   firstName: EntryFieldTypes.Symbol;
@@ -21,11 +21,11 @@ export interface TypeAuthorsFields {
 
 export type TypeAuthorsSkeleton = EntrySkeletonType<
   TypeAuthorsFields,
-  'authors'
+  "authors"
 >;
 export type TypeAuthors<
   Modifiers extends ChainModifiers,
-  Locales extends LocaleCode
+  Locales extends LocaleCode,
 > = Entry<TypeAuthorsSkeleton, Modifiers, Locales>;
 
 export interface TypeBlogPostFields {
@@ -42,7 +42,7 @@ export interface TypeBlogPostFields {
 
 export type TypeBlogPostSkeleton = EntrySkeletonType<
   TypeBlogPostFields,
-  'blogPost'
+  "blogPost"
 >;
 
 export interface TypeForsidetekstFields {
@@ -53,7 +53,7 @@ export interface TypeForsidetekstFields {
 
 export type TypeForsidetekstSkeleton = EntrySkeletonType<
   TypeForsidetekstFields,
-  'forsidetekst'
+  "forsidetekst"
 >;
 
 export interface TypeOfficeFields {
@@ -64,10 +64,10 @@ export interface TypeOfficeFields {
   description?: EntryFieldTypes.RichText;
 }
 
-export type TypeOfficeSkeleton = EntrySkeletonType<TypeOfficeFields, 'office'>;
+export type TypeOfficeSkeleton = EntrySkeletonType<TypeOfficeFields, "office">;
 export type TypeOffice<
   Modifiers extends ChainModifiers,
-  Locales extends LocaleCode
+  Locales extends LocaleCode,
 > = Entry<TypeOfficeSkeleton, Modifiers, Locales>;
 
 export interface TypePageFields {
@@ -94,14 +94,14 @@ export interface TypePageFields {
   slug: EntryFieldTypes.Symbol;
 }
 
-export type TypePageSkeleton = EntrySkeletonType<TypePageFields, 'page'>;
+export type TypePageSkeleton = EntrySkeletonType<TypePageFields, "page">;
 export type TypePage<
   Modifiers extends ChainModifiers,
-  Locales extends LocaleCode
+  Locales extends LocaleCode,
 > = Entry<TypePageSkeleton, Modifiers, Locales>;
 
 export interface TypeServiceMenuFields {
-  serviceMenuTitle: EntryFieldTypes.Symbol<'infomeny'>;
+  serviceMenuTitle: EntryFieldTypes.Symbol<"infomeny">;
   menu1?: EntryFieldTypes.Symbol;
   menu1File?: EntryFieldTypes.AssetLink;
   menu2?: EntryFieldTypes.Symbol;
@@ -118,9 +118,9 @@ export interface TypeServiceMenuFields {
 
 export type TypeServiceMenuSkeleton = EntrySkeletonType<
   TypeServiceMenuFields,
-  'serviceMenu'
+  "serviceMenu"
 >;
 export type TypeServiceMenu<
   Modifiers extends ChainModifiers,
-  Locales extends LocaleCode
+  Locales extends LocaleCode,
 > = Entry<TypeServiceMenuSkeleton, Modifiers, Locales>;

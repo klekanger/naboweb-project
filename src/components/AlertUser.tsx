@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Button,
@@ -7,8 +7,8 @@ import {
   CardFooter,
   CardHeader,
   Divider,
-} from '@nextui-org/react';
-import { AlertCircle } from 'lucide-react';
+} from "@nextui-org/react";
+import { AlertCircle } from "lucide-react";
 
 type AlertUserProps = {
   alertMessage: string;

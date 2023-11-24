@@ -6,11 +6,11 @@
  * @returns {string}
  */
 
-export function formatDate(dateToFormat: string, locale = 'no-NO'): string {
+export function formatDate(dateToFormat: string, locale = "no-NO"): string {
   // Format the dates shown at the bottom of every article page
   return new Date(dateToFormat).toLocaleDateString(locale, {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
   });
 }

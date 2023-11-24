@@ -1,7 +1,7 @@
-import type { TypeBlogPostSkeleton } from '@/types/contentful-types';
-import * as contentful from 'contentful';
-import Image from 'next/image';
-import Link from 'next/link';
+import type { TypeBlogPostSkeleton } from "@/types/contentful-types";
+import * as contentful from "contentful";
+import Image from "next/image";
+import Link from "next/link";
 
 async function getArticleGridData() {
   const client = contentful.createClient({
@@ -11,10 +11,10 @@ async function getArticleGridData() {
 
   const data =
     await client.withoutUnresolvableLinks.getEntries<TypeBlogPostSkeleton>({
-      content_type: 'blogPost',
+      content_type: "blogPost",
       limit: 4,
       // @ts-expect-error: Ignore type mismatch on this one.
-      'fields.privatePost': false,
+      "fields.privatePost": false,
     });
 
   return data;
@@ -58,7 +58,7 @@ export default async function ArticleGrid() {
             </h2>
             <p>
               {article.fields.excerpt.length > 130
-                ? article.fields.excerpt.slice(0, 147).padEnd(150, '.')
+                ? article.fields.excerpt.slice(0, 147).padEnd(150, ".")
                 : article.fields.excerpt}
             </p>
             <Link href={`/blog/${article.fields.slug}`}>Les mer »</Link>

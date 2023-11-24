@@ -1,8 +1,8 @@
-import Article from '@/components/Article';
-import { getPageWithId } from '@/lib/api';
+import Article from "@/components/Article";
+import { getPageWithId } from "@/lib/api";
 
 export default async function Page() {
-  const pageContent = await getPageWithId('7PSsSBGU8MnlNvPIem8ij');
+  const pageContent = await getPageWithId("7PSsSBGU8MnlNvPIem8ij");
 
   const {
     pageTitle,

@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from "next/link";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -18,7 +18,7 @@ export default function Footer() {
       </div>
       <div>
         <p>
-          Epost:{' '}
+          Epost:{" "}
           <a href="mailto:post@gartnerihagen-askim.no">
             post@gartnerihagen-askim.no
           </a>

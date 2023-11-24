@@ -1,11 +1,11 @@
 /**
  * Layout for all protected pages
  */
-import '@/app/globals.css';
+import "@/app/globals.css";
 
 export const metadata = {
-  title: 'Boligsameiet Gartnerihagen',
-  description: 'Askims hyggeligste nabolag',
+  title: "Boligsameiet Gartnerihagen",
+  description: "Askims hyggeligste nabolag",
 };
 
 export default function ArticlePageLayout({

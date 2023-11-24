@@ -1,8 +1,8 @@
-import AlertUser from '@/components/AlertUser';
-import Article from '@/components/Article';
-import { getBlogPostWithSlug, getSlugsForBlogPost } from '@/lib/api';
-import type { ArticleProps } from '@/types/types';
-import type { Metadata, ResolvingMetadata } from 'next';
+import AlertUser from "@/components/AlertUser";
+import Article from "@/components/Article";
+import { getBlogPostWithSlug, getSlugsForBlogPost } from "@/lib/api";
+import type { ArticleProps } from "@/types/types";
+import type { Metadata, ResolvingMetadata } from "next";
 
 type BlogParams = {
   params: { slug: string };
@@ -24,7 +24,7 @@ export async function generateStaticParams() {
 //
 export async function generateMetadata(
   { params }: BlogParams,
-  parent: ResolvingMetadata
+  parent: ResolvingMetadata,
 ): Promise<Metadata> {
   const slug = params.slug;
 
@@ -44,18 +44,18 @@ export async function generateMetadata(
   const parentResult = await parent;
   const previousImages = parentResult.openGraph?.images ?? [];
 
-  const ogImage = featuredImage?.url ?? '';
+  const ogImage = featuredImage?.url ?? "";
 
   return {
     title: title,
     description: excerpt,
     openGraph: {
       images: [`${ogImage}?w=1200&h=630&fit=fill`, ...previousImages],
-      type: 'article',
-      title: title ?? '',
-      description: excerpt ?? '',
-      locale: 'nb_NO',
-      siteName: 'Boligsameiet Gartnerihagen',
+      type: "article",
+      title: title ?? "",
+      description: excerpt ?? "",
+      locale: "nb_NO",
+      siteName: "Boligsameiet Gartnerihagen",
       url: `https://gartnerihagen-askim.no/informasjon/post/${slug}`,
     },
   };
@@ -91,7 +91,7 @@ export default async function Page({ params }: BlogParams) {
   } = post;
 
   if (!title || !bodyText) {
-    throw new Error('Missing data');
+    throw new Error("Missing data");
   }
 
   return (
@@ -102,7 +102,7 @@ export default async function Page({ params }: BlogParams) {
         firstPublishedAt={firstPublishedAt}
         publishedAt={publishedAt}
         mainImage={featuredImage}
-        authors={author as ArticleProps['authors']}
+        authors={author as ArticleProps["authors"]}
         buttonLink="/blog"
       />
     </div>

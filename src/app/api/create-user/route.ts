@@ -1,36 +1,35 @@
-import { clerkClient } from '@clerk/nextjs';
-import { getAuth } from '@clerk/nextjs/server';
-import { NextRequest } from 'next/server';
+import { clerkClient } from "@clerk/nextjs";
+import { getAuth } from "@clerk/nextjs/server";
+import { NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
   const requestBody = request;
   const parsedBody = await requestBody.json();
   const { userToCreate, userRole } = parsedBody;
-
   const { userId } = getAuth(request);
 
   if (!userId) {
     return Response.json(
       {
-        error: 'Unauthorized',
+        error: "Unauthorized",
       },
       {
         status: 401,
-      }
+      },
     );
   }
 
   const user = await clerkClient.users.getUser(userId);
   const { roles } = (user?.publicMetadata as { roles: string[] }) ?? [];
 
-  if (!roles.includes('admin')) {
+  if (!roles.includes("admin")) {
     return Response.json(
       {
-        error: 'User is not admin',
+        error: "User is not admin",
       },
       {
         status: 403,
-      }
+      },
     );
   }
 
@@ -43,55 +42,56 @@ export async function POST(request: NextRequest) {
     if (users.length > 0) {
       return Response.json(
         {
-          error: 'User already exists',
+          error: "User already exists",
           message: `User with email ${userToCreate?.email} already exists`,
         },
         {
           status: 409,
-        }
+        },
       );
     }
 
-    return Response.json(
-      {
-        success: {
-          message: 'User created',
-          user: {
-            ...userToCreate,
-            publicMetadata: {
-              roles: [userRole],
-            },
+    const userCreated = await clerkClient.users.createUser({
+      emailAddress: [userToCreate?.email],
+      firstName: userToCreate?.firstName,
+      lastName: userToCreate?.lastName,
+      publicMetadata: {
+        roles: [userRole],
+      },
+      password: userToCreate?.password,
+    });
+
+    console.log("userCreated ", userCreated);
+
+    return Response.json({
+      success: {
+        message: "User created",
+        user: {
+          userCreated,
+          publicMetadata: {
+            roles: [userRole],
           },
         },
       },
-      {
-        status: 201,
-      }
-    );
+    });
   } catch (error) {
-    console.error('Something went wrong: ', error);
-    if (error instanceof Error) {
-      return Response.json(
-        {
-          error: error.name ?? 'Unknown error',
+    console.error("Something went wrong: ", error);
+
+    return Response.json(
+      {
+        error: {
+          errorName: error.name ?? "Unknown error",
+          code: error.errors[0].code,
           message: error.message,
+          longMessage: error.errors[0].longMessage ?? "",
         },
-        {
-          status: 500,
-        }
-      );
-    } else {
-      return Response.json(
-        {
-          error: 'Unknown error',
-          message: error ?? 'Something is not right...',
-        },
-        {
-          status: 500,
-        }
-      );
-    }
+      },
+      {
+        status: error.status ?? 500,
+      },
+    );
   }
+  1;
 
   // Create user with default role "user" into publicMetadata
   // https://clerk.com/docs/references/backend/user/create-user

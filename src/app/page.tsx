@@ -1,7 +1,7 @@
-import ArticleGrid from '@/components/ArticleGrid';
-import HeroWide from '@/components/HeroWide';
-import type { TypeForsidetekstSkeleton } from '@/types/contentful-types';
-import * as contentful from 'contentful';
+import ArticleGrid from "@/components/ArticleGrid";
+import HeroWide from "@/components/HeroWide";
+import type { TypeForsidetekstSkeleton } from "@/types/contentful-types";
+import * as contentful from "contentful";
 
 async function getFrontPageData() {
   const client = contentful.createClient({
@@ -11,7 +11,7 @@ async function getFrontPageData() {
 
   const data =
     await client.withoutUnresolvableLinks.getEntries<TypeForsidetekstSkeleton>({
-      content_type: 'forsidetekst',
+      content_type: "forsidetekst",
     });
 
   return data;
@@ -26,7 +26,7 @@ export default async function Home() {
     <>
       <HeroWide
         pageTitle={pageTitle}
-        excerpt={excerpt ?? ''}
+        excerpt={excerpt ?? ""}
         pageImage={pageImage}
       />
       <ArticleGrid />

@@ -4,7 +4,7 @@ import {
   BLOGPOST_GRAPHQL_FIELDS,
   PAGE_GRAPHQL_FIELDS,
   SERVICEMENU_GRAPHQL_FIELDS,
-} from '@/lib/graphql-fields';
+} from "@/lib/graphql-fields";
 import type {
   DocumentCollection,
   ReturnTypeForBlogPosts,
@@ -13,7 +13,7 @@ import type {
   ReturnTypeForGetSlugsForBlogPosts,
   ReturnTypeForPage,
   ReturnTypeForSingleBlogPost,
-} from '@/types/types';
+} from "@/types/types";
 
 /**
  * Fetches data from a GraphQL API.
@@ -23,23 +23,23 @@ import type {
  * @returns  - A promise that resolves to the fetched data.
  */
 async function fetchGraphQL<T>(query: string, preview = false): Promise<T> {
-  if (typeof window !== 'undefined') {
-    throw new Error('FetchGraphQL must be used only on the server');
+  if (typeof window !== "undefined") {
+    throw new Error("FetchGraphQL must be used only on the server");
   }
 
   if (!process.env.CONTENTFUL_SPACE_ID) {
-    throw new Error('CONTENTFUL_SPACE_ID is not set');
+    throw new Error("CONTENTFUL_SPACE_ID is not set");
   }
 
   const url = `https://graphql.contentful.com/content/v1/spaces/${process.env.CONTENTFUL_SPACE_ID}`;
   const accessToken = preview
-    ? process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN ?? ''
-    : process.env.CONTENTFUL_ACCESS_TOKEN ?? '';
+    ? process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN ?? ""
+    : process.env.CONTENTFUL_ACCESS_TOKEN ?? "";
 
   const response = await fetch(url, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify({ query }),
@@ -73,7 +73,7 @@ export async function getPageWithId(id: string): Promise<ReturnTypeForPage> {
     return pageData;
   } catch (error) {
     console.error(error);
-    throw new Error('Failed to fetch page data');
+    throw new Error("Failed to fetch page data");
   }
 }
 
@@ -91,7 +91,7 @@ export async function getBlogPostWithSlug({
   isPrivate: boolean;
 }) {
   if (!slug) {
-    throw new Error('Missing slug');
+    throw new Error("Missing slug");
   }
 
   try {
@@ -103,15 +103,13 @@ export async function getBlogPostWithSlug({
     const blogPostData = await fetchGraphQL<ReturnTypeForSingleBlogPost>(query);
 
     const {
-      data: {
-        blogPostCollection: { total, items },
-      },
+      data: { blogPostCollection: { total, items } },
     } = blogPostData;
 
     return { total, items, isPrivate };
   } catch (error) {
     console.error(error);
-    throw new Error('Failed to fetch page data');
+    throw new Error("Failed to fetch page data");
   }
 }
 
@@ -143,14 +141,12 @@ export async function getBlogPostCollection({
     const blogPostCollectionData = fetchGraphQL<ReturnTypeForBlogPosts>(query);
 
     const {
-      data: {
-        blogPostCollection: { total, items },
-      },
+      data: { blogPostCollection: { total, items } },
     } = await blogPostCollectionData;
     return { total, items, isPrivate };
   } catch (error) {
     console.error(error);
-    throw new Error('Failed to fetch blog post collection data');
+    throw new Error("Failed to fetch blog post collection data");
   }
 }
 
@@ -164,14 +160,13 @@ export async function getBlogPostRoutes({ isPrivate = false }) {
     }
     `;
 
-    const blogPostRoutes = await fetchGraphQL<ReturnTypeForGetBlogPostRoutes>(
-      query
-    );
+    const blogPostRoutes =
+      await fetchGraphQL<ReturnTypeForGetBlogPostRoutes>(query);
 
     return { total: blogPostRoutes.data.blogPostCollection.total };
   } catch (error) {
     console.error(error);
-    throw new Error('Failed to fetch blog post routes');
+    throw new Error("Failed to fetch blog post routes");
   }
 }
 
@@ -193,7 +188,7 @@ export async function getSlugsForBlogPost({ isPrivate = false }) {
     return blogPostRoutes;
   } catch (error) {
     console.error(error);
-    throw new Error('Failed to fetch blog post routes');
+    throw new Error("Failed to fetch blog post routes");
   }
 }
 
@@ -206,7 +201,7 @@ export async function getDocuments({
   getDocumentsQuery: string;
 }) {
   if (!getDocumentsQuery) {
-    throw new Error('Missing getDocumentsQuery');
+    throw new Error("Missing getDocumentsQuery");
   }
 
   const pageNumber = 1;

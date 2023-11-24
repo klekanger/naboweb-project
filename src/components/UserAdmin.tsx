@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
-import UserTable from '@/components/UserTable';
-import CreateUserModal from '@/components/modals/CreateUserModal';
-import type { UsersWithEmails } from '@/types/types';
-import { NewUser } from '@/types/types';
+import UserTable from "@/components/UserTable";
+import CreateUserModal from "@/components/modals/CreateUserModal";
+import type { UsersWithEmails } from "@/types/types";
+import { NewUser } from "@/types/types";
 import {
+  Avatar,
   Button,
   Input,
   Modal,
@@ -13,26 +14,27 @@ import {
   ModalFooter,
   ModalHeader,
   useDisclosure,
-} from '@nextui-org/react';
-import { Crown, User, UserPlus2 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+} from "@nextui-org/react";
+import { Crown, User, UserPlus2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import LoadingSpinner from "./LoadingSpinner";
 
 const menuElements = [
   {
     id: 0,
-    name: 'Vis brukere',
+    name: "Vis brukere",
     description: `Viser alle brukere som er registrert.<br />Du kan bruke søkefeltet for å finne en bestemt bruker (søker i både e-post og navn).`,
     menuIcon: User,
   },
   {
     id: 1,
-    name: 'Ny bruker',
+    name: "Ny bruker",
     description: `Opprett en ny bruker.<br />Brukeren vil motta en e-post med informasjon om innlogging.`,
     menuIcon: UserPlus2,
   },
   {
     id: 2,
-    name: 'Tildel roller',
+    name: "Tildel roller",
     description: `Tildel roller til brukere. Alle har automatisk rollen «bruker». Brukere med «admin»-rolle har tilgang til alle funksjoner. «Redaktør» kan legge til nytt innhold på sidene.`,
     menuIcon: Crown,
   },
@@ -46,30 +48,48 @@ enum ModalMode {
 
 const errorsToNorwegian = [
   {
-    code: 'form_password_length_too_short',
-    message: 'Passordet er for kort',
+    code: "form_password_length_too_short",
+    message: "Passordet er for kort",
   },
   {
-    code: 'form_password_pwned',
-    message: 'Passordet er funnet i en datalekkasje - velg et annet',
+    code: "form_password_pwned",
+    message: "Passordet er funnet i en datalekkasje - velg et annet",
   },
 ];
+
+enum createUserScreenType {
+  FORM,
+  SUCCESS,
+  ERROR,
+}
 
 export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [modalMode, setModalMode] = useState<ModalMode>(ModalMode.NONE);
   const [selectedMenu, setSelectedMenu] = useState(0);
+  const [createUserScreen, setCreateUserScreen] = useState({
+    isCreatingUser: false,
+    screenToDisplay: createUserScreenType.FORM,
+  });
 
   const [passwordError, setPasswordError] = useState({
     hasError: false,
-    message: '',
+    message: "",
   });
 
   const [newUser, setNewUser] = useState<NewUser>({
-    email: '',
-    firstName: '',
-    lastName: '',
-    password: '',
+    email: "",
+    firstName: "",
+    lastName: "",
+    password: "",
+  });
+
+  const [newlyCreatedUser, setNewlyCreatedUser] = useState({
+    email: "",
+    firstName: "",
+    lastName: "",
+    imageUrl: "",
+    roles: [],
   });
 
   const emailFieldContent = newUser.email;
@@ -81,42 +101,47 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
   };
 
   const isInvalidEmail = useMemo(() => {
-    if (emailFieldContent === '') return false;
+    if (emailFieldContent === "") return false;
     return !isValidEmail(emailFieldContent);
   }, [emailFieldContent]);
 
   function validateForm(user: NewUser) {
     return (
       isValidEmail(user?.email) &&
-      user?.firstName !== '' &&
-      user?.lastName !== ''
+      user?.firstName !== "" &&
+      user?.lastName !== ""
     );
   }
 
   async function createUser(user: NewUser) {
     if (validateForm(user) === true) {
+      setCreateUserScreen({
+        ...createUserScreen,
+        isCreatingUser: true,
+      });
+
       try {
-        const res = await fetch('/api/create-user', {
-          method: 'POST',
+        const res = await fetch("/api/create-user", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             userToCreate: user,
-            userRole: 'user',
+            userRole: "user",
           }),
         });
         const data = await res.json();
 
         if (data.error) {
-          console.error('Something went wrong:', data.error);
+          console.error("Something went wrong:", data?.error);
           const errorInNorwegian = errorsToNorwegian.find(
-            (error) => error.code === data.error.code
+            (error) => error.code === data.error.code,
           );
 
           setPasswordError({
             hasError: true,
-            message: errorInNorwegian?.message ?? 'Ukjent feil',
+            message: errorInNorwegian?.message ?? "Ukjent feil",
           });
 
           setModalMode(ModalMode.ERROR_MESSAGE);
@@ -127,12 +152,31 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
           throw new Error(data.message);
         }
 
+        setNewlyCreatedUser({
+          email: data.emailAddresses[0].emailAddress,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          imageUrl: data.imageUrl,
+          roles: data.roles,
+        });
+
+        setCreateUserScreen({
+          ...createUserScreen,
+          screenToDisplay: createUserScreenType.SUCCESS,
+          isCreatingUser: false,
+        });
+
         return data;
       } catch (error) {
-        console.error('Something went wrong:', error);
+        console.error("Something went wrong:", error);
+      } finally {
+        setCreateUserScreen({
+          ...createUserScreen,
+          isCreatingUser: false,
+        });
       }
     } else {
-      console.error('Invalid form data');
+      console.error("Invalid form data");
     }
   }
 
@@ -142,19 +186,12 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
     </main>
   );
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (passwordError) {
-      setPasswordError({ ...passwordError, hasError: false });
-    }
-    setNewUser({ ...newUser, password: e.target.value });
-  };
-
   const handleSubmit = () => {
     if (validateForm(newUser)) {
       setModalMode(ModalMode.CREATE_USER);
       onOpen();
     } else {
-      console.error('not valid');
+      console.error("not valid");
     }
   };
 
@@ -169,7 +206,7 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
                 variant="light"
                 onPress={() => setSelectedMenu(element.id)}
                 className={`h-24 flex-1 flex-col rounded-none text-sm text-brand-black hover:text-brand-black/80 dark:text-brand-white dark:hover:text-brand-white/80 lg:flex-row lg:border-none ${
-                  element.id !== 0 && 'border-l border-black/10'
+                  element.id !== 0 && "border-l border-black/10"
                 }`}
               >
                 <element.menuIcon />
@@ -194,76 +231,123 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
           {selectedMenu === 0 && (
             <UserTable users={users} className="lg:px-2" />
           )}
-          {selectedMenu === 1 && (
-            <section className="p-4 text-left lg:px-2">
-              <div className="mb-5 flex flex-col gap-5  lg:flex-row">
-                <Input
-                  type="email"
-                  label="E-post"
-                  description="E-posten som vil bli brukt til innlogging"
-                  isRequired
-                  value={newUser.email}
-                  onChange={(e) => {
-                    setNewUser({ ...newUser, email: e.target.value });
-                  }}
-                  isInvalid={isInvalidEmail}
-                  color={isInvalidEmail ? 'danger' : 'default'}
-                  errorMessage={
-                    isInvalidEmail && 'Tast inn en gyldig e-postadresse'
-                  }
-                />
-                <Input
-                  type="text"
-                  label="Fornavn"
-                  isRequired
-                  value={newUser.firstName}
-                  onChange={(e) => {
-                    setNewUser({ ...newUser, firstName: e.target.value });
-                  }}
-                />
-              </div>
 
-              <div className="mb-5 flex flex-col gap-5  lg:flex-row">
-                <Input
-                  type="text"
-                  label="Etternavn"
-                  isRequired
-                  value={newUser.lastName}
-                  onChange={(e) => {
-                    setNewUser({ ...newUser, lastName: e.target.value });
-                  }}
-                />
-
-                <Input
-                  type="password"
-                  label="Passord"
-                  description="Passordet kan endres av brukeren etter innlogging."
-                  isRequired
-                  value={newUser.password}
-                  onChange={(e) => {
-                    if (passwordError) {
-                      setPasswordError({ ...passwordError, hasError: false });
-                    }
-                    setNewUser({ ...newUser, password: e.target.value });
-                  }}
-                  errorMessage={
-                    passwordError.hasError && passwordError?.message
-                  }
-                />
-              </div>
-
-              <div className="flex justify-center lg:justify-start">
-                <Button
-                  color="default"
-                  className="mt-8"
-                  name="submit-form"
-                  onPress={handleSubmit}
-                >
-                  Opprett bruker
-                </Button>
-              </div>
-            </section>
+          {selectedMenu === 1 && createUserScreen.isCreatingUser && (
+            <div className="mt-24 flex flex-col items-center justify-center gap-4">
+              <LoadingSpinner />
+              <p>
+                Oppretter bruker <br />
+                {newUser.email}
+              </p>
+            </div>
           )}
+
+          {selectedMenu === 1 &&
+            createUserScreen.isCreatingUser === false &&
+            createUserScreen.screenToDisplay === createUserScreenType.FORM && (
+              <section className="p-4 text-left lg:px-2">
+                <div className="mb-5 flex flex-col gap-5  lg:flex-row">
+                  <Input
+                    type="email"
+                    label="E-post"
+                    description="E-posten som vil bli brukt til innlogging"
+                    isRequired
+                    value={newUser.email}
+                    onChange={(e) => {
+                      setNewUser({ ...newUser, email: e.target.value });
+                    }}
+                    isInvalid={isInvalidEmail}
+                    color={isInvalidEmail ? "danger" : "default"}
+                    errorMessage={
+                      isInvalidEmail && "Tast inn en gyldig e-postadresse"
+                    }
+                  />
+                  <Input
+                    type="text"
+                    label="Fornavn"
+                    isRequired
+                    value={newUser.firstName}
+                    onChange={(e) => {
+                      setNewUser({ ...newUser, firstName: e.target.value });
+                    }}
+                  />
+                </div>
+
+                <div className="mb-5 flex flex-col gap-5  lg:flex-row">
+                  <Input
+                    type="text"
+                    label="Etternavn"
+                    isRequired
+                    value={newUser.lastName}
+                    onChange={(e) => {
+                      setNewUser({ ...newUser, lastName: e.target.value });
+                    }}
+                  />
+
+                  <Input
+                    type="password"
+                    label="Passord"
+                    description="Midlertidig passord som kan endres av brukeren senere. Brukeren kan også velge å logge inn med e-post-lenke uten passord."
+                    isRequired
+                    value={newUser.password}
+                    onChange={(e) => {
+                      if (passwordError) {
+                        setPasswordError({ ...passwordError, hasError: false });
+                      }
+                      setNewUser({ ...newUser, password: e.target.value });
+                    }}
+                    errorMessage={
+                      passwordError.hasError && passwordError?.message
+                    }
+                  />
+                </div>
+
+                <div className="flex justify-center lg:justify-start">
+                  <Button
+                    color="default"
+                    className="mt-8"
+                    name="submit-form"
+                    onPress={handleSubmit}
+                  >
+                    Opprett bruker
+                  </Button>
+                </div>
+              </section>
+            )}
+
+          {selectedMenu === 1 &&
+            createUserScreen.screenToDisplay ===
+              createUserScreenType.SUCCESS && (
+              <section className="p-4 text-left lg:px-2">
+                <h2>Brukeren har blitt opprettet</h2>
+                <p>E-post: {newlyCreatedUser.email}</p>
+                <p>Fornavn: {newlyCreatedUser.firstName}</p>
+                <p>Etternavn: {newlyCreatedUser.lastName}</p>
+
+                <div className="flex justify-center lg:justify-start">
+                  <Button
+                    color="default"
+                    className="mt-8"
+                    name="submit-form"
+                    onPress={() => {
+                      setCreateUserScreen({
+                        ...createUserScreen,
+                        screenToDisplay: createUserScreenType.FORM,
+                      });
+                      setNewUser({
+                        email: "",
+                        firstName: "",
+                        lastName: "",
+                        password: "",
+                      });
+                    }}
+                  >
+                    Ok
+                  </Button>
+                </div>
+              </section>
+            )}
+
           {selectedMenu === 2 && <AssignRoleForm />}
         </section>
       </div>
@@ -296,6 +380,7 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
             )}
           </ModalContent>
         )}
+
         {modalMode === ModalMode.ERROR_MESSAGE && (
           <ModalContent>
             {(onClose) => (

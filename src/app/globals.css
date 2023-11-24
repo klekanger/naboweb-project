@@ -123,8 +123,12 @@ a:not(.btn-link) {
   @apply bg-primary duration-100 transition hover:bg-primary-600;
 }
 
-.cl-internal-b3fm6y {
-  @apply bg-brand-primary;
+.cl-rootBox {
+  @apply bg-brand-white dark:bg-brand-black;
+}
+
+.cl-card {
+  @apply bg-white;
 }
 
 .mypage-card {

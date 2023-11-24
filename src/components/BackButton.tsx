@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Button } from '@nextui-org/react';
-import { ArrowBigLeft } from 'lucide-react';
-import Link from 'next/link';
+import { Button } from "@nextui-org/react";
+import { ArrowBigLeft } from "lucide-react";
+import Link from "next/link";
 
 export default function BackButton({ buttonLink }: { buttonLink: string }) {
   if (!buttonLink) {

@@ -1,14 +1,14 @@
-import BackButton from '@/components/BackButton';
-import { formatDate } from '@/lib/format-date';
-import { renderRichTextOptions } from '@/lib/render-rich-text-options';
-import type { ArticleProps } from '@/types/types';
+import BackButton from "@/components/BackButton";
+import { formatDate } from "@/lib/format-date";
+import { renderRichTextOptions } from "@/lib/render-rich-text-options";
+import type { ArticleProps } from "@/types/types";
 import {
   documentToReactComponents,
   type Options,
-} from '@contentful/rich-text-react-renderer';
+} from "@contentful/rich-text-react-renderer";
 
-import Image from 'next/image';
-import Link from 'next/link';
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Article({
   title,
@@ -28,16 +28,16 @@ export default function Article({
     updatedAt === createdAt
       ? `Publisert: ${formatDate(createdAt)}`
       : `Publisert: ${formatDate(createdAt)} (oppdatert: ${formatDate(
-          updatedAt
+          updatedAt,
         )})`;
 
   let blurDataURL: string;
 
-  if (mainImage && 'src' in mainImage) {
-    blurDataURL = mainImage.url + '?w=10&h=10&fit=fill';
+  if (mainImage && "src" in mainImage) {
+    blurDataURL = mainImage.url + "?w=10&h=10&fit=fill";
   } else {
     blurDataURL =
-      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mOsWDvtPwAGHAK8KBlg/wAAAABJRU5ErkJggg==';
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mOsWDvtPwAGHAK8KBlg/wAAAABJRU5ErkJggg==";
   }
 
   return (
@@ -60,7 +60,7 @@ export default function Article({
       <div>
         {documentToReactComponents(
           richTextJson,
-          renderRichTextOptions(links) as Options
+          renderRichTextOptions(links) as Options,
         )}
       </div>
 
@@ -69,7 +69,7 @@ export default function Article({
         <br />
         {authors && (
           <em className="text-sm">
-            Av{' '}
+            Av{" "}
             {authors.map((author, index) => {
               const isLastAuthor = index === authors.length - 1;
               return (
@@ -78,7 +78,7 @@ export default function Article({
                   key={`${author.fields.firstName}-${author.fields.lastName}`}
                 >
                   {author.fields.firstName} {author.fields.lastName}
-                  {!isLastAuthor && ', '}
+                  {!isLastAuthor && ", "}
                 </span>
               );
             })}
