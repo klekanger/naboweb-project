@@ -1,15 +1,9 @@
+import RoleDisplay from "@/components/RoleDisplay";
 import { type UserCardProps } from "@/types/types";
 import { Button } from "@nextui-org/button";
 import { Card, CardBody, CardHeader } from "@nextui-org/card";
-import { Chip, type ChipProps } from "@nextui-org/chip";
 import { Divider } from "@nextui-org/divider";
 import Link from "next/link";
-
-type FriendlyUserRole = {
-  role: string;
-  friendlyName: string;
-  color: ChipProps["color"];
-};
 
 export default function UserCard({ user, ...rest }: UserCardProps) {
   if (!user) {
@@ -23,33 +17,6 @@ export default function UserCard({ user, ...rest }: UserCardProps) {
 
   const isAdmin = roles.includes("admin") || false;
   const isEditor = roles.includes("editor") || false;
-
-  const friendlyUserRoles: FriendlyUserRole[] = [
-    {
-      role: "admin",
-      friendlyName: "Administrator",
-      color: "danger",
-    },
-    {
-      role: "editor",
-      friendlyName: "Redaktør",
-      color: "warning",
-    },
-    {
-      role: "user",
-      friendlyName: "Bruker",
-      color: "success",
-    },
-  ];
-
-  const friendlyUserRoleNames = roles.map((role) => {
-    const friendlyRole = friendlyUserRoles.find((r) => r.role === role);
-
-    return {
-      name: friendlyRole?.friendlyName ?? "Bruker",
-      color: friendlyRole?.color ?? "primary",
-    };
-  });
 
   return (
     <>
@@ -76,19 +43,7 @@ export default function UserCard({ user, ...rest }: UserCardProps) {
               <div>
                 <b className="text-lg">Roller:</b>
               </div>
-              <div className="flex flex-row flex-wrap items-center justify-start gap-2">
-                {roles.length === 0 ? (
-                  <Chip size="sm" color="primary">
-                    Ingen roller
-                  </Chip>
-                ) : (
-                  friendlyUserRoleNames.map((role, i) => (
-                    <Chip key={`chip-${i}`} size="sm" color={role.color}>
-                      {role.name}
-                    </Chip>
-                  ))
-                )}
-              </div>
+              <RoleDisplay roles={roles} />
             </div>
             <Divider className="mb-8 mt-4" />
 
