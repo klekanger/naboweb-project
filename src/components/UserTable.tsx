@@ -1,28 +1,37 @@
 "use client";
 
+import { formatDate } from "@/lib/format-date";
 import type { UserWithRoles, UsersWithEmails } from "@/types/types";
 import { Input } from "@nextui-org/input";
 import {
+  Avatar,
+  AvatarGroup,
+  AvatarIcon,
   Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
   Pagination,
-} from "@nextui-org/react";
-import {
   Table,
   TableBody,
   TableCell,
   TableColumn,
   TableHeader,
   TableRow,
-} from "@nextui-org/table";
+  useDisclosure,
+} from "@nextui-org/react";
 
 import { MoreVertical, SearchIcon } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import RoleDisplay from "./RoleDisplay";
 
-const ROWS_PER_PAGE = 20;
+const ROWS_PER_PAGE = 10;
 
 type UserTableProps = {
   users: UsersWithEmails[];
@@ -30,9 +39,18 @@ type UserTableProps = {
 };
 
 export default function UserTable({ users, ...rest }: UserTableProps) {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [page, setPage] = useState(1);
+  const [userDataToSHow, setUserDataToSHow] = useState({});
   const [filterValue, setFilterValue] = useState("");
   const hasSearchFilter = Boolean(filterValue);
+
+  async function showUserWithId(id: string) {
+    const userDataFromId = await fetchUserWithId(id);
+
+    setUserDataToSHow(userDataFromId);
+    onOpen();
+  }
 
   if (!users) {
     return null;
@@ -46,12 +64,9 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
     if (hasSearchFilter) {
       filteredUsers = filteredUsers.filter(
         (user) =>
-          (user.email &&
-            user.email.toLowerCase().includes(filterValue.toLowerCase())) ||
-          (user.firstName &&
-            user.firstName.toLowerCase().includes(filterValue.toLowerCase())) ||
-          (user.lastName &&
-            user.lastName.toLowerCase().includes(filterValue.toLowerCase())),
+          user.email?.toLowerCase().includes(filterValue.toLowerCase()) ||
+          user.firstName?.toLowerCase().includes(filterValue.toLowerCase()) ||
+          user.lastName?.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
     return filteredUsers;
@@ -157,7 +172,13 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
                     </Button>
                   </DropdownTrigger>
                   <DropdownMenu aria-label="Meny for brukeroperasjoner">
-                    <DropdownItem>Vis</DropdownItem>
+                    <DropdownItem
+                      onPress={() => {
+                        showUserWithId(user.id);
+                      }}
+                    >
+                      Vis
+                    </DropdownItem>
                     <DropdownItem>Rediger</DropdownItem>
                     <DropdownItem>Slett</DropdownItem>
                   </DropdownMenu>
@@ -167,6 +188,97 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
           )) || []}
         </TableBody>
       </Table>
+
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-row gap-4">
+                <Avatar src={userDataToSHow?.image} />
+                <div className="text-xl self-center">{`${userDataToSHow?.firstName} ${userDataToSHow?.lastName}`}</div>
+              </ModalHeader>
+              <ModalBody>
+                <section>
+                  <div className="flex flex-row gap-4">
+                    <div className="w-1/3">
+                      <strong>E-post:</strong>
+                    </div>
+                    <div> {userDataToSHow?.email}</div>
+                  </div>
+                  <div className="flex flex-row gap-4">
+                    <div className="w-1/3">
+                      <strong>Opprettet:</strong>
+                    </div>
+                    <div>{formatDate(userDataToSHow?.createdAt)}</div>
+                  </div>
+                  <div className="flex flex-row gap-4">
+                    <div className="w-1/3">
+                      <strong>Sist innlogget:</strong>
+                    </div>
+                    <div>
+                      {formatDate(userDataToSHow?.lastSignInAt) || "Aldri"}
+                    </div>
+                  </div>
+                  <div className="flex flex-row gap-4 mt-8">
+                    <div className="w-1/3">
+                      <strong>Roller:</strong>
+                    </div>
+                    <div>
+                      <RoleDisplay roles={userDataToSHow?.roles} />
+                    </div>
+                  </div>
+                </section>
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="primary"
+                  onPress={() => {
+                    onClose();
+                  }}
+                >
+                  Tilbake
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
+}
+
+async function fetchUserWithId(id: string) {
+  let userData = {};
+
+  try {
+    const res = await fetch("/api/get-user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userToFetch: id,
+      }),
+    });
+
+    const data = await res.json();
+    const { user } = data.success;
+
+    userData = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.emailAddresses[0].emailAddress,
+      createdAt: user.createdAt,
+      image: user.imageUrl,
+      lastSignInAt: user.lastSignInAt,
+      roles: user.publicMetadata?.roles,
+    };
+
+    return userData;
+  } catch (error) {
+    console.error("Something went wrong:", error);
+    return {
+      error: "Kunne ikke hente brukerdata.",
+    };
+  }
 }
