@@ -1,6 +1,9 @@
 import UserAdmin from "@/components/UserAdmin";
 import type { UserWithRoles, UsersWithEmails } from "@/types/types";
 import { clerkClient, currentUser } from "@clerk/nextjs";
+import { Button } from "@nextui-org/react";
+import { ArrowBigLeft } from "lucide-react";
+import Link from "next/link";
 
 async function checkIfAdmin() {
   const currentUserData: UserWithRoles | null = await currentUser();
@@ -11,7 +14,11 @@ async function checkIfAdmin() {
 
 async function fetchUsers() {
   try {
-    const userList: UserWithRoles[] = await clerkClient.users.getUserList();
+    const userList: UserWithRoles[] = await clerkClient.users.getUserList({
+      limit: 500, // We're getting the maximum allowed by ClerkJS, as we want to be able to search locally for users on the client.
+      // Minimize the number of API requests using the free version of Clerk.
+      // Considering filtering users on the server later (https://clerk.com/docs/references/backend/user/get-user-list )
+    });
 
     return {
       userData: {
@@ -24,7 +31,7 @@ async function fetchUsers() {
     return {
       userData: {
         users: [],
-        hasAccess: true,
+        hasAccess: false,
       },
     };
   }
@@ -56,13 +63,17 @@ export default async function Page() {
 
   if (!userData.hasAccess) {
     return (
-      <div className="mt-32 flex justify-center">
-        <p>Ingen tilgang.</p>
+      <div className="mt-32 text-center">
+        <p>Noe gikk galt</p>
+        <Button as={Link} href="/min-side/" startContent={<ArrowBigLeft />}>
+          Gå tilbake
+        </Button>
       </div>
     );
   }
 
   const users = userData.users;
+
   const usersWithEmails: UsersWithEmails[] = users.map(mapUsersWithEmails);
 
   // Temporary test code for testing pagination
