@@ -4,13 +4,13 @@ import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import {
   Button,
   ButtonGroup,
+  Navbar as NextUINavbar,
   NavbarBrand,
   NavbarContent,
   NavbarItem,
   NavbarMenu,
   NavbarMenuItem,
   NavbarMenuToggle,
-  Navbar as NextUINavbar,
   semanticColors,
 } from "@nextui-org/react";
 import { LogIn, LogOut, Moon, Sun } from "lucide-react";
@@ -25,15 +25,26 @@ import { useEffect, useState } from "react";
 export default function Navbar() {
   const { isSignedIn, user, isLoaded } = useUser();
   const menuItems = [
-    { title: "For beboere", href: "/informasjon", protected: true },
-    { title: "Blogg", href: "/blog-collection", protected: false },
     {
+      id: "menu-1",
+      title: "For beboere",
+      href: "/informasjon",
+      protected: true,
+    },
+    {
+      id: "menu-2",
+      title: "Blogg",
+      href: "/blog-collection",
+      protected: false,
+    },
+    {
+      id: "menu-3",
       title: "Om oss",
       href: "/om-boligsameiet-gartnerihagen",
       protected: false,
     },
-    { title: "Styret", href: "/styret", protected: false },
-    { title: "Min side", href: "/min-side", protected: true },
+    { id: "menu-4", title: "Styret", href: "/styret", protected: false },
+    { id: "menu-5", title: "Min side", href: "/min-side", protected: true },
   ];
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -48,6 +59,7 @@ export default function Navbar() {
   }, []);
 
   // When the user navigates to a new page, always close the hamburger menu
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Needs pathname as a dependency
   useEffect(() => {
     setIsMenuOpen(false);
   }, [pathname]);
@@ -87,12 +99,12 @@ export default function Navbar() {
       </NavbarContent>
 
       <NavbarContent className="hidden gap-8 lg:flex" justify="end">
-        {menuItems.map((item, index) => {
+        {menuItems.map((item) => {
           if (item.protected && !user) return null;
 
           return (
             <NavbarItem
-              key={index}
+              key={item.id}
               isActive={pathname.startsWith(item.href)}
               className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
             >
@@ -148,25 +160,15 @@ export default function Navbar() {
       </NavbarContent>
 
       <NavbarMenu className="pt-8">
-        {menuItems.map((item, index) => {
+        {menuItems.map((item) => {
           if (item.protected && !user) return null;
 
           return (
             <NavbarMenuItem
-              key={index}
+              key={item.id}
               className="hover:text-brand-hoverButtonColor duration-100 transition"
             >
-              <Link
-                color={
-                  index === 2
-                    ? "primary"
-                    : index === menuItems.length - 1
-                    ? "danger"
-                    : "foreground"
-                }
-                className="w-full"
-                href={item.href}
-              >
+              <Link className="w-full" href={item.href}>
                 {item.title}
               </Link>
             </NavbarMenuItem>
