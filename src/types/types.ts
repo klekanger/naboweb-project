@@ -240,6 +240,7 @@ export type NewUser = {
   firstName: string;
   lastName: string;
   password: string;
+  roles: string[];
 };
 
 export type UserCardProps = {

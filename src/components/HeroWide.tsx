@@ -16,7 +16,7 @@ export default function HeroWide({
 
   const { url } = pageImage?.fields?.file ?? {};
   if (!url) {
-    console.error(`Missing featured image for hero section`);
+    console.error("Missing featured image for hero section");
     return null;
   }
 

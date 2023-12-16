@@ -3,8 +3,8 @@ import { formatDate } from "@/lib/format-date";
 import { renderRichTextOptions } from "@/lib/render-rich-text-options";
 import type { ArticleProps } from "@/types/types";
 import {
-  documentToReactComponents,
   type Options,
+  documentToReactComponents,
 } from "@contentful/rich-text-react-renderer";
 
 import Image from "next/image";
@@ -34,7 +34,7 @@ export default function Article({
   let blurDataURL: string;
 
   if (mainImage && "src" in mainImage) {
-    blurDataURL = mainImage.url + "?w=10&h=10&fit=fill";
+    blurDataURL = `${mainImage.url}?w=10&h=10&fit=fill`;
   } else {
     blurDataURL =
       "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mOsWDvtPwAGHAK8KBlg/wAAAABJRU5ErkJggg==";

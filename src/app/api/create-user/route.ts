@@ -5,7 +5,7 @@ import { NextRequest } from "next/server";
 export async function POST(request: NextRequest) {
   const requestBody = request;
   const parsedBody = await requestBody.json();
-  const { userToCreate, userRole } = parsedBody;
+  const { userToCreate, userRoles } = parsedBody;
   const { userId } = getAuth(request);
 
   if (!userId) {
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       firstName: userToCreate?.firstName,
       lastName: userToCreate?.lastName,
       publicMetadata: {
-        roles: [userRole],
+        roles: userRoles,
       },
       password: userToCreate?.password,
     });
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
         user: {
           userCreated,
           publicMetadata: {
-            roles: [userRole],
+            roles: userRoles,
           },
         },
       },
@@ -91,7 +91,6 @@ export async function POST(request: NextRequest) {
       },
     );
   }
-  1;
 
   // Create user with default role "user" into publicMetadata
   // https://clerk.com/docs/references/backend/user/create-user

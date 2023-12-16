@@ -1,5 +1,5 @@
 import type { EmbeddedAsset } from "@/types/types";
-import { BLOCKS, MARKS, type Block } from "@contentful/rich-text-types";
+import { BLOCKS, type Block, MARKS } from "@contentful/rich-text-types";
 import Image from "next/image";
 import { type ReactNode } from "react";
 

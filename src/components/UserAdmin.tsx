@@ -1,5 +1,6 @@
 "use client";
 
+import RoleDisplay from "@/components/RoleDisplay";
 import UserTable from "@/components/UserTable";
 import CreateUserModal from "@/components/modals/CreateUserModal";
 import type { UsersWithEmails } from "@/types/types";
@@ -7,6 +8,8 @@ import { NewUser } from "@/types/types";
 import {
   Avatar,
   Button,
+  Checkbox,
+  CheckboxGroup,
   Input,
   Modal,
   ModalBody,
@@ -23,27 +26,42 @@ const menuElements = [
   {
     id: 0,
     name: "Vis brukere",
-    description: `Viser alle brukere som er registrert.<br />Du kan bruke søkefeltet for å finne en bestemt bruker (søker i både e-post og navn).`,
+    description:
+      "Viser alle brukere som er registrert.<br />Du kan bruke søkefeltet for å finne en bestemt bruker (søker i både e-post og navn).",
     menuIcon: User,
   },
   {
     id: 1,
     name: "Ny bruker",
-    description: `Opprett en ny bruker.<br />Brukeren vil motta en e-post med informasjon om innlogging.`,
+    description:
+      "Opprett en ny bruker.<br />Brukeren vil motta en e-post med informasjon om innlogging.",
     menuIcon: UserPlus2,
   },
   {
     id: 2,
     name: "Tildel roller",
-    description: `Tildel roller til brukere. Alle har automatisk rollen «bruker». Brukere med «admin»-rolle har tilgang til alle funksjoner. «Redaktør» kan legge til nytt innhold på sidene.`,
+    description:
+      "Tildel roller til brukere. Alle har automatisk rollen «bruker». Brukere med «admin»-rolle har tilgang til alle funksjoner. «Redaktør» kan legge til nytt innhold på sidene.",
     menuIcon: Crown,
   },
 ];
 
 enum ModalMode {
-  NONE,
-  CREATE_USER,
-  ERROR_MESSAGE,
+  NONE = 0,
+  CREATE_USER = 1,
+  ERROR_MESSAGE = 2,
+}
+
+enum CreateUserScreenType {
+  FORM = 0,
+  SUCCESS = 1,
+  ERROR = 2,
+}
+
+enum SidebarMenu {
+  USERS = 0,
+  CREATE_USER = 1,
+  ASSIGN_ROLES = 2,
 }
 
 const errorsToNorwegian = [
@@ -57,19 +75,13 @@ const errorsToNorwegian = [
   },
 ];
 
-enum createUserScreenType {
-  FORM,
-  SUCCESS,
-  ERROR,
-}
-
 export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [modalMode, setModalMode] = useState<ModalMode>(ModalMode.NONE);
   const [selectedMenu, setSelectedMenu] = useState(0);
   const [createUserScreen, setCreateUserScreen] = useState({
     isCreatingUser: false,
-    screenToDisplay: createUserScreenType.FORM,
+    screenToDisplay: CreateUserScreenType.FORM,
   });
 
   const [passwordError, setPasswordError] = useState({
@@ -82,6 +94,7 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
     firstName: "",
     lastName: "",
     password: "",
+    roles: [],
   });
 
   const [newlyCreatedUser, setNewlyCreatedUser] = useState({
@@ -128,7 +141,7 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
           },
           body: JSON.stringify({
             userToCreate: user,
-            userRole: "user",
+            userRoles: user.roles,
           }),
         });
         const data = await res.json();
@@ -162,7 +175,7 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
 
         setCreateUserScreen({
           ...createUserScreen,
-          screenToDisplay: createUserScreenType.SUCCESS,
+          screenToDisplay: CreateUserScreenType.SUCCESS,
           isCreatingUser: false,
         });
 
@@ -182,7 +195,9 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
 
   const AssignRoleForm = () => (
     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
-      <div className="rounded-lg border border-dashed border-zinc-200 dark:border-zinc-800"></div>
+      <div className="rounded-lg border border-dashed border-zinc-200 dark:border-zinc-800">
+        <h1>Tildel rolle</h1>
+      </div>
     </main>
   );
 
@@ -223,28 +238,29 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
         <section className="flex flex-col overflow-auto">
           <p
             className="w-full border-b bg-brand-white px-6 py-8 text-left text-base dark:bg-brand-black"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: for formatting. Not dangerous – content is from CMS.
             dangerouslySetInnerHTML={{
               __html: menuElements[selectedMenu].description,
             }}
           />
-
-          {selectedMenu === 0 && (
+          {selectedMenu === SidebarMenu.USERS && (
             <UserTable users={users} className="lg:px-2" />
           )}
 
-          {selectedMenu === 1 && createUserScreen.isCreatingUser && (
-            <div className="mt-24 flex flex-col items-center justify-center gap-4">
-              <LoadingSpinner />
-              <p>
-                Oppretter bruker <br />
-                {newUser.email}
-              </p>
-            </div>
-          )}
+          {selectedMenu === SidebarMenu.CREATE_USER &&
+            createUserScreen.isCreatingUser && (
+              <div className="mt-24 flex flex-col items-center justify-center gap-4">
+                <LoadingSpinner />
+                <p>
+                  Oppretter bruker <br />
+                  {newUser.email}
+                </p>
+              </div>
+            )}
 
-          {selectedMenu === 1 &&
+          {selectedMenu === SidebarMenu.CREATE_USER &&
             createUserScreen.isCreatingUser === false &&
-            createUserScreen.screenToDisplay === createUserScreenType.FORM && (
+            createUserScreen.screenToDisplay === CreateUserScreenType.FORM && (
               <section className="p-4 text-left lg:px-2">
                 <div className="mb-5 flex flex-col gap-5  lg:flex-row">
                   <Input
@@ -302,6 +318,23 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
                   />
                 </div>
 
+                <CheckboxGroup
+                  label="Velg roller"
+                  orientation="horizontal"
+                  color="secondary"
+                  defaultValue={["user"]}
+                  onValueChange={(value) => {
+                    console.log(newUser);
+                    setNewUser({ ...newUser, roles: value });
+                  }}
+                >
+                  <Checkbox value="user" isDisabled>
+                    Bruker
+                  </Checkbox>
+                  <Checkbox value="editor">Redaktør</Checkbox>
+                  <Checkbox value="admin">Administrator</Checkbox>
+                </CheckboxGroup>
+
                 <div className="flex justify-center lg:justify-start">
                   <Button
                     color="default"
@@ -315,9 +348,9 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
               </section>
             )}
 
-          {selectedMenu === 1 &&
+          {selectedMenu === SidebarMenu.CREATE_USER &&
             createUserScreen.screenToDisplay ===
-              createUserScreenType.SUCCESS && (
+              CreateUserScreenType.SUCCESS && (
               <section className="p-4 text-left lg:px-2">
                 <h2>Brukeren har blitt opprettet</h2>
                 <p>E-post: {newlyCreatedUser.email}</p>
@@ -332,7 +365,7 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
                     onPress={() => {
                       setCreateUserScreen({
                         ...createUserScreen,
-                        screenToDisplay: createUserScreenType.FORM,
+                        screenToDisplay: CreateUserScreenType.FORM,
                       });
                       setNewUser({
                         email: "",
@@ -348,7 +381,7 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
               </section>
             )}
 
-          {selectedMenu === 2 && <AssignRoleForm />}
+          {selectedMenu === SidebarMenu.ASSIGN_ROLES && <AssignRoleForm />}
         </section>
       </div>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>

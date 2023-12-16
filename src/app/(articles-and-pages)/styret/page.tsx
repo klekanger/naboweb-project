@@ -21,7 +21,7 @@ export default async function Page() {
         publishedAt={publishedAt}
         mainImage={pageImage}
         buttonLink="/"
-      ></Article>
+      />
     </>
   );
 }

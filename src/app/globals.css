@@ -104,7 +104,7 @@ a:not(.btn-link) {
 }
 
 /*
- Styles for custom rich text rendering 
+Styles for custom rich text rendering 
 */
 .rich-ul {
   @apply my-8 text-left;
