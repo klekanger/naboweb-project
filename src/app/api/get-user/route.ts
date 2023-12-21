@@ -1,11 +1,12 @@
+import { ClerkError } from "@/types/types";
 import { clerkClient } from "@clerk/nextjs";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<Response> {
   const requestBody = request;
   const parsedBody = await requestBody.json();
-  const { userToFetch } = parsedBody;
+  const { userToFetch }: { userToFetch: string } = parsedBody;
   const { userId } = getAuth(request);
 
   if (!userId) {
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
   if (!userToFetch) {
     return Response.json(
       {
-        error: "Please supply a user id",
+        error: "User id missing",
       },
       {
         status: 400,
@@ -50,23 +51,24 @@ export async function POST(request: NextRequest) {
     return Response.json({
       success: {
         message: "Successfully fetched user",
-        user: userWithId,
       },
+      user: userWithId,
     });
   } catch (error) {
+    const clerkError = error as ClerkError;
     console.error("Something went wrong: ", error);
 
     return Response.json(
       {
         error: {
-          errorName: error.name ?? "Unknown error",
-          code: error.errors[0].code,
-          message: error.message,
-          longMessage: error.errors[0].longMessage ?? "",
+          errorName: clerkError?.name ?? "Unknown error",
+          code: clerkError?.errors[0].code,
+          message: clerkError?.message,
+          longMessage: clerkError?.errors[0]?.longMessage ?? "",
         },
       },
       {
-        status: error.status ?? 500,
+        status: clerkError?.status ?? 500,
       },
     );
   }

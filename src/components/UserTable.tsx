@@ -1,7 +1,11 @@
 "use client";
 
 import { formatDate } from "@/lib/format-date";
-import type { UserWithRoles, UsersWithEmails } from "@/types/types";
+import type {
+  ReturnTypeForUserError,
+  ReturnTypeForUserSuccess,
+  UsersWithEmails,
+} from "@/types/types";
 import { Input } from "@nextui-org/input";
 import {
   Avatar,
@@ -26,6 +30,7 @@ import {
   TableRow,
   useDisclosure,
 } from "@nextui-org/react";
+import toast, { Toaster } from "react-hot-toast";
 
 import { MoreVertical, SearchIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -47,6 +52,12 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
 
   async function showUserWithId(id: string) {
     const userDataFromId = await fetchUserWithId(id);
+
+    if ("error" in userDataFromId) {
+      console.error("Something went wrong:", userDataFromId.error);
+      toast.error(`Noe gikk galt: ${userDataFromId.error}`);
+      return;
+    }
 
     setUserDataToSHow(userDataFromId);
     onOpen();
@@ -171,16 +182,20 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
                       <MoreVertical className="text-default-300" />
                     </Button>
                   </DropdownTrigger>
-                  <DropdownMenu aria-label="Meny for brukeroperasjoner">
+                  <DropdownMenu
+                    closeOnSelect={true}
+                    aria-label="Meny for brukeroperasjoner"
+                  >
                     <DropdownItem
+                      key="show_user"
                       onPress={() => {
                         showUserWithId(user.id);
                       }}
                     >
                       Vis
                     </DropdownItem>
-                    <DropdownItem>Rediger</DropdownItem>
-                    <DropdownItem>Slett</DropdownItem>
+                    <DropdownItem key="edit_user">Rediger</DropdownItem>
+                    <DropdownItem key="delete_user">Slett</DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               </TableCell>
@@ -243,11 +258,14 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
           )}
         </ModalContent>
       </Modal>
+      <Toaster position="bottom-center" />
     </div>
   );
 }
 
-async function fetchUserWithId(id: string) {
+async function fetchUserWithId(
+  id: string,
+): Promise<ReturnTypeForUserSuccess | ReturnTypeForUserError | {}> {
   let userData = {};
 
   try {
@@ -261,20 +279,32 @@ async function fetchUserWithId(id: string) {
       }),
     });
 
-    const data = await res.json();
-    const { user } = data.success;
+    const data: ReturnTypeForUserSuccess | ReturnTypeForUserError =
+      (await res.json()) || {
+        error: "Kunne ikke hente brukerdata.",
+      };
 
-    userData = {
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.emailAddresses[0].emailAddress,
-      createdAt: user.createdAt,
-      image: user.imageUrl,
-      lastSignInAt: user.lastSignInAt,
-      roles: user.publicMetadata?.roles,
-    };
+    if ("error" in data) {
+      return data;
+    } else {
+      if ("success" in data) {
+        const { user } = data;
 
-    return userData;
+        userData = {
+          firstName: user?.firstName,
+          lastName: user?.lastName,
+          email: user?.emailAddresses[0]?.emailAddress,
+          createdAt: user?.createdAt,
+          image: user.imageUrl,
+          lastSignInAt: user.lastSignInAt,
+          roles: user.publicMetadata?.roles,
+        };
+
+        return userData;
+      }
+    }
+
+    return {};
   } catch (error) {
     console.error("Something went wrong:", error);
     return {

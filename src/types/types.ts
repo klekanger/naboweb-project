@@ -20,6 +20,48 @@ export type ContentImage = {
   height: number;
 };
 
+export type ClerkError = {
+  name: string;
+  errors: Array<{
+    code: string;
+    longMessage?: string;
+  }>;
+  message: string;
+  status?: number;
+};
+
+export type ReturnTypeForUserSuccess = {
+  success: {
+    message: string;
+  };
+  user: {
+    firstName: string;
+    lastName: string;
+    emailAddresses: {
+      id: string;
+      emailAddress: string;
+    }[];
+    createdAt: string;
+    imageUrl: string;
+    lastSignInAt: string;
+    publicMetadata: {
+      roles: string[] | undefined;
+    };
+  };
+};
+
+export type ReturnTypeForUserError = {
+  error:
+    | string
+    | {
+        errorName: string;
+        code: string;
+        message: string;
+        longMessage: string;
+      };
+  status?: number;
+};
+
 export type ArticleProps = {
   title: string;
   authors?: Array<{
