@@ -1,26 +1,21 @@
 "use client";
 
-import { formatDate } from "@/lib/format-date";
-import type {
-  ReturnTypeForUserError,
-  ReturnTypeForUserSuccess,
-  UsersWithEmails,
+import ShowUserModal from "@/components/modals/ShowUserModal";
+import {
+  type ReturnTypeForUserError,
+  type ReturnTypeForUserSuccess,
+  ShowUserProps,
+  type UsersWithEmails,
 } from "@/types/types";
 import { Input } from "@nextui-org/input";
 import {
-  Avatar,
-  AvatarGroup,
-  AvatarIcon,
   Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
   Modal,
-  ModalBody,
   ModalContent,
-  ModalFooter,
-  ModalHeader,
   Pagination,
   Table,
   TableBody,
@@ -34,7 +29,6 @@ import toast, { Toaster } from "react-hot-toast";
 
 import { MoreVertical, SearchIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import RoleDisplay from "./RoleDisplay";
 
 const ROWS_PER_PAGE = 10;
 
@@ -46,7 +40,9 @@ type UserTableProps = {
 export default function UserTable({ users, ...rest }: UserTableProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [page, setPage] = useState(1);
-  const [userDataToSHow, setUserDataToSHow] = useState({});
+  const [userDataToShow, setUserDataToSHow] = useState<
+    ShowUserProps | undefined
+  >();
   const [filterValue, setFilterValue] = useState("");
   const hasSearchFilter = Boolean(filterValue);
 
@@ -207,54 +203,7 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-row gap-4">
-                <Avatar src={userDataToSHow?.image} />
-                <div className="text-xl self-center">{`${userDataToSHow?.firstName} ${userDataToSHow?.lastName}`}</div>
-              </ModalHeader>
-              <ModalBody>
-                <section>
-                  <div className="flex flex-row gap-4">
-                    <div className="w-1/3">
-                      <strong>E-post:</strong>
-                    </div>
-                    <div> {userDataToSHow?.email}</div>
-                  </div>
-                  <div className="flex flex-row gap-4">
-                    <div className="w-1/3">
-                      <strong>Opprettet:</strong>
-                    </div>
-                    <div>{formatDate(userDataToSHow?.createdAt)}</div>
-                  </div>
-                  <div className="flex flex-row gap-4">
-                    <div className="w-1/3">
-                      <strong>Sist innlogget:</strong>
-                    </div>
-                    <div>
-                      {formatDate(userDataToSHow?.lastSignInAt) || "Aldri"}
-                    </div>
-                  </div>
-                  <div className="flex flex-row gap-4 mt-8">
-                    <div className="w-1/3">
-                      <strong>Roller:</strong>
-                    </div>
-                    <div>
-                      <RoleDisplay roles={userDataToSHow?.roles} />
-                    </div>
-                  </div>
-                </section>
-              </ModalBody>
-              <ModalFooter>
-                <Button
-                  color="primary"
-                  onPress={() => {
-                    onClose();
-                  }}
-                >
-                  Tilbake
-                </Button>
-              </ModalFooter>
-            </>
+            <ShowUserModal userDataToShow={userDataToShow} onClose={onClose} />
           )}
         </ModalContent>
       </Modal>

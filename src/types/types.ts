@@ -30,6 +30,16 @@ export type ClerkError = {
   status?: number;
 };
 
+export type ShowUserProps = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  createdAt: string;
+  image: string;
+  lastSignInAt: string;
+  roles: string[];
+};
+
 export type ReturnTypeForUserSuccess = {
   success: {
     message: string;
