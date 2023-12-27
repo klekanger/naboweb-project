@@ -1,12 +1,10 @@
 "use client";
 
-import RoleDisplay from "@/components/RoleDisplay";
 import UserTable from "@/components/UserTable";
-import CreateUserModal from "@/components/modals/CreateUserModal";
+// import CreateUserModal from "@/components/modals/CreateUserModal";
 import type { UsersWithEmails } from "@/types/types";
 import { NewUser } from "@/types/types";
 import {
-  Avatar,
   Button,
   Checkbox,
   CheckboxGroup,
@@ -19,8 +17,9 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { Crown, User, UserPlus2 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import LoadingSpinner from "./LoadingSpinner";
+import RoleDisplay from "./RoleDisplay";
 
 const menuElements = [
   {
@@ -73,21 +72,26 @@ const errorsToNorwegian = [
     code: "form_password_pwned",
     message: "Passordet er funnet i en datalekkasje - velg et annet",
   },
+  {
+    code: "User already exists",
+    message: "Brukeren eksisterer allerede",
+  },
+  {
+    code: "User is not admin",
+    message: "Du er ikke administrator",
+  },
 ];
 
 export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [modalMode, setModalMode] = useState<ModalMode>(ModalMode.NONE);
   const [selectedMenu, setSelectedMenu] = useState(0);
-  const [createUserScreen, setCreateUserScreen] = useState({
-    isCreatingUser: false,
-    screenToDisplay: CreateUserScreenType.FORM,
-  });
+  const [isCreatingUser, setIsCreatingUser] = useState(false);
+  const [screenToDisplay, setScreenToDisplay] = useState(
+    CreateUserScreenType.FORM,
+  );
 
-  const [passwordError, setPasswordError] = useState({
-    hasError: false,
-    message: "",
-  });
+  const [generalError, setGeneralError] = useState("");
 
   const [newUser, setNewUser] = useState<NewUser>({
     email: "",
@@ -116,22 +120,19 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
   const isInvalidEmail = useMemo(() => {
     if (emailFieldContent === "") return false;
     return !isValidEmail(emailFieldContent);
-  }, [emailFieldContent]);
+  }, [emailFieldContent, isValidEmail]);
 
-  function validateForm(user: NewUser) {
+  const validateForm = (user: NewUser) => {
     return (
       isValidEmail(user?.email) &&
       user?.firstName !== "" &&
       user?.lastName !== ""
     );
-  }
+  };
 
-  async function createUser(user: NewUser) {
+  const createUser = async (user: NewUser) => {
     if (validateForm(user) === true) {
-      setCreateUserScreen({
-        ...createUserScreen,
-        isCreatingUser: true,
-      });
+      setIsCreatingUser(true);
 
       try {
         const res = await fetch("/api/create-user", {
@@ -147,51 +148,52 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
         const data = await res.json();
 
         if (data.error) {
-          console.error("Something went wrong:", data?.error);
-          const errorInNorwegian = errorsToNorwegian.find(
-            (error) => error.code === data.error.code,
-          );
-
-          setPasswordError({
-            hasError: true,
-            message: errorInNorwegian?.message ?? "Ukjent feil",
-          });
-
-          setModalMode(ModalMode.ERROR_MESSAGE);
-          onOpen();
+          throw new Error(data.error);
         }
 
         if (!data.success) {
           throw new Error(data.message);
         }
 
+        const {
+          success: { userCreated },
+        } = data;
+
         setNewlyCreatedUser({
-          email: data.emailAddresses[0].emailAddress,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          imageUrl: data.imageUrl,
-          roles: data.roles,
+          email: userCreated?.emailAddresses[0]?.emailAddress ?? "",
+          firstName: userCreated?.firstName ?? "",
+          lastName: userCreated?.lastName ?? "",
+          imageUrl: userCreated?.imageUrl ?? "",
+          roles: userCreated?.publicMetadata?.roles,
         });
 
-        setCreateUserScreen({
-          ...createUserScreen,
-          screenToDisplay: CreateUserScreenType.SUCCESS,
-          isCreatingUser: false,
-        });
+        setIsCreatingUser(false);
+        setScreenToDisplay(CreateUserScreenType.SUCCESS);
 
         return data;
       } catch (error) {
-        console.error("Something went wrong:", error);
+        console.error("Something went wrong:", error.message);
+
+        const errorInNorwegian = errorsToNorwegian.find(
+          (e) => e.code === error.message,
+        );
+
+        console.log(errorInNorwegian);
+
+        setGeneralError(
+          errorInNorwegian?.message ??
+            `Feil: ${error?.message || "Noe gikk galt"}`,
+        );
+
+        setModalMode(ModalMode.ERROR_MESSAGE);
+        onOpen();
       } finally {
-        setCreateUserScreen({
-          ...createUserScreen,
-          isCreatingUser: false,
-        });
+        setIsCreatingUser(false);
       }
     } else {
       console.error("Invalid form data");
     }
-  }
+  };
 
   const AssignRoleForm = () => (
     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
@@ -201,7 +203,7 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
     </main>
   );
 
-  const handleSubmit = () => {
+  const handleCreateUserSubmit = () => {
     if (validateForm(newUser)) {
       setModalMode(ModalMode.CREATE_USER);
       onOpen();
@@ -217,9 +219,9 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
           <nav className="flex flex-row lg:flex-col lg:gap-8 lg:px-4 lg:pt-8">
             {menuElements.map((element) => (
               <Button
-                key={element.id}
+                key={`menu-${element.id}`}
                 variant="light"
-                onPress={() => setSelectedMenu(element.id)}
+                onClick={(e) => setSelectedMenu(element.id)}
                 className={`h-24 flex-1 flex-col rounded-none text-sm text-brand-black hover:text-brand-black/80 dark:text-brand-white dark:hover:text-brand-white/80 lg:flex-row lg:border-none ${
                   element.id !== 0 && "border-l border-black/10"
                 }`}
@@ -247,20 +249,19 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
             <UserTable users={users} className="lg:px-2" />
           )}
 
-          {selectedMenu === SidebarMenu.CREATE_USER &&
-            createUserScreen.isCreatingUser && (
-              <div className="mt-24 flex flex-col items-center justify-center gap-4">
-                <LoadingSpinner />
-                <p>
-                  Oppretter bruker <br />
-                  {newUser.email}
-                </p>
-              </div>
-            )}
+          {selectedMenu === SidebarMenu.CREATE_USER && isCreatingUser && (
+            <div className="mt-24 flex flex-col items-center justify-center gap-4">
+              <LoadingSpinner />
+              <p>
+                Oppretter bruker <br />
+                {newUser.email}
+              </p>
+            </div>
+          )}
 
           {selectedMenu === SidebarMenu.CREATE_USER &&
-            createUserScreen.isCreatingUser === false &&
-            createUserScreen.screenToDisplay === CreateUserScreenType.FORM && (
+            isCreatingUser === false &&
+            screenToDisplay === CreateUserScreenType.FORM && (
               <section className="p-4 text-left lg:px-2">
                 <div className="mb-5 flex flex-col gap-5  lg:flex-row">
                   <Input
@@ -307,14 +308,8 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
                     isRequired
                     value={newUser.password}
                     onChange={(e) => {
-                      if (passwordError) {
-                        setPasswordError({ ...passwordError, hasError: false });
-                      }
                       setNewUser({ ...newUser, password: e.target.value });
                     }}
-                    errorMessage={
-                      passwordError.hasError && passwordError?.message
-                    }
                   />
                 </div>
 
@@ -324,7 +319,6 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
                   color="secondary"
                   defaultValue={["user"]}
                   onValueChange={(value) => {
-                    console.log(newUser);
                     setNewUser({ ...newUser, roles: value });
                   }}
                 >
@@ -340,7 +334,7 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
                     color="default"
                     className="mt-8"
                     name="submit-form"
-                    onPress={handleSubmit}
+                    onClick={handleCreateUserSubmit}
                   >
                     Opprett bruker
                   </Button>
@@ -349,24 +343,37 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
             )}
 
           {selectedMenu === SidebarMenu.CREATE_USER &&
-            createUserScreen.screenToDisplay ===
-              CreateUserScreenType.SUCCESS && (
-              <section className="p-4 text-left lg:px-2">
-                <h2>Brukeren har blitt opprettet</h2>
-                <p>E-post: {newlyCreatedUser.email}</p>
-                <p>Fornavn: {newlyCreatedUser.firstName}</p>
-                <p>Etternavn: {newlyCreatedUser.lastName}</p>
+            screenToDisplay === CreateUserScreenType.SUCCESS && (
+              <section className="ml-4 text-left lg:pl-2 lg:pr-32">
+                <h2 className="mt-4">Brukeren har blitt opprettet</h2>
+                <div>
+                  <strong>E-post:</strong> {newlyCreatedUser.email}
+                </div>
+                <div>
+                  <strong>Fornavn:</strong> {newlyCreatedUser.firstName}
+                  <br />
+                  <strong>Etternavn:</strong> {newlyCreatedUser.lastName}
+                </div>
+                <div className="flex flex-row gap-4 pt-4 py-8">
+                  <strong>Roller: </strong>
+                  <RoleDisplay roles={newlyCreatedUser.roles} />
+                </div>
+                <p>
+                  Du kan senere endre brukernes roller ved å velge «Tildel
+                  roller».
+                </p>
+                <p>
+                  Under «Vis brukere» kan du se alle brukere som er registrert,
+                  endre e-post og navn på brukere, eller slette brukere.
+                </p>
 
                 <div className="flex justify-center lg:justify-start">
                   <Button
-                    color="default"
+                    color="primary"
                     className="mt-8"
                     name="submit-form"
-                    onPress={() => {
-                      setCreateUserScreen({
-                        ...createUserScreen,
-                        screenToDisplay: CreateUserScreenType.FORM,
-                      });
+                    onClick={() => {
+                      setScreenToDisplay(CreateUserScreenType.FORM);
                       setNewUser({
                         email: "",
                         firstName: "",
@@ -375,7 +382,7 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
                       });
                     }}
                   >
-                    Ok
+                    Tilbake
                   </Button>
                 </div>
               </section>
@@ -396,14 +403,14 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
                   <p>Er du sikker på at du vil opprette en ny bruker?</p>
                 </ModalBody>
                 <ModalFooter>
-                  <Button color="danger" variant="light" onPress={onClose}>
+                  <Button color="danger" variant="light" onClick={onClose}>
                     Avbryt
                   </Button>
                   <Button
                     color="primary"
-                    onPress={() => {
-                      onClose();
+                    onClick={() => {
                       createUser(newUser);
+                      onClose();
                     }}
                   >
                     Opprett
@@ -422,12 +429,14 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
                   Det har oppstått en feil
                 </ModalHeader>
                 <ModalBody>
-                  <p>{passwordError.message}</p>
+                  <p>{generalError}</p>
                 </ModalBody>
                 <ModalFooter>
                   <Button
                     color="primary"
-                    onPress={() => {
+                    onClick={() => {
+                      setModalMode(ModalMode.NONE);
+                      setGeneralError("");
                       onClose();
                     }}
                   >
