@@ -45,12 +45,6 @@ const menuElements = [
   },
 ];
 
-enum ModalMode {
-  NONE = 0,
-  CREATE_USER = 1,
-  ERROR_MESSAGE = 2,
-}
-
 enum CreateUserScreenType {
   FORM = 0,
   SUCCESS = 1,
@@ -83,8 +77,11 @@ const errorsToNorwegian = [
 ];
 
 export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [modalMode, setModalMode] = useState<ModalMode>(ModalMode.NONE);
+  // const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  const modalCreateUser = useDisclosure();
+  const modalErrorMessage = useDisclosure();
+
   const [selectedMenu, setSelectedMenu] = useState(0);
   const [isCreatingUser, setIsCreatingUser] = useState(false);
   const [screenToDisplay, setScreenToDisplay] = useState(
@@ -185,8 +182,7 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
             `Feil: ${error?.message || "Noe gikk galt"}`,
         );
 
-        setModalMode(ModalMode.ERROR_MESSAGE);
-        onOpen();
+        modalErrorMessage.onOpen();
       } finally {
         setIsCreatingUser(false);
       }
@@ -205,8 +201,7 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
 
   const handleCreateUserSubmit = () => {
     if (validateForm(newUser)) {
-      setModalMode(ModalMode.CREATE_USER);
-      onOpen();
+      modalCreateUser.onOpen();
     } else {
       console.error("not valid");
     }
@@ -391,62 +386,70 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
           {selectedMenu === SidebarMenu.ASSIGN_ROLES && <AssignRoleForm />}
         </section>
       </div>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        {modalMode === ModalMode.CREATE_USER && (
-          <ModalContent>
-            {(onClose) => (
-              <>
-                <ModalHeader className="flex flex-col gap-1">
-                  Er du sikker
-                </ModalHeader>
-                <ModalBody>
-                  <p>Er du sikker på at du vil opprette en ny bruker?</p>
-                </ModalBody>
-                <ModalFooter>
-                  <Button color="danger" variant="light" onClick={onClose}>
-                    Avbryt
-                  </Button>
-                  <Button
-                    color="primary"
-                    onClick={() => {
-                      createUser(newUser);
-                      onClose();
-                    }}
-                  >
-                    Opprett
-                  </Button>
-                </ModalFooter>
-              </>
-            )}
-          </ModalContent>
-        )}
 
-        {modalMode === ModalMode.ERROR_MESSAGE && (
-          <ModalContent>
-            {(onClose) => (
-              <>
-                <ModalHeader className="flex flex-col gap-1">
-                  Det har oppstått en feil
-                </ModalHeader>
-                <ModalBody>
-                  <p>{generalError}</p>
-                </ModalBody>
-                <ModalFooter>
-                  <Button
-                    color="primary"
-                    onClick={() => {
-                      setModalMode(ModalMode.NONE);
-                      setGeneralError("");
-                      onClose();
-                    }}
-                  >
-                    Ok
-                  </Button>
-                </ModalFooter>
-              </>
-            )}
-          </ModalContent>
-        )}
+      <Modal
+        isOpen={modalCreateUser.isOpen}
+        onOpenChange={modalCreateUser.onOpenChange}
+      >
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">
+            Er du sikker
+          </ModalHeader>
+          <ModalBody>
+            <p>Er du sikker på at du vil opprette en ny bruker?</p>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              color="danger"
+              variant="light"
+              onClick={modalCreateUser.onClose}
+            >
+              Avbryt
+            </Button>
+            <Button
+              color="primary"
+              onClick={() => {
+                createUser(newUser);
+                modalCreateUser.onClose();
+              }}
+            >
+              Opprett
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal
+        isOpen={modalErrorMessage.isOpen}
+        onOpenChange={modalErrorMessage.onOpenChange}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Det har oppstått en feil
+              </ModalHeader>
+              <ModalBody>
+                <p>{generalError}</p>
+                <p>
+                  Hvis du mener noe er galt, ta kontakt med styret eller
+                  web-administrator.
+                </p>
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="primary"
+                  onClick={() => {
+                    setGeneralError("");
+                    modalErrorMessage.onClose();
+                  }}
+                >
+                  Ok
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
       </Modal>
     </>
   );
