@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export default function Footer() {
@@ -7,7 +8,7 @@ export default function Footer() {
     <footer className="footer">
       <div>
         <p>
-          &copy; {currentYear} Boligsameiet Gartnerihagen <br />
+          Boligsameiet Gartnerihagen <br />
           <Link
             href="/cookies-og-personvern-gdpr"
             className="cursor-pointer text-xs"
@@ -27,15 +28,25 @@ export default function Footer() {
         </p>
         <br />
         <p className="text-brand-logoLightGreen">
-          Vil du ha en nettside som dette? <br />
-          Ta kontakt med <a href="mailto:kurt@lekanger.no">kurt@lekanger.no</a>
+          <a href="https://naboweb.no">
+            <Image
+              src="/naboweb-darkmode.png"
+              alt="Naboweb logo"
+              width={200}
+              height={50}
+              className="m-auto pb-2"
+            />
+          </a>
+          Nettsider for sameier og borettslag
         </p>
       </div>
       <div>
         <p>
-          Webdesign: <a href="https://www.lekanger.no">Kurt Lekanger</a>
+          Webdesign og utvikling:
           <br />
-          Bygget med Next.js og Tailwind CSS
+          <a href="mailto:kurt@lekanger.no">
+            Kurt Lekanger &copy; {currentYear}{" "}
+          </a>
         </p>
       </div>
     </footer>
