@@ -11,16 +11,15 @@ import {
   NavbarMenu,
   NavbarMenuItem,
   NavbarMenuToggle,
-  semanticColors,
 } from "@nextui-org/react";
 import { LogIn, LogOut, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import logoDark from "public/logo-dark.svg";
-import logoLight from "public/logo-light.svg";
 import { useEffect, useState } from "react";
+import logoDark from "/public/logo-dark.svg";
+import logoLight from "/public/logo-light.svg";
 
 export default function Navbar() {
   const { isSignedIn, user, isLoaded } = useUser();

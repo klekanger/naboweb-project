@@ -32,9 +32,9 @@ export default function Footer() {
             <Image
               src="/naboweb-darkmode.png"
               alt="Naboweb logo"
-              width={200}
-              height={50}
-              className="m-auto pb-2"
+              width={335}
+              height={53}
+              className="m-auto px-8 pb-2"
             />
           </a>
           Nettsider for sameier og borettslag

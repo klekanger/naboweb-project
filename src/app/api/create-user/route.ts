@@ -3,9 +3,7 @@ import { getAuth } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
-  const requestBody = request;
-  const parsedBody = await requestBody.json();
-  const { userToCreate, userRoles } = parsedBody;
+  const { userToCreate, userRoles } = await request.json();
   const { userId } = getAuth(request);
 
   if (!userId) {
@@ -66,34 +64,29 @@ export async function POST(request: NextRequest) {
     return Response.json({
       success: {
         message: "User created",
-        user: {
-          userCreated,
-          publicMetadata: {
-            roles: userRoles,
-          },
-        },
+        userCreated,
       },
     });
   } catch (error) {
     console.error("Something went wrong: ", error);
 
+    const typedError = error as Error & {
+      errors: { code: string; longMessage: string }[];
+      status: number;
+    };
+
     return Response.json(
       {
         error: {
-          errorName: error.name ?? "Unknown error",
-          code: error.errors[0].code,
-          message: error.message,
-          longMessage: error.errors[0].longMessage ?? "",
+          errorName: typedError.name ?? "Unknown error",
+          code: typedError.errors[0].code,
+          message: typedError.message,
+          longMessage: typedError.errors[0].longMessage ?? "",
         },
       },
       {
-        status: error.status ?? 500,
+        status: typedError.status ?? 500,
       },
     );
   }
-
-  // Create user with default role "user" into publicMetadata
-  // https://clerk.com/docs/references/backend/user/create-user
-
-  // Return error or success
 }

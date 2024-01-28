@@ -1,7 +1,7 @@
 "use client";
 import RoleDisplay from "@/components/RoleDisplay";
 import { formatDate } from "@/lib/format-date";
-import { NewUser } from "@/types/types";
+import { ShowUserProps } from "@/types/types";
 import {
   Avatar,
   Button,
@@ -12,9 +12,6 @@ import {
   ModalHeader,
   Spinner,
 } from "@nextui-org/react";
-
-import { ShowUserProps } from "@/types/types";
-import { Heading1 } from "lucide-react";
 
 export default function ShowUserModal({
   userDataToShow,

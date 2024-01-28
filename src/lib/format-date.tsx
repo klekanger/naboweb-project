@@ -7,6 +7,10 @@
  */
 
 export function formatDate(dateToFormat: string, locale = "no-NO"): string {
+  if (!dateToFormat) {
+    return "";
+  }
+
   // Format the dates shown at the bottom of every article page
   return new Date(dateToFormat).toLocaleDateString(locale, {
     day: "2-digit",

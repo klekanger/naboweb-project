@@ -1,7 +1,7 @@
 "use client";
 
 import UserTable from "@/components/UserTable";
-// import CreateUserModal from "@/components/modals/CreateUserModal";
+import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 import type { UsersWithEmails } from "@/types/types";
 import { NewUser } from "@/types/types";
 import {
@@ -26,7 +26,7 @@ const menuElements = [
     id: 0,
     name: "Vis brukere",
     description:
-      "Viser alle brukere som er registrert.<br />Du kan bruke søkefeltet for å finne en bestemt bruker (søker i både e-post og navn).",
+      "Viser alle brukere som er registrert, sortert etter etternavn og deretter fornavn.<br />Du kan bruke søkefeltet for å finne en bestemt bruker (søker i både e-post og navn).",
     menuIcon: User,
   },
   {
@@ -57,38 +57,15 @@ enum SidebarMenu {
   ASSIGN_ROLES = 2,
 }
 
-const errorsToNorwegian = [
-  {
-    code: "form_password_length_too_short",
-    message: "Passordet er for kort",
-  },
-  {
-    code: "form_password_pwned",
-    message: "Passordet er funnet i en datalekkasje - velg et annet",
-  },
-  {
-    code: "User already exists",
-    message: "Brukeren eksisterer allerede",
-  },
-  {
-    code: "User is not admin",
-    message: "Du er ikke administrator",
-  },
-];
-
 export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
-  // const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
   const modalCreateUser = useDisclosure();
   const modalErrorMessage = useDisclosure();
-
+  const [generalError, setGeneralError] = useState("");
   const [selectedMenu, setSelectedMenu] = useState(0);
   const [isCreatingUser, setIsCreatingUser] = useState(false);
   const [screenToDisplay, setScreenToDisplay] = useState(
     CreateUserScreenType.FORM,
   );
-
-  const [generalError, setGeneralError] = useState("");
 
   const [newUser, setNewUser] = useState<NewUser>({
     email: "",
@@ -257,8 +234,8 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
           {selectedMenu === SidebarMenu.CREATE_USER &&
             isCreatingUser === false &&
             screenToDisplay === CreateUserScreenType.FORM && (
-              <section className="p-4 text-left lg:px-2">
-                <div className="mb-5 flex flex-col gap-5  lg:flex-row">
+              <section className="px-4 lg:px-6 py-4 text-left  ">
+                <div className="mb-5 flex flex-col gap-5 lg:flex-row">
                   <Input
                     type="email"
                     label="E-post"

@@ -6,7 +6,9 @@ type FriendlyUserRole = {
   color: ChipProps["color"];
 };
 
-export default function RoleDisplay({ roles }: { roles: string[] }) {
+export default function RoleDisplay({
+  roles,
+}: { roles: string[] | undefined }) {
   const friendlyUserRoles: FriendlyUserRole[] = [
     {
       role: "admin",

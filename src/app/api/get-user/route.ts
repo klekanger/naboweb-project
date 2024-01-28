@@ -4,9 +4,7 @@ import { getAuth } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
 
 export async function POST(request: NextRequest): Promise<Response> {
-  const requestBody = request;
-  const parsedBody = await requestBody.json();
-  const { userToFetch }: { userToFetch: string } = parsedBody;
+  const { userToFetch }: { userToFetch: string } = await request.json();
   const { userId } = getAuth(request);
 
   if (!userId) {
@@ -62,7 +60,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       {
         error: {
           errorName: clerkError?.name ?? "Unknown error",
-          code: clerkError?.errors[0].code,
+          code: clerkError?.errors[0]?.code,
           message: clerkError?.message,
           longMessage: clerkError?.errors[0]?.longMessage ?? "",
         },

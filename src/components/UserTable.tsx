@@ -1,12 +1,9 @@
 "use client";
 
+import DeleteUserModal from "@/components/modals/DeleteUserModal";
 import ShowUserModal from "@/components/modals/ShowUserModal";
-import {
-  type ReturnTypeForUserError,
-  type ReturnTypeForUserSuccess,
-  ShowUserProps,
-  type UsersWithEmails,
-} from "@/types/types";
+import { fetchUserWithId } from "@/lib/fetchUserWithId";
+import { type ShowUserProps, type UserTableProps } from "@/types/types";
 import { Input } from "@nextui-org/input";
 import {
   Button,
@@ -14,8 +11,6 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
-  Modal,
-  ModalContent,
   Pagination,
   Table,
   TableBody,
@@ -25,39 +20,44 @@ import {
   TableRow,
   useDisclosure,
 } from "@nextui-org/react";
-import toast, { Toaster } from "react-hot-toast";
-
 import { MoreVertical, SearchIcon } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
-const ROWS_PER_PAGE = 10;
-
-type UserTableProps = {
-  users: UsersWithEmails[];
-  className?: string;
-};
+const ROWS_PER_PAGE = 15;
 
 export default function UserTable({ users, ...rest }: UserTableProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const modalViewUser = useDisclosure();
+  const modalEditUser = useDisclosure();
+  const modalDeleteUser = useDisclosure();
+  const modalErrorMessage = useDisclosure();
+
   const [page, setPage] = useState(1);
-  const [userDataToShow, setUserDataToSHow] = useState<
-    ShowUserProps | undefined
-  >();
+  const [userDataToShow, setUserDataToShowOrDelete] = useState<ShowUserProps>({
+    firstName: "",
+    lastName: "",
+    email: "",
+    createdAt: "",
+    image: "",
+    lastSignInAt: "",
+    roles: [],
+  });
   const [filterValue, setFilterValue] = useState("");
   const hasSearchFilter = Boolean(filterValue);
 
-  async function showUserWithId(id: string) {
+  const showUserWithIdModal = async (id: string) => {
     const userDataFromId = await fetchUserWithId(id);
 
     if ("error" in userDataFromId) {
       console.error("Something went wrong:", userDataFromId.error);
-      toast.error(`Noe gikk galt: ${userDataFromId.error}`);
+
       return;
     }
 
-    setUserDataToSHow(userDataFromId);
+    setUserDataToShowOrDelete(userDataFromId);
+    modalViewUser.onOpen();
     onOpen();
-  }
+  };
 
   if (!users) {
     return null;
@@ -68,6 +68,21 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
   const filteredUsers = useMemo(() => {
     let filteredUsers = [...users];
 
+    // Sort users by last name, then first name
+    filteredUsers.sort((a, b) => {
+      const nameA = `${a.lastName} ${a.firstName}`.toLowerCase();
+      const nameB = `${b.lastName} ${b.firstName}`.toLowerCase();
+
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+      return 0;
+    });
+
+    // Search for users if search field is not empty
     if (hasSearchFilter) {
       filteredUsers = filteredUsers.filter(
         (user) =>
@@ -77,14 +92,14 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
       );
     }
     return filteredUsers;
-  }, [users, filterValue]);
+  }, [users, filterValue, hasSearchFilter]);
 
   const usersToRender = useMemo(() => {
     const start = (page - 1) * ROWS_PER_PAGE;
     const end = start + ROWS_PER_PAGE;
 
     return filteredUsers.slice(start, end);
-  }, [page, filteredUsers, ROWS_PER_PAGE]);
+  }, [page, filteredUsers]);
 
   const onSearchChange = useCallback((value?: string) => {
     if (value) {
@@ -113,13 +128,7 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
         </div>
       </div>
     );
-  }, [
-    filterValue,
-    onSearchChange,
-    filteredUsers.length,
-    hasSearchFilter,
-    ROWS_PER_PAGE,
-  ]);
+  }, [filterValue, onSearchChange, filteredUsers.length]);
 
   return (
     <div className={rest?.className ?? ""}>
@@ -184,14 +193,39 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
                   >
                     <DropdownItem
                       key="show_user"
-                      onPress={() => {
-                        showUserWithId(user.id);
+                      onClick={() => {
+                        setUserDataToShowOrDelete({
+                          firstName: "",
+                          lastName: "",
+                          email: "",
+                          createdAt: "",
+                          image: "",
+                          lastSignInAt: "",
+                          roles: [],
+                        });
+                        modalViewUser.onOpen();
+                        showUserWithIdModal(user.id);
                       }}
                     >
                       Vis
                     </DropdownItem>
                     <DropdownItem key="edit_user">Rediger</DropdownItem>
-                    <DropdownItem key="delete_user">Slett</DropdownItem>
+                    <DropdownItem
+                      key="delete_user"
+                      onClick={() => {
+                        modalDeleteUser.onOpen();
+                        setUserDataToShowOrDelete({
+                          ...userDataToShow,
+                          id: user?.id,
+                          firstName: user?.firstName ?? "",
+                          lastName: user?.lastName ?? "",
+                          email: user?.email ?? "",
+                        });
+                        onOpen();
+                      }}
+                    >
+                      Slett
+                    </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               </TableCell>
@@ -200,64 +234,19 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
         </TableBody>
       </Table>
 
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent>
-          {(onClose) => (
-            <ShowUserModal userDataToShow={userDataToShow} onClose={onClose} />
-          )}
-        </ModalContent>
-      </Modal>
-      <Toaster position="bottom-center" />
+      <ShowUserModal
+        userDataToShow={userDataToShow}
+        onClose={modalViewUser.onClose}
+        isOpen={modalViewUser.isOpen}
+        onOpenChange={modalViewUser.onOpenChange}
+      />
+
+      <DeleteUserModal
+        userDataToDelete={userDataToShow}
+        onClose={modalDeleteUser.onClose}
+        isOpen={modalDeleteUser.isOpen}
+        onOpenChange={modalDeleteUser.onOpenChange}
+      />
     </div>
   );
-}
-
-async function fetchUserWithId(
-  id: string,
-): Promise<ReturnTypeForUserSuccess | ReturnTypeForUserError | {}> {
-  let userData = {};
-
-  try {
-    const res = await fetch("/api/get-user", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userToFetch: id,
-      }),
-    });
-
-    const data: ReturnTypeForUserSuccess | ReturnTypeForUserError =
-      (await res.json()) || {
-        error: "Kunne ikke hente brukerdata.",
-      };
-
-    if ("error" in data) {
-      return data;
-    } else {
-      if ("success" in data) {
-        const { user } = data;
-
-        userData = {
-          firstName: user?.firstName,
-          lastName: user?.lastName,
-          email: user?.emailAddresses[0]?.emailAddress,
-          createdAt: user?.createdAt,
-          image: user.imageUrl,
-          lastSignInAt: user.lastSignInAt,
-          roles: user.publicMetadata?.roles,
-        };
-
-        return userData;
-      }
-    }
-
-    return {};
-  } catch (error) {
-    console.error("Something went wrong:", error);
-    return {
-      error: "Kunne ikke hente brukerdata.",
-    };
-  }
 }

@@ -28,12 +28,12 @@ export default function CreateUserModal(
                 <p>Er du sikker på at du vil opprette en ny bruker?</p>
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
+                <Button color="danger" variant="light" onClick={onClose}>
                   Avbryt
                 </Button>
                 <Button
                   color="primary"
-                  onPress={() => {
+                  onClick={() => {
                     onClose();
                     createUser(newUser);
                   }}
