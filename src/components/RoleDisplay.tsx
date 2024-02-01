@@ -9,6 +9,12 @@ type FriendlyUserRole = {
 export default function RoleDisplay({
   roles,
 }: { roles: string[] | undefined }) {
+  // Check if roles is an array
+  if (!Array.isArray(roles)) {
+    console.error("Error: Not able to show roles. Roles is not an array");
+    return null;
+  }
+
   const friendlyUserRoles: FriendlyUserRole[] = [
     {
       role: "admin",
