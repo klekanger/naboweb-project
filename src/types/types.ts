@@ -5,6 +5,25 @@ import type { TypePageFields } from "./contentful-types";
 
 export type UserRoles = "admin" | "editor" | "user";
 
+export type createNewUserReturnType = {
+  error?: {
+    errorName?: string;
+    code?: string;
+    message: string;
+    longMessage?: string;
+  };
+  success?: {
+    message: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    roles: string[];
+    id: string;
+  };
+
+  status: number;
+};
+
 export type UserTableProps = {
   users: UsersWithEmails[];
   className?: string;
