@@ -4,6 +4,8 @@ import UserTable from "@/components/UserTable";
 import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 import type { UsersWithEmails } from "@/types/types";
 import { NewUser } from "@/types/types";
+import { createNewUser } from "@/app/actions/createUser";
+import { useFormState, useFormStatus } from "react-dom";
 import {
   Button,
   Checkbox,
@@ -17,7 +19,7 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { Crown, User, UserPlus2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import RoleDisplay from "./RoleDisplay";
 
@@ -57,15 +59,35 @@ enum SidebarMenu {
   ASSIGN_ROLES = 2,
 }
 
+const initialState = {
+  status: 0,
+  message: "",
+};
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button
+      type="submit"
+      color="default"
+      aria-disabled={pending}
+      isDisabled={pending}
+      className="mt-8"
+    >
+      {pending ? "Sender..." : "Send"}
+    </Button>
+  );
+}
+
 export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
   const modalCreateUser = useDisclosure();
   const modalErrorMessage = useDisclosure();
   const [generalError, setGeneralError] = useState("");
   const [selectedMenu, setSelectedMenu] = useState(0);
   const [isCreatingUser, setIsCreatingUser] = useState(false);
-  const [screenToDisplay, setScreenToDisplay] = useState(
-    CreateUserScreenType.FORM,
-  );
+  const [emailValue, setEmailValue] = useState("");
+  const [formState, formAction] = useFormState(createNewUser, initialState);
 
   const [newUser, setNewUser] = useState<NewUser>({
     email: "",
@@ -75,98 +97,56 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
     roles: [],
   });
 
-  const [newlyCreatedUser, setNewlyCreatedUser] = useState({
+  const [newlyCreatedUser, setNewlyCreatedUser] = useState<
+    Omit<NewUser, "password">
+  >({
     email: "",
     firstName: "",
     lastName: "",
-    imageUrl: "",
     roles: [],
   });
 
-  const emailFieldContent = newUser.email;
+  const [screenToDisplay, setScreenToDisplay] = useState(
+    CreateUserScreenType.FORM,
+  );
 
-  const isValidEmail = (currentEmailField: string) => {
-    return (
-      currentEmailField.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/i) !== null
-    );
-  };
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    if (formState?.error) {
+      const errorInNorwegian = errorsToNorwegian.find(
+        (e) => e.code === formState.error?.message,
+      );
+
+      setGeneralError(
+        errorInNorwegian?.message ??
+          `Feil: ${formState?.error?.message ?? "Noe gikk galt"}`,
+      );
+
+      modalErrorMessage.onOpen();
+    }
+
+    if (formState?.success) {
+      setNewlyCreatedUser({
+        email: formState?.success?.email ?? "",
+        firstName: formState?.success?.firstName ?? "",
+        lastName: formState?.success?.lastName ?? "",
+        roles: formState?.success?.roles,
+      });
+
+      setScreenToDisplay(CreateUserScreenType.SUCCESS);
+    }
+  }, [formState]);
+
+  function isValidEmail(email: string) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return !emailRegex.test(email);
+  }
 
   const isInvalidEmail = useMemo(() => {
-    if (emailFieldContent === "") return false;
-    return !isValidEmail(emailFieldContent);
-  }, [emailFieldContent, isValidEmail]);
+    if (emailValue === "") return false;
 
-  const validateForm = (user: NewUser) => {
-    return (
-      isValidEmail(user?.email) &&
-      user?.firstName !== "" &&
-      user?.lastName !== ""
-    );
-  };
-
-  const createUser = async (user: NewUser) => {
-    if (validateForm(user) === true) {
-      setIsCreatingUser(true);
-
-      try {
-        const res = await fetch("/api/create-user", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userToCreate: user,
-            userRoles: user.roles,
-          }),
-        });
-        const data = await res.json();
-
-        if (data.error) {
-          throw new Error(data.error);
-        }
-
-        if (!data.success) {
-          throw new Error(data.message);
-        }
-
-        const {
-          success: { userCreated },
-        } = data;
-
-        setNewlyCreatedUser({
-          email: userCreated?.emailAddresses[0]?.emailAddress ?? "",
-          firstName: userCreated?.firstName ?? "",
-          lastName: userCreated?.lastName ?? "",
-          imageUrl: userCreated?.imageUrl ?? "",
-          roles: userCreated?.publicMetadata?.roles,
-        });
-
-        setIsCreatingUser(false);
-        setScreenToDisplay(CreateUserScreenType.SUCCESS);
-
-        return data;
-      } catch (error) {
-        console.error("Something went wrong:", error.message);
-
-        const errorInNorwegian = errorsToNorwegian.find(
-          (e) => e.code === error.message,
-        );
-
-        console.log(errorInNorwegian);
-
-        setGeneralError(
-          errorInNorwegian?.message ??
-            `Feil: ${error?.message || "Noe gikk galt"}`,
-        );
-
-        modalErrorMessage.onOpen();
-      } finally {
-        setIsCreatingUser(false);
-      }
-    } else {
-      console.error("Invalid form data");
-    }
-  };
+    return isValidEmail(emailValue);
+  }, [emailValue]);
 
   const AssignRoleForm = () => (
     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
@@ -176,12 +156,8 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
     </main>
   );
 
-  const handleCreateUserSubmit = () => {
-    if (validateForm(newUser)) {
-      modalCreateUser.onOpen();
-    } else {
-      console.error("not valid");
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault();
   };
 
   return (
@@ -220,7 +196,7 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
           {selectedMenu === SidebarMenu.USERS && (
             <UserTable users={users} className="lg:px-2" />
           )}
-
+          local
           {selectedMenu === SidebarMenu.CREATE_USER && isCreatingUser && (
             <div className="mt-24 flex flex-col items-center justify-center gap-4">
               <LoadingSpinner />
@@ -234,84 +210,71 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
           {selectedMenu === SidebarMenu.CREATE_USER &&
             isCreatingUser === false &&
             screenToDisplay === CreateUserScreenType.FORM && (
-              <section className="px-4 lg:px-6 py-4 text-left  ">
+              <form
+                className="px-4 lg:px-6 py-4 text-left" /* action={formAction} */
+                onSubmit={handleSubmit}
+              >
                 <div className="mb-5 flex flex-col gap-5 lg:flex-row">
                   <Input
                     type="email"
+                    name="email"
                     label="E-post"
                     description="E-posten som vil bli brukt til innlogging"
                     isRequired
-                    value={newUser.email}
-                    onChange={(e) => {
-                      setNewUser({ ...newUser, email: e.target.value });
-                    }}
                     isInvalid={isInvalidEmail}
                     color={isInvalidEmail ? "danger" : "default"}
                     errorMessage={
                       isInvalidEmail && "Tast inn en gyldig e-postadresse"
                     }
+                    onValueChange={setEmailValue}
                   />
                   <Input
                     type="text"
+                    name="firstName"
                     label="Fornavn"
                     isRequired
-                    value={newUser.firstName}
-                    onChange={(e) => {
-                      setNewUser({ ...newUser, firstName: e.target.value });
-                    }}
                   />
                 </div>
 
                 <div className="mb-5 flex flex-col gap-5  lg:flex-row">
                   <Input
                     type="text"
+                    name="lastName"
                     label="Etternavn"
                     isRequired
-                    value={newUser.lastName}
-                    onChange={(e) => {
-                      setNewUser({ ...newUser, lastName: e.target.value });
-                    }}
                   />
 
                   <Input
                     type="password"
+                    name="password"
                     label="Passord"
                     description="Midlertidig passord som kan endres av brukeren senere. Brukeren kan også velge å logge inn med e-post-lenke uten passord."
                     isRequired
-                    value={newUser.password}
-                    onChange={(e) => {
-                      setNewUser({ ...newUser, password: e.target.value });
-                    }}
                   />
                 </div>
 
                 <CheckboxGroup
                   label="Velg roller"
+                  name="roles"
                   orientation="horizontal"
                   color="secondary"
                   defaultValue={["user"]}
-                  onValueChange={(value) => {
-                    setNewUser({ ...newUser, roles: value });
-                  }}
                 >
-                  <Checkbox value="user" isDisabled>
+                  <Checkbox value="user" name="role-user" isDisabled>
                     Bruker
                   </Checkbox>
-                  <Checkbox value="editor">Redaktør</Checkbox>
-                  <Checkbox value="admin">Administrator</Checkbox>
+                  <Checkbox value="editor" name="role-editor">
+                    Redaktør
+                  </Checkbox>
+                  <Checkbox value="admin" name="role-admin">
+                    Administrator
+                  </Checkbox>
                 </CheckboxGroup>
 
                 <div className="flex justify-center lg:justify-start">
-                  <Button
-                    color="default"
-                    className="mt-8"
-                    name="submit-form"
-                    onClick={handleCreateUserSubmit}
-                  >
-                    Opprett bruker
-                  </Button>
+                  <SubmitButton />
                 </div>
-              </section>
+              </form>
             )}
 
           {selectedMenu === SidebarMenu.CREATE_USER &&
