@@ -4,10 +4,7 @@ import { Spinner } from "@nextui-org/spinner";
 
 export default async function Page() {
   const user = await currentUser();
-
   if (!user) return <div>Not authenticated</div>;
-
-  console.log("user", user);
 
   return (
     <div className="flex flex-col items-center">
