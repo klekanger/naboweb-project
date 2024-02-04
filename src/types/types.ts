@@ -5,14 +5,8 @@ import type { TypePageFields } from "./contentful-types";
 
 export type UserRoles = "admin" | "editor" | "user";
 
-export type createNewUserReturnType = {
-  error?: {
-    errorName?: string;
-    code?: string;
-    message: string;
-    longMessage?: string;
-  };
-  success?: {
+export type CreateNewUserSuccessType = {
+  success: {
     message: string;
     email: string;
     firstName: string;
@@ -20,9 +14,22 @@ export type createNewUserReturnType = {
     roles: string[];
     id: string;
   };
-
   status: number;
 };
+
+export type CreateNewUserErrorType = {
+  error: {
+    errorName?: string;
+    code?: string;
+    message: string;
+    longMessage?: string;
+  };
+  status: number;
+};
+
+export type CreateNewUserReturnType =
+  | CreateNewUserSuccessType
+  | CreateNewUserErrorType;
 
 export type UserTableProps = {
   users: UsersWithEmails[];

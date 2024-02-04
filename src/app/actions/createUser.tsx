@@ -2,48 +2,24 @@
 
 import { clerkClient } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs";
-import { createNewUserReturnType } from "@/types/types";
+import { NewUser, createNewUserReturnType } from "@/types/types";
 
 export async function createNewUser(
-  prevState: { status: number },
-  formData: FormData,
+  newUser: NewUser,
 ): Promise<createNewUserReturnType> {
-  const user = await currentUser();
+  console.log("newUser", newUser);
 
-  if (!user) {
+  const user = await currentUser();
+  const userRoles = (user?.publicMetadata as { roles: string[] }) ?? [];
+
+  if (!user || !userRoles.roles.includes("admin")) {
     return {
       error: { message: "Unauthorized" },
       status: 401,
     };
   }
 
-  const userRoles = (user?.publicMetadata as { roles: string[] }) ?? [];
-
-  if (!userRoles.roles.includes("admin")) {
-    return {
-      error: { message: "User is not admin" },
-      status: 403,
-    };
-  }
-
-  const { email, firstName, lastName, password, roles } = {
-    email: formData.get("email") as string,
-    firstName: formData.get("firstName") as string,
-    lastName: formData.get("lastName") as string,
-    password: formData.get("password") as string,
-    roles: [
-      formData.get("role-user") || "user",
-      formData.get("role-editor"),
-      formData.get("role-admin"),
-    ] as string[],
-  };
-
-  if (!email) {
-    return {
-      error: { message: "Email is required" },
-      status: 400,
-    };
-  }
+  const { email, firstName, lastName, password, roles } = newUser;
 
   try {
     const users = await clerkClient.users.getUserList({
@@ -74,7 +50,7 @@ export async function createNewUser(
     return {
       success: {
         message: "User created",
-        email: userCreated?.emailAddresses[0].emailAddress,
+        email: userCreated?.emailAddresses[0].emailAddress || "",
         firstName: userCreated?.firstName || "",
         lastName: userCreated?.lastName || "",
         roles: userRoles.roles,

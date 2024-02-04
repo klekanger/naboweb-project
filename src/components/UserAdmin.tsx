@@ -5,7 +5,7 @@ import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 import type { UsersWithEmails } from "@/types/types";
 import { NewUser } from "@/types/types";
 import { createNewUser } from "@/app/actions/createUser";
-import { useFormState, useFormStatus } from "react-dom";
+
 import {
   Button,
   Checkbox,
@@ -59,27 +59,6 @@ enum SidebarMenu {
   ASSIGN_ROLES = 2,
 }
 
-const initialState = {
-  status: 0,
-  message: "",
-};
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <Button
-      type="submit"
-      color="default"
-      aria-disabled={pending}
-      isDisabled={pending}
-      className="mt-8"
-    >
-      {pending ? "Sender..." : "Send"}
-    </Button>
-  );
-}
-
 export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
   const modalCreateUser = useDisclosure();
   const modalErrorMessage = useDisclosure();
@@ -87,14 +66,13 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
   const [selectedMenu, setSelectedMenu] = useState(0);
   const [isCreatingUser, setIsCreatingUser] = useState(false);
   const [emailValue, setEmailValue] = useState("");
-  const [formState, formAction] = useFormState(createNewUser, initialState);
 
   const [newUser, setNewUser] = useState<NewUser>({
     email: "",
     firstName: "",
     lastName: "",
     password: "",
-    roles: [],
+    roles: ["user"],
   });
 
   const [newlyCreatedUser, setNewlyCreatedUser] = useState<
@@ -110,43 +88,21 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
     CreateUserScreenType.FORM,
   );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    if (formState?.error) {
-      const errorInNorwegian = errorsToNorwegian.find(
-        (e) => e.code === formState.error?.message,
-      );
-
-      setGeneralError(
-        errorInNorwegian?.message ??
-          `Feil: ${formState?.error?.message ?? "Noe gikk galt"}`,
-      );
-
-      modalErrorMessage.onOpen();
-    }
-
-    if (formState?.success) {
-      setNewlyCreatedUser({
-        email: formState?.success?.email ?? "",
-        firstName: formState?.success?.firstName ?? "",
-        lastName: formState?.success?.lastName ?? "",
-        roles: formState?.success?.roles,
-      });
-
-      setScreenToDisplay(CreateUserScreenType.SUCCESS);
-    }
-  }, [formState]);
-
-  function isValidEmail(email: string) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return !emailRegex.test(email);
-  }
+  const validateEmail = (value: string) =>
+    value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i);
 
   const isInvalidEmail = useMemo(() => {
     if (emailValue === "") return false;
+    return validateEmail(emailValue) ? false : true;
+  }, [emailValue, validateEmail]);
 
-    return isValidEmail(emailValue);
-  }, [emailValue]);
+  const validateForm = (user: NewUser) => {
+    return (
+      validateEmail(user?.email) &&
+      user?.firstName !== "" &&
+      user?.lastName !== ""
+    );
+  };
 
   const AssignRoleForm = () => (
     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
@@ -156,8 +112,31 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
     </main>
   );
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (validateForm(newUser)) {
+      modalCreateUser.onOpen();
+    } else {
+      console.error("not valid");
+    }
+  };
+
+  const handleCreateNewUser = async () => {
+    setIsCreatingUser(true);
+    const { error, success } = await createNewUser(newUser);
+    setIsCreatingUser(false);
+    if (error) {
+      setGeneralError(error.message);
+      modalErrorMessage.onOpen();
+    } else {
+      setNewlyCreatedUser({
+        email: success?.email,
+        firstName: success?.firstName,
+        lastName: success?.lastName,
+        roles: success?.roles,
+      });
+      setScreenToDisplay(CreateUserScreenType.SUCCESS);
+    }
   };
 
   return (
@@ -188,15 +167,16 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
         <section className="flex flex-col overflow-auto">
           <p
             className="w-full border-b bg-brand-white px-6 py-8 text-left text-base dark:bg-brand-black"
-            // biome-ignore lint/security/noDangerouslySetInnerHtml: for formatting. Not dangerous – content is from CMS.
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: for formatting. Not dangerous – content is defined by us.
             dangerouslySetInnerHTML={{
               __html: menuElements[selectedMenu].description,
             }}
           />
+
           {selectedMenu === SidebarMenu.USERS && (
             <UserTable users={users} className="lg:px-2" />
           )}
-          local
+
           {selectedMenu === SidebarMenu.CREATE_USER && isCreatingUser && (
             <div className="mt-24 flex flex-col items-center justify-center gap-4">
               <LoadingSpinner />
@@ -207,11 +187,12 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
             </div>
           )}
 
+          {/* CREATE NEW USER SCREEN - SHOW FORM */}
           {selectedMenu === SidebarMenu.CREATE_USER &&
             isCreatingUser === false &&
             screenToDisplay === CreateUserScreenType.FORM && (
               <form
-                className="px-4 lg:px-6 py-4 text-left" /* action={formAction} */
+                className="px-4 lg:px-6 py-4 text-left"
                 onSubmit={handleSubmit}
               >
                 <div className="mb-5 flex flex-col gap-5 lg:flex-row">
@@ -221,18 +202,27 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
                     label="E-post"
                     description="E-posten som vil bli brukt til innlogging"
                     isRequired
+                    value={newUser.email}
                     isInvalid={isInvalidEmail}
                     color={isInvalidEmail ? "danger" : "default"}
                     errorMessage={
                       isInvalidEmail && "Tast inn en gyldig e-postadresse"
                     }
-                    onValueChange={setEmailValue}
+                    onChange={(e) => {
+                      setNewUser({ ...newUser, email: e.target.value });
+                    }}
+                    onValueChange={setEmailValue} // Only for visual validation feedback in the input field
                   />
+
                   <Input
                     type="text"
                     name="firstName"
                     label="Fornavn"
                     isRequired
+                    value={newUser.firstName}
+                    onChange={(e) => {
+                      setNewUser({ ...newUser, firstName: e.target.value });
+                    }}
                   />
                 </div>
 
@@ -242,6 +232,10 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
                     name="lastName"
                     label="Etternavn"
                     isRequired
+                    value={newUser.lastName}
+                    onChange={(e) => {
+                      setNewUser({ ...newUser, lastName: e.target.value });
+                    }}
                   />
 
                   <Input
@@ -250,6 +244,10 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
                     label="Passord"
                     description="Midlertidig passord som kan endres av brukeren senere. Brukeren kan også velge å logge inn med e-post-lenke uten passord."
                     isRequired
+                    value={newUser.password}
+                    onChange={(e) => {
+                      setNewUser({ ...newUser, password: e.target.value });
+                    }}
                   />
                 </div>
 
@@ -259,6 +257,9 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
                   orientation="horizontal"
                   color="secondary"
                   defaultValue={["user"]}
+                  onValueChange={(value) => {
+                    setNewUser({ ...newUser, roles: value });
+                  }}
                 >
                   <Checkbox value="user" name="role-user" isDisabled>
                     Bruker
@@ -272,11 +273,20 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
                 </CheckboxGroup>
 
                 <div className="flex justify-center lg:justify-start">
-                  <SubmitButton />
+                  <Button
+                    type="submit"
+                    color="default"
+                    aria-disabled={isCreatingUser}
+                    isDisabled={isCreatingUser}
+                    className="mt-8"
+                  >
+                    {isCreatingUser ? "Sender..." : "Send"}
+                  </Button>
                 </div>
               </form>
             )}
 
+          {/* NEW USER HAS BEEN CREATED - SHOW SUCCESS SCREEN */}
           {selectedMenu === SidebarMenu.CREATE_USER &&
             screenToDisplay === CreateUserScreenType.SUCCESS && (
               <section className="ml-4 text-left lg:pl-2 lg:pr-32">
@@ -327,6 +337,7 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
         </section>
       </div>
 
+      {/* CREATE NEW USER MODAL - USER NEEDS TO CONFIRM BEFORE CALLING THE SERVER ACTION */}
       <Modal
         isOpen={modalCreateUser.isOpen}
         onOpenChange={modalCreateUser.onOpenChange}
@@ -349,7 +360,7 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
             <Button
               color="primary"
               onClick={() => {
-                createUser(newUser);
+                handleCreateNewUser();
                 modalCreateUser.onClose();
               }}
             >
@@ -359,6 +370,7 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
         </ModalContent>
       </Modal>
 
+      {/* MODAL FOR DISPLAYING ERRORS */}
       <Modal
         isOpen={modalErrorMessage.isOpen}
         onOpenChange={modalErrorMessage.onOpenChange}
