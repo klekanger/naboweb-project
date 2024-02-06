@@ -2,11 +2,11 @@
 
 import { clerkClient } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs";
-import { NewUser, createNewUserReturnType } from "@/types/types";
+import { NewUser, CreateNewUserReturnType } from "@/types/types";
 
 export async function createNewUser(
   newUser: NewUser,
-): Promise<createNewUserReturnType> {
+): Promise<CreateNewUserReturnType> {
   console.log("newUser", newUser);
 
   const user = await currentUser();
