@@ -19,7 +19,7 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { Crown, User, UserPlus2 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import RoleDisplay from "./RoleDisplay";
 
@@ -121,12 +121,21 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
     }
   };
 
+  // Call the createNewUser server action
   const handleCreateNewUser = async () => {
     setIsCreatingUser(true);
     const { error, success } = await createNewUser(newUser);
     setIsCreatingUser(false);
+
     if (error) {
-      setGeneralError(error.message);
+      const errorInNorwegian = errorsToNorwegian.find(
+        (e) => e.code === error.message,
+      );
+      console.log("error ", error);
+      setGeneralError(
+        errorInNorwegian?.message ??
+          `Feil: ${error?.message || "Noe gikk galt"}`,
+      );
       modalErrorMessage.onOpen();
     } else {
       setNewlyCreatedUser({
@@ -173,18 +182,9 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
             }}
           />
 
+          {/* SHOW USERS SCREEN */}
           {selectedMenu === SidebarMenu.USERS && (
             <UserTable users={users} className="lg:px-2" />
-          )}
-
-          {selectedMenu === SidebarMenu.CREATE_USER && isCreatingUser && (
-            <div className="mt-24 flex flex-col items-center justify-center gap-4">
-              <LoadingSpinner />
-              <p>
-                Oppretter bruker <br />
-                {newUser.email}
-              </p>
-            </div>
           )}
 
           {/* CREATE NEW USER SCREEN - SHOW FORM */}
@@ -285,6 +285,17 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
                 </div>
               </form>
             )}
+
+          {/* SHOW LOADING SPINNER WHILE CREATING USER */}
+          {selectedMenu === SidebarMenu.CREATE_USER && isCreatingUser && (
+            <div className="mt-24 flex flex-col items-center justify-center gap-4">
+              <LoadingSpinner />
+              <p>
+                Oppretter bruker <br />
+                {newUser.email}
+              </p>
+            </div>
+          )}
 
           {/* NEW USER HAS BEEN CREATED - SHOW SUCCESS SCREEN */}
           {selectedMenu === SidebarMenu.CREATE_USER &&

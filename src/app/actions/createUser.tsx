@@ -29,7 +29,9 @@ export async function createNewUser(
 
     if (users.length > 0) {
       return {
-        error: { message: `User with email ${email} already exists` },
+        error: {
+          message: `User with email ${email} already exists`,
+        },
         status: 409,
       };
     }
