@@ -124,27 +124,29 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
   // Call the createNewUser server action
   const handleCreateNewUser = async () => {
     setIsCreatingUser(true);
-    const { error, success } = await createNewUser(newUser);
+    const response = await createNewUser(newUser);
     setIsCreatingUser(false);
 
-    if (error) {
+    if ("error" in response) {
       const errorInNorwegian = errorsToNorwegian.find(
-        (e) => e.code === error.message,
+        (e) => e.code === response.error.message,
       );
-      console.log("error ", error);
+      console.error("error ", response.error);
       setGeneralError(
         errorInNorwegian?.message ??
-          `Feil: ${error?.message || "Noe gikk galt"}`,
+          `Feil: ${response.error?.message || "Noe gikk galt"}`,
       );
       modalErrorMessage.onOpen();
-    } else {
+    } else if ("success" in response) {
       setNewlyCreatedUser({
-        email: success?.email,
-        firstName: success?.firstName,
-        lastName: success?.lastName,
-        roles: success?.roles,
+        email: response.success?.email,
+        firstName: response.success?.firstName,
+        lastName: response.success?.lastName,
+        roles: response.success?.roles,
       });
       setScreenToDisplay(CreateUserScreenType.SUCCESS);
+    } else {
+      setGeneralError("Noe gikk galt");
     }
   };
 

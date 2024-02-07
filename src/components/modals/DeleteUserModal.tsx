@@ -11,18 +11,8 @@ import {
   Spinner,
 } from "@nextui-org/react";
 import { useState } from "react";
-
-const errorsToNorwegian = [
-  {
-    error: "Unauthorized",
-    message:
-      "Du har ikke de nødvendige rettigheter til å utføre denne operasjonen",
-  },
-  {
-    error: "User is not admin",
-    message: "Du må være administrator for å gjøre dette",
-  },
-];
+import { deleteUser } from "@/app/actions/deleteUser";
+import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 
 export default function DeleteUserModal({
   userDataToDelete,
@@ -53,33 +43,23 @@ export default function DeleteUserModal({
     setIsDeleting(true);
 
     try {
-      const res = await fetch("/api/delete-user", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userToDelete: id,
-        }),
-      });
+      const response = await deleteUser(id);
 
-      const data = await res.json();
-
-      console.log(data);
-
-      if (data.error) {
+      if ("error" in response) {
         const errorInNorwegian = errorsToNorwegian.find(
-          (error) => error.error === data.error,
+          (e) => e.code === response.error.message,
         );
 
-        console.error(data.error);
+        console.error("error ", response.error);
         setErrorToShow(errorInNorwegian?.message ?? "Ukjent feil");
         return;
+      } else if ("success" in response) {
+        setSuccessMessage(
+          `Bruker ${userDataToDelete.firstName} ${userDataToDelete.lastName} ble slettet`,
+        );
+      } else {
+        setErrorToShow("Ukjent feil");
       }
-
-      setSuccessMessage(
-        `Bruker ${userDataToDelete.firstName} ${userDataToDelete.lastName} ble slettet`,
-      );
     } catch (error) {
       console.error("Error deleting user: ", error);
 

@@ -2,13 +2,11 @@
 
 import { clerkClient } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs";
-import { NewUser, CreateNewUserReturnType } from "@/types/types";
+import type { NewUser, CreateNewUserReturnType } from "@/types/types";
 
 export async function createNewUser(
   newUser: NewUser,
 ): Promise<CreateNewUserReturnType> {
-  console.log("newUser", newUser);
-
   const user = await currentUser();
   const userRoles = (user?.publicMetadata as { roles: string[] }) ?? [];
 

@@ -5,6 +5,23 @@ import type { TypePageFields } from "./contentful-types";
 
 export type UserRoles = "admin" | "editor" | "user";
 
+export type DeleteUserSuccessType = {
+  success: {
+    message: string;
+    userId: string;
+  };
+  status: number;
+};
+
+export type DeleteUserErrorType = {
+  error: {
+    message: string;
+  };
+  status: number;
+};
+
+export type DeleteUserReturnType = DeleteUserSuccessType | DeleteUserErrorType;
+
 export type CreateNewUserSuccessType = {
   success: {
     message: string;
