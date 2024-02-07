@@ -28,7 +28,6 @@ export async function deleteUser(
 
   try {
     userWhoWasDeleted = await clerkClient.users.deleteUser(userIDToDelete);
-    console.log("User deleted: ", userWhoWasDeleted);
 
     return {
       success: {
