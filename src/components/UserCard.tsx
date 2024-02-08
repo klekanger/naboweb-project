@@ -1,4 +1,4 @@
-import RoleDisplay from "@/components/RoleDisplay";
+import RoleDisplay from "@/components/userAdmin/RoleDisplay";
 import { type UserCardProps } from "@/types/types";
 import { Button } from "@nextui-org/button";
 import { Card, CardBody, CardHeader } from "@nextui-org/card";

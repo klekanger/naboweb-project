@@ -1,4 +1,4 @@
-import UserAdmin from "@/components/UserAdmin";
+import UserAdmin from "@/components/userAdmin/UserAdmin";
 import type { UserWithRoles, UsersWithEmails } from "@/types/types";
 import { clerkClient, currentUser } from "@clerk/nextjs";
 import { Button } from "@nextui-org/react";

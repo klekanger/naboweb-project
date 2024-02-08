@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import RoleDisplay from "../components/RoleDisplay";
+import RoleDisplay from "../components/userAdmin/RoleDisplay";
 
 const meta: Meta<typeof RoleDisplay> = {
   title: "RoleDisplay",

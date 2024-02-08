@@ -1,7 +1,7 @@
 "use client";
 
-import DeleteUserModal from "@/components/modals/DeleteUserModal";
-import ShowUserModal from "@/components/modals/ShowUserModal";
+import DeleteUserModal from "@/components/userAdmin/DeleteUserModal";
+import ShowUserModal from "@/components/userAdmin/ShowUserModal";
 import { fetchUserWithId } from "@/lib/fetchUserWithId";
 import { type ShowUserProps, type UserTableProps } from "@/types/types";
 import { Input } from "@nextui-org/input";

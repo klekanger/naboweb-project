@@ -1,6 +1,6 @@
 "use client";
 
-import UserTable from "@/components/UserTable";
+import UserTable from "@/components/userAdmin/UserTable";
 import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 import type { UsersWithEmails } from "@/types/types";
 import { NewUser } from "@/types/types";
@@ -20,7 +20,7 @@ import {
 } from "@nextui-org/react";
 import { Crown, User, UserPlus2 } from "lucide-react";
 import { useMemo, useState } from "react";
-import LoadingSpinner from "./LoadingSpinner";
+import LoadingSpinner from "../LoadingSpinner";
 import RoleDisplay from "./RoleDisplay";
 
 const menuElements = [
@@ -363,11 +363,7 @@ export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
             <p>Er du sikker på at du vil opprette en ny bruker?</p>
           </ModalBody>
           <ModalFooter>
-            <Button
-              color="danger"
-              variant="light"
-              onClick={modalCreateUser.onClose}
-            >
+            <Button color="warning" onClick={modalCreateUser.onClose}>
               Avbryt
             </Button>
             <Button

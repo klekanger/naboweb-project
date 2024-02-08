@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import UserTable from "../components/UserTable";
+import UserTable from "../components/userAdmin/UserTable";
 import type { UsersWithEmails } from "../types/types";
 
 const meta = {
