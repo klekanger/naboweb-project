@@ -1,7 +1,6 @@
 "use server";
 
-import { clerkClient } from "@clerk/nextjs";
-import { currentUser } from "@clerk/nextjs";
+import { clerkClient, currentUser } from "@clerk/nextjs";
 import type { NewUser, CreateNewUserReturnType } from "@/types/types";
 
 export async function createNewUser(
