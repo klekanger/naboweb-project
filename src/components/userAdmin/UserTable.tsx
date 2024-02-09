@@ -3,6 +3,7 @@
 import DeleteUserModal from "@/components/userAdmin/DeleteUserModal";
 import ShowUserModal from "@/components/userAdmin/ShowUserModal";
 import { fetchUserWithId } from "@/lib/fetchUserWithId";
+import { getUser } from "@/app/actions/getUser";
 import { type ShowUserProps, type UserTableProps } from "@/types/types";
 import { Input } from "@nextui-org/input";
 import {
@@ -19,11 +20,28 @@ import {
   TableHeader,
   TableRow,
   useDisclosure,
+  Tooltip,
 } from "@nextui-org/react";
 import { MoreVertical, SearchIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
 const ROWS_PER_PAGE = 15;
+
+const CircleAdmin = () => (
+  <Tooltip content="Administrator">
+    <span className="rounded-full bg-danger/30 w-[1em] h-[1em] justify-center items-center p-2.5 inline-flex text-[1em] mr-1">
+      A
+    </span>
+  </Tooltip>
+);
+
+const CircleEditor = () => (
+  <Tooltip content="Redaktør">
+    <span className="rounded-full bg-warning/30 w-[1em] h-[1em] justify-center items-center p-2.5 inline-flex text-[1em]">
+      R
+    </span>
+  </Tooltip>
+);
 
 export default function UserTable({ users, ...rest }: UserTableProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -46,7 +64,7 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
   const hasSearchFilter = Boolean(filterValue);
 
   const showUserWithIdModal = async (id: string) => {
-    const userDataFromId = await fetchUserWithId(id);
+    const userDataFromId = await getUser(id);
 
     if ("error" in userDataFromId) {
       console.error("Something went wrong:", userDataFromId.error);
@@ -54,9 +72,16 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
       return;
     }
 
-    setUserDataToShowOrDelete(userDataFromId);
-    modalViewUser.onOpen();
-    onOpen();
+    if ("success" in userDataFromId) {
+      const { success } = userDataFromId;
+
+      setUserDataToShowOrDelete(success?.user);
+
+      modalViewUser.onOpen();
+      onOpen();
+    }
+
+    modalErrorMessage.onOpen();
   };
 
   if (!users) {
@@ -164,73 +189,92 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
           <TableColumn className="hidden bg-brand-primary/20 text-sm font-bold sm:table-cell md:text-base">
             Opprettet
           </TableColumn>
+          <TableColumn className="hidden bg-brand-primary/20 text-sm font-bold sm:table-cell md:text-base">
+            Roller
+          </TableColumn>
           <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
             Oppgaver
           </TableColumn>
         </TableHeader>
         <TableBody emptyContent={"Ingen brukere"}>
-          {usersToRender.map((user) => (
-            <TableRow key={user.id} className="text-left">
-              <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
-              <TableCell>{user.email}</TableCell>
-              <TableCell className="hidden sm:table-cell">
-                {new Date(user.createdAt).toLocaleDateString("nb-NO", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                })}
-              </TableCell>
-              <TableCell>
-                <Dropdown>
-                  <DropdownTrigger>
-                    <Button isIconOnly size="sm" variant="light">
-                      <MoreVertical className="text-default-300" />
-                    </Button>
-                  </DropdownTrigger>
-                  <DropdownMenu
-                    closeOnSelect={true}
-                    aria-label="Meny for brukeroperasjoner"
-                  >
-                    <DropdownItem
-                      key="show_user"
-                      onClick={() => {
-                        setUserDataToShowOrDelete({
-                          firstName: "",
-                          lastName: "",
-                          email: "",
-                          createdAt: "",
-                          image: "",
-                          lastSignInAt: "",
-                          roles: [],
-                        });
-                        modalViewUser.onOpen();
-                        showUserWithIdModal(user.id);
-                      }}
+          {usersToRender.map((user) => {
+            let roles;
+            if (Array.isArray(user.roles)) {
+              roles = user.roles
+                .map((role) =>
+                  role === "admin" ? (
+                    <CircleAdmin key={`${user.id}-admin`} />
+                  ) : role === "editor" ? (
+                    <CircleEditor key={`${user.id}-editor`} />
+                  ) : null,
+                )
+                .sort();
+            }
+
+            return (
+              <TableRow key={user.id} className="text-left">
+                <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell className="hidden sm:table-cell">
+                  {new Date(user.createdAt).toLocaleDateString("nb-NO", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}
+                </TableCell>
+                <TableCell className="hidden sm:table-cell">{roles}</TableCell>
+                <TableCell>
+                  <Dropdown>
+                    <DropdownTrigger>
+                      <Button isIconOnly size="sm" variant="light">
+                        <MoreVertical className="text-default-300" />
+                      </Button>
+                    </DropdownTrigger>
+                    <DropdownMenu
+                      closeOnSelect={true}
+                      aria-label="Meny for brukeroperasjoner"
                     >
-                      Vis
-                    </DropdownItem>
-                    <DropdownItem key="edit_user">Rediger</DropdownItem>
-                    <DropdownItem
-                      key="delete_user"
-                      onClick={() => {
-                        modalDeleteUser.onOpen();
-                        setUserDataToShowOrDelete({
-                          ...userDataToShow,
-                          id: user?.id,
-                          firstName: user?.firstName ?? "",
-                          lastName: user?.lastName ?? "",
-                          email: user?.email ?? "",
-                        });
-                        onOpen();
-                      }}
-                    >
-                      Slett
-                    </DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </TableCell>
-            </TableRow>
-          )) || []}
+                      <DropdownItem
+                        key="show_user"
+                        onClick={() => {
+                          setUserDataToShowOrDelete({
+                            firstName: "",
+                            lastName: "",
+                            email: "",
+                            createdAt: "",
+                            image: "",
+                            lastSignInAt: "",
+                            roles: [],
+                          });
+                          modalViewUser.onOpen();
+                          showUserWithIdModal(user.id);
+                        }}
+                      >
+                        Vis
+                      </DropdownItem>
+                      <DropdownItem key="edit_user">Rediger</DropdownItem>
+                      <DropdownItem
+                        key="delete_user"
+                        onClick={() => {
+                          modalDeleteUser.onOpen();
+                          setUserDataToShowOrDelete({
+                            ...userDataToShow,
+                            id: user?.id,
+                            firstName: user?.firstName ?? "",
+                            lastName: user?.lastName ?? "",
+                            email: user?.email ?? "",
+                          });
+                          onOpen();
+                        }}
+                      >
+                        Slett
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
+                </TableCell>
+              </TableRow>
+            );
+          }) || []}
         </TableBody>
       </Table>
 
