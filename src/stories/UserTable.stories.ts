@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import UserTable from "../components/userAdmin/UserTable";
-import type { UsersWithEmails } from "../types/types";
+import type { UserWithEmails } from "../types/types";
 
 const meta = {
   title: "UserTable",
@@ -16,8 +16,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function mockUsers(numberOfUsers = 1): UsersWithEmails[] {
-  const users: UsersWithEmails[] = [];
+function mockUsers(numberOfUsers = 1): UserWithEmails[] {
+  const users: UserWithEmails[] = [];
   for (let i = 1; i <= numberOfUsers; i++) {
     const randomRole = ["admin", "editor", "user"]
       .map((role) => {

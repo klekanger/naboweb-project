@@ -48,8 +48,36 @@ export type CreateNewUserReturnType =
   | CreateNewUserSuccessType
   | CreateNewUserErrorType;
 
+export type GetUserSuccessType = {
+  success: {
+    message: string;
+    user: {
+      id: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      createdAt: string;
+      lastSignInAt: string;
+      roles: string[];
+    };
+    status: number;
+  };
+};
+
+export type GetUserErrorType = {
+  error: {
+    message: string;
+    errorName?: string;
+    code?: string;
+    longMessage?: string;
+  };
+  status: number;
+};
+
+export type GetUserReturnType = GetUserSuccessType | GetUserErrorType;
+
 export type UserTableProps = {
-  users: UsersWithEmails[];
+  users: UserWithEmails[];
   className?: string;
 };
 
@@ -84,7 +112,7 @@ export type ShowUserProps = {
   lastName: string;
   email: string;
   createdAt: string;
-  image: string;
+  image?: string;
   lastSignInAt: string;
   roles?: string[];
 };
@@ -349,7 +377,9 @@ export type UserCardProps = {
   className?: string;
 };
 
-export type UsersWithEmails = Pick<
+export type UserWithEmails = Pick<
   UserWithRoles,
   "id" | "createdAt" | "firstName" | "lastName" | "email"
->;
+> & {
+  roles: string[] | undefined;
+};
