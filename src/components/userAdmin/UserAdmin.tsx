@@ -2,7 +2,7 @@
 
 import UserTable from "@/components/userAdmin/UserTable";
 import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
-import type { UsersWithEmails } from "@/types/types";
+import type { UserWithEmails, UserWithRoles } from "@/types/types";
 import { NewUser } from "@/types/types";
 import { createNewUser } from "@/app/actions/createUser";
 
@@ -59,7 +59,7 @@ enum SidebarMenu {
   ASSIGN_ROLES = 2,
 }
 
-export default function UserAdmin({ users }: { users: UsersWithEmails[] }) {
+export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
   const modalCreateUser = useDisclosure();
   const modalErrorMessage = useDisclosure();
   const [generalError, setGeneralError] = useState("");
