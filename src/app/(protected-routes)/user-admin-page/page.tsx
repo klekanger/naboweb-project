@@ -1,5 +1,5 @@
 import UserAdmin from "@/components/userAdmin/UserAdmin";
-import type { UserWithRoles, UsersWithEmails } from "@/types/types";
+import type { UserWithRoles, UserWithEmails } from "@/types/types";
 import { clerkClient, currentUser } from "@clerk/nextjs";
 import { Button } from "@nextui-org/react";
 import { ArrowBigLeft } from "lucide-react";
@@ -74,29 +74,7 @@ export default async function Page() {
 
   const users = userData.users;
 
-  const usersWithEmails: UsersWithEmails[] = users.map(mapUsersWithEmails);
-
-  // Temporary test code for testing pagination
-  const mockUsers = [];
-  for (let i = 1; i <= 200; i++) {
-    const randomRole = ["admin", "editor", "user"]
-      .map((role) => {
-        if (Math.random() > 0.5) {
-          return role;
-        } else return null;
-      })
-      .filter((role) => role !== null);
-
-    const user = {
-      id: i,
-      createdAt: new Date(),
-      roles: randomRole,
-      firstName: `Firstname ${i}`,
-      lastName: `Lastname ${i}`,
-      email: `user${i}@example.com`,
-    };
-    mockUsers.push(user);
-  }
+  const usersWithEmails: UserWithEmails[] = users.map(mapUsersWithEmails);
 
   return (
     <div className="text-center">
