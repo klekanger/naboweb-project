@@ -302,7 +302,7 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
           {/* NEW USER HAS BEEN CREATED - SHOW SUCCESS SCREEN */}
           {selectedMenu === SidebarMenu.CREATE_USER &&
             screenToDisplay === CreateUserScreenType.SUCCESS && (
-              <section className="ml-4 text-left lg:pl-2 lg:pr-32">
+              <section className="ml-4 text-left lg:pl-2 lg:pr-32 pb-16">
                 <h2 className="mt-4">Brukeren har blitt opprettet</h2>
                 <div>
                   <strong>E-post:</strong> {newlyCreatedUser.email}
