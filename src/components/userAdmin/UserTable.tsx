@@ -55,9 +55,9 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
     firstName: "",
     lastName: "",
     email: "",
-    createdAt: "",
+    createdAt: null,
     image: "",
-    lastSignInAt: "",
+    lastSignInAt: null,
     roles: [],
   });
   const [filterValue, setFilterValue] = useState("");
@@ -241,9 +241,9 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
                             firstName: "",
                             lastName: "",
                             email: "",
-                            createdAt: "",
+                            createdAt: null,
                             image: "",
-                            lastSignInAt: "",
+                            lastSignInAt: null,
                             roles: [],
                           });
                           modalViewUser.onOpen();

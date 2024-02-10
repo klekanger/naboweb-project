@@ -56,8 +56,8 @@ export type GetUserSuccessType = {
       firstName: string;
       lastName: string;
       email: string;
-      createdAt: string;
-      lastSignInAt: string;
+      createdAt: number | null;
+      lastSignInAt: number | null;
       roles: string[];
     };
     status: number;
@@ -111,9 +111,9 @@ export type ShowUserProps = {
   firstName: string;
   lastName: string;
   email: string;
-  createdAt: string;
+  createdAt: number | null;
   image?: string;
-  lastSignInAt: string;
+  lastSignInAt: number | null;
   roles?: string[];
 };
 
@@ -128,9 +128,9 @@ export type ReturnTypeForUserSuccess = {
       id: string;
       emailAddress: string;
     }[];
-    createdAt: string;
+    createdAt: number | null;
     imageUrl: string;
-    lastSignInAt: string;
+    lastSignInAt: number | null;
     publicMetadata: {
       roles: string[] | undefined;
     };
