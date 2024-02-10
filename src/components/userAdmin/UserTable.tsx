@@ -25,7 +25,7 @@ import {
 import { MoreVertical, SearchIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
-const ROWS_PER_PAGE = 15;
+const ROWS_PER_PAGE = 20;
 
 const CircleAdmin = () => (
   <Tooltip content="Administrator">
@@ -160,6 +160,7 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
       <Table
         className="mb-16"
         shadow="none"
+        isCompact
         aria-label="Tabell med oversikt over brukere"
         topContent={topContent}
         bottomContent={

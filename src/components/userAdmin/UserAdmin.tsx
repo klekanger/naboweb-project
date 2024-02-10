@@ -152,7 +152,7 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
 
   return (
     <>
-      <div className="grid h-screen min-h-screen w-full grid-rows-[auto_1fr] overflow-hidden rounded-large bg-content1 shadow-small lg:grid-cols-[280px_1fr] lg:grid-rows-none">
+      <div className="grid w-full grid-rows-[auto_1fr] overflow-hidden rounded-large bg-content1 shadow-small lg:grid-cols-[280px_1fr] lg:grid-rows-none">
         <div className="bg-default-100 dark:bg-zinc-800/40 lg:border-r">
           <nav className="flex flex-row lg:flex-col lg:gap-8 lg:px-4 lg:pt-8">
             {menuElements.map((element) => (
