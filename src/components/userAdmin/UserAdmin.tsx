@@ -19,7 +19,7 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
-import { Crown, User, UserPlus2 } from "lucide-react";
+import { Crown, User, UserPlus2, UserCog } from "lucide-react";
 import { useMemo, useState } from "react";
 import LoadingSpinner from "../LoadingSpinner";
 import RoleDisplay from "./RoleDisplay";
@@ -41,6 +41,13 @@ const menuElements = [
   },
   {
     id: 2,
+    name: "Endre bruker",
+    description:
+      "Endre en allerede eksisterende bruker (navn, e-post, roller).",
+    menuIcon: UserCog,
+  },
+  {
+    id: 3,
     name: "Superbrukere",
     description:
       "Oversikt over brukere med utvidede rettigheter. <em>Administratorer</em> har tilgang til alle funksjoner og kan opprette brukere og endre roller. <em>Redaktører</em> kan legge til nytt innhold på sidene.",
@@ -57,7 +64,8 @@ enum CreateUserScreenType {
 enum SidebarMenu {
   USERS = 0,
   CREATE_USER = 1,
-  ASSIGN_ROLES = 2,
+  EDIT_USER = 2,
+  ASSIGN_ROLES = 3,
 }
 
 export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
@@ -145,16 +153,17 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
 
   return (
     <>
-      <div className="grid w-full grid-rows-[auto_1fr] overflow-hidden rounded-large bg-content1 shadow-small lg:grid-cols-[280px_1fr] lg:grid-rows-none">
+      <div className="grid w-full grid-rows-[auto_1fr] rounded-large bg-content1 shadow-small lg:grid-cols-[280px_1fr] lg:grid-rows-none">
         <div className="bg-default-100 dark:bg-zinc-800/40 lg:border-r">
-          <nav className="flex flex-row lg:flex-col lg:gap-8 lg:px-4 lg:pt-8">
+          <nav className="grid grid-cols-2 lg:grid-cols-1 lg:px-4 lg:gap-4 lg:py-8">
             {menuElements.map((element) => (
               <Button
                 key={`menu-${element.id}`}
                 variant="light"
                 onClick={(e) => setSelectedMenu(element.id)}
-                className={`h-24 flex-1 flex-col rounded-none text-sm text-brand-black hover:text-brand-black/80 dark:text-brand-white dark:hover:text-brand-white/80 lg:flex-row lg:border-none ${
-                  element.id !== 0 && "border-l border-black/10"
+                className={`h-24 lg:py-2 lg:justify-start lg:h-auto flex flex-col lg:flex-row rounded-none text-sm text-brand-black hover:text-brand-black/80 dark:text-brand-white dark:hover:text-brand-white/80 lg:border-none ${
+                  element.id !== 0 &&
+                  "border-l border-black/10 dark:border-white/10"
                 }`}
               >
                 <element.menuIcon />
