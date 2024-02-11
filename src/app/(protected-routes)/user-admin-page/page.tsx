@@ -4,6 +4,7 @@ import { clerkClient, currentUser } from "@clerk/nextjs";
 import { Button } from "@nextui-org/react";
 import { ArrowBigLeft } from "lucide-react";
 import Link from "next/link";
+import BackButton from "@/components/BackButton";
 
 async function checkIfAdmin() {
   const currentUserData: UserWithRoles | null = await currentUser();
@@ -82,6 +83,9 @@ export default async function Page() {
 
       <div className="base:py-24">
         <UserAdmin users={usersWithEmails} />
+      </div>
+      <div className="pt-8 flex justify-start">
+        <BackButton buttonLink="/min-side" />
       </div>
     </div>
   );
