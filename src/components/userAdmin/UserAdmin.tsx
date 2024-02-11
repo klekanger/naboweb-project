@@ -1,10 +1,11 @@
 "use client";
 
-import UserTable from "@/components/userAdmin/UserTable";
+import UserTable from "./UserTable";
 import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 import type { UserWithEmails, UserWithRoles } from "@/types/types";
 import { NewUser } from "@/types/types";
 import { createNewUser } from "@/app/actions/createUser";
+import AssignRolesTable from "./ShowRolesTable";
 
 import {
   Button,
@@ -40,9 +41,9 @@ const menuElements = [
   },
   {
     id: 2,
-    name: "Tildel roller",
+    name: "Superbrukere",
     description:
-      "Tildel roller til brukere. Alle har automatisk rollen «bruker». Brukere med «admin»-rolle har tilgang til alle funksjoner. «Redaktør» kan legge til nytt innhold på sidene.",
+      "Oversikt over brukere med utvidede rettigheter. <em>Administratorer</em> har tilgang til alle funksjoner og kan opprette brukere og endre roller. <em>Redaktører</em> kan legge til nytt innhold på sidene.",
     menuIcon: Crown,
   },
 ];
@@ -50,7 +51,7 @@ const menuElements = [
 enum CreateUserScreenType {
   FORM = 0,
   SUCCESS = 1,
-  ERROR = 2,
+  EDIT = 2,
 }
 
 enum SidebarMenu {
@@ -103,14 +104,6 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
       user?.lastName !== ""
     );
   };
-
-  const AssignRoleForm = () => (
-    <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
-      <div className="rounded-lg border border-dashed border-zinc-200 dark:border-zinc-800">
-        <h1>Tildel rolle</h1>
-      </div>
-    </main>
-  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -346,7 +339,9 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
               </section>
             )}
 
-          {selectedMenu === SidebarMenu.ASSIGN_ROLES && <AssignRoleForm />}
+          {selectedMenu === SidebarMenu.ASSIGN_ROLES && (
+            <AssignRolesTable users={users} className="lg:px-2" />
+          )}
         </section>
       </div>
 
