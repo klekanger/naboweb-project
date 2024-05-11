@@ -6,6 +6,7 @@ import type { UserWithEmails, UserWithRoles } from "@/types/types";
 import { NewUser } from "@/types/types";
 import { createNewUser } from "@/app/actions/createUser";
 import AssignRolesTable from "./ShowRolesTable";
+import EditUser from "./EditUser";
 
 import {
   Button,
@@ -347,6 +348,8 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
                 </div>
               </section>
             )}
+
+          {selectedMenu === SidebarMenu.EDIT_USER && <EditUser />}
 
           {selectedMenu === SidebarMenu.ASSIGN_ROLES && (
             <AssignRolesTable users={users} className="lg:px-2" />

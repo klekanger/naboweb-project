@@ -25,7 +25,7 @@ export default function Error({
       </p>
       <button
         type="button"
-        className="bg-primaryButton mt-8 rounded-md border-2 border-black p-2"
+        className="bg-primaryButton mt-8 rounded-3xl border-2 border-black p-2"
         onClick={
           // Attempt to recover by trying to re-render the segment
           () => {

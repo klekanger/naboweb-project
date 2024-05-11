@@ -1,5 +1,7 @@
 "use client";
 
+import { deleteUser } from "@/app/actions/deleteUser";
+import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 import { ShowUserProps } from "@/types/types";
 import {
   Button,
@@ -11,8 +13,6 @@ import {
   Spinner,
 } from "@nextui-org/react";
 import { useState } from "react";
-import { deleteUser } from "@/app/actions/deleteUser";
-import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 
 export default function DeleteUserModal({
   userDataToDelete,
@@ -83,7 +83,7 @@ export default function DeleteUserModal({
               <section>
                 {errorToShow && (
                   <div
-                    className="bg-brand-danger text-white p-4 rounded-md"
+                    className="bg-brand-danger text-white p-4 rounded-3xl"
                     role="alert"
                   >
                     {errorToShow}
@@ -92,7 +92,7 @@ export default function DeleteUserModal({
 
                 {successMessage && (
                   <div
-                    className="bg-brand-danger text-white p-4 rounded-md"
+                    className="bg-brand-danger text-white p-4 rounded-3xl"
                     role="alert"
                   >
                     {successMessage}

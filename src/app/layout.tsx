@@ -18,6 +18,7 @@ const openSans = Open_Sans({
 
 const montserrat = Montserrat({
   subsets: ["latin"],
+  weight: ["400", "700", "900"],
   display: "swap",
   variable: "--font-montserrat",
 });
@@ -44,7 +45,7 @@ export default function RootLayout({
           <Providers>
             <main className="flex min-h-screen flex-col">
               <Navbar />
-              <div className="mt-16 sm:mt-32">{children}</div>
+              <div className="mt-16 sm:mt-32 container">{children}</div>
             </main>
             <Footer />
           </Providers>

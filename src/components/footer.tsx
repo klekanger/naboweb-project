@@ -44,8 +44,8 @@ export default function Footer() {
         <p>
           Webdesign og utvikling:
           <br />
-          <a href="mailto:kurt@lekanger.no">
-            Kurt Lekanger &copy; {currentYear}{" "}
+          <a href="mailto:post@lekanger.no">
+            Lekanger tekst og kode &copy; {currentYear}{" "}
           </a>
         </p>
       </div>

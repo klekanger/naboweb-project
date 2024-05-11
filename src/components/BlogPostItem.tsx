@@ -25,10 +25,10 @@ export default function BlogPostItem(post: BlogPostItemProps) {
   return (
     <article key={post.sys.id}>
       <div className="grid-cols-12 gap-2 pb-2 md:grid md:pb-8 lg:gap-8">
-        <div className="relative order-last overflow-hidden rounded-md md:col-span-5 lg:col-span-6">
+        <div className="relative order-last overflow-hidden rounded-3xl md:col-span-5 lg:col-span-6">
           <Link href={urlToPost} passHref>
             <Image
-              className="aspect-[16/10] rounded-md object-cover duration-200 transition hover:scale-[102%]"
+              className="aspect-[16/10] rounded-3xl object-cover duration-200 transition hover:scale-[102%]"
               src={`${url}`}
               alt={description || title}
               width={width}

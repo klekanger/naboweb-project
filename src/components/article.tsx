@@ -53,7 +53,7 @@ export default function Article({
             fill
             blurDataURL={blurDataURL}
             placeholder="blur"
-            className="rounded-md object-cover shadow-md"
+            className="rounded-3xl object-cover shadow-md"
           />
         </div>
       )}

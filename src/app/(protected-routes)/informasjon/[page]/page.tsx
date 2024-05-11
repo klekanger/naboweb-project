@@ -126,7 +126,7 @@ export default async function Page({ params }: Props) {
 
   return (
     <>
-      <div className="mb-16 rounded-md border border-dashed border-brand-black border-opacity-60 p-4 pt-8 dark:border-brand-white">
+      <div className="mb-16 rounded-3xl border border-dashed border-brand-black border-opacity-60 p-4 pt-8 dark:border-brand-white">
         <p className="h-10 pl-1 font-light">
           {user ? (
             <>

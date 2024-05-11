@@ -12,50 +12,40 @@ import {
   NavbarMenuItem,
   NavbarMenuToggle,
 } from "@nextui-org/react";
-import { LogIn, LogOut, Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
+import { LogIn, LogOut } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import logoDark from "/public/logo-dark.svg";
 import logoLight from "/public/logo-light.svg";
+
+const menuItems = [
+  {
+    id: "menu-1",
+    title: "For beboere",
+    href: "/informasjon",
+    protected: true,
+  },
+  {
+    id: "menu-2",
+    title: "Blogg",
+    href: "/blog-collection",
+    protected: false,
+  },
+  {
+    id: "menu-3",
+    title: "Om oss",
+    href: "/om-boligsameiet-gartnerihagen",
+    protected: false,
+  },
+  { id: "menu-4", title: "Styret", href: "/styret", protected: false },
+  { id: "menu-5", title: "Min side", href: "/min-side", protected: true },
+];
 
 export default function Navbar() {
   const { isSignedIn, user, isLoaded } = useUser();
-  const menuItems = [
-    {
-      id: "menu-1",
-      title: "For beboere",
-      href: "/informasjon",
-      protected: true,
-    },
-    {
-      id: "menu-2",
-      title: "Blogg",
-      href: "/blog-collection",
-      protected: false,
-    },
-    {
-      id: "menu-3",
-      title: "Om oss",
-      href: "/om-boligsameiet-gartnerihagen",
-      protected: false,
-    },
-    { id: "menu-4", title: "Styret", href: "/styret", protected: false },
-    { id: "menu-5", title: "Min side", href: "/min-side", protected: true },
-  ];
-
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  const router = useRouter();
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // When the user navigates to a new page, always close the hamburger menu
   // biome-ignore lint/correctness/useExhaustiveDependencies: Needs pathname as a dependency
@@ -63,20 +53,18 @@ export default function Navbar() {
     setIsMenuOpen(false);
   }, [pathname]);
 
-  if (!mounted) return null;
-
   return (
     <NextUINavbar
       classNames={{
-        base: "dark:bg-black/80 bg-brand-black/10",
+        base: "dark:bg-black/80 bg-brand-white/70",
         item: "text-brand-black dark:text-brand-white",
       }}
       onMenuOpenChange={() => {
         setIsMenuOpen(!isMenuOpen);
       }}
       isMenuOpen={isMenuOpen}
-      shouldHideOnScroll
-      maxWidth="full"
+      shouldHideOnScroll={false}
+      maxWidth="2xl"
       height="4.5rem"
       isBlurred
     >
@@ -88,7 +76,7 @@ export default function Navbar() {
         <NavbarBrand aria-label="Gartnerihagen-logo">
           <Link href="/" className="cursor-pointer">
             <Image
-              src={theme === "light" ? logoLight : logoDark}
+              src={logoLight}
               alt="Gartnerihagen-logo"
               className="-mt-3 sm:-ml-12 sm:h-16 lg:ml-0 lg:w-auto"
               priority
@@ -116,7 +104,7 @@ export default function Navbar() {
 
         <ButtonGroup>
           <NavbarItem>
-            {user ? (
+            {isSignedIn ? (
               <SignOutButton>
                 <Button
                   variant="flat"
@@ -137,23 +125,6 @@ export default function Navbar() {
                 </Button>
               </SignInButton>
             )}
-          </NavbarItem>
-          <NavbarItem>
-            <Button
-              variant="light"
-              onClick={() => {
-                if (theme === "dark") {
-                  setTheme("light");
-                } else {
-                  setTheme("dark");
-                }
-              }}
-              isIconOnly
-              className="ml-2"
-              aria-label="Bytt mellom mørk og lys modus"
-            >
-              {theme === "light" ? <Sun /> : <Moon />}
-            </Button>
           </NavbarItem>
         </ButtonGroup>
       </NavbarContent>
@@ -192,22 +163,6 @@ export default function Navbar() {
                 </Button>
               </SignInButton>
             )}
-          </NavbarMenuItem>
-          <NavbarMenuItem>
-            <Button
-              variant="light"
-              onClick={() => {
-                if (theme === "dark") {
-                  setTheme("light");
-                } else {
-                  setTheme("dark");
-                }
-              }}
-              className="ml-2"
-              isIconOnly
-            >
-              {theme === "light" ? <Sun /> : <Moon />}
-            </Button>
           </NavbarMenuItem>
         </ButtonGroup>
       </NavbarMenu>

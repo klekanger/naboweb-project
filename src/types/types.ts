@@ -76,6 +76,47 @@ export type GetUserErrorType = {
 
 export type GetUserReturnType = GetUserSuccessType | GetUserErrorType;
 
+export type SearchUserSuccessType = {
+  success: {
+    message: string;
+    users: {
+      id: string;
+      firstName: string | null;
+      lastName: string | null;
+      email: string;
+      roles: string[] | undefined;
+    }[];
+    status: number;
+  };
+};
+
+export type SearchUserErrorType = {
+  error: {
+    message: string;
+    errorName?: string;
+    code?: string;
+    longMessage?: string;
+  };
+  status: number;
+};
+
+export type SearchUserReturnType = SearchUserSuccessType | SearchUserErrorType;
+
+export type SearchUserType = {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  roles?: string[];
+  email: string;
+  publicMetadata?: {
+    roles?: UserRoles[];
+  };
+  emailAddresses?: {
+    id: string;
+    emailAddress: string;
+  }[];
+};
+
 export type UserTableProps = {
   users: UserWithEmails[];
   className?: string;
@@ -382,4 +423,17 @@ export type UserWithEmails = Pick<
   "id" | "createdAt" | "firstName" | "lastName" | "email"
 > & {
   roles: string[] | undefined;
+};
+
+export type ServicesContent = {
+  fields: {
+    description: string;
+    title: string;
+    icon: string;
+    locked: boolean;
+    url?: string;
+  };
+  sys: {
+    id: string;
+  };
 };
