@@ -1,9 +1,9 @@
 "use client";
 
+import { getUser } from "@/app/actions/getUser";
 import DeleteUserModal from "@/components/userAdmin/DeleteUserModal";
 import ShowUserModal from "@/components/userAdmin/ShowUserModal";
 import { fetchUserWithId } from "@/lib/fetchUserWithId";
-import { getUser } from "@/app/actions/getUser";
 import { type ShowUserProps, type UserTableProps } from "@/types/types";
 import { Input } from "@nextui-org/input";
 import {
@@ -19,8 +19,8 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
-  useDisclosure,
   Tooltip,
+  useDisclosure,
 } from "@nextui-org/react";
 import { MoreVertical, SearchIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
@@ -237,7 +237,7 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
                     >
                       <DropdownItem
                         key="show_user"
-                        onClick={() => {
+                        onPress={() => {
                           setUserDataToShowOrDelete({
                             firstName: "",
                             lastName: "",
@@ -256,7 +256,7 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
                       <DropdownItem key="edit_user">Rediger</DropdownItem>
                       <DropdownItem
                         key="delete_user"
-                        onClick={() => {
+                        onPress={() => {
                           modalDeleteUser.onOpen();
                           setUserDataToShowOrDelete({
                             ...userDataToShow,

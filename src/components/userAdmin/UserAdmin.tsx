@@ -1,12 +1,12 @@
 "use client";
 
-import UserTable from "./UserTable";
+import { createNewUser } from "@/app/actions/createUser";
 import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 import type { UserWithEmails, UserWithRoles } from "@/types/types";
 import { NewUser } from "@/types/types";
-import { createNewUser } from "@/app/actions/createUser";
-import AssignRolesTable from "./ShowRolesTable";
 import EditUser from "./EditUser";
+import AssignRolesTable from "./ShowRolesTable";
+import UserTable from "./UserTable";
 
 import {
   Button,
@@ -20,7 +20,7 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
-import { Crown, User, UserPlus2, UserCog } from "lucide-react";
+import { Crown, User, UserCog, UserPlus2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import LoadingSpinner from "../LoadingSpinner";
 import RoleDisplay from "./RoleDisplay";
@@ -161,14 +161,13 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
               <Button
                 key={`menu-${element.id}`}
                 variant="light"
-                onClick={(e) => setSelectedMenu(element.id)}
+                onPress={(e) => setSelectedMenu(element.id)}
                 className={`h-24 lg:py-2 lg:justify-start lg:h-auto flex flex-col lg:flex-row rounded-none text-sm text-brand-black hover:text-brand-black/80 dark:text-brand-white dark:hover:text-brand-white/80 lg:border-none ${
                   element.id !== 0 &&
                   "border-l border-black/10 dark:border-white/10"
                 }`}
               >
                 <element.menuIcon />
-
                 {element.id === selectedMenu ? (
                   <strong>{element.name}</strong>
                 ) : (
@@ -333,7 +332,7 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
                     color="primary"
                     className="mt-8"
                     name="submit-form"
-                    onClick={() => {
+                    onPress={() => {
                       setScreenToDisplay(CreateUserScreenType.FORM);
                       setNewUser({
                         email: "",
@@ -370,12 +369,12 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
             <p>Er du sikker på at du vil opprette en ny bruker?</p>
           </ModalBody>
           <ModalFooter>
-            <Button color="warning" onClick={modalCreateUser.onClose}>
+            <Button color="warning" onPress={modalCreateUser.onClose}>
               Avbryt
             </Button>
             <Button
               color="primary"
-              onClick={() => {
+              onPress={() => {
                 handleCreateNewUser();
                 modalCreateUser.onClose();
               }}
@@ -407,7 +406,7 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
               <ModalFooter>
                 <Button
                   color="primary"
-                  onClick={() => {
+                  onPress={() => {
                     setGeneralError("");
                     modalErrorMessage.onClose();
                   }}
