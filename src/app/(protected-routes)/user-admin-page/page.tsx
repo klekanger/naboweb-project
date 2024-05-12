@@ -1,10 +1,10 @@
+import BackButton from "@/components/BackButton";
 import UserAdmin from "@/components/userAdmin/UserAdmin";
-import type { UserWithRoles, UserWithEmails } from "@/types/types";
+import type { UserWithEmails, UserWithRoles } from "@/types/types";
 import { clerkClient, currentUser } from "@clerk/nextjs";
 import { Button } from "@nextui-org/react";
 import { ArrowBigLeft } from "lucide-react";
 import Link from "next/link";
-import BackButton from "@/components/BackButton";
 
 async function checkIfAdmin() {
   const currentUserData: UserWithRoles | null = await currentUser();
@@ -74,7 +74,6 @@ export default async function Page() {
   }
 
   const users = userData.users;
-
   const usersWithEmails: UserWithEmails[] = users.map(mapUsersWithEmails);
 
   return (
