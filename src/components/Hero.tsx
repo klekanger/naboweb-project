@@ -15,8 +15,6 @@ export default function Hero({ pageTitle, excerpt, pageImage }: HeroWideProps) {
 
   const { description = "" } = pageImage?.fields ?? {};
 
-  console.log("pageImage", description);
-
   const { url } = pageImage?.fields?.file ?? {};
   if (!url) {
     console.error("Missing featured image for hero section");
