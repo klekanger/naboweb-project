@@ -83,8 +83,6 @@ export default function Services({ content }) {
 
             const { title, description, image } = box.fields;
 
-            console.log("bilde ", image);
-
             return (
               <div>
                 <StyledCard
