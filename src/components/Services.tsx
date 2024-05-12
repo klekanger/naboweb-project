@@ -89,7 +89,7 @@ export default function Services({ content }: { content: ServicesContent[] }) {
                 description={description}
                 locked={box.fields.locked}
                 url={box.fields.url}
-                icon={<IconComponent width={4} height={4} />}
+                icon={<IconComponent width={3} height={3} />}
               />
             );
           })}
