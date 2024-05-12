@@ -129,7 +129,7 @@ export default function DeleteUserModal({
               {!errorToShow && !successMessage && (
                 <Button
                   color="danger"
-                  onClick={() => {
+                  onPress={() => {
                     deleteUserWithId(userDataToDelete?.id);
                   }}
                 >
@@ -139,7 +139,7 @@ export default function DeleteUserModal({
 
               <Button
                 color="primary"
-                onClick={() => {
+                onPress={() => {
                   setErrorToShow("");
                   setSuccessMessage("");
                   onClose();
