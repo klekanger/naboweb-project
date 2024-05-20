@@ -257,6 +257,7 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
                   onValueChange={(value) => {
                     setNewUser({ ...newUser, roles: value });
                   }}
+                  description="Alle må ha rollen 'Bruker' for å få tilgang til systemet. Redaktører kan opprette og redigere innhold, mens administratorer har tilgang til alle funksjoner."
                 >
                   <Checkbox value="user" name="role-user" isDisabled>
                     Bruker
