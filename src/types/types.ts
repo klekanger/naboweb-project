@@ -19,8 +19,30 @@ export type DeleteUserErrorType = {
   };
   status: number;
 };
+export type UpdateUserSuccessType = {
+  success: {
+    message: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    roles: string[];
+    id: string;
+  };
+  status: number;
+};
+
+export type UpdateUserErrorType = {
+  error: {
+    errorName?: string;
+    code?: string;
+    message: string;
+    longMessage?: string;
+  };
+  status: number;
+};
 
 export type DeleteUserReturnType = DeleteUserSuccessType | DeleteUserErrorType;
+export type UpdateUserReturnType = UpdateUserSuccessType | UpdateUserErrorType;
 
 export type CreateNewUserSuccessType = {
   success: {
@@ -153,7 +175,7 @@ export type ShowUserProps = {
   lastName: string;
   email: string;
   createdAt: number | null;
-  image?: string;
+  imageUrl?: string;
   lastSignInAt: number | null;
   roles?: string[];
 };
@@ -413,6 +435,10 @@ export type NewUser = {
   roles?: string[];
 };
 
+export type UpdateUserType = Omit<NewUser, "password" | "email"> & {
+  id: string;
+};
+
 export type UserCardProps = {
   user: UserWithRoles;
   className?: string;
@@ -423,6 +449,7 @@ export type UserWithEmails = Pick<
   "id" | "createdAt" | "firstName" | "lastName" | "email"
 > & {
   roles: string[] | undefined;
+  imageUrl: string;
 };
 
 export type ServicesContent = {
