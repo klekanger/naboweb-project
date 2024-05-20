@@ -189,15 +189,14 @@ export default function EditUser() {
               color="secondary"
               defaultValue={["user"]}
               value={
-                Array.isArray(selectedUser.roles)
-                  ? selectedUser.roles
-                  : ["user"]
+                Array.isArray(selectedUser.roles) ? selectedUser.roles : []
               }
               onValueChange={(value) => {
                 setSelectedUser({ ...selectedUser, roles: value });
               }}
+              description="Alle må ha rollen 'Bruker' for å få tilgang til systemet. Redaktører kan opprette og redigere innhold, mens administratorer har tilgang til alle funksjoner."
             >
-              <Checkbox value="user" name="role-user" isDisabled>
+              <Checkbox value="user" name="role-user">
                 Bruker
               </Checkbox>
               <Checkbox value="editor" name="role-editor">

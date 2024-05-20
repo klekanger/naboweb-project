@@ -9,12 +9,6 @@ type FriendlyUserRole = {
 export default function RoleDisplay({
   roles,
 }: { roles: string[] | undefined }) {
-  // Check if roles is an array
-  if (!Array.isArray(roles)) {
-    console.error("Error: Not able to show roles. Roles is not an array");
-    return null;
-  }
-
   const friendlyUserRoles: FriendlyUserRole[] = [
     {
       role: "admin",
@@ -33,26 +27,45 @@ export default function RoleDisplay({
     },
   ];
 
-  const friendlyUserRoleNames = roles?.map((role) => {
-    const friendlyRole = friendlyUserRoles.find((r) => r.role === role);
-    return {
-      name: friendlyRole?.friendlyName ?? "Bruker",
-      color: friendlyRole?.color ?? "primary",
-    };
-  }) ?? [
-    {
-      name: "Ingen tilgang",
-      color: "secondary",
-    },
-  ];
+  let friendlyUserRoleNames;
+
+  if (roles && Array.isArray(roles)) {
+    friendlyUserRoleNames = roles?.map((role) => {
+      const friendlyRole = friendlyUserRoles.find((r) => r.role === role);
+
+      return friendlyRole
+        ? {
+            name: friendlyRole?.friendlyName ?? "Bruker",
+            color: friendlyRole?.color ?? "primary",
+          }
+        : {
+            name: "unknown",
+            color: "default",
+          };
+    });
+  } else {
+    friendlyUserRoleNames = [
+      {
+        name: "Ingen tilgang",
+        color: "default",
+      },
+    ];
+  }
 
   return (
     <div className="flex flex-row flex-wrap items-center justify-start gap-2">
-      {friendlyUserRoleNames.map((role, i) => (
-        <Chip key={`chip-${i}`} size="sm" color={role.color}>
-          {role.name}
-        </Chip>
-      ))}
+      {friendlyUserRoleNames.map(
+        (role, i) =>
+          role?.name !== "unknown" && (
+            <Chip
+              key={`chip-${i}`}
+              size="sm"
+              color={role?.color as ChipProps["color"]}
+            >
+              {role.name}
+            </Chip>
+          ),
+      )}
     </div>
   );
 }
