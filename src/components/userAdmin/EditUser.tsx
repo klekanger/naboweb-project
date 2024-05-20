@@ -3,6 +3,7 @@ import { updateUser } from "@/app/actions/updateUser";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import DeleteUserModal from "@/components/userAdmin/DeleteUserModal";
 import { UserAdminContext } from "@/context/userAdminContext";
+import { formatDate } from "@/lib/format-date";
 import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 import {
   type SearchUserType,
@@ -117,13 +118,13 @@ export default function EditUser() {
   };
 
   return (
-    <div className="lg:px-6 py-4 text-left min-h-[450px]">
+    <>
       {/* If we click "edit user" from the user table, then we have a 
           selected user and should show a form for changing user info.
           If not, we show a search form to find the user we want to edit.
           */}
       {selectedUser && (
-        <section className="px-4 lg:px-6 py-4 text-left">
+        <section>
           <div className="flex flex-row items-center gap-4 pb-8">
             <Avatar size="lg" src={selectedUser?.imageUrl} />
             <div>
@@ -131,7 +132,7 @@ export default function EditUser() {
                 {selectedUser?.firstName} {selectedUser?.lastName}
               </h2>
               <div className="text-xs">
-                Bruker opprettet: {selectedUser.createdAt}
+                Bruker opprettet: {formatDate(selectedUser?.createdAt)}
               </div>
             </div>
           </div>
@@ -244,50 +245,49 @@ export default function EditUser() {
 
       {!selectedUser && (
         <>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSubmit(searchTerm);
-            }}
-            className="flex flex-row gap-4 pb-8"
-          >
-            <Input
-              placeholder="Søk etter bruker..."
-              startContent={<SearchIcon />}
-              onValueChange={setSearchTerm}
-              value={searchTerm}
-              className="w-full sm:max-w-[44%]"
-            />
-            <Button
-              className="h-auto"
-              type="submit"
-              color="default"
-              onPress={() => handleSubmit(searchTerm)}
+          <div className="px-4 lg:px-6 py-4 text-left">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSubmit(searchTerm);
+              }}
+              className="flex flex-row gap-4 pb-8"
             >
-              Søk
-            </Button>
-          </form>
-          {(foundUsers.length > 0 && (
-            <p>
-              <strong>
-                Viser inntil {MAX_RESULTS} første treff &ndash; klikk brukeren
-                du vil redigere:
-              </strong>
-            </p>
-          )) || (
-            <p>
-              Begynn å skrive i søkefeltet for å finne brukeren du vil endre.
-            </p>
-          )}
+              <Input
+                placeholder="Søk etter bruker..."
+                startContent={<SearchIcon />}
+                onValueChange={setSearchTerm}
+                value={searchTerm}
+                className="w-full sm:max-w-[44%]"
+              />
+              <Button
+                className="h-auto"
+                type="submit"
+                color="default"
+                onPress={() => handleSubmit(searchTerm)}
+              >
+                Søk
+              </Button>
+            </form>
+            {(foundUsers.length > 0 && (
+              <p>
+                <strong>
+                  Viser inntil {MAX_RESULTS} første treff &ndash; klikk brukeren
+                  du vil redigere:
+                </strong>
+              </p>
+            )) || (
+              <p>
+                Begynn å skrive i søkefeltet for å finne brukeren du vil endre.
+              </p>
+            )}
+          </div>
 
           <Table
-            className="mb-16"
+            className="mb-16 "
             shadow="none"
             isCompact
             aria-label="Tabell med oversikt over brukere"
-            classNames={{
-              base: "-ml-4",
-            }}
             onRowAction={(id) => {
               const userToEdit = foundUsers.find((user) => user.id === id);
               setSelectedUser(userToEdit as UserWithEmails);
@@ -343,6 +343,6 @@ export default function EditUser() {
         isOpen={modalDeleteUser.isOpen}
         onOpenChange={modalDeleteUser.onOpenChange}
       />
-    </div>
+    </>
   );
 }
