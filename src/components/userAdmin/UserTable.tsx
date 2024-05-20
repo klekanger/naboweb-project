@@ -146,7 +146,6 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
   }, []);
 
   const handleEditUser = (user: UserWithEmails) => () => {
-    console.log("Editing user:", user);
     setSelectedUser(user);
     setSelectedMenu(SidebarMenu.EDIT_USER);
   };
