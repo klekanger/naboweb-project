@@ -1,25 +1,28 @@
 "use server";
 
-import {
-  ClerkError,
-  SearchUserReturnType,
-  SearchUserType,
-} from "@/types/types";
+import { ClerkError, SearchUserReturnType } from "@/types/types";
 import { clerkClient, currentUser } from "@clerk/nextjs";
+import { User } from "@clerk/nextjs/dist/types/server";
 
-function mapUsersWithEmails(user: SearchUserType) {
+function mapUsersWithEmails(user: User) {
   return {
     id: user.id,
     firstName: user.firstName,
     lastName: user.lastName,
     roles: user?.publicMetadata?.roles ?? [],
     email: user?.emailAddresses?.[0]?.emailAddress ?? "",
+    imageUrl: user?.imageUrl ?? "",
+    createdAt: user?.createdAt ?? null,
   };
 }
 
-export async function searchUser(
-  searchTerm: string,
-): Promise<SearchUserReturnType> {
+export async function searchUser({
+  searchTerm,
+  maxResults = 10,
+}: {
+  searchTerm: string;
+  maxResults?: number;
+}): Promise<SearchUserReturnType> {
   const user = await currentUser();
   const userRoles = (user?.publicMetadata as { roles: string[] }) ?? [];
 
@@ -40,7 +43,7 @@ export async function searchUser(
   try {
     const foundUsers = await clerkClient.users.getUserList({
       query: searchTerm,
-      limit: 5,
+      limit: maxResults,
     });
 
     if (foundUsers.length > 0) {
