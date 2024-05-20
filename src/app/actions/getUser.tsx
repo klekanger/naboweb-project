@@ -35,6 +35,8 @@ export async function getUser(userToFetch: string): Promise<GetUserReturnType> {
           createdAt: userWithId?.createdAt,
           lastSignInAt: userWithId?.lastSignInAt,
           roles: userWithId?.publicMetadata.roles as string[],
+          imageUrl: userWithId?.imageUrl ?? "",
+          hasImage: userWithId?.hasImage ?? false,
         },
         status: 200,
       },
