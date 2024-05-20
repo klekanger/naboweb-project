@@ -3,8 +3,12 @@
 import { getUser } from "@/app/actions/getUser";
 import DeleteUserModal from "@/components/userAdmin/DeleteUserModal";
 import ShowUserModal from "@/components/userAdmin/ShowUserModal";
-import { fetchUserWithId } from "@/lib/fetchUserWithId";
-import { type ShowUserProps, type UserTableProps } from "@/types/types";
+import { SidebarMenu, UserAdminContext } from "@/context/userAdminContext";
+import {
+  type ShowUserProps,
+  type UserTableProps,
+  UserWithEmails,
+} from "@/types/types";
 import { Input } from "@nextui-org/input";
 import {
   Button,
@@ -23,7 +27,7 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { MoreVertical, SearchIcon } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 
 const ROWS_PER_PAGE = 20;
 
@@ -44,22 +48,32 @@ const CircleEditor = () => (
 );
 
 export default function UserTable({ users, ...rest }: UserTableProps) {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const {
+    generalError,
+    setGeneralError,
+    selectedMenu,
+    setSelectedMenu,
+    screenToDisplay,
+    setScreenToDisplay,
+    selectedUser,
+    setSelectedUser,
+  } = useContext(UserAdminContext);
+
   const modalViewUser = useDisclosure();
-  const modalEditUser = useDisclosure();
   const modalDeleteUser = useDisclosure();
   const modalErrorMessage = useDisclosure();
 
   const [page, setPage] = useState(1);
-  const [userDataToShow, setUserDataToShowOrDelete] = useState<ShowUserProps>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    createdAt: null,
-    image: "",
-    lastSignInAt: null,
-    roles: [],
-  });
+  const [userDataToShowOrDelete, setUserDataToShowOrDelete] =
+    useState<ShowUserProps>({
+      firstName: "",
+      lastName: "",
+      email: "",
+      createdAt: null,
+      imageUrl: "",
+      lastSignInAt: null,
+      roles: [],
+    });
   const [filterValue, setFilterValue] = useState("");
   const hasSearchFilter = Boolean(filterValue);
 
@@ -68,17 +82,13 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
 
     if ("error" in userDataFromId) {
       console.error("Something went wrong:", userDataFromId.error);
-
       return;
     }
 
     if ("success" in userDataFromId) {
       const { success } = userDataFromId;
-
       setUserDataToShowOrDelete(success?.user);
-
       modalViewUser.onOpen();
-      onOpen();
     }
 
     modalErrorMessage.onOpen();
@@ -134,6 +144,12 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
       setFilterValue("");
     }
   }, []);
+
+  const handleEditUser = (user: UserWithEmails) => () => {
+    console.log("Editing user:", user);
+    setSelectedUser(user);
+    setSelectedMenu(SidebarMenu.EDIT_USER);
+  };
 
   const topContent = useMemo(() => {
     return (
@@ -243,7 +259,7 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
                             lastName: "",
                             email: "",
                             createdAt: null,
-                            image: "",
+                            imageUrl: "",
                             lastSignInAt: null,
                             roles: [],
                           });
@@ -253,19 +269,24 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
                       >
                         Vis
                       </DropdownItem>
-                      <DropdownItem key="edit_user">Rediger</DropdownItem>
+                      <DropdownItem
+                        key="edit_user"
+                        onPress={handleEditUser(user)}
+                      >
+                        Rediger
+                      </DropdownItem>
                       <DropdownItem
                         key="delete_user"
                         onPress={() => {
                           modalDeleteUser.onOpen();
                           setUserDataToShowOrDelete({
-                            ...userDataToShow,
+                            ...userDataToShowOrDelete,
                             id: user?.id,
                             firstName: user?.firstName ?? "",
                             lastName: user?.lastName ?? "",
                             email: user?.email ?? "",
+                            imageUrl: user?.imageUrl,
                           });
-                          onOpen();
                         }}
                       >
                         Slett
@@ -280,14 +301,14 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
       </Table>
 
       <ShowUserModal
-        userDataToShow={userDataToShow}
+        userDataToShow={userDataToShowOrDelete}
         onClose={modalViewUser.onClose}
         isOpen={modalViewUser.isOpen}
         onOpenChange={modalViewUser.onOpenChange}
       />
 
       <DeleteUserModal
-        userDataToDelete={userDataToShow}
+        userDataToDelete={userDataToShowOrDelete}
         onClose={modalDeleteUser.onClose}
         isOpen={modalDeleteUser.isOpen}
         onOpenChange={modalDeleteUser.onOpenChange}

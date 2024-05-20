@@ -1,6 +1,7 @@
 "use client";
 
 import { deleteUser } from "@/app/actions/deleteUser";
+import { UserAdminContext } from "@/context/userAdminContext";
 import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 import { ShowUserProps } from "@/types/types";
 import {
@@ -12,6 +13,7 @@ import {
   ModalHeader,
   Spinner,
 } from "@nextui-org/react";
+
 import { useState } from "react";
 
 export default function DeleteUserModal({

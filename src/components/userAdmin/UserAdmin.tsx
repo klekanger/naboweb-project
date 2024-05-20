@@ -1,13 +1,14 @@
 "use client";
 
 import { createNewUser } from "@/app/actions/createUser";
+import {
+  CreateUserScreenType,
+  SidebarMenu,
+  UserAdminContext,
+} from "@/context/userAdminContext";
 import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 import type { UserWithEmails, UserWithRoles } from "@/types/types";
 import { NewUser } from "@/types/types";
-import EditUser from "./EditUser";
-import AssignRolesTable from "./ShowRolesTable";
-import UserTable from "./UserTable";
-
 import {
   Button,
   Checkbox,
@@ -21,9 +22,13 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { Crown, User, UserCog, UserPlus2 } from "lucide-react";
+import { useContext, useEffect } from "react";
 import { useMemo, useState } from "react";
 import LoadingSpinner from "../LoadingSpinner";
+import EditUser from "./EditUser";
 import RoleDisplay from "./RoleDisplay";
+import AssignRolesTable from "./ShowRolesTable";
+import UserTable from "./UserTable";
 
 const menuElements = [
   {
@@ -43,8 +48,7 @@ const menuElements = [
   {
     id: 2,
     name: "Endre bruker",
-    description:
-      "Endre en allerede eksisterende bruker (navn, e-post, roller).",
+    description: "Endre en allerede eksisterende bruker (navn eller roller).",
     menuIcon: UserCog,
   },
   {
@@ -56,47 +60,34 @@ const menuElements = [
   },
 ];
 
-enum CreateUserScreenType {
-  FORM = 0,
-  SUCCESS = 1,
-  EDIT = 2,
-}
-
-enum SidebarMenu {
-  USERS = 0,
-  CREATE_USER = 1,
-  EDIT_USER = 2,
-  ASSIGN_ROLES = 3,
-}
-
 export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
+  const {
+    generalError,
+    setGeneralError,
+    selectedMenu,
+    setSelectedMenu,
+    isCreatingUser,
+    setIsCreatingUser,
+    emailValue,
+    setEmailValue,
+    newUser,
+    setNewUser,
+    newlyCreatedUser,
+    setNewlyCreatedUser,
+    screenToDisplay,
+    setScreenToDisplay,
+    selectedUser,
+    setSelectedUser,
+    resetUserAdminContext,
+  } = useContext(UserAdminContext);
+
   const modalCreateUser = useDisclosure();
   const modalErrorMessage = useDisclosure();
-  const [generalError, setGeneralError] = useState("");
-  const [selectedMenu, setSelectedMenu] = useState(0);
-  const [isCreatingUser, setIsCreatingUser] = useState(false);
-  const [emailValue, setEmailValue] = useState("");
 
-  const [newUser, setNewUser] = useState<NewUser>({
-    email: "",
-    firstName: "",
-    lastName: "",
-    password: "",
-    roles: ["user"],
-  });
-
-  const [newlyCreatedUser, setNewlyCreatedUser] = useState<
-    Omit<NewUser, "password">
-  >({
-    email: "",
-    firstName: "",
-    lastName: "",
-    roles: [],
-  });
-
-  const [screenToDisplay, setScreenToDisplay] = useState(
-    CreateUserScreenType.FORM,
-  );
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    resetUserAdminContext();
+  }, []);
 
   const validateEmail = (value: string) =>
     value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i);
@@ -155,13 +146,16 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
   return (
     <>
       <div className="grid w-full grid-rows-[auto_1fr] rounded-large bg-content1 shadow-small lg:grid-cols-[280px_1fr] lg:grid-rows-none">
-        <div className="bg-default-100 dark:bg-zinc-800/40 lg:border-r">
+        <div className="bg-default-100 dark:bg-zinc-800/40 lg:border-r rounded-l-large">
           <nav className="grid grid-cols-2 lg:grid-cols-1 lg:px-4 lg:gap-4 lg:py-8">
             {menuElements.map((element) => (
               <Button
                 key={`menu-${element.id}`}
                 variant="light"
-                onPress={(e) => setSelectedMenu(element.id)}
+                onPress={(e) => {
+                  setSelectedUser(null);
+                  setSelectedMenu(element.id);
+                }}
                 className={`h-24 lg:py-2 lg:justify-start lg:h-auto flex flex-col lg:flex-row rounded-none text-sm text-brand-black hover:text-brand-black/80 dark:text-brand-white dark:hover:text-brand-white/80 lg:border-none ${
                   element.id !== 0 &&
                   "border-l border-black/10 dark:border-white/10"
@@ -179,13 +173,12 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
         </div>
         <section className="flex flex-col overflow-auto">
           <p
-            className="w-full border-b bg-brand-white px-6 py-8 text-left text-base dark:bg-brand-black"
+            className="w-full border-b bg-brand-white rounded-tr-large px-6 py-8 text-left text-base dark:bg-brand-black"
             // biome-ignore lint/security/noDangerouslySetInnerHtml: for formatting. Not dangerous – content is defined by us.
             dangerouslySetInnerHTML={{
               __html: menuElements[selectedMenu].description,
             }}
           />
-
           {/* SHOW USERS SCREEN */}
           {selectedMenu === SidebarMenu.USERS && (
             <UserTable users={users} className="lg:px-2" />
@@ -319,8 +312,8 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
                   <RoleDisplay roles={newlyCreatedUser.roles} />
                 </div>
                 <p>
-                  Du kan senere endre brukernes roller ved å velge «Tildel
-                  roller».
+                  Du kan senere endre brukernes roller ved å velge «Endre
+                  bruker».
                 </p>
                 <p>
                   Under «Vis brukere» kan du se alle brukere som er registrert,
@@ -387,7 +380,7 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
 
       {/* MODAL FOR DISPLAYING ERRORS */}
       <Modal
-        isOpen={modalErrorMessage.isOpen}
+        isOpen={modalErrorMessage.isOpen || generalError !== ""}
         onOpenChange={modalErrorMessage.onOpenChange}
       >
         <ModalContent>
