@@ -1,6 +1,6 @@
+import CustomButton from "@/components/CustomButton";
 import RoleDisplay from "@/components/userAdmin/RoleDisplay";
 import { type UserCardProps } from "@/types/types";
-import { Button } from "@nextui-org/button";
 import { Card, CardBody, CardHeader } from "@nextui-org/card";
 import { Divider } from "@nextui-org/divider";
 import Link from "next/link";
@@ -49,36 +49,15 @@ export default function UserCard({ user, ...rest }: UserCardProps) {
 
             <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-3">
               {isAdmin && (
-                <Button
-                  as={Link}
+                <CustomButton
                   href="/user-admin-page"
-                  size="lg"
-                  color="primary"
-                  className="bg-primary duration-100 transition hover:bg-primary-600"
-                >
-                  Brukeradmin
-                </Button>
+                  buttonText="Brukeradmin"
+                />
               )}
               {isEditor && (
-                <Button
-                  as={Link}
-                  href="/"
-                  size="lg"
-                  color="primary"
-                  className="bg-primary duration-100 transition hover:bg-primary-600"
-                >
-                  Rediger innhold
-                </Button>
+                <CustomButton href="/" buttonText="Rediger innhold" />
               )}
-              <Button
-                as={Link}
-                href="/"
-                size="lg"
-                color="primary"
-                className="bg-primary duration-100 transition hover:bg-primary-600"
-              >
-                Slå av e-post-varsling
-              </Button>
+              <CustomButton href="/" buttonText="Slå av e-post-varsling" />
             </div>
           </CardBody>
         </Card>
