@@ -30,15 +30,16 @@ export default function SignMeUp() {
   }, []);
 
   async function signUpUser() {
-    try {
-      /* const response = await signUp.create({
+    console.log("signing up user");
+    /* try {
+       const response = await signUp.create({
         ticket,
         strategy: 'ticket',
         
-      }); */
+      }); 
     } catch (error) {
       console.error("noe gikk galt:", error);
-    }
+    } */
   }
 
   return (
