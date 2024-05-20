@@ -36,7 +36,7 @@ export default function ShowUserModal({
         {(onClose) => (
           <>
             <ModalHeader className="flex flex-row gap-4">
-              <Avatar src={userDataToShow?.image} />
+              <Avatar src={userDataToShow?.imageUrl} />
               <div className="text-xl self-center">{`${userDataToShow?.firstName} ${userDataToShow?.lastName}`}</div>
             </ModalHeader>
             <ModalBody>
