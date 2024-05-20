@@ -32,4 +32,8 @@ export const errorsToNorwegian = [
     code: "Failed to delete user",
     message: "Kunne ikke slette brukeren.",
   },
+  {
+    code: "Not Found",
+    message: "Brukeren ble ikke funnet",
+  },
 ];
