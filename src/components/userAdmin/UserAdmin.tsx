@@ -172,7 +172,7 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
           </nav>
         </div>
         <section className="flex flex-col overflow-auto">
-          <p
+          <header
             className="w-full border-b bg-brand-white rounded-tr-large px-6 py-8 text-left text-base dark:bg-brand-black"
             // biome-ignore lint/security/noDangerouslySetInnerHtml: for formatting. Not dangerous – content is defined by us.
             dangerouslySetInnerHTML={{
