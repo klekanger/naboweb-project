@@ -1,5 +1,7 @@
 "use client";
 
+import { SidebarMenu, UserAdminContext } from "@/context/userAdminContext";
+import { UserTableProps, UserWithEmails } from "@/types/types";
 import {
   Button,
   Dropdown,
@@ -13,14 +15,24 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
-  useDisclosure,
   Tooltip,
+  useDisclosure,
 } from "@nextui-org/react";
-import { MoreVertical } from "lucide-react";
-import { UserTableProps } from "@/types/types";
 import { Crown, Edit } from "lucide-react";
+import { useContext } from "react";
 
 export default function ShowRolesTable({ users, ...rest }: UserTableProps) {
+  const {
+    selectedUser,
+    setSelectedMenu,
+    setSelectedUser,
+    emailValue,
+    setEmailValue,
+    isCreatingUser,
+    setIsCreatingUser,
+    setGeneralError,
+  } = useContext(UserAdminContext);
+
   if (!users) {
     return null;
   }
@@ -39,6 +51,10 @@ export default function ShowRolesTable({ users, ...rest }: UserTableProps) {
 
   return (
     <div className={rest?.className ?? ""}>
+      <p className="text-sm text-gray-500 italic p-4">
+        Klikk brukeren du vil redigere, for eksempel hvis du vil fjerne eller
+        legge til en rolle.{" "}
+      </p>
       <Table
         shadow="none"
         isCompact
@@ -50,6 +66,11 @@ export default function ShowRolesTable({ users, ...rest }: UserTableProps) {
           </p>
         }
         aria-label="Tabell med oversikt over adminbrukere"
+        onRowAction={(id) => {
+          const userToEdit = users.find((user) => user.id === id);
+          setSelectedUser(userToEdit as UserWithEmails);
+          setSelectedMenu(SidebarMenu.EDIT_USER);
+        }}
       >
         <TableHeader>
           <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
@@ -58,34 +79,21 @@ export default function ShowRolesTable({ users, ...rest }: UserTableProps) {
           <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
             E-post
           </TableColumn>
-          <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
-            Oppgaver
-          </TableColumn>
         </TableHeader>
         <TableBody>
           {adminUsers.map((user) => (
-            <TableRow key={user?.id} className="text-left">
-              <TableCell>
-                {user?.firstName} {user?.lastName}
+            <TableRow key={user?.id} className="text-left group">
+              <TableCell className="group-hover:bg-brand-black/10 cursor-pointer">
+                <Tooltip
+                  content="Klikk for å redigere"
+                  delay={2000}
+                  placement="right-end"
+                >
+                  <span>{`${user?.firstName} ${user?.lastName}`}</span>
+                </Tooltip>
               </TableCell>
-              <TableCell>{user?.email}</TableCell>
-              <TableCell>
-                <Dropdown>
-                  <DropdownTrigger>
-                    <Button isIconOnly size="sm" variant="light">
-                      <MoreVertical />
-                    </Button>
-                  </DropdownTrigger>
-                  <DropdownMenu
-                    closeOnSelect={true}
-                    aria-label="Meny for brukeroperasjoner"
-                  >
-                    <DropdownItem key="edit_roles">Endre roller</DropdownItem>
-                    <DropdownItem key="remove_admin">
-                      Fjern som admin
-                    </DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
+              <TableCell className="group-hover:bg-brand-black/10 cursor-pointer">
+                {user?.email}
               </TableCell>
             </TableRow>
           ))}
@@ -103,6 +111,11 @@ export default function ShowRolesTable({ users, ...rest }: UserTableProps) {
             </strong>
           </p>
         }
+        onRowAction={(id) => {
+          const userToEdit = users.find((user) => user.id === id);
+          setSelectedUser(userToEdit as UserWithEmails);
+          setSelectedMenu(SidebarMenu.EDIT_USER);
+        }}
         aria-label="Tabell med oversikt over redaktører"
       >
         <TableHeader>
@@ -112,34 +125,22 @@ export default function ShowRolesTable({ users, ...rest }: UserTableProps) {
           <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
             E-post
           </TableColumn>
-          <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
-            Oppgaver
-          </TableColumn>
         </TableHeader>
         <TableBody>
           {editorUsers.map((user) => (
-            <TableRow key={user?.id} className="text-left">
-              <TableCell>
-                {user?.firstName} {user?.lastName}
+            <TableRow key={user?.id} className="text-left group">
+              <TableCell className="group-hover:bg-brand-black/10 cursor-pointer">
+                <Tooltip
+                  content="Klikk for å redigere"
+                  delay={2000}
+                  placement="right-end"
+                >
+                  <span>{`${user?.firstName} ${user?.lastName}`}</span>
+                </Tooltip>
               </TableCell>
-              <TableCell>{user?.email}</TableCell>
-              <TableCell>
-                <Dropdown>
-                  <DropdownTrigger>
-                    <Button isIconOnly size="sm" variant="light">
-                      <MoreVertical />
-                    </Button>
-                  </DropdownTrigger>
-                  <DropdownMenu
-                    closeOnSelect={true}
-                    aria-label="Meny for brukeroperasjoner"
-                  >
-                    <DropdownItem key="edit_roles">Endre roller</DropdownItem>
-                    <DropdownItem key="remove_admin">
-                      Fjern som redaktør
-                    </DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
+
+              <TableCell className="group-hover:bg-brand-black/10 cursor-pointer">
+                {user?.email}
               </TableCell>
             </TableRow>
           ))}
