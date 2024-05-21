@@ -17,8 +17,12 @@ import {
   CheckboxGroup,
   Divider,
   Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
   Spacer,
-  Tab,
   Table,
   TableBody,
   TableCell,
@@ -57,14 +61,13 @@ export default function EditUser() {
   const {
     selectedUser,
     setSelectedUser,
-    emailValue,
-    setEmailValue,
     isCreatingUser,
     setIsCreatingUser,
     setGeneralError,
   } = useContext(UserAdminContext);
 
   const modalDeleteUser = useDisclosure();
+  const modalUserUpdated = useDisclosure();
 
   // This function is called when the user submits the search form.
   const handleSubmit = async (searchTerm: string) => {
@@ -103,7 +106,7 @@ export default function EditUser() {
             `Feil: ${response.error?.message || "Noe gikk galt"}`,
         );
       } else if ("success" in response) {
-        console.log("User updated successfully");
+        modalUserUpdated.onOpen();
       } else {
         setGeneralError("Noe gikk galt");
       }
@@ -124,7 +127,7 @@ export default function EditUser() {
           If not, we show a search form to find the user we want to edit.
           */}
       {selectedUser && (
-        <section>
+        <div className="px-4 lg:px-6 py-4 text-left">
           <div className="flex flex-row items-center gap-4 pb-8">
             <Avatar size="lg" src={selectedUser?.imageUrl} />
             <div>
@@ -240,7 +243,7 @@ export default function EditUser() {
               </Button>
             </div>
           </form>
-        </section>
+        </div>
       )}
 
       {!selectedUser && (
@@ -323,11 +326,11 @@ export default function EditUser() {
 
                 return (
                   <TableRow key={user.id} className="text-left group">
-                    <TableCell className="group-hover:bg-brand-primary/20 cursor-pointer">{`${user.firstName} ${user.lastName}`}</TableCell>
-                    <TableCell className="group-hover:bg-brand-primary/20 cursor-pointer">
+                    <TableCell className="group-hover:bg-brand-black/10 cursor-pointer">{`${user.firstName} ${user.lastName}`}</TableCell>
+                    <TableCell className="group-hover:bg-brand-black/10 cursor-pointer">
                       {user.email}
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell group-hover:bg-brand-primary/20 cursor-pointer">
+                    <TableCell className="hidden sm:table-cell group-hover:bg-brand-black/10 cursor-pointer">
                       {roles}
                     </TableCell>
                   </TableRow>
@@ -343,6 +346,32 @@ export default function EditUser() {
         isOpen={modalDeleteUser.isOpen}
         onOpenChange={modalDeleteUser.onOpenChange}
       />
+      <Modal
+        isOpen={modalUserUpdated.isOpen}
+        onOpenChange={modalUserUpdated.onOpenChange}
+        backdrop="blur"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader>Brukeren er oppdatert</ModalHeader>
+              <ModalBody>
+                <span>
+                  Du har oppdatert brukeren{" "}
+                  <span className="text-brand-secondary">
+                    {selectedUser?.firstName} {selectedUser?.lastName}.
+                  </span>
+                </span>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="success" onPress={onClose}>
+                  Lukk
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 }
