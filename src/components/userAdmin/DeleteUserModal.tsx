@@ -72,7 +72,7 @@ export default function DeleteUserModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} backdrop="blur">
       <ModalContent>
         {(onClose) => (
           <>
