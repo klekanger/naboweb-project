@@ -270,7 +270,7 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
                   </Checkbox>
                 </CheckboxGroup>
 
-                <div className="flex justify-center lg:justify-start">
+                <div className="flex justify-center lg:justify-start gap-4 pb-8">
                   <Button
                     type="submit"
                     color="default"
@@ -278,7 +278,22 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
                     isDisabled={isCreatingUser}
                     className="mt-8"
                   >
-                    {isCreatingUser ? "Sender..." : "Send"}
+                    {isCreatingUser ? "Jobber..." : "Legg til"}
+                  </Button>
+                  <Button
+                    color="warning"
+                    className="mt-8"
+                    onPress={() => {
+                      setScreenToDisplay(CreateUserScreenType.FORM);
+                      setNewUser({
+                        email: "",
+                        firstName: "",
+                        lastName: "",
+                        password: "",
+                      });
+                    }}
+                  >
+                    Avbryt
                   </Button>
                 </div>
               </form>
