@@ -29,7 +29,7 @@ export default function RoleDisplay({
 
   let friendlyUserRoleNames;
 
-  if (roles && Array.isArray(roles)) {
+  if (roles && Array.isArray(roles) && roles.length > 0) {
     friendlyUserRoleNames = roles?.map((role) => {
       const friendlyRole = friendlyUserRoles.find((r) => r.role === role);
 
