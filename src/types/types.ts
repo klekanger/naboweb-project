@@ -449,7 +449,7 @@ export type UserWithEmails = Pick<
   "id" | "createdAt" | "firstName" | "lastName" | "email"
 > & {
   roles: string[] | undefined;
-  imageUrl: string;
+  imageUrl?: string;
 };
 
 export type ServicesContent = {
