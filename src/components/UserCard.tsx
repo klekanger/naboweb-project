@@ -57,7 +57,9 @@ export default function UserCard({ user, ...rest }: UserCardProps) {
               {isEditor && (
                 <CustomButton href="/" buttonText="Rediger innhold" />
               )}
-              <CustomButton href="/" buttonText="Slå av e-post-varsling" />
+
+              {/* TODO Implement e-mail notifactions */}
+              {/*  <CustomButton href="/" buttonText="Slå av e-post-varsling" /> */}
             </div>
           </CardBody>
         </Card>
