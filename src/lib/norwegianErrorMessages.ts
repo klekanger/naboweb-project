@@ -36,4 +36,8 @@ export const errorsToNorwegian = [
     code: "Not Found",
     message: "Brukeren ble ikke funnet",
   },
+  {
+    code: "Unprocessable Entity",
+    message: "Kunne ikke invitere brukeren",
+  },
 ];

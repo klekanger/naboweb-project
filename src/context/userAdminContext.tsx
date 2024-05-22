@@ -5,9 +5,10 @@ import { createContext, useContext, useState } from "react";
 
 export enum SidebarMenu {
   USERS = 0,
-  CREATE_USER = 1,
-  EDIT_USER = 2,
-  ASSIGN_ROLES = 3,
+  INVITE_USER = 1,
+  CREATE_USER = 2,
+  EDIT_USER = 3,
+  SHOW_SUPER_USERS = 4,
 }
 
 export enum CreateUserScreenType {

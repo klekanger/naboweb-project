@@ -26,13 +26,14 @@ import { useContext, useEffect } from "react";
 import { useMemo, useState } from "react";
 import LoadingSpinner from "../LoadingSpinner";
 import EditUser from "./EditUser";
+import InviteUser from "./InviteUser";
 import RoleDisplay from "./RoleDisplay";
 import AssignRolesTable from "./ShowRolesTable";
 import UserTable from "./UserTable";
 
 const menuElements = [
   {
-    id: 0,
+    id: 0, // Which SidebarMenu.ITEM to display. 0 is the first item in the enum.
     name: "Vis brukere",
     description:
       "Viser alle brukere som er registrert, sortert etter etternavn og deretter fornavn.<br />Du kan bruke søkefeltet for å finne en bestemt bruker (søker i både e-post og navn).",
@@ -40,19 +41,26 @@ const menuElements = [
   },
   {
     id: 1,
-    name: "Ny bruker",
+    name: "Inviter bruker",
     description:
-      "Opprett en ny bruker.<br />Brukeren vil motta en e-post med informasjon om innlogging.",
+      "Inviter en bruker til å opprette en konto. Brukeren vil motta en lenke på e-post for å opprette kontoen sin.",
     menuIcon: UserPlus2,
   },
   {
     id: 2,
+    name: "Ny bruker",
+    description:
+      "Opprett en ny bruker. Du må selv informere brukeren om at kontoen er opprettet og be vedkommende om å logge inn.",
+    menuIcon: UserPlus2,
+  },
+  {
+    id: 3,
     name: "Endre bruker",
     description: "Endre en allerede eksisterende bruker (navn eller roller).",
     menuIcon: UserCog,
   },
   {
-    id: 3,
+    id: 4,
     name: "Superbrukere",
     description:
       "Oversikt over brukere med utvidede rettigheter. <em>Administratorer</em> har tilgang til alle funksjoner og kan opprette brukere og endre roller. <em>Redaktører</em> kan legge til nytt innhold på sidene.",
@@ -281,7 +289,7 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
                     {isCreatingUser ? "Jobber..." : "Legg til"}
                   </Button>
                   <Button
-                    color="warning"
+                    color="danger"
                     className="mt-8"
                     onPress={() => {
                       setScreenToDisplay(CreateUserScreenType.FORM);
@@ -357,9 +365,14 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
               </section>
             )}
 
+          {/* INVITE USER TO CREATE ACCOUNT */}
+          {selectedMenu === SidebarMenu.INVITE_USER && <InviteUser />}
+
+          {/* EDIT EXISTING USER */}
           {selectedMenu === SidebarMenu.EDIT_USER && <EditUser />}
 
-          {selectedMenu === SidebarMenu.ASSIGN_ROLES && (
+          {/* SHOW USERS WITH ADMIN OR OTHER SUPER USER ROLES */}
+          {selectedMenu === SidebarMenu.SHOW_SUPER_USERS && (
             <AssignRolesTable users={users} className="lg:px-2" />
           )}
         </section>
@@ -372,17 +385,19 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
       >
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">
-            Er du sikker
+            Er du sikker?
           </ModalHeader>
           <ModalBody>
-            <p>Er du sikker på at du vil opprette en ny bruker?</p>
+            <p>
+              Du er i ferd med å opprette en ny bruker. Bekreft at du ønsker å
+              gjøre dette.
+            </p>
           </ModalBody>
           <ModalFooter>
-            <Button color="warning" onPress={modalCreateUser.onClose}>
+            <Button color="danger" onPress={modalCreateUser.onClose}>
               Avbryt
             </Button>
             <Button
-              color="primary"
               onPress={() => {
                 handleCreateNewUser();
                 modalCreateUser.onClose();
