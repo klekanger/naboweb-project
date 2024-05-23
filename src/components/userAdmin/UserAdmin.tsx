@@ -21,9 +21,8 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
-import { Crown, User, UserCog, UserPlus2 } from "lucide-react";
-import { useContext, useEffect } from "react";
-import { useMemo, useState } from "react";
+import { Crown, UserCheck, UserCog, UserPlus2, Users } from "lucide-react";
+import { useContext, useEffect, useMemo } from "react";
 import LoadingSpinner from "../LoadingSpinner";
 import EditUser from "./EditUser";
 import InviteUser from "./InviteUser";
@@ -37,14 +36,14 @@ const menuElements = [
     name: "Vis brukere",
     description:
       "Viser alle brukere som er registrert, sortert etter etternavn og deretter fornavn.<br />Du kan bruke søkefeltet for å finne en bestemt bruker (søker i både e-post og navn).",
-    menuIcon: User,
+    menuIcon: Users,
   },
   {
     id: 1,
     name: "Inviter bruker",
     description:
       "Inviter en bruker til å opprette en konto. Brukeren vil motta en lenke på e-post for å opprette kontoen sin.",
-    menuIcon: UserPlus2,
+    menuIcon: UserCheck,
   },
   {
     id: 2,
