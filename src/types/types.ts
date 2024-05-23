@@ -81,6 +81,8 @@ export type GetUserSuccessType = {
       createdAt: number | null;
       lastSignInAt: number | null;
       roles: string[];
+      imageUrl: string;
+      hasImage: boolean;
     };
     status: number;
   };
@@ -105,8 +107,10 @@ export type SearchUserSuccessType = {
       id: string;
       firstName: string | null;
       lastName: string | null;
-      email: string;
       roles: string[] | undefined;
+      email: string;
+      imageUrl: string;
+      createdAt: number;
     }[];
     status: number;
   };
@@ -157,6 +161,17 @@ export type ContentImage = {
   description: string;
   width: number;
   height: number;
+  fields: {
+    file: {
+      url: string;
+      details: {
+        image: {
+          width: number;
+          height: number;
+        };
+      };
+    };
+  };
 };
 
 export type ClerkError = {
@@ -293,7 +308,7 @@ export type BlogPostItemProps = {
     privatePost: boolean;
     title: string;
     excerpt: string;
-    featuredImage: ContentImage | undefined;
+    featuredImage?: ContentImage | undefined;
     slug: string;
   };
 };

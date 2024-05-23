@@ -46,6 +46,7 @@ function mapUsersWithEmails(user: UserWithRoles) {
     lastName: user.lastName,
     roles: user.publicMetadata.roles,
     email: user.emailAddresses[0].emailAddress,
+    imageUrl: user.imageUrl,
   };
 }
 

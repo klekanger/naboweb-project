@@ -1,6 +1,10 @@
 "use server";
 
-import { ClerkError, SearchUserReturnType } from "@/types/types";
+import {
+  ClerkError,
+  SearchUserReturnType,
+  SearchUserSuccessType,
+} from "@/types/types";
 import { clerkClient, currentUser } from "@clerk/nextjs";
 import { User } from "@clerk/nextjs/dist/types/server";
 
@@ -52,7 +56,7 @@ export async function searchUser({
       return {
         success: {
           message: "Successfully fetched user",
-          users: allUsers,
+          users: allUsers as SearchUserSuccessType["success"]["users"],
           status: 200,
         },
       };
