@@ -1,7 +1,10 @@
 import ArticleGrid from "@/components/ArticleGrid";
 import Hero from "@/components/Hero";
 import Services from "@/components/Services";
-import type { TypeForsidetekstSkeleton } from "@/types/contentful-types";
+import type {
+  TypeBlogPostSkeleton,
+  TypeForsidetekstSkeleton,
+} from "@/types/contentful-types";
 import { Spacer } from "@nextui-org/react";
 import * as contentful from "contentful";
 
@@ -20,7 +23,15 @@ async function getFrontPageData() {
     content_type: "introboxes",
   });
 
-  return { heroData, introboxData };
+  const articleGridData =
+    await client.withoutUnresolvableLinks.getEntries<TypeBlogPostSkeleton>({
+      content_type: "blogPost",
+      limit: 4,
+      // @ts-expect-error: Ignore type mismatch on this one.
+      "fields.privatePost": false,
+    });
+
+  return { heroData, introboxData, articleGridData };
 }
 
 export default async function Home() {
@@ -28,6 +39,19 @@ export default async function Home() {
 
   const { pageTitle, excerpt, pageImage } =
     frontPageData.heroData.items[0].fields;
+
+  const servicesContent = frontPageData.introboxData.items.map((item) => ({
+    fields: {
+      description: item.fields.description ?? "",
+      title: item.fields.title ?? "",
+      icon: item.fields.icon ?? "",
+      locked: item.fields.locked ?? false,
+      url: item.fields.url ?? undefined,
+    },
+    sys: {
+      id: item.sys.id,
+    },
+  }));
 
   return (
     <>
@@ -37,8 +61,9 @@ export default async function Home() {
         pageImage={pageImage}
       />
       <Spacer y={16} />
-      <Services content={frontPageData.introboxData.items} />
-      <ArticleGrid />
+      {/* @ts-expect-error: Ignore type mismatch on this one.*/}
+      <Services content={servicesContent} />
+      <ArticleGrid articles={frontPageData.articleGridData.items} />
     </>
   );
 }

@@ -1,37 +1,23 @@
-import type { TypeBlogPostSkeleton } from "@/types/contentful-types";
-import * as contentful from "contentful";
+import { TypeBlogPostFields } from "@/types/contentful-types";
+import { BlogPostItemProps, ContentImage } from "@/types/types";
 import Image from "next/image";
 import Link from "next/link";
 
-async function getArticleGridData() {
-  const client = contentful.createClient({
-    space: process.env.CONTENTFUL_SPACE_ID!,
-    accessToken: process.env.CONTENTFUL_ACCESS_TOKEN!,
-  });
-
-  const data =
-    await client.withoutUnresolvableLinks.getEntries<TypeBlogPostSkeleton>({
-      content_type: "blogPost",
-      limit: 4,
-      // @ts-expect-error: Ignore type mismatch on this one.
-      "fields.privatePost": false,
-    });
-
-  return data;
-}
-
-export default async function ArticleGrid() {
-  const articles = await getArticleGridData();
+export default function ArticleGrid({
+  articles,
+}: { articles: BlogPostItemProps[] }) {
+  if (!articles) {
+    console.error("No articles is passed to ArticleGrid");
+    return null;
+  }
 
   return (
     <>
       <h2 className="mt-16 pb-4 p-0 font-semibold">Nyheter</h2>
       <section className="grid gap-16 px-1 md:grid-cols-2">
-        {articles.items.map((article) => {
-          // @ts-expect-error Ignore type mismatch
+        {articles.map((article) => {
           const { url } = article.fields.featuredImage?.fields.file ?? {};
           const { width, height } =
-            // @ts-expect-error Ignore type mismatch
             article.fields.featuredImage?.fields.file?.details?.image ?? {};
 
           if (!url) {
