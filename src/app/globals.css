@@ -59,15 +59,16 @@ h5,
   @apply text-lg sm:text-xl;
 }
 
-p:not(.rich-image-caption),
-.rich-p {
-  @apply mb-[1rem];
-}
+
  */
 
 
 .rich-image {
-  @apply mt-8 border border-slate-300 md:mt-16;
+  @apply mt-8 border border-slate-300 md:mt-16 rounded-3xl !mb-0;
+}
+
+.rich-image-caption {
+  @apply rounded-b-3xl bg-slate-200 mx-4 px-4 py-2 text-left text-sm text-brand-black dark:bg-slate-700 dark:text-brand-white md:mb-4 !mt-0;
 }
 
 a:not(.btn-link) {
@@ -110,6 +111,9 @@ a:not(.btn-link) {
 /*
 Styles for custom rich text rendering 
 */
+
+
+
 /* .rich-ul {
   @apply my-8 text-left;
 }
@@ -118,9 +122,7 @@ Styles for custom rich text rendering
   @apply my-8 text-left;
 }
 
-.rich-image-caption {
-  @apply rounded-b-md bg-slate-200 px-4 py-2 text-left text-sm text-brand-black dark:bg-slate-700 dark:text-brand-white md:mb-4;
-}
+
 
 /* Clerk classes */
 

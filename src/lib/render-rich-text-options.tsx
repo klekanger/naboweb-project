@@ -77,7 +77,7 @@ export const renderRichTextOptions = (links?: any) => {
               placeholder="blur"
               className="rich-image"
             />
-            <p className="rich-image-caption">
+            <p className="rich-image-caption mt-0">
               <em>{description}</em>
             </p>
           </>
