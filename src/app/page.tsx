@@ -60,8 +60,7 @@ export default async function Home() {
         excerpt={excerpt ?? ""}
         pageImage={pageImage}
       />
-      <Spacer y={16} />
-      {/* @ts-expect-error: Ignore type mismatch on this one.*/}
+      {/* @ts-expect-error: Ignore type mismatch on this one. TODO*/}
       <Services content={servicesContent} />
       <ArticleGrid articles={frontPageData.articleGridData.items} />
     </>

@@ -43,9 +43,9 @@ export default function RootLayout({
       <ClerkProvider localization={nbNO}>
         <body>
           <Providers>
-            <main className="flex min-h-screen flex-col">
+            <main className="flex min-h-screen flex-col ">
               <Navbar />
-              <div className="mt-16 sm:mt-32 container">{children}</div>
+              <div className="mt-8 sm:mt-16 md:mt-32 container">{children}</div>
             </main>
             <Footer />
           </Providers>

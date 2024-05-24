@@ -61,8 +61,8 @@ export default function Services({ content }: { content: ServicesContent[] }) {
         <div className=" flex items-center justify-center">{icon}</div>
       </CardHeader>
 
-      <CardBody className="pt-0">
-        <h2 className="mt-0 text-xl font-semibold">
+      <CardBody className="pt-0 prose">
+        <h2 className="mt-4 text-xl font-semibold">
           {title.toUpperCase()}{" "}
           {locked && <span className="pl-[0.5em]">🔐</span>}
         </h2>
@@ -73,13 +73,10 @@ export default function Services({ content }: { content: ServicesContent[] }) {
 
   return (
     <>
-      <section className="py-16 max-w-6xl m-auto">
+      <section className="py-8 sm:py-16 max-w-8xl m-auto">
         <div className="gap-8 grid grid-cols-12 grid-rows-1">
           {content.map((box) => {
-            const imageUrl = "/gartnerihagen_solnedgang.jpg";
-
             const { title, description, icon: iconName } = box.fields;
-
             const IconComponent = iconMap[iconName];
 
             return (

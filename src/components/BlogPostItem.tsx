@@ -38,16 +38,11 @@ export default function BlogPostItem(post: BlogPostItemProps) {
           </Link>
         </div>
 
-        <div className="md:col-span-7 md:pr-8 lg:col-span-6">
+        <div className="md:col-span-7 md:pr-8 lg:col-span-6 prose prose-h2:text-3xl">
           <Link href={urlToPost} passHref>
-            <h2
-              className="m4-4 transform cursor-pointer pb-2 pt-0 text-2xl duration-500 transition hover:text-brand-secondary md:mt-0 "
-              tabIndex={0}
-            >
-              {title}
-            </h2>
+            <h2>{title}</h2>
           </Link>
-          <p className="mt-2">
+          <p>
             {excerpt &&
               `${excerpt.slice(0, 500)}${excerpt.length > 500 ? "..." : ""}`}
             <Link href={urlToPost} className="pt-4 no-underline md:block">

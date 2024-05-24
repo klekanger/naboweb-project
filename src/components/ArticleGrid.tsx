@@ -12,9 +12,9 @@ export default function ArticleGrid({
   }
 
   return (
-    <>
-      <h2 className="mt-16 pb-4 p-0 font-semibold">Nyheter</h2>
-      <section className="grid gap-16 px-1 md:grid-cols-2">
+    <section className="py-8 sm:py-16 max-w-8xl m-auto">
+      <h2 className="prose text-3xl mb-8">Nyheter</h2>
+      <div className="grid gap-16 px-1 md:grid-cols-2">
         {articles.map((article) => {
           const { url } = article.fields.featuredImage?.fields.file ?? {};
           const { width, height } =
@@ -55,13 +55,13 @@ export default function ArticleGrid({
             </article>
           );
         })}
-        <Link
-          href="http://localhost:3000/blog-collection"
-          className="text-brand-secondary dark:text-brand-dark-secondary"
-        >
-          <em>Gå til nyhetsarkivet »</em>
-        </Link>
-      </section>
-    </>
+      </div>
+      <Link
+        href="http://localhost:3000/blog-collection"
+        className="text-brand-secondary dark:text-brand-dark-secondary"
+      >
+        <em>Gå til nyhetsarkivet »</em>
+      </Link>
+    </section>
   );
 }

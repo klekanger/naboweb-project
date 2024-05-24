@@ -14,7 +14,7 @@ export default function ArticlePageLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mx-auto max-w-6xl overflow-hidden px-2 md:px-5">
+    <div className="mx-auto max-w-8xl overflow-hidden px-2 md:px-5">
       {children}
     </div>
   );

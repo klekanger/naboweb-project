@@ -97,7 +97,7 @@ export default async function Page({ params }: BlogCollectionParams) {
       <Pagination
         totalPages={totalPages}
         pageNumber={pageNumber}
-        url={`blog-collection`}
+        url={"blog-collection"}
       />
       <p className="pb-4 text-center">
         side {`${pageNumber} av ${totalPages}`}
