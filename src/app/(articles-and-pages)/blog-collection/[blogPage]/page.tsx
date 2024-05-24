@@ -92,8 +92,9 @@ export default async function Page({ params }: BlogCollectionParams) {
 
   return (
     <>
-      <h1>Siste blogg­innlegg</h1>
+      <h1 className="prose lg:prose-xl pb-16 font-thin">SISTE BLOGGINNLEGG</h1>
       <BlogPostList posts={postItems} />
+
       <Pagination
         totalPages={totalPages}
         pageNumber={pageNumber}

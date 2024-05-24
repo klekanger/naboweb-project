@@ -17,6 +17,7 @@ body {
   /* Background and text colors are set in the NextUI theme in tailwind.config.js */
 }
 
+/* 
 h1,
 h2,
 h3,
@@ -30,8 +31,7 @@ h6,
 .rich-h5,
 .rich-h6 {
   font-family: var(--font-montserrat);
-  @apply prose;
-  /* @apply mx-0 mb-[1.38rem] mt-[3rem] pt-4 font-normal leading-[1.3]; */
+  @apply prose lg:prose-xl;
 }
 
 h1,
@@ -63,7 +63,7 @@ p:not(.rich-image-caption),
 .rich-p {
   @apply mb-[1rem];
 }
-
+ */
 
 
 .rich-image {
@@ -110,7 +110,7 @@ a:not(.btn-link) {
 /*
 Styles for custom rich text rendering 
 */
-.rich-ul {
+/* .rich-ul {
   @apply my-8 text-left;
 }
 
@@ -123,6 +123,8 @@ Styles for custom rich text rendering
 }
 
 /* Clerk classes */
+
+/*
 .cl-formButtonPrimary {
   @apply bg-primary duration-100 transition hover:bg-primary-600;
 }
@@ -143,3 +145,5 @@ Styles for custom rich text rendering
     max-width: calc(100vw - 0.75rem);
   }
 }
+
+*/

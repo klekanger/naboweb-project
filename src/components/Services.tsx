@@ -55,7 +55,7 @@ export default function Services({ content }: { content: ServicesContent[] }) {
     <Card
       isPressable
       onPress={() => handlePress(url)}
-      className="col-span-12 sm:col-span-4 h-[300px] p-4 hover:-translate-y-2 "
+      className="col-span-12 lg:col-span-4 p-4 hover:-translate-y-2 "
     >
       <CardHeader className="flex-col !items-start hover:">
         <div className=" flex items-center justify-center">{icon}</div>

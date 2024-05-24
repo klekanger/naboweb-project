@@ -14,7 +14,7 @@ export default function BackButton({ buttonLink }: { buttonLink: string }) {
       href={buttonLink}
       startContent={<ArrowBigLeft />}
       color="primary"
-      className="btn-link"
+      className="btn-link no-underline"
     >
       Gå tilbake
     </Button>

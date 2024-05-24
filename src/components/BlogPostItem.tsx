@@ -38,9 +38,9 @@ export default function BlogPostItem(post: BlogPostItemProps) {
           </Link>
         </div>
 
-        <div className="md:col-span-7 md:pr-8 lg:col-span-6 prose prose-h2:text-3xl">
+        <div className="md:col-span-7 md:pr-8 lg:col-span-6 prose lg:prose-xl">
           <Link href={urlToPost} passHref>
-            <h2>{title}</h2>
+            <h2 className="text-2xl mt-0 lg:mt-0">{title}</h2>
           </Link>
           <p>
             {excerpt &&

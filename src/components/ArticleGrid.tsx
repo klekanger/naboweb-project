@@ -1,5 +1,6 @@
 import { TypeBlogPostFields } from "@/types/contentful-types";
 import { BlogPostItemProps, ContentImage } from "@/types/types";
+import { Spacer } from "@nextui-org/react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -13,7 +14,7 @@ export default function ArticleGrid({
 
   return (
     <section className="py-8 sm:py-16 max-w-8xl m-auto">
-      <h2 className="prose text-3xl mb-8">Nyheter</h2>
+      <h2 className="prose text-3xl mb-8 font-semibold">Nyheter</h2>
       <div className="grid gap-16 px-1 md:grid-cols-2">
         {articles.map((article) => {
           const { url } = article.fields.featuredImage?.fields.file ?? {};
@@ -28,7 +29,7 @@ export default function ArticleGrid({
           }
 
           return (
-            <article key={article.sys.id}>
+            <article key={article.sys.id} className="prose">
               <div className="relative overflow-hidden rounded-3xl">
                 <Link href={`/blog/${article.fields.slug}`} passHref>
                   <Image
@@ -56,12 +57,15 @@ export default function ArticleGrid({
           );
         })}
       </div>
-      <Link
-        href="http://localhost:3000/blog-collection"
-        className="text-brand-secondary dark:text-brand-dark-secondary"
-      >
-        <em>Gå til nyhetsarkivet »</em>
-      </Link>
+      <Spacer />
+      <div className="prose mt-8">
+        <Link
+          href="http://localhost:3000/blog-collection"
+          className="text-brand-secondary dark:text-brand-dark-secondary"
+        >
+          <em>Gå til nyhetsarkivet »</em>
+        </Link>
+      </div>
     </section>
   );
 }

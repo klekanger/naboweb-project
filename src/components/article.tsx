@@ -41,7 +41,7 @@ export default function Article({
   }
 
   return (
-    <article>
+    <article className="prose lg:prose-xl">
       <h1>{title}</h1>
       {mainImage && (
         <div className="image relative mb-8 aspect-video md:mb-16">

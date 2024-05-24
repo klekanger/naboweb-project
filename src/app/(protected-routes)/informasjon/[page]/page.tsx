@@ -127,7 +127,7 @@ export default async function Page({ params }: Props) {
   return (
     <>
       <div className="mb-16 rounded-3xl border border-dashed border-brand-black border-opacity-60 p-4 pt-8 dark:border-brand-white">
-        <p className="h-10 pl-1 font-light">
+        <p className="pl-1 prose">
           {user ? (
             <>
               <span>
@@ -141,9 +141,9 @@ export default async function Page({ params }: Props) {
             </span>
           )}
         </p>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 pt-4 pb-8 pl-1 font-semibold prose">
           <Link
-            className="animate h-16 pl-1 font-semibold duration-100 hover:text-brand-black/70"
+            className="animate duration-100 hover:text-brand-black/70"
             href="/min-side"
           >
             Gå til Min side »

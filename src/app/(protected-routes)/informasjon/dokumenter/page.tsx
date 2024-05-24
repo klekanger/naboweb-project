@@ -32,9 +32,10 @@ export default async function Page() {
 
   return (
     <section>
-      <h1 className="text-center text-2xl md:text-left md:text-4xl ">
+      <h1 className="text-center text-2xl md:text-left md:text-4xl prose lg:prose-xl mb-8">
         Diverse dokumenter
       </h1>
+
       <DocumentTable documents={items} />
     </section>
   );
