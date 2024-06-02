@@ -32,7 +32,7 @@ export default function UserOveview({ user, ...rest }: UserCardProps) {
 
         <div className="flex gap-4">
           <div>
-            <b className="text-lg">Dine roller:</b>
+            <b>Roller:</b>
           </div>
           <RoleDisplay roles={roles} />
         </div>
