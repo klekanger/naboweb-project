@@ -21,13 +21,9 @@ export default function UserCard({ user, ...rest }: UserCardProps) {
   return (
     <>
       <div className={rest?.className}>
-        <Card
-          classNames={{
-            base: "mypage-card",
-          }}
-        >
-          <CardHeader className="justify-between ">
-            <div className="mx-2 flex flex-col items-start justify-center gap-1">
+        <Card>
+          <CardHeader className="justify-between px-4">
+            <div className="flex flex-col items-start justify-center gap-4">
               <p>
                 <b>Velkommen, {`${firstName} ${lastName}`}!</b>
               </p>
@@ -38,7 +34,7 @@ export default function UserCard({ user, ...rest }: UserCardProps) {
               </p>
             </div>
           </CardHeader>
-          <CardBody>
+          <CardBody className="px-4">
             <div className="flex gap-5 ">
               <div>
                 <b className="text-lg">Roller:</b>

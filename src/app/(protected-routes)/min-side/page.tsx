@@ -1,4 +1,5 @@
-import UserCard from "@/components/UserCard";
+// import UserCard from "@/components/UserCard";
+import UserOverview from "@/components/UserOverview";
 import { UserProfile, currentUser } from "@clerk/nextjs";
 import { Spinner } from "@nextui-org/spinner";
 
@@ -7,17 +8,20 @@ export default async function Page() {
   if (!user) return <div>Not authenticated</div>;
 
   return (
-    <div className="flex flex-col items-center ">
-      <h1 className="text-center">Min side</h1>
-
+    <section className="flex flex-col items-center">
+      <h1 className="prose lg:prose-xl text-4xl lg:text-5xl mb-8 font-semibold self-start">
+        Min side
+      </h1>
       {user ? (
-        <>
-          <UserCard user={user} className="mb-16" />
-          <UserProfile />
-        </>
+        <div className="self-start w-full">
+          <UserOverview user={user} className="mb-16" />
+          <div className="sm:-ml-7">
+            <UserProfile />
+          </div>
+        </div>
       ) : (
         <Spinner />
       )}
-    </div>
+    </section>
   );
 }
