@@ -63,7 +63,7 @@ export const renderRichTextOptions = (links?: any) => {
         if (!width || !height || !url) return null;
 
         const description = asset.description;
-        const blurDataURL = asset.url + "?w=10&h=10&fit=fill" || "";
+        const blurDataURL = `${asset.url}?w=10&h=10&fit=fill` || "";
 
         return (
           <>
@@ -75,9 +75,9 @@ export const renderRichTextOptions = (links?: any) => {
               sizes="100vw"
               blurDataURL={blurDataURL}
               placeholder="blur"
-              className="rich-image"
+              className="rich-image md:max-w-4xl "
             />
-            <p className="rich-image-caption mt-0">
+            <p className="rich-image-caption">
               <em>{description}</em>
             </p>
           </>

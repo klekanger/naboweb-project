@@ -41,10 +41,12 @@ export default function Article({
   }
 
   return (
-    <article className="prose lg:prose-xl">
-      <h1>{title}</h1>
+    <article>
+      <h1 className="prose lg:prose-xl text-4xl lg:text-5xl mb-8 font-semibold">
+        {title}
+      </h1>
       {mainImage && (
-        <div className="image relative mb-8 aspect-video md:mb-16">
+        <div className="image relative mb-16 aspect-video md:max-w-4xl">
           <Image
             src={mainImage.url}
             alt={mainImage.description}
@@ -57,7 +59,7 @@ export default function Article({
           />
         </div>
       )}
-      <div>
+      <div className="prose lg:prose-xl">
         {documentToReactComponents(
           richTextJson,
           renderRichTextOptions(links) as Options,
