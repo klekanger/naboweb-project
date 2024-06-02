@@ -17,51 +17,6 @@ body {
   /* Background and text colors are set in the NextUI theme in tailwind.config.js */
 }
 
-/* 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-.rich-h1,
-.rich-h2,
-.rich-h3,
-.rich-h4,
-.rich-h5,
-.rich-h6 {
-  font-family: var(--font-montserrat);
-  @apply prose lg:prose-xl;
-}
-
-h1,
-.rich-h1 {
-  @apply mt-0 pb-8 text-4xl font-semibold sm:text-5xl;
-}
-
-h2,
-.rich-h2 {
-  @apply text-3xl sm:text-4xl;
-}
-
-h3,
-.rich-h3 {
-  @apply text-2xl sm:text-3xl;
-}
-
-h4,
-.rich-h4 {
-  @apply text-xl sm:text-2xl;
-}
-
-h5,
-.rich-h5 {
-  @apply text-lg sm:text-xl;
-}
-
-
- */
-
 
 .rich-image {
   @apply mt-8 border border-slate-300 md:mt-16 rounded-3xl !mb-0;
@@ -107,45 +62,3 @@ a:not(.btn-link) {
   @apply ease-in-out;
   @apply -translate-y-40;
 }
-
-/*
-Styles for custom rich text rendering 
-*/
-
-
-
-/* .rich-ul {
-  @apply my-8 text-left;
-}
-
-.rich-ol {
-  @apply my-8 text-left;
-}
-
-
-
-/* Clerk classes */
-
-/*
-.cl-formButtonPrimary {
-  @apply bg-primary duration-100 transition hover:bg-primary-600;
-}
-
-.cl-rootBox {
-  @apply bg-brand-white dark:bg-brand-black;
-}
-
-.cl-card {
-  @apply bg-white;
-}
-
-.mypage-card {
-  width: 55rem;
-  max-width: calc(100vw - 5rem);
-
-  @media (max-width: 30em) {
-    max-width: calc(100vw - 0.75rem);
-  }
-}
-
-*/
