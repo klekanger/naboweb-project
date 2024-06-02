@@ -95,7 +95,7 @@ export default async function Page({ params }: BlogParams) {
   }
 
   return (
-    <div className="container">
+    <div>
       <Article
         title={title}
         bodyText={bodyText}

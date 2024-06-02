@@ -40,10 +40,17 @@ export default function RootLayout({
       className={`${openSans.variable} ${montserrat.variable}`}
       suppressHydrationWarning
     >
-      <ClerkProvider localization={nbNO}>
+      <ClerkProvider
+        localization={nbNO}
+        appearance={{
+          variables: {
+            colorPrimary: "#005600",
+          },
+        }}
+      >
         <body>
           <Providers>
-            <main className="flex min-h-screen flex-col ">
+            <main className="flex min-h-screen flex-col mx-auto max-w-7xl px-2 sm:px-5">
               <Navbar />
               <div className="mt-4 sm:mt-8 md:mt-16 container">{children}</div>
             </main>

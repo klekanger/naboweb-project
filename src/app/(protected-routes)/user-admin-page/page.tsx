@@ -79,7 +79,9 @@ export default async function Page() {
 
   return (
     <div className="text-center">
-      <h1 className="mb-8 text-center">Administrer brukere</h1>
+      <h1 className="mb-8 text-center text-4xl lg:text-5xl font-semibold">
+        Administrer brukere
+      </h1>
 
       <div className="base:py-24">
         <UserAdmin users={usersWithEmails} />

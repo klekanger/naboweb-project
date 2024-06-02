@@ -18,7 +18,7 @@ export default async function Page() {
 
   if (!items) {
     return (
-      <section className="container flex flex-col justify-center align-middle">
+      <section className="flex flex-col justify-center align-middle">
         <AlertUser
           alertTitle="Ingen dokumenter"
           alertMessage="Det ser ikke ut til at det eksisterer noen dokumenter på denne siden. "
