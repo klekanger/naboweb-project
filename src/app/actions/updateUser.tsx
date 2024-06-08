@@ -1,7 +1,7 @@
 "use server";
 
 import { type UpdateUserReturnType, type UpdateUserType } from "@/types/types";
-import { clerkClient, currentUser } from "@clerk/nextjs";
+import { clerkClient, currentUser } from "@clerk/nextjs/server";
 
 export async function updateUser(
   userToUpdate: UpdateUserType,

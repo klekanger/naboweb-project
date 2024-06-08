@@ -2,7 +2,7 @@ import AlertUser from "@/components/AlertUser";
 import DocumentTable from "@/components/DocumentTable";
 import { getDocuments } from "@/lib/api";
 import { DOCUMENTS_MENU5_GRAPHQL_FIELDS } from "@/lib/graphql-fields";
-import { currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
 
 export default async function Page() {
@@ -11,7 +11,9 @@ export default async function Page() {
   if (!user) return <div>Not authenticated</div>;
 
   const {
-    data: { serviceMenu: { menu5FilesCollection: items } },
+    data: {
+      serviceMenu: { menu5FilesCollection: items },
+    },
   } = await getDocuments({
     getDocumentsQuery: DOCUMENTS_MENU5_GRAPHQL_FIELDS,
   });

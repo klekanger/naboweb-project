@@ -9,22 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@clerk/clerk-react": "^4.32.2",
     "@clerk/localizations": "^1.28.7",
-    "@clerk/nextjs": "^4.31.2",
+    "@clerk/nextjs": "^5.1.4",
     "@contentful/rich-text-react-renderer": "^15.21.2",
     "@contentful/rich-text-types": "^16.5.2",
     "@nextui-org/react": "^2.4.1",
     "@sanity/icons": "^3.2.0",
     "@sanity/image-url": "^1.0.2",
     "@sanity/locale-nb-no": "^1.1.7",
-    "@sanity/react-loader": "^1.10.1",
+    "@sanity/react-loader": "^1.10.2",
     "@sanity/ui": "^2.3.1",
-    "@sanity/vision": "^3.44.0",
+    "@sanity/vision": "^3.45.0",
     "@serverless-jwt/jwt-verifier": "^0.2.1",
     "autoprefixer": "10.4.14",
-    "contentful": "^10.11.7",
-    "eslint": "8",
+    "contentful": "^10.11.8",
+    "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.3",
     "framer-motion": "^10.18.0",
     "jsonwebtoken": "^9.0.2",
@@ -45,7 +44,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "@clerk/types": "^3.65.2",
+    "@clerk/types": "^4.6.0",
     "@tailwindcss/typography": "^0.5.13",
     "@types/node": "20.11.0",
     "@types/react": "^18.3.3",
@@ -53,5 +52,6 @@
     "eslint-config-prettier": "^9.1.0",
     "prettier": "3.3.1",
     "typescript": "^5.4.5"
-  }
+  },
+  "packageManager": "pnpm@9.2.0+sha256.94fab213df221c55b6956b14a2264c21c6203cca9f0b3b95ff2fe9b84b120390"
 }

@@ -1,7 +1,6 @@
 "use server";
 
-import { clerkClient } from "@clerk/nextjs";
-import { currentUser } from "@clerk/nextjs";
+import { currentUser, clerkClient } from "@clerk/nextjs/server";
 import { type DeleteUserReturnType } from "@/types/types";
 
 export async function deleteUser(

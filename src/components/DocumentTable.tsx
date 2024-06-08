@@ -82,7 +82,7 @@ export default function DocumentTable({
     }
 
     return filteredItems;
-  }, [items, filterValue]);
+  }, [items, filterValue, hasSearchFilter]);
 
   const itemsToRender = useMemo(() => {
     const start = (page - 1) * rowsPerPage;

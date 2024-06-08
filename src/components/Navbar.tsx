@@ -48,7 +48,6 @@ export default function Navbar() {
   const pathname = usePathname();
 
   // When the user navigates to a new page, always close the hamburger menu
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Needs pathname as a dependency
   useEffect(() => {
     setIsMenuOpen(false);
   }, [pathname]);

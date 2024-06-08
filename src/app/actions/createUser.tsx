@@ -1,6 +1,6 @@
 "use server";
 
-import { clerkClient, currentUser } from "@clerk/nextjs";
+import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import type { NewUser, CreateNewUserReturnType } from "@/types/types";
 
 export async function createNewUser(
@@ -19,7 +19,7 @@ export async function createNewUser(
   const { email, firstName, lastName, password, roles } = newUser;
 
   try {
-    const users = await clerkClient.users.getUserList({
+    const { data: users } = await clerkClient.users.getUserList({
       limit: 1,
       emailAddress: [email],
     });

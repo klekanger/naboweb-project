@@ -1,7 +1,7 @@
 "use server";
 
 import { ClerkError, GetUserReturnType } from "@/types/types";
-import { clerkClient, currentUser } from "@clerk/nextjs";
+import { clerkClient, currentUser } from "@clerk/nextjs/server";
 
 export async function getUser(userToFetch: string): Promise<GetUserReturnType> {
   const user = await currentUser();

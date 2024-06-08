@@ -5,8 +5,8 @@ import {
   SearchUserReturnType,
   SearchUserSuccessType,
 } from "@/types/types";
-import { clerkClient, currentUser } from "@clerk/nextjs";
 import { User } from "@clerk/nextjs/dist/types/server";
+import { clerkClient, currentUser } from "@clerk/nextjs/server";
 
 function mapUsersWithEmails(user: User) {
   return {
@@ -45,7 +45,7 @@ export async function searchUser({
   }
 
   try {
-    const foundUsers = await clerkClient.users.getUserList({
+    const { data: foundUsers } = await clerkClient.users.getUserList({
       query: searchTerm,
       limit: maxResults,
     });
