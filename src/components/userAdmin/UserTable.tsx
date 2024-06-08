@@ -5,9 +5,9 @@ import DeleteUserModal from "@/components/userAdmin/DeleteUserModal";
 import ShowUserModal from "@/components/userAdmin/ShowUserModal";
 import { SidebarMenu, UserAdminContext } from "@/context/userAdminContext";
 import {
+  UserWithEmails,
   type ShowUserProps,
   type UserTableProps,
-  UserWithEmails,
 } from "@/types/types";
 import { Input } from "@nextui-org/input";
 import {

@@ -1,11 +1,13 @@
 import ArticleGrid from "@/components/ArticleGrid";
+import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
+import Navbar from "@/components/Navbar";
 import Services from "@/components/Services";
+
 import type {
   TypeBlogPostSkeleton,
   TypeForsidetekstSkeleton,
 } from "@/types/contentful-types";
-import { Spacer } from "@nextui-org/react";
 import * as contentful from "contentful";
 
 async function getFrontPageData() {
@@ -55,14 +57,20 @@ export default async function Home() {
 
   return (
     <>
-      <Hero
-        pageTitle={pageTitle}
-        excerpt={excerpt ?? ""}
-        pageImage={pageImage}
-      />
-      {/* @ts-expect-error: Ignore type mismatch on this one. TODO*/}
-      <Services content={servicesContent} />
-      <ArticleGrid articles={frontPageData.articleGridData.items} />
+      <main className="flex min-h-screen flex-col mx-auto max-w-7xl px-2 sm:px-5">
+        <Navbar />
+        <div className="mt-4 sm:mt-8 md:mt-16 container">
+          <Hero
+            pageTitle={pageTitle}
+            excerpt={excerpt ?? ""}
+            pageImage={pageImage}
+          />
+          {/* @ts-expect-error: Ignore type mismatch on this one. TODO*/}
+          <Services content={servicesContent} />
+          <ArticleGrid articles={frontPageData.articleGridData.items} />
+        </div>
+      </main>
+      <Footer />
     </>
   );
 }

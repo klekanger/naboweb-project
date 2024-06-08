@@ -49,13 +49,7 @@ export default function RootLayout({
         }}
       >
         <body>
-          <Providers>
-            <main className="flex min-h-screen flex-col mx-auto max-w-7xl px-2 sm:px-5">
-              <Navbar />
-              <div className="mt-4 sm:mt-8 md:mt-16 container">{children}</div>
-            </main>
-            <Footer />
-          </Providers>
+          <Providers>{children}</Providers>
         </body>
       </ClerkProvider>
     </html>
