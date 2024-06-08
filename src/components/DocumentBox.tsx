@@ -1,8 +1,6 @@
 "use client";
 
 import type { DocumentBoxProps } from "@/types/types";
-import { Button } from "@nextui-org/react";
-import Link from "next/link";
 import CustomButton from "./CustomButton";
 
 export default function DocumentBox({ documentBoxLinks }: DocumentBoxProps) {

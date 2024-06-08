@@ -1,5 +1,4 @@
 import type { User } from "@clerk/nextjs/dist/types/server";
-import type { UserResource } from "@clerk/types";
 import type { Asset, EntryFieldTypes, EntryFields } from "contentful";
 import type { TypePageFields } from "./contentful-types";
 

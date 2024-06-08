@@ -1,5 +1,4 @@
-import type { EmbeddedAsset } from "@/types/types";
-import { BLOCKS, type Block, MARKS } from "@contentful/rich-text-types";
+import { BLOCKS, MARKS, type Block } from "@contentful/rich-text-types";
 import Image from "next/image";
 import { type ReactNode } from "react";
 
@@ -53,7 +52,6 @@ export const renderRichTextOptions = (links?: any) => {
       [BLOCKS.LIST_ITEM]: (node: Block, children: ReactNode) => (
         <li>{children}</li>
       ),
-      // eslint-disable-next-line object-shorthand
       [BLOCKS.EMBEDDED_ASSET]: (node: Block) => {
         const asset = assetBlockMap.get(node.data.target.sys.id);
         if (!asset) return null;

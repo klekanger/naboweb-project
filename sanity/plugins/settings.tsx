@@ -3,7 +3,6 @@
  * This plugin contains all the logic for setting up the singletons
  */
 
-import { title } from "process";
 import type { DocumentDefinition } from "sanity";
 
 export const singletonPlugin = (types: string[]) => {

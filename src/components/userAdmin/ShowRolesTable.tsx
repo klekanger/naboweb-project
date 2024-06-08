@@ -3,12 +3,6 @@
 import { SidebarMenu, UserAdminContext } from "@/context/userAdminContext";
 import { UserTableProps, UserWithEmails } from "@/types/types";
 import {
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -16,7 +10,6 @@ import {
   TableHeader,
   TableRow,
   Tooltip,
-  useDisclosure,
 } from "@nextui-org/react";
 import { Crown, Edit } from "lucide-react";
 import { useContext } from "react";

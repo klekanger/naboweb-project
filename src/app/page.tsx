@@ -8,7 +8,6 @@ import type {
   TypeBlogPostSkeleton,
   TypeForsidetekstSkeleton,
 } from "@/types/contentful-types";
-import { Spacer } from "@nextui-org/react";
 import * as contentful from "contentful";
 
 async function getFrontPageData() {

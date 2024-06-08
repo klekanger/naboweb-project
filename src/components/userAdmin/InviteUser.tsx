@@ -1,6 +1,5 @@
 import { inviteUser } from "@/app/actions/inviteUser";
 import { UserAdminContext } from "@/context/userAdminContext";
-import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 import {
   Button,
   Checkbox,
@@ -12,7 +11,6 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  modal,
   useDisclosure,
 } from "@nextui-org/react";
 import { useContext, useMemo, useState } from "react";

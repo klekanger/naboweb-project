@@ -4,15 +4,7 @@
 
 import { BookIcon, HouseIcon, NewsIcon, PencilIcon } from "@/components/icons";
 import type { IconProps, ServicesContent } from "@/types/types";
-import {
-  Button,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Image,
-  Link,
-} from "@nextui-org/react";
+import { Card, CardBody, CardHeader } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { type FunctionComponent } from "react";
 

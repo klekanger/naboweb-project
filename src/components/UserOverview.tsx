@@ -1,10 +1,6 @@
 import CustomButton from "@/components/CustomButton";
 import RoleDisplay from "@/components/userAdmin/RoleDisplay";
 import { type UserCardProps } from "@/types/types";
-import { Card, CardBody, CardHeader } from "@nextui-org/card";
-import { Divider } from "@nextui-org/divider";
-import { Button } from "@nextui-org/react";
-import Link from "next/link";
 
 export default function UserOveview({ user, ...rest }: UserCardProps) {
   if (!user) {
@@ -27,8 +23,8 @@ export default function UserOveview({ user, ...rest }: UserCardProps) {
         </p>
         <p>
           På denne siden kan du administrere kontoen din. Hvis du er
-          administrator kan du også redigere innhold og administrere brukere på
-          Gartnerihagens nettsider.
+          administrator kan du også redigere innhold og administrere brukere som
+          skal ha tilgang til de lukkede områdene av nettsidene.
         </p>
 
         <div className="flex gap-4">
@@ -54,6 +50,7 @@ export default function UserOveview({ user, ...rest }: UserCardProps) {
                 buttonText="Rediger innhold"
                 className="w-40"
               />
+
               <CustomButton
                 href="/studio/structure/fileOtherDocuments"
                 asLink={false}

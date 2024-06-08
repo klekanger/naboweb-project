@@ -17,6 +17,7 @@ import { twitter } from "./sanity/schemas/objects/twitter";
 import { youtube } from "./sanity/schemas/objects/youtube";
 import documentMenu from "./sanity/schemas/singletons/documentMenu";
 import frontpageHero from "./sanity/schemas/singletons/frontpage-hero";
+import settings from "./sanity/schemas/singletons/settings";
 
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
 import { apiVersion, dataset, projectId } from "./sanity/env";
@@ -38,6 +39,7 @@ export default defineConfig({
       fileMeetingMinutes,
       fileOtherDocuments,
       documentMenu,
+      settings,
 
       // Objects
       youtube,
@@ -47,9 +49,9 @@ export default defineConfig({
   plugins: [
     structureTool({
       title: "Innhold",
-      structure: pageStructure([frontpageHero, documentMenu]),
+      structure: pageStructure([settings, frontpageHero, documentMenu]),
     }),
-    singletonPlugin([frontpageHero.name, documentMenu.name]),
+    singletonPlugin([settings.name, frontpageHero.name, documentMenu.name]),
     visionTool({ defaultApiVersion: apiVersion }),
     nbNOLocale(),
   ],

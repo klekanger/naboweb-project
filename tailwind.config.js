@@ -1,3 +1,6 @@
+/* eslint-disable no-undef */
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 const { nextui } = require("@nextui-org/react");
 
 /** @type {import('tailwindcss').Config} */

@@ -118,13 +118,7 @@ export default function DocumentTable({
         </div>
       </div>
     );
-  }, [
-    filterValue,
-    onSearchChange,
-    filteredItems.length,
-    hasSearchFilter,
-    rowsPerPage,
-  ]);
+  }, [filterValue, onSearchChange, filteredItems.length]);
 
   // helper function to get the file extension from item.filename
   const returnIconFromFileType = (fileName: string) => {

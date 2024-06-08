@@ -1,7 +1,7 @@
 "use client";
 
 import type { NewUser, UserWithEmails } from "@/types/types";
-import { createContext, useContext, useState } from "react";
+import { createContext, useState } from "react";
 
 export enum SidebarMenu {
   USERS = 0,
@@ -79,7 +79,9 @@ export const UserAdminContext = createContext<UserAdminContextType>(
 //
 export default function UserAdminProvider({
   children,
-}: { children: React.ReactNode }) {
+}: {
+  children: React.ReactNode;
+}) {
   const [generalError, setGeneralError] = useState("");
   const [selectedMenu, setSelectedMenu] = useState(SidebarMenu.USERS);
   const [isCreatingUser, setIsCreatingUser] = useState(false);
