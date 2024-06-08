@@ -9,7 +9,7 @@ import {
   getDocumentBoxFields,
 } from "@/lib/api";
 import { BlogPostItemProps, UserWithRoles } from "@/types/types";
-import { currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 import { RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";

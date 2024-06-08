@@ -1,11 +1,13 @@
 "use server";
-import { ClerkError, GetUserReturnType } from "@/types/types";
-import { clerkClient, currentUser } from "@clerk/nextjs";
+import { clerkClient, currentUser } from "@clerk/nextjs/server";
 
 export async function inviteUser({
   email,
   roles,
-}: { email: string; roles: string[] }) {
+}: {
+  email: string;
+  roles: string[];
+}) {
   const user = await currentUser();
   const userRoles = (user?.publicMetadata as { roles: string[] }) ?? [];
 

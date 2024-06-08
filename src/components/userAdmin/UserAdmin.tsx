@@ -22,7 +22,7 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { Crown, UserCheck, UserCog, UserPlus2, Users } from "lucide-react";
-import { useContext, useEffect, useMemo } from "react";
+import { useCallback, useContext, useEffect, useMemo } from "react";
 import LoadingSpinner from "../LoadingSpinner";
 import EditUser from "./EditUser";
 import InviteUser from "./InviteUser";
@@ -91,13 +91,15 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
   const modalCreateUser = useDisclosure();
   const modalErrorMessage = useDisclosure();
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     resetUserAdminContext();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const validateEmail = (value: string) =>
-    value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i);
+  const validateEmail = useCallback(
+    (value: string) => value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i),
+    [],
+  );
 
   const isInvalidEmail = useMemo(() => {
     if (emailValue === "") return false;
@@ -181,7 +183,6 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
         <section className="flex flex-col overflow-auto">
           <header
             className="w-full border-b bg-brand-white rounded-tr-large px-6 py-8 text-left text-base dark:bg-brand-black"
-            // biome-ignore lint/security/noDangerouslySetInnerHtml: for formatting. Not dangerous – content is defined by us.
             dangerouslySetInnerHTML={{
               __html: menuElements[selectedMenu].description,
             }}

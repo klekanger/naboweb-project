@@ -92,7 +92,6 @@ export default function EditUser() {
 
     if (selectedUser && validateForm(selectedUser)) {
       setIsCreatingUser(true);
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
       const response = await updateUser(selectedUser as any);
       setIsCreatingUser(false);
 

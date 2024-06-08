@@ -1,10 +1,12 @@
 // import UserCard from "@/components/UserCard";
 import UserOverview from "@/components/UserOverview";
-import { UserProfile, currentUser } from "@clerk/nextjs";
+import { UserProfile } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 import { Spinner } from "@nextui-org/spinner";
 
 export default async function Page() {
   const user = await currentUser();
+
   if (!user) return <div>Not authenticated</div>;
 
   return (
@@ -15,7 +17,7 @@ export default async function Page() {
       {user ? (
         <div className="self-start w-full">
           <UserOverview user={user} className="mb-16" />
-          <div className="sm:-ml-7">
+          <div>
             <UserProfile />
           </div>
         </div>
