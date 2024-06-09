@@ -18,6 +18,7 @@ import { youtube } from "./sanity/schemas/objects/youtube";
 import documentMenu from "./sanity/schemas/singletons/documentMenu";
 import frontpageHero from "./sanity/schemas/singletons/frontpage-hero";
 import settings from "./sanity/schemas/singletons/settings";
+import authors from "./sanity/schemas/documents/authors"
 
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
 import { apiVersion, dataset, projectId } from "./sanity/env";
@@ -33,6 +34,7 @@ export default defineConfig({
       // Documents
       page,
       blog,
+      authors,
 
       // Singletons
       frontpageHero,

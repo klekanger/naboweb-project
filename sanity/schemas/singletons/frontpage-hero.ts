@@ -33,6 +33,12 @@ export default defineType({
       fieldset: "content",
     }),
     defineField({
+      name: "heroImage",
+      title: "Bilde til intromodulen ('hero')",
+      type: "image",
+      fieldset: "content",
+    }),
+    defineField({
       name: "bodytext",
       type: "text",
       title: "Teksten som skal vises øverst.",
