@@ -1,4 +1,6 @@
+import { image } from "@nextui-org/react";
 import { DocumentIcon, ImageIcon } from "@sanity/icons";
+import { m } from "framer-motion";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
 export default defineType({
@@ -156,11 +158,13 @@ export default defineType({
   preview: {
     select: {
       title: "title",
+      mainImage: "mainImage",
     },
-    prepare({ title }) {
+    prepare({ title, mainImage }) {
       return {
         subtitle: "Side",
         title,
+        media: mainImage,
       };
     },
   },

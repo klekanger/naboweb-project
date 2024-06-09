@@ -1,4 +1,5 @@
 import { defineField, defineType } from "sanity";
+import { UserIcon } from "@sanity/icons";
 
 export default defineType({
   type: "document",
@@ -36,7 +37,17 @@ export default defineType({
       readOnly: true,
     }),
   ],
-  preview: { select: { title: "firstName" } },
-  readOnly: ({ document }) =>
-    (document == null ? void 0 : document.contentfulArchived) === !0,
+  preview: {
+    select: {
+      firstName: "firstName",
+      lastName: "lastName",
+      authorImage: "authorImage",
+    },
+    prepare({ firstName, lastName, authorImage }) {
+      return {
+        title: `${firstName} ${lastName}`,
+        media: authorImage || UserIcon,
+      };
+    },
+  },
 });

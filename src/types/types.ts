@@ -1,6 +1,7 @@
 import type { User } from "@clerk/nextjs/dist/types/server";
 import type { Asset, EntryFieldTypes, EntryFields } from "contentful";
 import type { TypePageFields } from "./contentful-types";
+import { Image, PortableTextBlock } from "sanity";
 
 export type UserRoles = "admin" | "editor" | "user";
 
@@ -477,4 +478,14 @@ export type ServicesContent = {
   sys: {
     id: string;
   };
+};
+
+// Sanity Types
+export type FrontHero = {
+  showButton: boolean;
+  buttonText?: string;
+  title: string;
+  subtitle?: string;
+  bodyText: Array<PortableTextBlock>;
+  heroImage: Image;
 };

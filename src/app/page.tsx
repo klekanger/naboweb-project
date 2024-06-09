@@ -3,6 +3,8 @@ import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
 import Services from "@/components/Services";
+import { SanityDocument } from "next-sanity";
+import { sanityFetch } from "";
 
 import type {
   TypeBlogPostSkeleton,
