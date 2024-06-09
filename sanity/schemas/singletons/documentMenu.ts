@@ -108,7 +108,7 @@ export default defineType({
   preview: {
     prepare() {
       return {
-        title: "Konfigurer knapp 1-4 for dokumentmenyen",
+        title: "Konfigurer snarveiknapper (knapp 1-4) for dokumentmenyen",
       };
     },
   },
