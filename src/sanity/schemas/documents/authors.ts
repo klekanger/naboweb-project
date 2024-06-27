@@ -29,13 +29,6 @@ export default defineType({
       hidden: false,
       description: "Portrettbilde av forfatter.",
     }),
-    defineField({
-      type: "boolean",
-      description:
-        "If this document was archived on Contentful at the time of export, the document will be in a read-only state.",
-      name: "contentfulArchived",
-      readOnly: true,
-    }),
   ],
   preview: {
     select: {

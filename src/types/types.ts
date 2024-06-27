@@ -1,9 +1,14 @@
 import type { User } from "@clerk/nextjs/dist/types/server";
-import type { Asset, EntryFieldTypes, EntryFields } from "contentful";
-import type { TypePageFields } from "./contentful-types";
-import { Image, PortableTextBlock } from "sanity";
+import type { Image, PortableTextBlock } from "sanity";
+import { Authors, BlogPost, Page } from "./sanity.types";
 
 export type UserRoles = "admin" | "editor" | "user";
+
+export type Slug = {
+  _type: "slug";
+  current?: string;
+  source?: string;
+};
 
 export type DeleteUserSuccessType = {
   success: {
@@ -227,213 +232,6 @@ export type ReturnTypeForUserError = {
   status?: number;
 };
 
-export type ArticleProps = {
-  title: string;
-  authors?: Array<{
-    fields: {
-      firstName: string;
-      lastName: string;
-    };
-  }>;
-  bodyText: TypePageFields["pageText"];
-  firstPublishedAt: EntryFields.Date;
-  publishedAt: EntryFields.Date;
-  mainImage?: ContentImage;
-  buttonLink: string;
-};
-
-export type ContentfulFile = {
-  sys: {
-    id: string;
-    firstPublishedAt: `${number}-${number}-${number}T${number}:${number}:${number}Z`;
-    publishedAt: `${number}-${number}-${number}T${number}:${number}:${number}Z`;
-  };
-  title: string;
-  description: string;
-  contentType: string;
-  fileName: string;
-  size: number;
-  url: string;
-};
-
-export type DocumentCollection = {
-  data: {
-    serviceMenu: {
-      menu5FilesCollection?: {
-        total: number;
-        items: ContentfulFile[];
-      };
-      menu6FilesCollection?: {
-        total: number;
-        items: ContentfulFile[];
-      };
-    };
-  };
-};
-
-export type DocumentTableProps = {
-  documents: {
-    total: number;
-    items: ContentfulFile[];
-  };
-  rowsPerPage?: number;
-  startPage?: number;
-};
-
-export type ReturnTypeForGetBlogPostRoutes = {
-  data: {
-    blogPostCollection: {
-      total: number;
-    };
-  };
-};
-
-export type ReturnTypeForGetSlugsForBlogPosts = {
-  data: {
-    blogPostCollection: {
-      items: Array<{
-        slug: string;
-      }>;
-    };
-  };
-};
-
-export type BlogPostItemProps = {
-  sys: {
-    id: string;
-    createdAt: EntryFields.Date;
-    updatedAt: EntryFields.Date;
-  };
-  fields: {
-    privatePost: boolean;
-    title: string;
-    excerpt: string;
-    featuredImage?: ContentImage | undefined;
-    slug: string;
-  };
-};
-
-export type BlogPostListProps = {
-  sys: {
-    id: string;
-  };
-  posts: BlogPostItemProps[];
-};
-
-export type ReturnTypeForPage = {
-  data: {
-    page: TypePageFields & {
-      sys: {
-        id: string;
-        publishedAt: EntryFields.Date;
-        firstPublishedAt: EntryFields.Date;
-      };
-    };
-  };
-};
-
-type SingleBlogPostItem = {
-  sys: {
-    id: string;
-    publishedAt: `${number}-${number}-${number}T${number}:${number}:${number}Z`;
-    firstPublishedAt: `${number}-${number}-${number}T${number}:${number}:${number}Z`;
-  };
-  privatePost: boolean;
-  title: string;
-  excerpt: string;
-  featuredImage?: ContentImage;
-  bodyText: TypePageFields["pageText"];
-  author?: {
-    firstName: string;
-    lastName: string;
-    authorImage?: ContentImage;
-  };
-  slug: string;
-};
-
-export type ReturnTypeForSingleBlogPost = {
-  data: {
-    blogPostCollection: {
-      total: number;
-      items: Array<SingleBlogPostItem>;
-    };
-  };
-};
-
-export type ReturnTypeForBlogPosts = {
-  data: {
-    blogPostCollection: {
-      total: number;
-      items: Array<SingleBlogPostItem>;
-    };
-  };
-};
-
-export type getPageDataReturnTypes = {
-  pageTitle: string;
-  excerpt?: string;
-  pageText: EntryFieldTypes.RichText;
-  slug: string;
-  id: string;
-  pageImage?: ContentImage;
-  createdAt: EntryFields.Date;
-  updatedAt: EntryFields.Date;
-};
-
-export type EmbeddedAsset = {
-  title: string;
-  description: string;
-  file: {
-    url: string;
-    details: {
-      size: number;
-      image: {
-        width: number;
-        height: number;
-      };
-    };
-    fileName: string;
-    contentType: string;
-  };
-};
-
-export type HeroWideProps = {
-  pageTitle: string;
-  excerpt: string;
-  pageImage: Asset<"WITHOUT_UNRESOLVABLE_LINKS"> | undefined;
-};
-
-type DocumentBoxFields = {
-  menu1Name: string;
-  menu2Name: string;
-  menu3Name: string;
-  menu4Name: string;
-  menu5Name: string;
-  menu6Name: string;
-  menu1File: {
-    url: string;
-  };
-  menu2File: {
-    url: string;
-  };
-  menu3File: {
-    url: string;
-  };
-  menu4File: {
-    url: string;
-  };
-};
-
-export type ReturnTypeForDocumentBox = {
-  data: {
-    serviceMenu: DocumentBoxFields;
-  };
-};
-
-export type DocumentBoxProps = {
-  documentBoxLinks: DocumentBoxFields;
-};
-
 export type IconProps = {
   fill?: string;
   stroke?: string;
@@ -467,25 +265,141 @@ export type UserWithEmails = Pick<
   imageUrl?: string;
 };
 
-export type ServicesContent = {
-  fields: {
-    description: string;
-    title: string;
-    icon: string;
-    locked: boolean;
-    url?: string;
-  };
-  sys: {
-    id: string;
-  };
-};
-
+// ************
 // Sanity Types
+// ************
+
 export type FrontHero = {
   showButton: boolean;
   buttonText?: string;
+  buttonLink?: {
+    slug: {
+      current: string;
+    };
+  };
   title: string;
   subtitle?: string;
-  bodyText: Array<PortableTextBlock>;
-  heroImage: Image;
+  bodyText: string;
+  heroImage: Image & {
+    alt: string;
+  };
+};
+
+export type HeroProps = {
+  data: FrontHero;
+};
+
+export type Services = {
+  title1: string;
+  title2: string;
+  title3: string;
+  description1: string;
+  description2: string;
+  description3: string;
+  icon1: string;
+  icon2: string;
+  icon3: string;
+  url1: string;
+  url2: string;
+  url3: string;
+  private1: boolean;
+  private2: boolean;
+  private3: boolean;
+};
+
+export type Showcase = {
+  _id: string;
+  showcaseTitle?: string;
+  excerpt: PortableTextBlock[];
+  showcaseBlogposts: BlogPost[];
+};
+
+export type ServicesProps = {
+  data: Services;
+};
+
+export type ShowcaseProps = {
+  data: Showcase;
+};
+
+export type HomePagePayload = {
+  frontpageHeroContent: HeroProps;
+  frontpageServicesContent: ServicesProps;
+  frontpageShowcaseContent: ShowcaseProps;
+};
+
+export type HomePageProps = {
+  data: HomePagePayload;
+};
+
+export type SanityReference = {
+  _type: string;
+  _ref: string;
+};
+
+export type FigureProps = {
+  value: {
+    alt?: string;
+    caption?: string;
+    asset: SanityReference;
+    _key: string;
+    _type: string;
+  };
+};
+
+export type PagePayload = {
+  _id: string;
+  _createdAt: string;
+  _updatedAt: string;
+  title: string;
+  mainImage: Image & { alt?: string };
+  overview: PortableTextBlock[];
+  body: PortableTextBlock[];
+  slug: Slug;
+};
+
+export type PageProps = {
+  data?: Page;
+};
+
+export type BlogPageProps = {
+  data?: BlogPost;
+};
+
+export type ArticleProps = {
+  title: string | undefined;
+  authors?: Array<Authors>;
+  bodyText: PortableTextBlock[] | undefined;
+  createdAt: string | undefined;
+  updatedAt: string | undefined;
+  mainImage: Image & { alt?: string; caption?: string; lqip?: string };
+  buttonLink: string | undefined;
+};
+
+export type BlogPagePayload = {
+  _id: string;
+  _createdAt: string;
+  _updatedAt: string;
+  privatePost?: boolean;
+  title?: string;
+  excerpt: PortableTextBlock[];
+  featuredImage: Image & { alt: string };
+  bodyText: PortableTextBlock[];
+  slug: Slug;
+  author: {
+    firstName: string;
+    lastName: string;
+    authorImage: Image;
+  };
+};
+
+export type DocumentMenu = {
+  button1Text: string;
+  button2Text: string;
+  button3Text: string;
+  button4Text: string;
+  file1: { url: string };
+  file2: { url: string };
+  file3: { url: string };
+  file4: { url: string };
 };

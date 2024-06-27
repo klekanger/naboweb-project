@@ -7,16 +7,16 @@ import { redirect } from "next/navigation";
 const clientWithToken = client.withConfig({ token });
 
 export async function GET(request: Request) {
-	const { isValid, redirectTo = "/" } = await validatePreviewUrl(
-		clientWithToken,
-		request.url,
-	);
+  const { isValid, redirectTo = "/" } = await validatePreviewUrl(
+    clientWithToken,
+    request.url,
+  );
 
-	if (!isValid) {
-		return new Response("Invalid secret", { status: 401 });
-	}
+  if (!isValid) {
+    return new Response("Invalid secret", { status: 401 });
+  }
 
-	draftMode().enable();
+  draftMode().enable();
 
-	redirect(redirectTo);
+  redirect(redirectTo);
 }

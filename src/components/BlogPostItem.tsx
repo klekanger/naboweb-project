@@ -1,39 +1,57 @@
-import type { BlogPostItemProps, ContentImage } from "@/types/types";
+import { urlForImage } from "@/sanity/lib/utils";
+import { BlogPost } from "@/types/sanity.types";
+import { toPlainText } from "next-sanity";
 import Image from "next/image";
 import Link from "next/link";
+import type { Image as SanityImage } from "sanity";
 
-export default function BlogPostItem(post: BlogPostItemProps) {
-  const { title, excerpt, featuredImage, slug, privatePost } = post.fields;
-  const { description, url, width, height } = featuredImage!;
+export type BlogPostItemProps = {
+  post: BlogPost & {
+    featuredImage: {
+      caption?: string;
+      alt?: string;
+      lqip?: string;
+    };
+  };
+};
 
-  if (!width || !height) {
-    console.warn(
-      "[blog-post.item.tsx] Missing data in featuredImage prop. Should provide width and height.",
-    );
+export default function BlogPostItem({ post }: BlogPostItemProps) {
+  const { title, excerpt, featuredImage, slug, privatePost } = post;
+
+  let imageUrl: string;
+  let imageAlt = "";
+
+  imageUrl =
+    urlForImage(featuredImage as SanityImage)
+      ?.height(1600)
+      .width(900)
+      .fit("crop")
+      .url() ?? "";
+  imageAlt = featuredImage?.alt ?? "";
+
+  if (!title || !excerpt || !featuredImage || !slug) {
+    console.warn("[blog-post.item.tsx] Missing data in post prop.");
     return null;
   }
 
-  if (!title || !excerpt || !featuredImage || !slug || !url) {
-    console.warn(
-      "[blog-post.item.tsx] Missing data in post prop. Should provide title, excerpt, featuredImage, slug and url. Ideally also description.",
-    );
-    return null;
-  }
-
-  const urlToPost = privatePost ? `/informasjon/post/${slug}` : `/blog/${slug}`;
+  const urlToPost = privatePost
+    ? `/informasjon/post/${slug?.current}`
+    : `/blog/${slug?.current}`;
 
   return (
-    <article key={post.sys.id}>
+    <article key={post?._id}>
       <div className="grid-cols-12 gap-2 pb-2 md:grid md:pb-8 lg:gap-8">
         <div className="relative order-last overflow-hidden rounded-3xl md:col-span-5 lg:col-span-6">
           <Link href={urlToPost} passHref>
             <Image
               className="aspect-[16/10] rounded-3xl object-cover duration-200 transition hover:scale-[102%]"
-              src={`${url}`}
-              alt={description || title}
-              width={width}
-              height={height}
-              sizes="(min-width: 768px) 40vw, (min-width: 1024px) 50vw,100vw"
+              src={imageUrl}
+              alt={imageAlt}
+              width={1600}
+              height={900}
+              placeholder="blur"
+              blurDataURL={featuredImage.lqip}
+              sizes="(min-width: 1024px) 50vw,100vw"
             />
           </Link>
         </div>
@@ -43,8 +61,7 @@ export default function BlogPostItem(post: BlogPostItemProps) {
             <h2 className="text-2xl mt-0 lg:mt-0">{title}</h2>
           </Link>
           <p>
-            {excerpt &&
-              `${excerpt.slice(0, 500)}${excerpt.length > 500 ? "..." : ""}`}
+            {excerpt && `${toPlainText(excerpt).slice(0, 500)}`}
             <Link href={urlToPost} className="pt-4 no-underline md:block">
               Les&nbsp;mer »
             </Link>

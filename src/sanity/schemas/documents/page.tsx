@@ -1,6 +1,4 @@
-import { image } from "@nextui-org/react";
 import { DocumentIcon, ImageIcon } from "@sanity/icons";
-import { m } from "framer-motion";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
 export default defineType({

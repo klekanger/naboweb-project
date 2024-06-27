@@ -37,6 +37,15 @@ export default defineType({
       title: "Bilde til intromodulen ('hero')",
       type: "image",
       fieldset: "content",
+      fields: [
+        defineField({
+          name: "alt",
+          type: "string",
+          title: "Alt-tekst",
+          description:
+            "Alternativ tekst til bildet, for tilgjengelighet for blinde og svaksynte.",
+        }),
+      ],
       validation: (rule) => rule.required(),
     }),
     defineField({

@@ -1,5 +1,5 @@
+import { ImageIcon } from "@sanity/icons";
 import { defineArrayMember, defineField, defineType } from "sanity";
-import { DocumentIcon, ImageIcon } from "@sanity/icons";
 
 export default defineType({
   type: "document",
@@ -37,6 +37,23 @@ export default defineType({
       title: "Toppbilde",
       hidden: false,
       description: "Hovedbilde som skal vises over artikkelen.",
+      options: {
+        hotspot: true,
+      },
+      fields: [
+        defineField({
+          title: "Bildetekst",
+          name: "caption",
+          type: "string",
+        }),
+        defineField({
+          name: "alt",
+          type: "string",
+          title: "Alt-tekst",
+          description:
+            "Alternativ tekst til bildet, for tilgjengelighet for blinde og svaksynte.",
+        }),
+      ],
     }),
     defineField({
       name: "bodyText",
@@ -135,13 +152,6 @@ export default defineType({
         "Dette er den siste delen av URL-en som gir bloggposten en unik adresse. Genereres automagisk!",
       validation: (Rule) => Rule.required(),
       options: { source: "title" },
-    }),
-    defineField({
-      type: "boolean",
-      description:
-        "If this document was archived on Contentful at the time of export, the document will be in a read-only state.",
-      name: "contentfulArchived",
-      readOnly: true,
     }),
   ],
   preview: {
