@@ -193,13 +193,13 @@ export default function DocumentTable({
 
                 return (
                   <TableRow
-                    key={item.document?.asset?.id}
+                    key={item.document?.asset?._id}
                     className="text-left"
                   >
                     <TableCell>
                       <Tooltip
                         content={
-                          <span className="flex flex-row items-center gap-2 py-2 text-xs md:text-sm">
+                          <span className="flex flex-row items-center gap-2 py-2 text-xs md:text-sm md:max-w-md">
                             <FileIcon
                               fill="#fff"
                               height={2}
