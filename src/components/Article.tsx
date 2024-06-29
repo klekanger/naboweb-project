@@ -1,69 +1,67 @@
 import BackButton from "@/components/BackButton";
 import { formatDate } from "@/lib/format-date";
-import { renderRichTextOptions } from "@/lib/render-rich-text-options";
-import type { ArticleProps } from "@/types/types";
-import {
-  type Options,
-  documentToReactComponents,
-} from "@contentful/rich-text-react-renderer";
-
+import { urlForImage } from "@/sanity/lib/utils";
+import { CustomPortableText } from "@/lib/CustomPortableText";
 import Image from "next/image";
-import Link from "next/link";
+import { ArticleProps } from "@/types/types";
 
 export default function Article({
   title,
   authors,
   bodyText,
-  firstPublishedAt: createdAt,
-  publishedAt: updatedAt,
+  createdAt,
+  updatedAt,
   mainImage,
   buttonLink,
 }: ArticleProps) {
-  // Put the rich text JSON and the linked entries into separate constants
-  // that should be passed into documentToReactComponents
-  const { json: richTextJson } = bodyText;
-  const { links } = bodyText;
-
-  const publishDate: string =
-    updatedAt === createdAt
-      ? `Publisert: ${formatDate(createdAt)}`
-      : `Publisert: ${formatDate(createdAt)} (oppdatert: ${formatDate(
-          updatedAt,
-        )})`;
-
-  let blurDataURL: string;
-
-  if (mainImage && "src" in mainImage) {
-    blurDataURL = `${mainImage.url}?w=10&h=10&fit=fill`;
-  } else {
-    blurDataURL =
-      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mOsWDvtPwAGHAK8KBlg/wAAAABJRU5ErkJggg==";
+  let publishDate = "";
+  if (createdAt && updatedAt) {
+    publishDate =
+      updatedAt === createdAt
+        ? `Publisert: ${formatDate(createdAt)}`
+        : `Publisert: ${formatDate(createdAt)} (oppdatert: ${formatDate(
+            updatedAt,
+          )})`;
   }
+
+  let imageUrl: string;
+  let imageAlt = "";
+
+  imageUrl = urlForImage(mainImage)?.width(1600).height(1000).url() ?? "";
+  imageAlt = mainImage?.alt ?? "";
 
   return (
     <article>
-      <h1 className="prose lg:prose-xl text-4xl lg:text-5xl mb-8 font-semibold">
+      <h1 className="prose lg:prose-xl text-4xl lg:text-5xl mb-8 font-semibold ">
         {title}
       </h1>
       {mainImage && (
-        <div className="image relative mb-16 aspect-video md:max-w-4xl">
+        <div className="relative mb-16 md:max-w-4xl">
           <Image
-            src={mainImage.url}
-            alt={mainImage.description}
+            src={imageUrl}
+            alt={imageAlt}
             sizes="100vw"
-            priority
-            fill
-            blurDataURL={blurDataURL}
+            width={1600}
+            height={1000}
+            blurDataURL={mainImage.lqip}
             placeholder="blur"
-            className="rounded-3xl object-cover shadow-md"
+            priority
+            className="rounded-large w-full h-full mb-0 pb-0"
           />
+
+          {mainImage?.caption && (
+            <div className="absolute bottom-0 left-0 right-0 rounded-b-large text-sm py-4 !pl-4 pr-16 bg-slate-200/70">
+              <em>{mainImage.caption}</em>
+            </div>
+          )}
         </div>
       )}
+
       <div className="prose lg:prose-xl">
-        {documentToReactComponents(
-          richTextJson,
-          renderRichTextOptions(links) as Options,
-        )}
+        <CustomPortableText
+          value={bodyText}
+          paragraphClasses="prose lg:prose-xl"
+        />
       </div>
 
       <section className="py-8">
@@ -77,9 +75,9 @@ export default function Article({
               return (
                 <span
                   className="text-sm"
-                  key={`${author.fields.firstName}-${author.fields.lastName}`}
+                  key={`${author.firstName}-${author.lastName}`}
                 >
-                  {author.fields.firstName} {author.fields.lastName}
+                  {author.firstName} {author.lastName}
                   {!isLastAuthor && ", "}
                 </span>
               );

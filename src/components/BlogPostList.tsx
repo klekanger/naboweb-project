@@ -1,17 +1,18 @@
 import BlogPostItem from "@/components/BlogPostItem";
-import type { BlogPostItemProps } from "@/types/types";
-import type { ComponentPropsWithoutRef } from "react";
+import { BLOG_BY_SLUG_QUERYResult, BlogPost } from "@/types/sanity.types";
 
-export default function BlogPostList({
-  posts,
-  ...rest
-}: {
-  posts: BlogPostItemProps[];
-} & ComponentPropsWithoutRef<"section">) {
+export default function BlogPostList(props: {
+  posts: BLOG_BY_SLUG_QUERYResult[];
+  className?: string;
+}) {
+  const { posts, className } = props ?? {};
+
+  if (!posts || posts.length === 0) return null;
+
   return (
-    <section className={`space-y-8 ${rest.className ?? ""}`}>
+    <section className={`space-y-8 ${className}`}>
       {posts.map((post) => (
-        <BlogPostItem key={post.sys.id} {...post} />
+        <BlogPostItem key={post?._id} post={post} />
       ))}
     </section>
   );

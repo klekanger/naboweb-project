@@ -5,11 +5,13 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "images.ctfassets.net",
-        port: "",
-        pathname: `/${process.env.CONTENTFUL_SPACE_ID}/**`,
+        hostname: "cdn.sanity.io",
       },
     ],
+
+  },
+  experimental: {
+    taint: true,
   },
 };
 

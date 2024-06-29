@@ -5,22 +5,27 @@
  */
 
 import { nbNOLocale } from "@sanity/locale-nb-no";
+import { presentationTool } from "sanity/presentation";
 import { visionTool } from "@sanity/vision";
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
-import { pageStructure, singletonPlugin } from "./sanity/plugins/settings";
-import blog from "./sanity/schemas/documents/blog";
-import fileMeetingMinutes from "./sanity/schemas/documents/fileMeetingMinutes";
-import fileOtherDocuments from "./sanity/schemas/documents/fileOtherDocuments";
-import page from "./sanity/schemas/documents/page";
-import { twitter } from "./sanity/schemas/objects/twitter";
-import { youtube } from "./sanity/schemas/objects/youtube";
-import documentMenu from "./sanity/schemas/singletons/documentMenu";
-import frontpageHero from "./sanity/schemas/singletons/frontpage-hero";
-import settings from "./sanity/schemas/singletons/settings";
+import { pageStructure, singletonPlugin } from "@/sanity/plugins/settings";
+import blogPost from "@/sanity/schemas/documents/blog";
+import fileMeetingMinutes from "@/sanity/schemas/documents/fileMeetingMinutes";
+import fileOtherDocuments from "@/sanity/schemas/documents/fileOtherDocuments";
+import page from "@/sanity/schemas/documents/page";
+import { twitter } from "@/sanity/schemas/objects/twitter";
+import { youtube } from "@/sanity/schemas/objects/youtube";
+import documentMenu from "@/sanity/schemas/singletons/documentMenu";
+import frontpageHero from "@/sanity/schemas/singletons/frontpage-hero";
+import settings from "@/sanity/schemas/singletons/settings";
+import authors from "@/sanity/schemas/documents/authors";
+import services from "@/sanity/schemas/singletons/services";
+import frontpageShowcase from "@/sanity/schemas/singletons/showcase";
+import { iconType } from "@/sanity/schemas/objects/icons";
 
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
-import { apiVersion, dataset, projectId } from "./sanity/env";
+import { apiVersion, dataset, projectId } from "@/sanity/env";
 
 export default defineConfig({
   title: `gartnerihagen-askim.no [dataset: ${dataset}]`,
@@ -32,10 +37,13 @@ export default defineConfig({
     types: [
       // Documents
       page,
-      blog,
+      blogPost,
+      authors,
 
       // Singletons
       frontpageHero,
+      frontpageShowcase,
+      services,
       fileMeetingMinutes,
       fileOtherDocuments,
       documentMenu,
@@ -44,15 +52,35 @@ export default defineConfig({
       // Objects
       youtube,
       twitter,
+      iconType,
     ],
   },
   plugins: [
     structureTool({
       title: "Innhold",
-      structure: pageStructure([settings, frontpageHero, documentMenu]),
+      structure: pageStructure([
+        settings,
+        frontpageHero,
+        frontpageShowcase,
+        services,
+        documentMenu,
+      ]),
     }),
-    singletonPlugin([settings.name, frontpageHero.name, documentMenu.name]),
+    singletonPlugin([
+      settings.name,
+      services.name,
+      frontpageHero.name,
+      frontpageShowcase.name,
+      documentMenu.name,
+    ]),
     visionTool({ defaultApiVersion: apiVersion }),
     nbNOLocale(),
+    presentationTool({
+      previewUrl: {
+        draftMode: {
+          enable: "/api/draft",
+        },
+      },
+    }),
   ],
 });

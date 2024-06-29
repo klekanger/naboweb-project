@@ -3,8 +3,6 @@
  */
 
 import { Providers } from "@/app/providers";
-import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
 import { nbNO } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Montserrat, Open_Sans } from "next/font/google";
