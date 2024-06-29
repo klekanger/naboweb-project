@@ -39,7 +39,7 @@ export async function generateStaticParams() {
   const totalPages = Math.ceil(numberOfBlogPosts / POSTS_PER_PAGE);
 
   return Array.from({ length: totalPages }).map((_, i) => ({
-    blogPage: `${i + 1}`,
+    page: `${i + 1}`,
   }));
 }
 
