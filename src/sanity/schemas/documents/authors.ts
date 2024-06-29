@@ -5,6 +5,7 @@ export default defineType({
   type: "document",
   name: "authors",
   title: "Forfattere",
+  icon: UserIcon,
   description:
     'Navn på artikkelforfattere. Kan brukes hvis du ønsker "byline" på artikler.',
   fields: [

@@ -1,3 +1,13 @@
+import type {
+  BlogPost,
+  DOCUMENTMENU_QUERYResult,
+  FRONTPAGE_HERO_QUERYResult,
+  FRONTPAGE_SERVICES_QUERYResult,
+  MEETING_MINUTES_QUERYResult,
+  OTHER_DOCUMENTS_QUERYResult,
+  Page,
+  SHOWCASE_QUERYResult,
+} from "@/types/sanity.types";
 import {
   BLOG_BY_SLUG_QUERY,
   DOCUMENTMENU_QUERY,
@@ -10,15 +20,6 @@ import {
   SHOWCASE_QUERY,
 } from "../lib/queries";
 import { loadQuery } from "../lib/store";
-import type {
-  BlogPost,
-  DOCUMENTMENU_QUERYResult,
-  FRONTPAGE_HERO_QUERYResult,
-  FRONTPAGE_SERVICES_QUERYResult,
-  OTHER_DOCUMENTS_QUERYResult,
-  Page,
-  SHOWCASE_QUERYResult,
-} from "@/types/sanity.types";
 
 export async function loadHomePage() {
   const [
@@ -26,12 +27,12 @@ export async function loadHomePage() {
     frontpageServicesContent,
     frontpageShowcaseContent,
   ] = await Promise.all([
-    loadQuery<FRONTPAGE_HERO_QUERYResult>(
+    loadQuery<FRONTPAGE_HERO_QUERYResult | null>(
       FRONTPAGE_HERO_QUERY,
       {},
       { next: { tags: ["frontpage-hero"] } },
     ),
-    loadQuery<FRONTPAGE_SERVICES_QUERYResult>(
+    loadQuery<FRONTPAGE_SERVICES_QUERYResult | null>(
       FRONTPAGE_SERVICES_QUERY,
       {},
       { next: { tags: ["frontpage-services"] } },
@@ -53,7 +54,7 @@ export async function loadHomePage() {
 }
 
 export async function loadPageBySlug(slug: string) {
-  return loadQuery<Page>(
+  return loadQuery<Page | null>(
     PAGE_BY_SLUG_QUERY,
     { slug },
     { next: { tags: [`${slug}`] } },
@@ -61,14 +62,14 @@ export async function loadPageBySlug(slug: string) {
 }
 
 export async function loadBlogPageBySlug(slug: string) {
-  return loadQuery<BlogPost>(
+  return loadQuery<BlogPost | null>(
     BLOG_BY_SLUG_QUERY,
     { slug },
     { next: { tags: [`blog:${slug}`] } },
   );
 }
 export async function loadPrivateBlogPageBySlug(slug: string) {
-  return loadQuery<BlogPost>(
+  return loadQuery<BlogPost | null>(
     PRIVATE_BLOG_BY_SLUG_QUERY,
     { slug },
     { next: { tags: [`blog:${slug}`] } },
@@ -76,7 +77,7 @@ export async function loadPrivateBlogPageBySlug(slug: string) {
 }
 
 export async function loadDocumentMenu() {
-  return loadQuery<DOCUMENTMENU_QUERYResult>(
+  return loadQuery<DOCUMENTMENU_QUERYResult | null>(
     DOCUMENTMENU_QUERY,
     {},
     { next: { tags: ["documentMenu"] } },
@@ -84,7 +85,7 @@ export async function loadDocumentMenu() {
 }
 
 export async function loadOtherDocuments() {
-  return loadQuery<OTHER_DOCUMENTS_QUERYResult>(
+  return loadQuery<OTHER_DOCUMENTS_QUERYResult | null>(
     OTHER_DOCUMENTS_QUERY,
     {},
     { next: { tags: ["fileOtherDocuments"] } },
@@ -92,36 +93,9 @@ export async function loadOtherDocuments() {
 }
 
 export async function loadMeetingMinutes() {
-  return loadQuery(
+  return loadQuery<MEETING_MINUTES_QUERYResult | null>(
     MEETING_MINUTES_QUERY,
     {},
     { next: { tags: ["fileMeetingMinutes"] } },
   );
 }
-
-/*
-
-export async function loadBlog(slug: string) {
-	return loadQuery<PagePayload>(
-		blogsBySlugQuery,
-		{ slug },
-		{ next: { tags: [`blog:${slug}`] } },
-	);
-}
-
-export async function loadProject(slug: string) {
-	return loadQuery<ProjectPayload>(
-		projectsBySlugQuery,
-		{ slug },
-		{ next: { tags: [`project:${slug}`] } },
-	);
-}
-
-export async function loadSettings() {
-	return loadQuery<Settings>(
-		settingsQuery,
-		{},
-		{ next: { tags: ["settings"] } },
-	);
-}
- */

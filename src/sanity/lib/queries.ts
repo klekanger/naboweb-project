@@ -1,4 +1,4 @@
-import { BlogPost } from "@/types/sanity.types";
+import { BLOG_BY_SLUG_QUERYResult, BlogPost } from "@/types/sanity.types";
 import { groq } from "next-sanity";
 import { client } from "../lib/client";
 
@@ -171,7 +171,7 @@ export async function fetchBlogCollection({
   pageNumber?: number;
   postsPerPage?: number;
   isPrivate?: boolean;
-}): Promise<BlogPost[]> {
+}): Promise<BLOG_BY_SLUG_QUERYResult[]> {
   return client.fetch(
     groq`
       *[_type=="blogPost" && 
@@ -184,7 +184,7 @@ export async function fetchBlogCollection({
         excerpt,
         privatePost,
         title,
-        slug
+        "slug": slug.current
       }      
     `,
     {

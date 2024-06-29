@@ -1,10 +1,11 @@
-import { ImageIcon } from "@sanity/icons";
+import { DocumentTextIcon, ImageIcon } from "@sanity/icons";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
 export default defineType({
   type: "document",
   name: "blogPost",
   title: "Blogginnlegg/artikkel",
+  icon: DocumentTextIcon,
   fields: [
     defineField({
       name: "privatePost",

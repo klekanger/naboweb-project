@@ -13,7 +13,7 @@ export default async function Home() {
   const initial = await loadHomePage();
 
   if (draftMode().isEnabled) {
-    return <HomePagePreview initial={initial} />;
+    return <HomePagePreview initial={initial as any} />;
   }
 
   if (!initial.data) {

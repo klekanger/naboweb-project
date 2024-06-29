@@ -1,6 +1,6 @@
-import Showcase from "@/components/sections/Showcase";
-import Services from "@/components/sections/Services";
 import Hero from "@/components/sections/Hero";
+import Services from "@/components/sections/Services";
+import Showcase from "@/components/sections/Showcase";
 import type { HomePageProps } from "@/types/types";
 
 export default function HomePage({ data }: HomePageProps) {
@@ -8,7 +8,16 @@ export default function HomePage({ data }: HomePageProps) {
     frontpageHeroContent,
     frontpageServicesContent,
     frontpageShowcaseContent,
-  } = data;
+  } = data ?? {};
+
+  if (
+    !frontpageHeroContent ||
+    !frontpageServicesContent ||
+    !frontpageShowcaseContent
+  ) {
+    console.error("Missing content from sanity");
+    return null;
+  }
 
   return (
     <>

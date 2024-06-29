@@ -4,6 +4,7 @@ import CustomButton from "@/components/CustomButton";
 import { urlForImage } from "@/sanity/lib/utils";
 import type { HeroProps } from "@/types/types";
 import { motion } from "framer-motion";
+import { HeartOffIcon } from "lucide-react";
 import Image from "next/image";
 import type { Image as SanityImage } from "sanity";
 
@@ -60,7 +61,7 @@ export default function Hero({ content }: { content: HeroProps }) {
             sizes="(min-width: 640px) 50vw, 100vw"
             priority
             placeholder="blur"
-            blurDataURL={lqip}
+            blurDataURL={lqip ?? ""}
             style={{ objectFit: "cover" }}
             className="h-full w-full"
           />

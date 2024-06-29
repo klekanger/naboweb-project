@@ -296,7 +296,6 @@ export type Authors = {
     crop?: SanityImageCrop;
     _type: "image";
   };
-  contentfulArchived?: boolean;
 };
 
 export type BlogPost = {
@@ -839,7 +838,6 @@ export type BLOG_BY_SLUG_QUERYResult = {
       crop?: SanityImageCrop;
       _type: "image";
     };
-    contentfulArchived?: boolean;
   }> | null;
 } | null;
 // Variable: PRIVATE_BLOG_BY_SLUG_QUERY
@@ -960,7 +958,6 @@ export type PRIVATE_BLOG_BY_SLUG_QUERYResult = {
       crop?: SanityImageCrop;
       _type: "image";
     };
-    contentfulArchived?: boolean;
   }> | null;
 } | null;
 // Variable: SHOWCASE_QUERY

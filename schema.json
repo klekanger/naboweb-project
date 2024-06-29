@@ -1605,13 +1605,6 @@
           }
         },
         "optional": true
-      },
-      "contentfulArchived": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "boolean"
-        },
-        "optional": true
       }
     }
   },

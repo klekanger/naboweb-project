@@ -76,8 +76,6 @@ export default function DocumentMeetingMinutes({
   const [filterValue, setFilterValue] = useState("");
   const hasSearchFilter = Boolean(filterValue);
 
-  console.log("DocumentMeetingMinutes", documents);
-
   if (!documents) {
     return (
       <>

@@ -87,33 +87,33 @@ export default function Services({ content }: { content: ServicesProps }) {
     </Card>
   );
 
-  const RenderedIcon1 = iconMap[icon1] || DocumentIcon;
-  const RenderedIcon2 = iconMap[icon2] || DocumentIcon;
-  const RenderedIcon3 = iconMap[icon3] || DocumentIcon;
+  const RenderedIcon1 = iconMap[icon1 ?? "DocumentIcon"];
+  const RenderedIcon2 = iconMap[icon2 ?? "DocumentIcon"];
+  const RenderedIcon3 = iconMap[icon3 ?? "DocumentIcon"];
 
   return (
     <>
       <section className="py-8 sm:py-16 max-w-8xl m-auto">
         <div className="gap-8 grid grid-cols-12 grid-rows-1">
           <StyledCard
-            title={title1}
-            description={description1}
-            locked={private1}
-            url={url1}
+            title={title1 ?? ""}
+            description={description1 ?? ""}
+            locked={private1 ?? false}
+            url={url1 ?? "/"}
             icon={<RenderedIcon1 width={3} height={3} />}
           />
           <StyledCard
-            title={title2}
-            description={description2}
-            locked={private2}
-            url={url2}
+            title={title2 ?? ""}
+            description={description2 ?? ""}
+            locked={private2 ?? false}
+            url={url2 ?? "/"}
             icon={<RenderedIcon2 width={3} height={3} />}
           />
           <StyledCard
-            title={title3}
-            description={description3}
-            locked={private3}
-            url={url3}
+            title={title3 ?? ""}
+            description={description3 ?? ""}
+            locked={private3 ?? false}
+            url={url3 ?? "/"}
             icon={<RenderedIcon3 width={3} height={3} />}
           />
         </div>

@@ -1,22 +1,16 @@
 import { urlForImage } from "@/sanity/lib/utils";
-import { BlogPost } from "@/types/sanity.types";
+import { BLOG_BY_SLUG_QUERYResult, BlogPost } from "@/types/sanity.types";
 import { toPlainText } from "next-sanity";
 import Image from "next/image";
 import Link from "next/link";
 import type { Image as SanityImage } from "sanity";
 
 export type BlogPostItemProps = {
-  post: BlogPost & {
-    featuredImage: {
-      caption?: string;
-      alt?: string;
-      lqip?: string;
-    };
-  };
+  post: BLOG_BY_SLUG_QUERYResult;
 };
 
 export default function BlogPostItem({ post }: BlogPostItemProps) {
-  const { title, excerpt, featuredImage, slug, privatePost } = post;
+  const { title, excerpt, featuredImage, slug, privatePost } = post ?? {};
 
   let imageUrl: string;
   let imageAlt = "";
@@ -34,9 +28,7 @@ export default function BlogPostItem({ post }: BlogPostItemProps) {
     return null;
   }
 
-  const urlToPost = privatePost
-    ? `/informasjon/post/${slug?.current}`
-    : `/blog/${slug?.current}`;
+  const urlToPost = privatePost ? `/informasjon/post/${slug}` : `/blog/${slug}`;
 
   return (
     <article key={post?._id}>
@@ -50,7 +42,7 @@ export default function BlogPostItem({ post }: BlogPostItemProps) {
               width={1600}
               height={900}
               placeholder="blur"
-              blurDataURL={featuredImage.lqip}
+              blurDataURL={featuredImage?.lqip ?? ""}
               sizes="(min-width: 1024px) 50vw,100vw"
             />
           </Link>

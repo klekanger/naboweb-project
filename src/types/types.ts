@@ -1,6 +1,14 @@
 import type { User } from "@clerk/nextjs/dist/types/server";
 import type { Image, PortableTextBlock } from "sanity";
-import { Authors, BlogPost, Page } from "./sanity.types";
+import {
+  Authors,
+  BlogPost,
+  FRONTPAGE_HERO_QUERYResult,
+  FRONTPAGE_SERVICES_QUERYResult,
+  FrontpageHero,
+  Page,
+  SHOWCASE_QUERYResult,
+} from "./sanity.types";
 
 export type UserRoles = "admin" | "editor" | "user";
 
@@ -269,24 +277,8 @@ export type UserWithEmails = Pick<
 // Sanity Types
 // ************
 
-export type FrontHero = {
-  showButton: boolean;
-  buttonText?: string;
-  buttonLink?: {
-    slug: {
-      current: string;
-    };
-  };
-  title: string;
-  subtitle?: string;
-  bodyText: string;
-  heroImage: Image & {
-    alt: string;
-  };
-};
-
 export type HeroProps = {
-  data: FrontHero;
+  data: FRONTPAGE_HERO_QUERYResult;
 };
 
 export type Services = {
@@ -315,21 +307,21 @@ export type Showcase = {
 };
 
 export type ServicesProps = {
-  data: Services;
+  data: FRONTPAGE_SERVICES_QUERYResult;
 };
 
 export type ShowcaseProps = {
-  data: Showcase;
+  data: SHOWCASE_QUERYResult;
 };
 
 export type HomePagePayload = {
-  frontpageHeroContent: HeroProps;
-  frontpageServicesContent: ServicesProps;
-  frontpageShowcaseContent: ShowcaseProps;
+  frontpageHeroContent: { data: FRONTPAGE_HERO_QUERYResult };
+  frontpageServicesContent: { data: FRONTPAGE_SERVICES_QUERYResult };
+  frontpageShowcaseContent: { data: SHOWCASE_QUERYResult };
 };
 
 export type HomePageProps = {
-  data: HomePagePayload;
+  data?: HomePagePayload;
 };
 
 export type SanityReference = {

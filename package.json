@@ -24,6 +24,7 @@
     "@sanity/vision": "^3.46.0",
     "@serverless-jwt/jwt-verifier": "^0.2.1",
     "autoprefixer": "10.4.14",
+    "date-fns": "^3.6.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.4",
     "framer-motion": "^10.18.0",
