@@ -1,8 +1,6 @@
-import AlertUser from "@/components/AlertUser";
 import BlogPostList from "@/components/BlogPostList";
 import DocumentMenu from "@/components/document-library/DocumentMenu";
 import InfoBox from "@/components/InfoBox";
-import NotLoggedIn from "@/components/NotLoggedIn";
 import Pagination from "@/components/Pagination";
 import RoleDisplay from "@/components/userAdmin/RoleDisplay";
 import { countBlogPosts, fetchBlogCollection } from "@/sanity/lib/queries";
@@ -48,7 +46,10 @@ export async function generateStaticParams() {
 //
 export default async function PrivateInfoPage({ params }: Props) {
   const user = await currentUser();
-  if (!user) return <NotLoggedIn />;
+  const { firstName, lastName } = user ?? {};
+  const roles = (user?.publicMetadata?.roles as string[]) || [];
+  const isAdmin = roles.includes("admin") || false;
+  const isEditor = roles.includes("editor") || false;
 
   const pageNumber = Number(params.page);
 
@@ -82,26 +83,6 @@ export default async function PrivateInfoPage({ params }: Props) {
         <h1>Siste blogginnlegg</h1>
         <p>Det er ingen blogginnlegg å vise.</p>
       </>
-    );
-  }
-
-  const { firstName, lastName } = user;
-  const roles = (user?.publicMetadata?.roles as string[]) || [];
-  const isAdmin = roles.includes("admin") || false;
-  const isEditor = roles.includes("editor") || false;
-
-  if (!roles.includes("user")) {
-    return (
-      <div className="container flex justify-center">
-        <AlertUser
-          alertTitle="Du har ikke tilgang"
-          alertMessage={`
-            På denne siden vil du finne nyttig informasjon fra styret,
-            som vedtekter, referater, klippelister og mye mer.
-            Ta kontakt med styret for å få tilgang.
-          `}
-        />
-      </div>
     );
   }
 

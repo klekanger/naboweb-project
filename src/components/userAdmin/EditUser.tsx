@@ -1,6 +1,6 @@
 import { searchUser } from "@/app/actions/searchUser";
 import { updateUser } from "@/app/actions/updateUser";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { Spinner } from "@nextui-org/react";
 import DeleteUserModal from "@/components/userAdmin/DeleteUserModal";
 import { UserAdminContext } from "@/context/userAdminContext";
 import { formatDate } from "@/lib/format-date";
@@ -308,7 +308,7 @@ export default function EditUser() {
               </TableColumn>
             </TableHeader>
 
-            <TableBody emptyContent={loading && <LoadingSpinner />}>
+            <TableBody emptyContent={loading && <Spinner />}>
               {foundUsers.map((user) => {
                 let roles;
                 if (Array.isArray(user.roles)) {

@@ -5,7 +5,6 @@ import {
   BlogPost,
   FRONTPAGE_HERO_QUERYResult,
   FRONTPAGE_SERVICES_QUERYResult,
-  FrontpageHero,
   Page,
   SHOWCASE_QUERYResult,
 } from "./sanity.types";

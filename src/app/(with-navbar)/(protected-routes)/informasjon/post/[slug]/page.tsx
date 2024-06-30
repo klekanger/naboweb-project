@@ -1,10 +1,9 @@
-import { generateStaticSlugs } from "@/sanity/loader/generateStaticSlugs";
-import { loadPrivateBlogPageBySlug } from "@/sanity/loader/loadQuery";
 import BlogPage from "@/components/pages/blog/BlogPage";
 import BlogPagePreview from "@/components/pages/blog/BlogPagePreview";
+import { generateStaticSlugs } from "@/sanity/loader/generateStaticSlugs";
+import { loadPrivateBlogPageBySlug } from "@/sanity/loader/loadQuery";
 import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
-import { ResolvingMetadata } from "next";
 
 type Props = {
   params: { slug: string };

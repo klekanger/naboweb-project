@@ -8,10 +8,7 @@ import {
   WordIcon,
 } from "@/components/icons";
 import { formatDate } from "@/lib/format-date";
-import {
-  MEETING_MINUTES_QUERYResult,
-  OTHER_DOCUMENTS_QUERYResult,
-} from "@/types/sanity.types";
+import { MEETING_MINUTES_QUERYResult } from "@/types/sanity.types";
 import {
   Button,
   Input,
@@ -25,7 +22,7 @@ import {
   TableRow,
   Tooltip,
 } from "@nextui-org/react";
-import { ArrowBigLeft, SearchIcon } from "lucide-react";
+import { ArrowBigLeft, SearchIcon, FolderOpen } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import BackButton from "../BackButton";
@@ -201,6 +198,19 @@ export default function DocumentMeetingMinutes({
                 return (
                   <TableRow key={item._id} className="text-left">
                     <TableCell>
+                      <Link
+                        href={"#"}
+                        className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80 "
+                      >
+                        <span className="flex ">
+                          <FolderOpen className="mr-2 h-auto" size="1em" />
+
+                          {item.title}
+                        </span>
+                      </Link>
+                    </TableCell>
+
+                    <TableCell>
                       <Tooltip
                         content={
                           <span className="flex flex-row items-center gap-2 py-2 text-xs md:text-sm md:max-w-md">
@@ -211,7 +221,6 @@ export default function DocumentMeetingMinutes({
                               {item.description && (
                                 <div>
                                   {item.description}
-
                                   <hr className="my-4" />
                                 </div>
                               )}
@@ -245,34 +254,6 @@ export default function DocumentMeetingMinutes({
                                     </span>
                                   ))}
                               </div>
-                            </div>
-                          </span>
-                        }
-                        placement="top-start"
-                        delay={1000}
-                        color="secondary"
-                        size="lg"
-                      >
-                        <Link
-                          href={"#"}
-                          className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80 "
-                        >
-                          {item.title}
-                        </Link>
-                      </Tooltip>
-                    </TableCell>
-
-                    <TableCell>
-                      <Tooltip
-                        content={
-                          <span className="flex flex-row items-center gap-2 py-2 text-xs md:text-sm md:max-w-md">
-                            <div>
-                              <h2 className="text-lg font-semibold pb-4">
-                                {item.title}
-                              </h2>
-                              {item.description && (
-                                <div>{item.description}</div>
-                              )}
                             </div>
                           </span>
                         }

@@ -1,15 +1,9 @@
 import AlertUser from "@/components/AlertUser";
 import DocumentTable from "@/components/document-library/DocumentTable";
-import NotLoggedIn from "@/components/NotLoggedIn";
 import { loadOtherDocuments } from "@/sanity/loader/loadQuery";
-import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
 
 export default async function Page() {
-  const user = await currentUser();
-
-  if (!user) return <NotLoggedIn />;
-
   const documents = await loadOtherDocuments();
 
   if (!documents.data) {
