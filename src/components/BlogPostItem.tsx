@@ -1,5 +1,5 @@
 import { urlForImage } from "@/sanity/lib/utils";
-import { BLOG_BY_SLUG_QUERYResult, BlogPost } from "@/types/sanity.types";
+import { BLOG_BY_SLUG_QUERYResult } from "@/types/sanity.types";
 import { toPlainText } from "next-sanity";
 import Image from "next/image";
 import Link from "next/link";

@@ -59,7 +59,6 @@ export default function InviteUser() {
 
     if ("error" in response) {
       console.error("error ", response.error);
-      // TODO - Translate error to Norwegian
       setErrorMessage(response.error?.longMessage ?? "Noe gikk galt");
       modalErrorMessage.onOpen();
     } else if ("success" in response) {
