@@ -152,6 +152,7 @@ export default function DocumentTable({
         className="mb-16"
         aria-label="Tabell med oversikt over dokumenter"
         topContent={topContent}
+        isStriped
         bottomContent={
           pages > 1 && (
             <div className="flex w-full justify-center">
@@ -200,12 +201,14 @@ export default function DocumentTable({
                       <Tooltip
                         content={
                           <span className="flex flex-row items-center gap-2 py-2 text-xs md:text-sm md:max-w-md">
-                            <FileIcon
-                              fill="#fff"
-                              height={2}
-                              width={2}
-                              className="md:mx-4"
-                            />
+                            <div>
+                              <FileIcon
+                                fill="#fff"
+                                height={2}
+                                width={2}
+                                className="md:mx-4"
+                              />
+                            </div>
                             <div>
                               {item.description && (
                                 <>
@@ -229,7 +232,10 @@ export default function DocumentTable({
                           href={item.document?.asset?.url ?? "#"}
                           className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80 "
                         >
-                          {item.title}
+                          <span className="flex ">
+                            <FileIcon className="mr-2 h-auto" />
+                            {item.title}
+                          </span>
                         </Link>
                       </Tooltip>
                     </TableCell>

@@ -1,16 +1,9 @@
 import AlertUser from "@/components/AlertUser";
 import DocumentMeetingMinutes from "@/components/document-library/MeetingMinutes";
-import DocumentTable from "@/components/document-library/DocumentTable";
-import NotLoggedIn from "@/components/NotLoggedIn";
 import { loadMeetingMinutes } from "@/sanity/loader/loadQuery";
-import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
 
 export default async function Page() {
-  const user = await currentUser();
-
-  if (!user) return <NotLoggedIn />;
-
   const documents = await loadMeetingMinutes();
 
   if (!documents.data) {
@@ -36,6 +29,3 @@ export default async function Page() {
     </section>
   );
 }
-
-// TODO We are fetching meeting queries grouped into year
-// we have to build a custom component to display the data

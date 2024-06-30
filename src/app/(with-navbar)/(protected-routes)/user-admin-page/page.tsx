@@ -1,17 +1,11 @@
 import BackButton from "@/components/BackButton";
 import UserAdmin from "@/components/userAdmin/UserAdmin";
+import { validRoles, validateUserRoles } from "@/lib/validateUserRoles";
 import type { UserWithEmails, UserWithRoles } from "@/types/types";
-import { clerkClient, currentUser } from "@clerk/nextjs/server";
+import { clerkClient } from "@clerk/nextjs/server";
 import { Button } from "@nextui-org/react";
 import { ArrowBigLeft } from "lucide-react";
 import Link from "next/link";
-
-async function checkIfAdmin() {
-  const currentUserData: UserWithRoles | null = await currentUser();
-  const roles = currentUserData?.publicMetadata?.roles;
-
-  return roles?.includes("admin") ?? false;
-}
 
 async function fetchUsers() {
   try {
@@ -51,7 +45,9 @@ function mapUsersWithEmails(user: UserWithRoles) {
 }
 
 export default async function Page() {
-  const isAdmin = await checkIfAdmin();
+  const isAdmin = await validateUserRoles({
+    requiredRoles: [validRoles.ADMIN],
+  });
 
   if (!isAdmin) {
     return (

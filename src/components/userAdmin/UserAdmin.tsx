@@ -23,7 +23,7 @@ import {
 } from "@nextui-org/react";
 import { Crown, UserCheck, UserCog, UserPlus2, Users } from "lucide-react";
 import { useCallback, useContext, useEffect, useMemo } from "react";
-import LoadingSpinner from "../LoadingSpinner";
+import { Spinner } from "@nextui-org/react";
 import EditUser from "./EditUser";
 import InviteUser from "./InviteUser";
 import RoleDisplay from "./RoleDisplay";
@@ -310,7 +310,7 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
           {/* SHOW LOADING SPINNER WHILE CREATING USER */}
           {selectedMenu === SidebarMenu.CREATE_USER && isCreatingUser && (
             <div className="mt-24 flex flex-col items-center justify-center gap-4">
-              <LoadingSpinner />
+              <Spinner />
               <p>
                 Oppretter bruker <br />
                 {newUser.email}

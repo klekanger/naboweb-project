@@ -1,5 +1,4 @@
 // import UserCard from "@/components/UserCard";
-import NotLoggedIn from "@/components/NotLoggedIn";
 import UserOverview from "@/components/UserOverview";
 import { UserProfile } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";
@@ -7,7 +6,6 @@ import { Spinner } from "@nextui-org/spinner";
 
 export default async function Page() {
   const user = await currentUser();
-  if (!user) return <NotLoggedIn />;
 
   return (
     <section className="flex flex-col items-center">
