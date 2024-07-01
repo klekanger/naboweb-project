@@ -26,7 +26,6 @@
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.4",
     "framer-motion": "^10.18.0",
-    "image": "link:@/sanity/lib/image",
     "lucide-react": "^0.258.0",
     "next": "^14.2.4",
     "next-sanity": "^9.3.10",

@@ -586,8 +586,21 @@ export type OTHER_DOCUMENTS_QUERYResult = Array<{
   } | null;
 }>;
 // Variable: MEETING_MINUTES_QUERY
-// Query:  *[_type=="fileMeetingMinutes"] | order(_createdAt asc) {  _id,    title,    description,      meetingDate,      meetingPlace,    tags,    _createdAt,    _updatedAt,     meetingDocuments[]{asset->{url, _id, originalFilename}}  }
+// Query:  *[_type=="fileMeetingMinutes"] | order(_createdAt asc) {  _id,    title,    description,      meetingDate,      meetingPlace,    tags,    _createdAt,    _updatedAt,    "documentCount": count(meetingDocuments)  }
 export type MEETING_MINUTES_QUERYResult = Array<{
+  _id: string;
+  title: string | null;
+  description: string | null;
+  meetingDate: string | null;
+  meetingPlace: string | null;
+  tags: Array<string> | null;
+  _createdAt: string;
+  _updatedAt: string;
+  documentCount: number | null;
+}>;
+// Variable: MEETING_MINUTES_BY_ID_QUERY
+// Query:   *[_type=="fileMeetingMinutes" && _id == $meeting] | order(_createdAt asc)[0] {    _id,    title,    description,    meetingDate,    meetingPlace,    tags,    _createdAt,    _updatedAt,    meetingDocuments[]{asset->{      url,       _id,       originalFilename,      extension,      size,      _createdAt,       _updatedAt      }}  }
+export type MEETING_MINUTES_BY_ID_QUERYResult = {
   _id: string;
   title: string | null;
   description: string | null;
@@ -601,9 +614,13 @@ export type MEETING_MINUTES_QUERYResult = Array<{
       url: string | null;
       _id: string;
       originalFilename: string | null;
+      extension: string | null;
+      size: number | null;
+      _createdAt: string;
+      _updatedAt: string;
     } | null;
   }> | null;
-}>;
+} | null;
 // Variable: FRONTPAGE_HERO_QUERY
 // Query:   *[_type=="frontpage-hero"]{    title,    subtitle,    showButton,    buttonText,    buttonLink->{slug},    heroImage{..., "lqip": asset->metadata.lqip},    bodyText  }[0]
 export type FRONTPAGE_HERO_QUERYResult = {
