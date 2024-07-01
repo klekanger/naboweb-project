@@ -228,15 +228,17 @@ export default function DocumentTable({
                         color="secondary"
                         size="lg"
                       >
-                        <Link
+                        <a
                           href={item.document?.asset?.url ?? "#"}
                           className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80 "
+                          target="blank"
+                          rel="noopener noreferrer"
                         >
                           <span className="flex ">
                             <FileIcon className="mr-2 h-auto" />
                             {item.title}
                           </span>
-                        </Link>
+                        </a>
                       </Tooltip>
                     </TableCell>
                     <TableCell>{formatDate(item._createdAt)}</TableCell>
