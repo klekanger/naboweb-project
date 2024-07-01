@@ -3,6 +3,7 @@ import type {
   DOCUMENTMENU_QUERYResult,
   FRONTPAGE_HERO_QUERYResult,
   FRONTPAGE_SERVICES_QUERYResult,
+  MEETING_MINUTES_BY_ID_QUERYResult,
   MEETING_MINUTES_QUERYResult,
   OTHER_DOCUMENTS_QUERYResult,
   Page,
@@ -13,6 +14,7 @@ import {
   DOCUMENTMENU_QUERY,
   FRONTPAGE_HERO_QUERY,
   FRONTPAGE_SERVICES_QUERY,
+  MEETING_MINUTES_BY_ID_QUERY,
   MEETING_MINUTES_QUERY,
   OTHER_DOCUMENTS_QUERY,
   PAGE_BY_SLUG_QUERY,
@@ -96,6 +98,14 @@ export async function loadMeetingMinutes() {
   return loadQuery<MEETING_MINUTES_QUERYResult | null>(
     MEETING_MINUTES_QUERY,
     {},
+    { next: { tags: ["fileMeetingMinutes"] } },
+  );
+}
+
+export async function loadMeetingMinutesById(meeting: string) {
+  return loadQuery<MEETING_MINUTES_BY_ID_QUERYResult | null>(
+    MEETING_MINUTES_BY_ID_QUERY,
+    { meeting },
     { next: { tags: ["fileMeetingMinutes"] } },
   );
 }

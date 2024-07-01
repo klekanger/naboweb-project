@@ -38,7 +38,29 @@ export const MEETING_MINUTES_QUERY = groq`
     tags,
     _createdAt,
     _updatedAt,
-     meetingDocuments[]{asset->{url, _id, originalFilename}}
+    "documentCount": count(meetingDocuments)
+  }
+`;
+
+export const MEETING_MINUTES_BY_ID_QUERY = groq`
+  *[_type=="fileMeetingMinutes" && _id == $meeting] | order(_createdAt asc)[0] {
+    _id,
+    title,
+    description,
+    meetingDate,
+    meetingPlace,
+    tags,
+    _createdAt,
+    _updatedAt,
+    meetingDocuments[]{asset->{
+      url, 
+      _id, 
+      originalFilename,
+      extension,
+      size,
+      _createdAt, 
+      _updatedAt
+      }}
   }
 `;
 

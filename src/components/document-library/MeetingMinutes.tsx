@@ -22,7 +22,7 @@ import {
   TableRow,
   Tooltip,
 } from "@nextui-org/react";
-import { ArrowBigLeft, SearchIcon, FolderOpen } from "lucide-react";
+import { ArrowBigLeft, FolderOpen, SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import BackButton from "../BackButton";
@@ -37,7 +37,7 @@ type Props = {
       | "meetingDate"
       | "meetingPlace"
       | "tags"
-      | "meetingDocuments"
+      | "documentCount"
       | "_createdAt"
       | "_updatedAt"
     >
@@ -64,7 +64,7 @@ const fileTypes: FileTypes = {
   ".pptx": PowerPointIcon,
 };
 
-export default function DocumentMeetingMinutes({
+export default function MeetingMinutes({
   documents,
   rowsPerPage = 10,
   startPage = 1,
@@ -72,6 +72,7 @@ export default function DocumentMeetingMinutes({
   const [page, setPage] = useState(startPage);
   const [filterValue, setFilterValue] = useState("");
   const hasSearchFilter = Boolean(filterValue);
+  const [detailView, setDetailView] = useState(false);
 
   if (!documents) {
     return (
@@ -138,18 +139,6 @@ export default function DocumentMeetingMinutes({
     );
   }, [filterValue, onSearchChange, filteredItems.length]);
 
-  // helper function to get the file extension from item.filename
-  const returnIconFromFileType = (fileName: string) => {
-    const fileExtension = fileName.split(".").pop();
-    const fileType = fileTypes[`.${fileExtension}`];
-
-    if (fileType === undefined) {
-      return DocumentIcon;
-    } else {
-      return fileType;
-    }
-  };
-
   return (
     <>
       <Table
@@ -198,16 +187,28 @@ export default function DocumentMeetingMinutes({
                 return (
                   <TableRow key={item._id} className="text-left">
                     <TableCell>
-                      <Link
-                        href={"#"}
-                        className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80 "
+                      <Tooltip
+                        content={
+                          <div className="flex flex-row items-center gap-2 py-2 text-xs md:text-sm md:max-w-md">
+                            Klikk for å vise alle dokumenter for dette møtet.
+                          </div>
+                        }
+                        placement="top-start"
+                        delay={1000}
+                        color="secondary"
+                        size="lg"
                       >
-                        <span className="flex ">
-                          <FolderOpen className="mr-2 h-auto" size="1em" />
+                        <Link
+                          href={`/informasjon/referater/${item._id}`}
+                          className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80 "
+                        >
+                          <span className="flex ">
+                            <FolderOpen className="mr-2 h-auto" size="1em" />
 
-                          {item.title}
-                        </span>
-                      </Link>
+                            {item.title}
+                          </span>
+                        </Link>
+                      </Tooltip>
                     </TableCell>
 
                     <TableCell>
@@ -237,7 +238,7 @@ export default function DocumentMeetingMinutes({
 
                               <div>
                                 <strong>Antall filer: </strong>
-                                {item?.meetingDocuments?.length ?? 0}
+                                {item?.documentCount ?? 0}
                               </div>
 
                               <Spacer y={4} />

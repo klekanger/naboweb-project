@@ -22,3 +22,23 @@ export function generateStaticSlugs(type: string) {
       },
     );
 }
+
+export function generateStaticIdPages(type: string) {
+  // Not using loadQuery as it's optimized for fetching in the RSC lifecycle
+  return client
+    .withConfig({
+      token,
+      perspective: "published",
+      useCdn: false,
+      stega: false,
+    })
+    .fetch<string[]>(
+      groq`*[_type == $type]{"slug": _id}`,
+      { type },
+      {
+        next: {
+          tags: [type],
+        },
+      },
+    );
+}
