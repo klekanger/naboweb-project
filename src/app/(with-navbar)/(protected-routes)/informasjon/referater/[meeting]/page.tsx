@@ -11,9 +11,7 @@ type Props = {
 // Generate all possible routes
 //
 export async function generateStaticParams() {
-  const meetings = (await generateStaticIdPages(
-    "fileMeetingMinutes",
-  )) as unknown as { _id: string }[];
+  const meetings = await generateStaticIdPages("fileMeetingMinutes");
 
   return meetings.map((meeting) => ({ meeting: meeting._id }));
 }
@@ -25,11 +23,6 @@ export default async function PageMeetingMinutesDetailsRoute({
   params,
 }: Props) {
   const initial = await loadMeetingMinutesById(params?.meeting);
-
-  /* if (draftMode().isEnabled) {
-    return <h1>draftmode - fiks dette!</h1>;
-  }
- */
 
   if (!initial.data) {
     notFound();
