@@ -168,3 +168,7 @@ export default function Navbar() {
     </NextUINavbar>
   );
 }
+
+// TODO
+// Implement dropdown menu
+// https://nextui.org/docs/components/navbar#with-dropdown-menu
