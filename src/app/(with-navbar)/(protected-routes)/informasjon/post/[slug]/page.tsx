@@ -12,8 +12,8 @@ type Props = {
 //
 // Generate all possible routes
 //
-export function generateStaticParams() {
-  return generateStaticSlugs("blogPost");
+export async function generateStaticParams() {
+  return await generateStaticSlugs("blogPost");
 }
 
 //
