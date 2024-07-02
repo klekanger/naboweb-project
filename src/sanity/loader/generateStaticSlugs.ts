@@ -32,8 +32,8 @@ export function generateStaticIdPages(type: string) {
       useCdn: false,
       stega: false,
     })
-    .fetch<string[]>(
-      groq`*[_type == $type]{"slug": _id}`,
+    .fetch<{ _id: string }[]>(
+      groq`*[_type == $type]{_id}`,
       { type },
       {
         next: {

@@ -98,9 +98,13 @@ export default function MeetingMinutesDetails({ data }: Props) {
           <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
             Dokument
           </TableColumn>
-          <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
+          <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base hidden sm:table-cell">
             Type
           </TableColumn>
+          <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base hidden sm:table-cell">
+            Filstørrelse
+          </TableColumn>
+
           <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
             Lastet opp
           </TableColumn>
@@ -119,9 +123,14 @@ export default function MeetingMinutesDetails({ data }: Props) {
                         {item.asset?.originalFilename ?? "N/A"}
                       </a>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden sm:table-cell">
                       {item?.asset?.extension
                         ? item.asset.extension.toUpperCase()
+                        : "-"}
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell">
+                      {item.asset?.size
+                        ? `${(item.asset.size / 1024).toFixed(0)} kB`
                         : "-"}
                     </TableCell>
                     <TableCell>

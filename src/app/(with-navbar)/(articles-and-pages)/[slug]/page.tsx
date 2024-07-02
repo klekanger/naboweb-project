@@ -37,8 +37,8 @@ export async function generateMetadata(
   };
 }
 
-export function generateStaticParams() {
-  return generateStaticSlugs("page");
+export async function generateStaticParams() {
+  return await generateStaticSlugs("page");
 }
 
 export default async function PageSlugRoute({
