@@ -33,7 +33,7 @@ export function generateStaticIdPages(type: string) {
       stega: false,
     })
     .fetch<string[]>(
-      groq`*[_type == $type]{"slug": _id}`,
+      groq`*[_type == $type]{_id}`,
       { type },
       {
         next: {

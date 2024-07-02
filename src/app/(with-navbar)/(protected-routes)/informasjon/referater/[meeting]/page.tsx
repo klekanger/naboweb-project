@@ -1,13 +1,6 @@
 import MeetingMinutesDetails from "@/components/document-library/MeetingMinutesDetails";
-import {
-  generateStaticIdPages,
-  generateStaticSlugs,
-} from "@/sanity/loader/generateStaticSlugs";
-import {
-  loadMeetingMinutes,
-  loadMeetingMinutesById,
-} from "@/sanity/loader/loadQuery";
-import { draftMode } from "next/headers";
+import { generateStaticIdPages } from "@/sanity/loader/generateStaticSlugs";
+import { loadMeetingMinutesById } from "@/sanity/loader/loadQuery";
 import { notFound } from "next/navigation";
 
 type Props = {
@@ -17,8 +10,12 @@ type Props = {
 //
 // Generate all possible routes
 //
-export function generateStaticParams() {
-  return generateStaticIdPages("fileMeetingMinutes");
+export async function generateStaticParams() {
+  const meetings = (await generateStaticIdPages(
+    "fileMeetingMinutes",
+  )) as unknown as { _id: string }[];
+
+  return meetings.map((meeting) => ({ meeting: meeting._id }));
 }
 
 //
@@ -33,6 +30,7 @@ export default async function PageMeetingMinutesDetailsRoute({
     return <h1>draftmode - fiks dette!</h1>;
   }
  */
+
   if (!initial.data) {
     notFound();
   }
