@@ -5,6 +5,7 @@ const isProtectedRoute = createRouteMatcher([
   "/min-side(.*)",
   "/informasjon(.*)",
   "/user-admin-page(.*)",
+  "/messageboard(.*)",
 ]);
 
 export default clerkMiddleware(
