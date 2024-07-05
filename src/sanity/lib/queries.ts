@@ -173,6 +173,21 @@ export const COUNT_PRIVATE_BLOG_POSTS = groq`
   count(*[_type=="blogPost" && privatePost==true])
 `;
 
+export const MESSAGEBOARD_QUERY = groq`
+*[_type == "messageBoard"][0] {
+    messages[]->{
+      _id,
+      _updatedAt,
+      _createdAt,
+      title,
+      messageImage,
+      bodyText,
+      tags,
+      author->{firstName, lastName}
+    }   
+}
+`;
+
 export async function countBlogPosts({
   privatePosts,
 }: {

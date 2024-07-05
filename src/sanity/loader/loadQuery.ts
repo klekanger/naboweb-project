@@ -1,13 +1,14 @@
-import type {
-  BlogPost,
-  DOCUMENTMENU_QUERYResult,
-  FRONTPAGE_HERO_QUERYResult,
-  FRONTPAGE_SERVICES_QUERYResult,
-  MEETING_MINUTES_BY_ID_QUERYResult,
-  MEETING_MINUTES_QUERYResult,
-  OTHER_DOCUMENTS_QUERYResult,
-  Page,
-  SHOWCASE_QUERYResult,
+import {
+  MESSAGEBOARD_QUERYResult,
+  type BlogPost,
+  type DOCUMENTMENU_QUERYResult,
+  type FRONTPAGE_HERO_QUERYResult,
+  type FRONTPAGE_SERVICES_QUERYResult,
+  type MEETING_MINUTES_BY_ID_QUERYResult,
+  type MEETING_MINUTES_QUERYResult,
+  type OTHER_DOCUMENTS_QUERYResult,
+  type Page,
+  type SHOWCASE_QUERYResult,
 } from "@/types/sanity.types";
 import {
   BLOG_BY_SLUG_QUERY,
@@ -16,6 +17,7 @@ import {
   FRONTPAGE_SERVICES_QUERY,
   MEETING_MINUTES_BY_ID_QUERY,
   MEETING_MINUTES_QUERY,
+  MESSAGEBOARD_QUERY,
   OTHER_DOCUMENTS_QUERY,
   PAGE_BY_SLUG_QUERY,
   PRIVATE_BLOG_BY_SLUG_QUERY,
@@ -107,5 +109,19 @@ export async function loadMeetingMinutesById(meeting: string) {
     MEETING_MINUTES_BY_ID_QUERY,
     { meeting },
     { next: { tags: ["fileMeetingMinutes"] } },
+  );
+}
+
+export async function loadMessageBoard({
+  pageIndex,
+  itemsPerPage,
+}: {
+  pageIndex: number;
+  itemsPerPage: number;
+}) {
+  return loadQuery<MESSAGEBOARD_QUERYResult>(
+    MESSAGEBOARD_QUERY,
+    { pageIndex, itemsPerPage },
+    { next: { tags: ["messageBoard", "message", "comments", "comment"] } },
   );
 }
