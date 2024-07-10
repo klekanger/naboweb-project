@@ -1,5 +1,5 @@
 import type { User } from "@clerk/nextjs/dist/types/server";
-import type { Image, PortableTextBlock } from "sanity";
+import type { Image } from "sanity";
 import {
   Authors,
   BlogPost,
@@ -8,6 +8,7 @@ import {
   Page,
   SHOWCASE_QUERYResult,
 } from "./sanity.types";
+import { PortableTextBlock } from "@portabletext/types";
 
 export type UserRoles = "admin" | "editor" | "user";
 

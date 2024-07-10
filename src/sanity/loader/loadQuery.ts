@@ -1,5 +1,5 @@
 import {
-  MESSAGEBOARD_QUERYResult,
+  type MESSAGEBOARD_QUERYResult,
   type BlogPost,
   type DOCUMENTMENU_QUERYResult,
   type FRONTPAGE_HERO_QUERYResult,
@@ -112,16 +112,10 @@ export async function loadMeetingMinutesById(meeting: string) {
   );
 }
 
-export async function loadMessageBoard({
-  pageIndex,
-  itemsPerPage,
-}: {
-  pageIndex: number;
-  itemsPerPage: number;
-}) {
+export async function loadMessageBoard() {
   return loadQuery<MESSAGEBOARD_QUERYResult>(
     MESSAGEBOARD_QUERY,
-    { pageIndex, itemsPerPage },
-    { next: { tags: ["messageBoard", "message", "comments", "comment"] } },
+    {},
+    { next: { tags: ["message"] } },
   );
 }

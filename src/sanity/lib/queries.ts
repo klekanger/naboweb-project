@@ -174,17 +174,17 @@ export const COUNT_PRIVATE_BLOG_POSTS = groq`
 `;
 
 export const MESSAGEBOARD_QUERY = groq`
-*[_type == "messageBoard"][0] {
-    messages[]->{
-      _id,
-      _updatedAt,
-      _createdAt,
-      title,
-      messageImage,
-      bodyText,
-      tags,
-      author->{firstName, lastName}
-    }   
+*[_type == "message"] | order(_createdAt desc) {
+  _id,
+  _updatedAt,
+  _createdAt,
+  title,
+  messageImage,
+  bodyText,
+  tags,
+  comments,
+  fromAdmin,
+  author->{firstName, lastName}
 }
 `;
 
