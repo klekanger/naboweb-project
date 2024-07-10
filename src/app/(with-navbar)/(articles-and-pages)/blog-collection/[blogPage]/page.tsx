@@ -74,8 +74,8 @@ export default async function BlogCollectionRoute({
   }
 
   return (
-    <>
-      <h1 className="prose lg:prose-xl pb-16 font-thin">SISTE BLOGGINNLEGG</h1>
+    <section className="">
+      <h1 className="lg:prose-xl pb-16 font-thin">SISTE BLOGGINNLEGG</h1>
       <BlogPostList posts={data} />
 
       <Pagination
@@ -88,6 +88,6 @@ export default async function BlogCollectionRoute({
           side {`${pageNumber} av ${totalPages}`}
         </p>
       )}
-    </>
+    </section>
   );
 }
