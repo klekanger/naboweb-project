@@ -2,13 +2,7 @@
 
 // Icons from https://www.svgrepo.com/collection/small-flat-vectors/
 
-import {
-  BookIcon,
-  HouseIcon,
-  NewsIcon,
-  PencilIcon,
-  DocumentIcon,
-} from "@/components/icons";
+import { BookIcon, HouseIcon, NewsIcon, PencilIcon } from "@/components/icons";
 import type { IconProps, ServicesProps } from "@/types/types";
 import { Card, CardBody, CardHeader } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
