@@ -24,6 +24,11 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "email",
+      type: "string",
+      title: "E-post",
+    }),
+    defineField({
       name: "authorImage",
       type: "image",
       title: "Forfatter-bilde",

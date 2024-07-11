@@ -6,6 +6,7 @@ const isProtectedRoute = createRouteMatcher([
   "/informasjon(.*)",
   "/user-admin-page(.*)",
   "/messageboard(.*)",
+  "/api(.*)",
 ]);
 
 export default clerkMiddleware(
