@@ -182,7 +182,12 @@ export const MESSAGEBOARD_QUERY = groq`
   messageImage,
   bodyText,
   tags,
-  comments,
+  comments[]{
+    _key,
+      commentText,
+    commentTitle,
+    commentAuthor->{_id, firstName, lastName}
+  },
   fromAdmin,
   author->{firstName, lastName}
 }

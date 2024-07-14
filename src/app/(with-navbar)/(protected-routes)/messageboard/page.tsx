@@ -12,5 +12,3 @@ export default async function MessageBoardRoute() {
 }
 
 // https://www.sanity.io/plugins/javascript-api-client
-
-// Add clerk users to sanity: https://dev.to/julimancan/how-to-add-user-auth-with-clerk-to-nextjs-app-directory-and-store-it-in-embedded-sanity-cms-f0

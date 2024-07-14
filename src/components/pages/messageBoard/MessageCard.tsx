@@ -1,14 +1,14 @@
 import { formatDate } from "@/lib/format-date";
-import { CircleUser, Shield, MessagesSquare } from "lucide-react";
 import {
   Card,
   CardBody,
   CardFooter,
   CardHeader,
-  Divider,
   Image,
+  Tooltip,
 } from "@nextui-org/react";
 import { PortableTextBlock } from "@portabletext/types";
+import { CircleUser, MessagesSquare, Shield } from "lucide-react";
 import { toPlainText } from "next-sanity";
 
 type MessageCardProps = {
@@ -20,6 +20,16 @@ type MessageCardProps = {
   author?: { firstName?: string; lastName?: string };
   fromAdmin?: boolean;
   createdAt: string;
+  comments: Array<{
+    _key: string;
+    commentText: string | null;
+    commentTitle: string | null;
+    commentAuthor: {
+      _id: string;
+      firstName: string | null;
+      lastName: string | null;
+    } | null;
+  }> | null;
 };
 
 export default function MessageCard({
@@ -31,6 +41,7 @@ export default function MessageCard({
   author,
   fromAdmin,
   createdAt,
+  comments,
 }: MessageCardProps) {
   const textLength = imageUrl ? 100 : 300;
   const plainText = toPlainText(description);
@@ -38,6 +49,15 @@ export default function MessageCard({
     plainText.length > textLength
       ? plainText.slice(0, textLength).concat("[...]")
       : plainText;
+
+  const commentPreviews =
+    comments?.slice(0, 3).map((comment) => {
+      return {
+        title: comment.commentTitle?.slice(0, 50),
+        key: comment._key,
+        author: comment?.commentAuthor?.firstName ?? "",
+      };
+    }) ?? [];
 
   return (
     <Card
@@ -75,10 +95,25 @@ export default function MessageCard({
             {formatDate(createdAt)}
           </div>
           {commentCount > 0 && (
-            <div className="flex">
-              <MessagesSquare className="h-auto mr-1" />
-              {commentCount}
-            </div>
+            <Tooltip
+              content={
+                <div>
+                  {commentPreviews.map((comment, index) => (
+                    <>
+                      <div key={comment.key} className="py-2">
+                        <strong>{comment.author}</strong>: {comment.title}...
+                      </div>
+                      {index !== commentPreviews.length - 1 && <hr />}
+                    </>
+                  ))}
+                </div>
+              }
+            >
+              <div className="flex">
+                <MessagesSquare className="h-auto mr-1" />
+                {commentCount}
+              </div>
+            </Tooltip>
           )}
         </div>
       </CardFooter>

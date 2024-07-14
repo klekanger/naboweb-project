@@ -148,7 +148,7 @@ export default async function PrivateInfoPage({ params }: Props) {
       <Pagination
         totalPages={totalPages}
         pageNumber={pageNumber}
-        url="/informasjon/"
+        url="/information/"
       />
       {totalPages > 1 && (
         <p className="pb-4 text-center">

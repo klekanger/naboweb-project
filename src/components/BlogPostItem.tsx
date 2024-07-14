@@ -28,7 +28,7 @@ export default function BlogPostItem({ post }: BlogPostItemProps) {
     return null;
   }
 
-  const urlToPost = privatePost ? `/informasjon/post/${slug}` : `/blog/${slug}`;
+  const urlToPost = privatePost ? `/information/post/${slug}` : `/blog/${slug}`;
 
   return (
     <article key={post?._id}>

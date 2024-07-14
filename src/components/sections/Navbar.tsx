@@ -103,7 +103,7 @@ export default function Navbar() {
                 description="Her finner du alle blogginnlegg fra styret, dokumenter, vedtekter, klippelister og annen informasjon."
                 startContent={<Info className="h-6 w-6 text-brand-secondary" />}
                 onPress={() => console.log("Dokumenter")}
-                href="/informasjon"
+                href="/information"
               >
                 Informasjon fra styret
               </DropdownItem>
@@ -115,7 +115,7 @@ export default function Navbar() {
                 startContent={
                   <MessagesSquare className="h-6 w-6 text-brand-secondary" />
                 }
-                href="/oppslag"
+                href="/messageboard"
               >
                 Oppslagstavle
               </DropdownItem>
@@ -127,7 +127,7 @@ export default function Navbar() {
                 startContent={
                   <NotebookPen className="h-6 w-6 text-brand-secondary" />
                 }
-                href="/informasjon/referater"
+                href="/information/referater"
               >
                 Møtereferater
               </DropdownItem>
@@ -139,7 +139,7 @@ export default function Navbar() {
                 startContent={
                   <Files className="h-6 w-6 text-brand-secondary" />
                 }
-                href="/informasjon/dokumenter"
+                href="/information/dokumenter"
               >
                 Diverse dokumenter
               </DropdownItem>
@@ -210,10 +210,10 @@ export default function Navbar() {
       <NavbarMenu className="pt-8 text-center">
         {user && (
           <NavbarItem
-            isActive={pathname.startsWith("/informasjon")}
+            isActive={pathname.startsWith("/information")}
             className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
           >
-            <Link href="/informasjon">For beboere</Link>
+            <Link href="/information">For beboere</Link>
           </NavbarItem>
         )}
 

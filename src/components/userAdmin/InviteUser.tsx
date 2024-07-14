@@ -87,7 +87,7 @@ export default function InviteUser() {
         Dette er den <em>anbefalte</em> måten å gjøre det på, da brukeren selv
         kan velge passord, navn og foretrukket innloggingsmetode.
       </p>
-      <Divider />
+      <Divider className="mt-4" />
       <form onSubmit={handleSubmit} className="py-8" id="form">
         <Input
           label="E-post"

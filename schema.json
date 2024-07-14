@@ -1933,6 +1933,13 @@
         },
         "optional": true
       },
+      "email": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
       "authorImage": {
         "type": "objectAttribute",
         "value": {

@@ -2,6 +2,7 @@ import createImageUrlBuilder from "@sanity/image-url";
 import type { Image } from "sanity";
 
 import { dataset, projectId } from "../env";
+import { UserWithRoles } from "@/types/types";
 
 const imageBuilder = createImageUrlBuilder({
   projectId: projectId || "",
@@ -55,4 +56,15 @@ export function toPreviewText(blocks = []) {
     // join the paragraphs leaving split by two linebreaks
     // .join("\n\n")
   );
+}
+
+export function currentUserRoles(user: UserWithRoles) {
+  const roles = (user?.publicMetadata?.roles as string[]) || [];
+  const isAdmin = roles.includes("admin") || false;
+  const isEditor = roles.includes("editor") || false;
+
+  return {
+    isAdmin,
+    isEditor,
+  };
 }

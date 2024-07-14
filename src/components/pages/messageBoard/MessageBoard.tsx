@@ -1,14 +1,15 @@
 "use client";
 
+import InfoBox from "@/components/InfoBox";
 import { urlForImage } from "@/sanity/lib/utils";
 import { MESSAGEBOARD_QUERYResult } from "@/types/sanity.types";
-import InfoBox from "@/components/InfoBox";
-import { CirclePlus, CircleUser, MessagesSquare } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
 import { Button, Checkbox } from "@nextui-org/react";
+import { CirclePlus, CircleUser, MessagesSquare } from "lucide-react";
+import { useState } from "react";
 import { type Image as SanityImage } from "sanity";
 import MessageCard from "./MessageCard";
-import { useState } from "react";
-import { useUser } from "@clerk/nextjs";
+import Link from "next/link";
 
 export default function MessageBoard({
   messages,
@@ -17,7 +18,7 @@ export default function MessageBoard({
 }) {
   if (!messages) return null;
   const [showOnlyFromAdmin, setShowOnlyFromAdmin] = useState(false);
-  const { user, isSignedIn, isLoaded } = useUser();
+  const { user, isLoaded } = useUser();
 
   const { firstName, lastName, publicMetadata } = user ?? {};
   const isAdmin = Array.isArray(publicMetadata?.roles)
@@ -40,7 +41,12 @@ export default function MessageBoard({
 
       <div className="flex flex-col md:flex-row gap-4 mb-4 md:mb-8 md:justify-between">
         <div className="flex gap-4">
-          <Button color="primary" startContent={<CirclePlus />}>
+          <Button
+            as={Link}
+            href="/messageboard/new-message"
+            color="primary"
+            startContent={<CirclePlus />}
+          >
             Opprett innlegg
           </Button>
 
@@ -81,6 +87,7 @@ export default function MessageBoard({
                 author={author as any}
                 fromAdmin={message?.fromAdmin ?? false}
                 createdAt={message._createdAt}
+                comments={message?.comments ?? []}
               />
             );
           })}
