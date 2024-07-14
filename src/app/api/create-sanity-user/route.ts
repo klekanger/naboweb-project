@@ -1,19 +1,25 @@
-import { currentUser } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
 import { clientWithWriteAccess } from "@/sanity/lib/client";
-import { NextApiRequest } from "next";
+import { currentUser } from "@clerk/nextjs/server";
+import { type NextRequest, NextResponse } from "next/server";
 
-export const GET = async (req: NextApiRequest) => {
+export const GET = async (req: NextRequest) => {
   const user = await currentUser();
-  const userRoles = (user?.publicMetadata as { roles: string[] }) ?? [];
+  const userRoles = user?.publicMetadata as { roles: string[] };
+  const requestUrl = new URL(req.nextUrl);
 
-  if (!user) {
-    return NextResponse.redirect("/sign-in");
+  if (!user || !userRoles) {
+    console.error("User not logged in or missing roles");
+    return NextResponse.redirect(new URL("/sign-in", requestUrl));
+  }
+
+  if (!("roles" in userRoles)) {
+    console.error("Roles array is missing from userRoles");
+    return NextResponse.redirect(new URL("/", requestUrl));
   }
 
   if (!userRoles.roles.includes("user")) {
-    console.error("User has not been assigned the 'user' role.");
-    return NextResponse.redirect("/");
+    console.error("User has not been assigned the 'user' role by admin.");
+    return NextResponse.redirect(new URL("/", requestUrl));
   }
 
   const { id, firstName, lastName, emailAddresses } = user;

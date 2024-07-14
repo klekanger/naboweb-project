@@ -2,11 +2,13 @@
 
 import { urlForImage } from "@/sanity/lib/utils";
 import { MESSAGEBOARD_QUERYResult } from "@/types/sanity.types";
-import { PlusCircleIcon, UserCircleIcon } from "@heroicons/react/24/outline";
+import InfoBox from "@/components/InfoBox";
+import { CirclePlus, CircleUser, MessagesSquare } from "lucide-react";
 import { Button, Checkbox } from "@nextui-org/react";
 import { type Image as SanityImage } from "sanity";
 import MessageCard from "./MessageCard";
 import { useState } from "react";
+import { useUser } from "@clerk/nextjs";
 
 export default function MessageBoard({
   messages,
@@ -15,27 +17,38 @@ export default function MessageBoard({
 }) {
   if (!messages) return null;
   const [showOnlyFromAdmin, setShowOnlyFromAdmin] = useState(false);
+  const { user, isSignedIn, isLoaded } = useUser();
+
+  const { firstName, lastName, publicMetadata } = user ?? {};
+  const isAdmin = Array.isArray(publicMetadata?.roles)
+    ? publicMetadata.roles.includes("admin")
+    : false;
+
+  const footerMessage =
+    isLoaded &&
+    `${isAdmin ? `Du publiserer som: ${firstName} ${lastName} eller styret` : ""}`;
 
   return (
     <>
-      <h1 className="lg:prose-xl font-thin mb-8 md:mb-16">OPPSLAGSTAVLE</h1>
+      <InfoBox
+        title="Oppslagstavle"
+        message="Her kan du legge ut meldinger til andre i sameiet, og se meldinger fra styret. "
+        footerMessage={footerMessage ? footerMessage : null}
+        icon={<MessagesSquare />}
+        className="mb-16"
+      />
 
       <div className="flex flex-col md:flex-row gap-4 mb-4 md:mb-8 md:justify-between">
         <div className="flex gap-4">
-          <Button
-            color="primary"
-            startContent={<PlusCircleIcon className="h-6 w-6" />}
-          >
+          <Button color="primary" startContent={<CirclePlus />}>
             Opprett innlegg
           </Button>
 
-          <Button
-            color="primary"
-            startContent={<UserCircleIcon className="h-6 w-6" />}
-          >
+          <Button color="primary" startContent={<CircleUser />}>
             Se mine innlegg
           </Button>
         </div>
+
         <Checkbox
           isSelected={showOnlyFromAdmin}
           onValueChange={setShowOnlyFromAdmin}

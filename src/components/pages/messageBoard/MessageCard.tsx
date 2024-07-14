@@ -1,9 +1,5 @@
 import { formatDate } from "@/lib/format-date";
-import {
-  ChatBubbleLeftIcon,
-  StarIcon,
-  UserCircleIcon,
-} from "@heroicons/react/24/outline";
+import { CircleUser, Shield, MessagesSquare } from "lucide-react";
 import {
   Card,
   CardBody,
@@ -47,14 +43,14 @@ export default function MessageCard({
     <Card
       isPressable
       onPress={() => console.log("clicked")}
-      className={`p-2 ${imageUrl ? "row-span-2" : "row-span-1"}`}
+      className={`p-2 ${imageUrl ? "row-span-2" : "row-span-1"} `}
     >
       <CardHeader className="flex-col !items-start hover:">
         <div className="font-thin text-sm pb-2 flex text-brand-black/60">
           {fromAdmin ? (
-            <StarIcon height={16} className="h-auto pr-2" />
+            <Shield className="h-auto pr-2" />
           ) : (
-            <UserCircleIcon height={16} className="h-auto pr-2" />
+            <CircleUser className="h-auto pr-2" />
           )}
           {author?.firstName} {author?.lastName}
         </div>
@@ -80,7 +76,7 @@ export default function MessageCard({
           </div>
           {commentCount > 0 && (
             <div className="flex">
-              <ChatBubbleLeftIcon className="size-6 h-auto mr-2" />
+              <MessagesSquare className="h-auto mr-1" />
               {commentCount}
             </div>
           )}
