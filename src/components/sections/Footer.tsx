@@ -27,7 +27,7 @@ export default function Footer() {
           Telefon: +47 - 4021 0140 <br />
         </p>
         <br />
-        <p className="text-brand-logoLightGreen">
+        <div className="text-brand-logoLightGreen md:pt-4">
           <a href="https://naboweb.no">
             <Image
               src="/naboweb-darkmode.png"
@@ -38,13 +38,13 @@ export default function Footer() {
             />
           </a>
           Nettsider for sameier og borettslag
-        </p>
+        </div>
       </div>
       <div>
         <p>
           Webdesign og utvikling:
           <br />
-          <a href="mailto:post@lekanger.no">
+          <a href="https://www.lekanger.no">
             Lekanger tekst og kode &copy; {currentYear}{" "}
           </a>
         </p>

@@ -85,7 +85,7 @@ export default function DeleteUserModal({
               <section>
                 {errorToShow && (
                   <div
-                    className="bg-brand-danger text-white p-4 rounded-3xl"
+                    className="bg-brand-danger text-white p-4 rounded-xl"
                     role="alert"
                   >
                     {errorToShow}
@@ -94,7 +94,7 @@ export default function DeleteUserModal({
 
                 {successMessage && (
                   <div
-                    className="bg-brand-danger text-white p-4 rounded-3xl"
+                    className="bg-brand-danger text-white p-4 rounded-xl"
                     role="alert"
                   >
                     {successMessage}

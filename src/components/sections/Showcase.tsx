@@ -41,7 +41,7 @@ export default function Showcase({ content }: { content: ShowcaseProps }) {
 
           return (
             <article key={article?._id} className="prose">
-              <div className="relative overflow-hidden rounded-3xl">
+              <div className="relative overflow-hidden rounded-xl">
                 <Link href={`/blog/${article?.slug?.current ?? ""}`} passHref>
                   <Image
                     src={url}
@@ -51,17 +51,23 @@ export default function Showcase({ content }: { content: ShowcaseProps }) {
                     alt={article?.title ?? ""}
                     placeholder="blur"
                     blurDataURL={article.featuredImage?.lqip ?? ""}
-                    className="rounded-3xl py-0 my-0"
+                    className="rounded-xl py-0 my-0"
                   />
                 </Link>
               </div>
-              <h2 className="my-4 duration-75 transition hover:text-brand-black/70">
-                <Link href={`/blog/${article?.slug?.current ?? ""}`}>
+              <h2 className="my-4 ">
+                <Link
+                  href={`/blog/${article?.slug?.current ?? ""}`}
+                  className="no-underline duration-75 transition hover:text-brand-black/70"
+                >
                   {article.title}
                 </Link>
               </h2>
               <p>{toPlainText(article.excerpt ?? [])}</p>
-              <Link href={`/blog/${article?.slug?.current ?? ""}`}>
+              <Link
+                href={`/blog/${article?.slug?.current ?? ""}`}
+                className="no-underline duration-75 transition hover:text-brand-black/70"
+              >
                 Les mer »
               </Link>
             </article>

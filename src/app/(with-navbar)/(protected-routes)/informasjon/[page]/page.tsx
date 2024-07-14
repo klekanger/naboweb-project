@@ -7,7 +7,7 @@ import { countBlogPosts, fetchBlogCollection } from "@/sanity/lib/queries";
 import { loadDocumentMenu } from "@/sanity/loader/loadQuery";
 import { currentUser } from "@clerk/nextjs/server";
 import { Spacer } from "@nextui-org/react";
-import { Pencil, RefreshCw, User } from "lucide-react";
+import { Info, Pencil, RefreshCw, User } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -88,7 +88,15 @@ export default async function PrivateInfoPage({ params }: Props) {
 
   return (
     <>
-      <div className="mb-16 rounded-3xl border border-dashed border-brand-black border-opacity-60 p-4 pt-8 dark:border-brand-white">
+      {pageNumber === 1 && (
+        <InfoBox
+          title="Informasjon fra styret"
+          message="På denne siden finner du nyttig informasjon fra styret. Ta kontakt hvis
+        det er noe du savner, eller du har tilbakemeldinger."
+          icon={<Info />}
+        />
+      )}
+      <div className="my-16 rounded-xl border border-dashed border-brand-black border-opacity-60 p-4 pt-8 dark:border-brand-white">
         <div className="pl-1">
           {user ? (
             <div className="flex gap-4">
@@ -132,13 +140,10 @@ export default async function PrivateInfoPage({ params }: Props) {
         <Spacer y={8} />
         <DocumentMenu content={documentMenu.data} />
       </div>
-      {pageNumber === 1 && (
-        <InfoBox
-          title="Informasjon fra styret"
-          message="På denne siden finner du nyttig informasjon fra styret. Ta kontakt hvis
-        det er noe du savner, eller har tilbakemeldinger."
-        />
-      )}
+
+      <h2 className="lg:prose-xl font-thin ">
+        SISTE NYHETSARTIKLER FRA STYRET
+      </h2>
       <BlogPostList posts={blogPosts} className="mt-8 md:mt-32" />
       <Pagination
         totalPages={totalPages}
