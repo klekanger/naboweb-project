@@ -67,6 +67,7 @@ body {
 .tiptap {
 
   @apply bg-default-100 pt-0 mt-0 overflow-auto;
+  ;
 
   :first-child {
     @apply mt-0;
@@ -81,30 +82,37 @@ body {
   }
 
   h2 {
-    @apply text-xl md:text-3xl font-semibold;
+    @apply text-xl md:text-3xl font-semibold pt-8;
   }
 
+  p {
+    @apply pt-4;
+  }
 
 }
 
 
+.tiptap>* {
+  @apply prose prose-sm sm:prose lg:prose-lg xl:prose-2xl;
+}
+
 /* width */
-::-webkit-scrollbar {
-  width: 10px;
+.tiptap::-webkit-scrollbar {
+  @apply w-[12px];
 }
 
 /* Track */
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
+.tiptap::-webkit-scrollbar-track {
+  @apply bg-default-200;
 }
 
 /* Handle */
-::-webkit-scrollbar-thumb {
-  background: #888;
+.tiptap::-webkit-scrollbar-thumb {
+  @apply bg-brand-secondary/50 rounded-md;
 }
 
 /* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-  cursor: pointer;
+.tiptap::-webkit-scrollbar-thumb:hover {
+  @apply bg-brand-secondary/70 cursor-pointer;
+
 }

@@ -99,17 +99,21 @@ export default function NewMessage() {
 
       console.log("bodyText", bodyText);
       const blocks = htmlToBlocks(bodyText, blockContentType);
+      const features = getBlockContentFeatures(blockContentType);
+      console.log("features ", features);
       console.log("blocks", blocks);
     }
   };
 
   return (
     <>
-      <Card className="p-2 py-8 mb-16 prose lg:prose-xl">
+      <Card className="p-2 py-8 mb-16">
         <CardHeader className="flex flex-col mb-0 pb-0">
-          <div className="pr-4 flex gap-3 w-full">
-            <MessagesSquare />{" "}
-            <h1 className="text-xl lg:text-3xl border-l-1 pl-2">
+          <div className="pr-4 md:pb-8 flex gap-3 w-full">
+            <div className="border-r-1 border-black/20 pr-4">
+              <MessagesSquare className="h-full" />
+            </div>
+            <h1 className="text-xl lg:text-3xl prose lg:prose-lg">
               Opprett nytt innlegg
             </h1>
           </div>
