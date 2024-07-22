@@ -17,18 +17,6 @@ type Props = {
 
 const POSTS_PER_PAGE = 5;
 
-export const metadata = {
-  title: "Boligsameiet Gartnerihagen",
-  description: "Informasjon for beboere",
-  openGraph: {
-    type: "website",
-    title: "Boligsameiet Gartnerihagen",
-    description: "Informasjon for beboere",
-    locale: "nb_NO",
-    siteName: "Boligsameiet Gartnerihagen",
-  },
-};
-
 //
 // Generate all possible routes
 //
@@ -69,12 +57,12 @@ export default async function PrivateInfoPage({ params }: Props) {
     })) ?? [];
   const documentMenu = (await loadDocumentMenu()) ?? [];
 
-  const total = await countBlogPosts({ privatePosts: false });
+  const total = await countBlogPosts({ privatePosts: true });
   const totalPages = Math.ceil(total / POSTS_PER_PAGE);
   const numberOfBlogPosts = blogPosts.length;
 
   if (pageNumber > totalPages || pageNumber < 1) {
-    redirect("/blog-collection/1");
+    redirect("/information/1");
   }
 
   if (numberOfBlogPosts === 0) {

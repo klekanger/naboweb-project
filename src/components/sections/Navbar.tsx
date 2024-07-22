@@ -75,13 +75,15 @@ export default function Navbar() {
 
       <NavbarContent className="hidden gap-8 lg:flex" justify="end">
         {user && (
-          <Dropdown>
+          <Dropdown className="hidden lg:block">
             <NavbarItem>
               <DropdownTrigger>
                 <Button
                   disableRipple
                   className="p-0 bg-transparent data-[hover=true]:bg-transparent text-base hover:text-brand-secondary duration-200 transition"
-                  endContent={<ChevronDown className="h-full w-full mt-1" />}
+                  endContent={
+                    <ChevronDown className="h-[1.2rem] w-[1.2rem] mt-1" />
+                  }
                   radius="sm"
                   variant="light"
                 >

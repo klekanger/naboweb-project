@@ -63,3 +63,48 @@ body {
   @apply ease-in-out;
   @apply -translate-y-40;
 }
+
+.tiptap {
+
+  @apply bg-default-100 pt-0 mt-0 overflow-auto;
+
+  :first-child {
+    @apply mt-0;
+  }
+
+  p.is-editor-empty:first-child::before {
+    color: #adb5bd;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+
+  h2 {
+    @apply text-xl md:text-3xl font-semibold;
+  }
+
+
+}
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  cursor: pointer;
+}

@@ -75,9 +75,8 @@ export default defineConfig({
       frontpageShowcase.name,
       documentMenu.name,
     ]),
-    ...(process.env.NEXT_PUBLIC_SANITY_DATASET === "development"
-      ? [visionTool({ defaultApiVersion: apiVersion })]
-      : []),
+
+    visionTool({ defaultApiVersion: apiVersion }),
 
     nbNOLocale(),
     presentationTool({

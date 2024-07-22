@@ -1,6 +1,6 @@
 import CustomButton from "@/components/CustomButton";
 import RoleDisplay from "@/components/userAdmin/RoleDisplay";
-import { currentUserRoles } from "@/sanity/lib/utils";
+import { currentUserRoles } from "@/lib/currentUserRoles";
 import { type UserCardProps } from "@/types/types";
 
 export default function UserOveview({ user, ...rest }: UserCardProps) {
