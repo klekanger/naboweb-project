@@ -26,6 +26,7 @@
     "@sanity/types": "^3.50.0",
     "@sanity/ui": "^2.6.6",
     "@sanity/vision": "^3.49.0",
+    "@tiptap/extension-character-count": "^2.5.7",
     "@tiptap/extension-list-item": "^2.5.4",
     "@tiptap/extension-placeholder": "^2.5.4",
     "@tiptap/extension-text-style": "^2.5.4",

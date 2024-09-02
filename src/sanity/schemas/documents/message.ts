@@ -118,11 +118,11 @@ export const message = defineType({
     }),
   ],
   preview: {
-    select: { title: "title", messageImage: "messageImage" },
-    prepare({ title, messageImage }) {
+    select: { title: "title" /* , messageImage: "messageImage" */ },
+    prepare({ title /* , messageImage  */ }) {
       return {
         title,
-        media: messageImage,
+        /* media: messageImage, */
       };
     },
   },

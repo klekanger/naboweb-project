@@ -18,7 +18,6 @@ export function PreviewPortableText({
   paragraphClasses?: string;
   value: any;
 }) {
-  console.log("[PreviewPortableText] value: ", value);
   const components: PortableTextComponents = {
     block: {
       normal: ({ children }) => {

@@ -296,3 +296,15 @@ export type ArticleProps = {
   mainImage: Image & { alt?: string; caption?: string; lqip?: string };
   buttonLink: string | undefined;
 };
+
+export type MessageType = {
+  title: string;
+  bodyText: PortableTextBlock[] | undefined | null;
+  author: {
+    firstName: string;
+    lastName: string;
+    userId: string;
+  };
+  messageImage: any; // TODO replace any with Image
+  fromAdmin: boolean;
+};

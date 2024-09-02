@@ -80,7 +80,7 @@ export default function MessageCard({
             className="object-cover rounded-xl"
             src={imageUrl}
             width={800}
-            height={450}
+            height={600}
           />
         )}
       </CardHeader>

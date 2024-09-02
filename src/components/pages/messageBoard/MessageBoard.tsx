@@ -68,7 +68,7 @@ export default function MessageBoard({
           .map((message) => {
             const imageUrl = urlForImage(message?.messageImage as SanityImage)
               ?.width(800)
-              .height(450)
+              .height(600)
               .fit("crop")
               .url();
 
