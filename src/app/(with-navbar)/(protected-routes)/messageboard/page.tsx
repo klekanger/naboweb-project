@@ -10,5 +10,3 @@ export default async function MessageBoardRoute() {
     </>
   );
 }
-
-// https://www.sanity.io/plugins/javascript-api-client
