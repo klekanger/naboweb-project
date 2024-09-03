@@ -4,6 +4,7 @@ import ImageUploader from "@/components/shared/ImageUploader";
 import { currentUserRoles } from "@/lib/currentUserRoles";
 import type { MessageType } from "@/types/types";
 import { useUser } from "@clerk/nextjs";
+import { revalidateTag } from "next/cache";
 import {
   Button,
   Card,
@@ -12,13 +13,13 @@ import {
   CardHeader,
   Checkbox,
   Input,
-  Spinner,
-  useDisclosure,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Spinner,
+  useDisclosure,
 } from "@nextui-org/react";
 import { PortableTextBlock } from "@portabletext/types";
 import { htmlToBlocks } from "@sanity/block-tools";
@@ -36,9 +37,11 @@ import {
   UploadIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
 
 const MAX_CHARACTERS = 1000;
+const DEFAULT_REDIRECT_URL = "/messageboard/new-message";
 
 const defaultSchema = Schema.compile({
   name: "myMessage",
@@ -78,6 +81,8 @@ export default function NewMessage() {
   const [modalOkText, setModalOkText] = useState("Ok");
   const [modalCancelText, setModalCancelText] = useState("Avbryt");
   const [modalCancelDisabled, setModalCancelDisabled] = useState(false);
+  const [modalOkUrl, setModalOkUrl] = useState(DEFAULT_REDIRECT_URL);
+  const router = useRouter();
 
   const editor = useEditor({
     extensions: [
@@ -126,6 +131,7 @@ export default function NewMessage() {
       setModalTitle("Feil: Ugyldig tittel");
       setModalBody("Meldingen din trenger en tittel.");
       setModalCancelDisabled(true);
+
       modalForMessages.onOpen();
       return;
     }
@@ -138,6 +144,7 @@ export default function NewMessage() {
         "Det er alltid fint å fatte seg i korthet, men innlegget ditt må være litt lenger (mer enn 10 tegn).",
       );
       setModalCancelDisabled(true);
+
       modalForMessages.onOpen();
       return;
     }
@@ -207,6 +214,9 @@ export default function NewMessage() {
         setModalBody(
           "Du blir nå tatt tilbake til oppslagstavlen, der du kan se innlegget ditt.",
         );
+        setModalOkUrl(`/messageboard?${data?._id}`);
+        setModalCancelDisabled(true);
+
         modalForMessages.onOpen();
       }
 
@@ -217,6 +227,7 @@ export default function NewMessage() {
       console.error(error);
       setModalTitle("Det oppsto en feil");
       setModalBody(`${error?.message ?? "Ukjent feil"}`);
+
       modalForMessages.onOpen();
     } finally {
       setIsSubmittingMessage(false);
@@ -232,6 +243,7 @@ export default function NewMessage() {
     setModalBody("");
     setModalOkText("Ok");
     setModalCancelText("Avbryt");
+    setModalOkUrl(DEFAULT_REDIRECT_URL);
     setModalCancelDisabled(false);
   };
 
@@ -349,6 +361,7 @@ export default function NewMessage() {
                   onPress={() => {
                     resetModal();
                     modalForMessages.onClose();
+                    router.push(modalOkUrl);
                   }}
                 >
                   {modalOkText}
