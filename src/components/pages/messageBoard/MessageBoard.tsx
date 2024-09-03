@@ -6,10 +6,10 @@ import { MESSAGEBOARD_QUERYResult } from "@/types/sanity.types";
 import { useUser } from "@clerk/nextjs";
 import { Button, Checkbox } from "@nextui-org/react";
 import { CirclePlus, CircleUser, MessagesSquare } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { type Image as SanityImage } from "sanity";
 import MessageCard from "./MessageCard";
-import Link from "next/link";
 
 export default function MessageBoard({
   messages,
@@ -79,6 +79,7 @@ export default function MessageBoard({
             return (
               <MessageCard
                 key={message._id}
+                id={message._id}
                 title={message.title ?? ""}
                 description={message?.bodyText as any}
                 commentCount={message?.comments?.length ?? 0}

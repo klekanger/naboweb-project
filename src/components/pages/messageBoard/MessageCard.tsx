@@ -1,3 +1,5 @@
+"use client";
+
 import { formatDate } from "@/lib/format-date";
 import {
   Card,
@@ -10,9 +12,11 @@ import {
 import { PortableTextBlock } from "@portabletext/types";
 import { CircleUser, MessagesSquare, Shield } from "lucide-react";
 import { toPlainText } from "next-sanity";
+import { useRouter } from "next/navigation";
 
 type MessageCardProps = {
   title: string;
+  id: string;
   description: PortableTextBlock;
   commentCount: number;
   url?: string;
@@ -34,6 +38,7 @@ type MessageCardProps = {
 
 export default function MessageCard({
   title,
+  id,
   description,
   commentCount,
   url,
@@ -43,6 +48,7 @@ export default function MessageCard({
   createdAt,
   comments,
 }: MessageCardProps) {
+  const router = useRouter();
   const textLength = imageUrl ? 100 : 300;
   const plainText = toPlainText(description);
   const slicedText =
@@ -62,7 +68,7 @@ export default function MessageCard({
   return (
     <Card
       isPressable
-      onPress={() => console.log("clicked")}
+      onPress={() => router.push(`/messageboard/${id}`)}
       className={`p-2 ${imageUrl ? "row-span-2" : "row-span-1"} `}
     >
       <CardHeader className="flex-col !items-start hover:">
@@ -96,18 +102,14 @@ export default function MessageCard({
           </div>
           {commentCount > 0 && (
             <Tooltip
-              content={
-                <div>
-                  {commentPreviews.map((comment, index) => (
-                    <>
-                      <div key={comment.key} className="py-2">
-                        <strong>{comment.author}</strong>: {comment.title}...
-                      </div>
-                      {index !== commentPreviews.length - 1 && <hr />}
-                    </>
-                  ))}
+              content={commentPreviews.map((comment, index) => (
+                <div key={comment.key}>
+                  <div className="py-2">
+                    <strong>{comment.author}</strong>: {comment.title}...
+                  </div>
+                  {index !== commentPreviews.length - 1 && <hr />}
                 </div>
-              }
+              ))}
             >
               <div className="flex">
                 <MessagesSquare className="h-auto mr-1" />
