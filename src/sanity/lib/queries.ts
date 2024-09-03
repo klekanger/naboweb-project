@@ -193,6 +193,10 @@ export const MESSAGEBOARD_QUERY = groq`
 }
 `;
 
+export const COUNT_MESSAGES = groq`
+  count(*[_type=="message"])
+`;
+
 export async function countBlogPosts({
   privatePosts,
 }: {
@@ -203,6 +207,10 @@ export async function countBlogPosts({
   } else {
     return client.fetch<number>(COUNT_PUBLIC_BLOG_POSTS);
   }
+}
+
+export async function countMessages() {
+  return client.fetch<number>(COUNT_MESSAGES);
 }
 
 export async function fetchBlogCollection({
