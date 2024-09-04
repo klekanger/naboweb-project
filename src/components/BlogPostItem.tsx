@@ -28,15 +28,15 @@ export default function BlogPostItem({ post }: BlogPostItemProps) {
     return null;
   }
 
-  const urlToPost = privatePost ? `/informasjon/post/${slug}` : `/blog/${slug}`;
+  const urlToPost = privatePost ? `/information/post/${slug}` : `/blog/${slug}`;
 
   return (
     <article key={post?._id}>
       <div className="grid-cols-12 gap-2 pb-2 md:grid md:pb-8 lg:gap-8">
-        <div className="relative order-last overflow-hidden rounded-3xl md:col-span-5 lg:col-span-6">
+        <div className="relative order-last overflow-hidden rounded-xl md:col-span-5 lg:col-span-6">
           <Link href={urlToPost} passHref>
             <Image
-              className="aspect-[16/10] rounded-3xl object-cover duration-200 transition hover:scale-[102%]"
+              className="aspect-[16/10] rounded-xl object-cover"
               src={imageUrl}
               alt={imageAlt}
               width={1600}
@@ -49,8 +49,8 @@ export default function BlogPostItem({ post }: BlogPostItemProps) {
         </div>
 
         <div className="md:col-span-7 md:pr-8 lg:col-span-6 prose lg:prose-xl">
-          <Link href={urlToPost} passHref>
-            <h2 className="text-2xl mt-0 lg:mt-0">{title}</h2>
+          <Link href={urlToPost} passHref className="no-underline">
+            <h2 className="text-2xl mt-0 lg:mt-0 ">{title}</h2>
           </Link>
           <p>
             {excerpt && `${toPlainText(excerpt).slice(0, 500)}`}

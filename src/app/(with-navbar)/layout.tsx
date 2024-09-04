@@ -2,12 +2,11 @@
  * Layout for all pages and articles - including blog posts
  */
 import "@/app/globals.css";
+import { AutomaticVisualEditing } from "@/components/AutomaticVisualEditing";
 import Footer from "@/components/sections/Footer";
 import Navbar from "@/components/sections/Navbar";
-import { Suspense } from "react";
-import { AutomaticVisualEditing } from "@/components/AutomaticVisualEditing";
 import { draftMode } from "next/headers";
-import { Span } from "next/dist/trace";
+import { Suspense } from "react";
 
 export const metadata = {
   title: "Boligsameiet Gartnerihagen",

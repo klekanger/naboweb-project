@@ -4,43 +4,32 @@ import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import {
   Button,
   ButtonGroup,
-  Navbar as NextUINavbar,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
   NavbarBrand,
   NavbarContent,
   NavbarItem,
   NavbarMenu,
   NavbarMenuItem,
   NavbarMenuToggle,
+  Navbar as NextUINavbar,
 } from "@nextui-org/react";
-import { LogIn, LogOut } from "lucide-react";
+import {
+  ChevronDown,
+  Files,
+  Info,
+  LogIn,
+  LogOut,
+  MessagesSquare,
+  NotebookPen,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import logoLight from "/public/logo-light.svg";
-
-const menuItems = [
-  {
-    id: "menu-1",
-    title: "For beboere",
-    href: "/informasjon",
-    protected: true,
-  },
-  {
-    id: "menu-2",
-    title: "Blogg",
-    href: "/blog-collection",
-    protected: false,
-  },
-  {
-    id: "menu-3",
-    title: "Om oss",
-    href: "/om-boligsameiet-gartnerihagen",
-    protected: false,
-  },
-  { id: "menu-4", title: "Styret", href: "/styret", protected: false },
-  { id: "menu-5", title: "Min side", href: "/min-side", protected: true },
-];
 
 export default function Navbar() {
   const { isSignedIn, user, isLoaded } = useUser();
@@ -85,26 +74,115 @@ export default function Navbar() {
       </NavbarContent>
 
       <NavbarContent className="hidden gap-8 lg:flex" justify="end">
-        {menuItems.map((item) => {
-          if (item.protected && !user) return null;
-
-          return (
-            <NavbarItem
-              key={item.id}
-              isActive={pathname.startsWith(item.href)}
-              className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
-            >
-              <Link href={item.href} className="">
-                {item.title}
-              </Link>
+        {user && (
+          <Dropdown className="hidden lg:block">
+            <NavbarItem>
+              <DropdownTrigger>
+                <Button
+                  disableRipple
+                  className="p-0 bg-transparent data-[hover=true]:bg-transparent text-base hover:text-brand-secondary duration-200 transition"
+                  endContent={
+                    <ChevronDown className="h-[1.2rem] w-[1.2rem] mt-1" />
+                  }
+                  radius="sm"
+                  variant="light"
+                >
+                  For beboere
+                </Button>
+              </DropdownTrigger>
             </NavbarItem>
-          );
-        })}
+
+            <DropdownMenu
+              aria-label="ACME features"
+              className="w-[340px]"
+              itemClasses={{
+                base: "gap-4",
+              }}
+            >
+              <DropdownItem
+                as={Link}
+                key="informasjon"
+                description="Her finner du alle blogginnlegg fra styret, dokumenter, vedtekter, klippelister og annen informasjon."
+                startContent={<Info className="h-6 w-6 text-brand-secondary" />}
+                onPress={() => console.log("Dokumenter")}
+                href="/information"
+              >
+                Informasjon fra styret
+              </DropdownItem>
+
+              <DropdownItem
+                as={Link}
+                key="oppslagstavle"
+                description="Oppslag om stort og smått fra beboere og styret."
+                startContent={
+                  <MessagesSquare className="h-6 w-6 text-brand-secondary" />
+                }
+                href="/messageboard"
+              >
+                Oppslagstavle
+              </DropdownItem>
+
+              <DropdownItem
+                as={Link}
+                key="møtereferater"
+                description="Referater fra årsmøter."
+                startContent={
+                  <NotebookPen className="h-6 w-6 text-brand-secondary" />
+                }
+                href="/information/referater"
+              >
+                Møtereferater
+              </DropdownItem>
+
+              <DropdownItem
+                as={Link}
+                key="diverse-dokumenter"
+                description="Diverse dokumenter fra styret, som husfarger og annet."
+                startContent={
+                  <Files className="h-6 w-6 text-brand-secondary" />
+                }
+                href="/information/dokumenter"
+              >
+                Diverse dokumenter
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        )}
+
+        <NavbarItem
+          isActive={pathname.startsWith("/blog-collection")}
+          className="hover:text-brand-secondary duration-200 transition"
+        >
+          <Link href="/blog-collection">Blogg</Link>
+        </NavbarItem>
+
+        <NavbarItem
+          isActive={pathname.startsWith("/om-boligsameiet-gartnerihagen")}
+          className="hover:text-brand-secondary duration-200 transition"
+        >
+          <Link href="/om-boligsameiet-gartnerihagen">Om oss</Link>
+        </NavbarItem>
+
+        <NavbarItem
+          isActive={pathname.startsWith("/styret")}
+          className="hover:text-brand-secondary duration-200 transition"
+        >
+          <Link href="/styret">Styret</Link>
+        </NavbarItem>
+
+        {user && (
+          <NavbarItem
+            isActive={pathname.startsWith("/min-side")}
+            className="hover:text-brand-secondary duration-200 transition"
+          >
+            <Link href="/min-side">Min side</Link>
+          </NavbarItem>
+        )}
 
         <ButtonGroup>
           <NavbarItem>
             {isSignedIn ? (
-              <SignOutButton>
+              <SignOutButton redirectUrl="/">
                 <Button
                   variant="flat"
                   className="ml-8 bg-secondary"
@@ -128,25 +206,59 @@ export default function Navbar() {
         </ButtonGroup>
       </NavbarContent>
 
-      <NavbarMenu className="pt-8">
-        {menuItems.map((item) => {
-          if (item.protected && !user) return null;
+      {/* ************** */}
+      {/* HAMBURGER MENU */}
+      {/* ************** */}
+      <NavbarMenu className="pt-8 text-center">
+        {user && (
+          <NavbarItem
+            isActive={pathname.startsWith("/information")}
+            className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
+          >
+            <Link href="/information">For beboere</Link>
+          </NavbarItem>
+        )}
 
-          return (
-            <NavbarMenuItem
-              key={item.id}
-              className="hover:text-brand-hoverButtonColor duration-100 transition"
-            >
-              <Link className="w-full" href={item.href}>
-                {item.title}
-              </Link>
-            </NavbarMenuItem>
-          );
-        })}
+        <NavbarItem
+          isActive={pathname.startsWith("/blog-collection")}
+          className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
+        >
+          <Link href="/blog-collection" className="">
+            Blogg
+          </Link>
+        </NavbarItem>
+
+        <NavbarItem
+          isActive={pathname.startsWith("/om-boligsameiet-gartnerihagen")}
+          className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
+        >
+          <Link href="/om-boligsameiet-gartnerihagen" className="">
+            Om oss
+          </Link>
+        </NavbarItem>
+
+        <NavbarItem
+          isActive={pathname.startsWith("/styret")}
+          className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
+        >
+          <Link href="/styret" className="">
+            Styret
+          </Link>
+        </NavbarItem>
+
+        {user && (
+          <NavbarItem
+            isActive={pathname.startsWith("/min-side")}
+            className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
+          >
+            <Link href="/min-side">Min side</Link>
+          </NavbarItem>
+        )}
+
         <ButtonGroup className="mt-8">
           <NavbarMenuItem>
             {user ? (
-              <SignOutButton>
+              <SignOutButton redirectUrl="/">
                 <Button
                   color="primary"
                   variant="flat"
@@ -168,7 +280,3 @@ export default function Navbar() {
     </NextUINavbar>
   );
 }
-
-// TODO
-// Implement dropdown menu
-// https://nextui.org/docs/components/navbar#with-dropdown-menu

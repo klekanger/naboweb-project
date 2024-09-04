@@ -49,14 +49,14 @@ export default async function BlogCollectionRoute({
     );
   }
 
-  const data = await fetchBlogCollection({
-    pageNumber: pageNumber - 1,
-    postsPerPage: POSTS_PER_PAGE,
-    isPrivate: false,
-  });
+  const data =
+    (await fetchBlogCollection({
+      pageNumber: pageNumber - 1,
+      postsPerPage: POSTS_PER_PAGE,
+      isPrivate: false,
+    })) ?? [];
 
   const total = await countBlogPosts({ privatePosts: false });
-
   const totalPages = Math.ceil(total / POSTS_PER_PAGE);
   const numberOfBlogPosts = data.length;
 
@@ -74,10 +74,9 @@ export default async function BlogCollectionRoute({
   }
 
   return (
-    <>
-      <h1 className="prose lg:prose-xl pb-16 font-thin">SISTE BLOGGINNLEGG</h1>
+    <section className="">
+      <h1 className="lg:prose-xl pb-16 font-thin">SISTE BLOGGINNLEGG</h1>
       <BlogPostList posts={data} />
-
       <Pagination
         totalPages={totalPages}
         pageNumber={pageNumber}
@@ -88,6 +87,6 @@ export default async function BlogCollectionRoute({
           side {`${pageNumber} av ${totalPages}`}
         </p>
       )}
-    </>
+    </section>
   );
 }

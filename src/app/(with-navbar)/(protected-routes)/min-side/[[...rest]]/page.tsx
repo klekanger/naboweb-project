@@ -15,9 +15,8 @@ export default async function Page() {
       {user ? (
         <div className="self-start w-full">
           <UserOverview user={user} className="mb-16" />
-          <div>
-            <UserProfile />
-          </div>
+
+          <UserProfile />
         </div>
       ) : (
         <Spinner />

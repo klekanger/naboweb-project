@@ -50,7 +50,7 @@ export default function Hero({ content }: { content: HeroProps }) {
         style={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 1, ease: "easeOut", delay: 0.4 }}
-        className="sm:row-span-2 row-span-1 col-span-12 sm:col-span-6 lg:col-span-7 rounded-3xl overflow-hidden w-full h-full aspect-[4/3] sm:aspect-[16/10]"
+        className="sm:row-span-2 row-span-1 col-span-12 sm:col-span-6 lg:col-span-7 rounded-xl overflow-hidden w-full h-full aspect-[4/3] sm:aspect-[16/10]"
       >
         {imageUrl && (
           <Image

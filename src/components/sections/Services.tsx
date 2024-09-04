@@ -2,13 +2,7 @@
 
 // Icons from https://www.svgrepo.com/collection/small-flat-vectors/
 
-import {
-  BookIcon,
-  HouseIcon,
-  NewsIcon,
-  PencilIcon,
-  DocumentIcon,
-} from "@/components/icons";
+import { BookIcon, HouseIcon, NewsIcon, PencilIcon } from "@/components/icons";
 import type { IconProps, ServicesProps } from "@/types/types";
 import { Card, CardBody, CardHeader } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
@@ -71,7 +65,7 @@ export default function Services({ content }: { content: ServicesProps }) {
     <Card
       isPressable
       onPress={() => handlePress(url)}
-      className="col-span-12 lg:col-span-4 p-4 hover:-translate-y-2 "
+      className="col-span-12 lg:col-span-4 p-4 hover:-translate-y-2"
     >
       <CardHeader className="flex-col !items-start hover:">
         <div className=" flex items-center justify-center">{icon}</div>

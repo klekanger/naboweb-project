@@ -73,7 +73,7 @@ export default function DocumentTable({
     return (
       <>
         <p className="pb-4">Ingen dokumenter</p>
-        <Button as={Link} href="/informasjon/1" startContent={<ArrowBigLeft />}>
+        <Button as={Link} href="/information/1" startContent={<ArrowBigLeft />}>
           Gå tilbake
         </Button>
       </>
@@ -248,7 +248,7 @@ export default function DocumentTable({
             : null) ?? []}
         </TableBody>
       </Table>
-      <BackButton buttonLink="/informasjon" />
+      <BackButton buttonLink="/information" />
     </>
   );
 }

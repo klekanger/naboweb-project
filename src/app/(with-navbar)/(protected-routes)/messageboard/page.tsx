@@ -1,7 +1,12 @@
-export default function MessageBoard() {
+import MessageBoard from "@/components/pages/messageBoard/MessageBoard";
+import { loadMessageBoard } from "@/sanity/loader/loadQuery";
+
+export default async function MessageBoardRoute() {
+  const initial = await loadMessageBoard();
+
   return (
-    <div>
-      <h1>Message Board</h1>
-    </div>
+    <>
+      <MessageBoard messages={initial.data} />
+    </>
   );
 }

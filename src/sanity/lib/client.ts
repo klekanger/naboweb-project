@@ -13,3 +13,11 @@ export const client = createClient({
     studioUrl: studioUrl ?? "/studio",
   },
 });
+
+export const clientWithWriteAccess = createClient({
+  projectId,
+  dataset,
+  apiVersion,
+  useCdn,
+  token: process.env.SANITY_API_WRITE_TOKEN,
+});

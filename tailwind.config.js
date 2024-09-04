@@ -26,7 +26,7 @@ module.exports = {
         "brand-success": "#7FA1F6",
         "brand-warning": "#F8BD5F",
         "brand-danger": "#FF7E7E",
-
+        
         "brand-dark-background": "#090A24",
         "brand-dark-default": "#DEF58F",
         "brand-dark-primary": "#84BDA4",

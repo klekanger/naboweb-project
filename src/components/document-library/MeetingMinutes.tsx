@@ -78,7 +78,7 @@ export default function MeetingMinutes({
     return (
       <>
         <p className="pb-4">Ingen dokumenter</p>
-        <Button as={Link} href="/informasjon/1" startContent={<ArrowBigLeft />}>
+        <Button as={Link} href="/information/1" startContent={<ArrowBigLeft />}>
           Gå tilbake
         </Button>
       </>
@@ -199,7 +199,7 @@ export default function MeetingMinutes({
                         size="lg"
                       >
                         <Link
-                          href={`/informasjon/referater/${item._id}`}
+                          href={`/information/referater/${item._id}`}
                           className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80 "
                         >
                           <span className="flex ">
@@ -275,7 +275,7 @@ export default function MeetingMinutes({
             : null) ?? []}
         </TableBody>
       </Table>
-      <BackButton buttonLink="/informasjon" />
+      <BackButton buttonLink="/information" />
     </>
   );
 }

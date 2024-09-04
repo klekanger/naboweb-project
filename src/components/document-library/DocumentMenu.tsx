@@ -28,9 +28,9 @@ export default function DocumentMenu({
       <CustomButton href={file2.url ?? "/"} buttonText={button2Text} />
       <CustomButton href={file3.url ?? "/"} buttonText={button3Text} />
       <CustomButton href={file4.url ?? "/"} buttonText={button4Text} />
-      <CustomButton href="/informasjon/referater" buttonText="Referater" />
+      <CustomButton href="/information/referater" buttonText="Referater" />
       <CustomButton
-        href="/informasjon/dokumenter"
+        href="/information/dokumenter"
         buttonText="Andre dokumenter"
       />
     </div>

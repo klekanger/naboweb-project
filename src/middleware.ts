@@ -3,8 +3,11 @@ import { NextResponse } from "next/server";
 
 const isProtectedRoute = createRouteMatcher([
   "/min-side(.*)",
-  "/informasjon(.*)",
+  "/information(.*)",
   "/user-admin-page(.*)",
+  "/messageboard(.*)",
+  "/api(.*)",
+  "/studio(.*)",
 ]);
 
 export default clerkMiddleware(

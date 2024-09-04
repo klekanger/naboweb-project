@@ -277,6 +277,65 @@ export type FrontpageHero = {
   };
 };
 
+export type Message = {
+  _id: string;
+  _type: "message";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  author?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "authors";
+  };
+  fromAdmin?: boolean;
+  bodyText?: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "normal" | "h2";
+    listItem?: "bullet" | "number";
+    markDefs?: Array<{
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  }>;
+  messageImage?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  tags?: Array<string>;
+  comments?: Array<{
+    commentTitle?: string;
+    commentText?: string;
+    commentAuthor?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "authors";
+    };
+    _type: "comment";
+    _key: string;
+  }>;
+};
+
 export type Authors = {
   _id: string;
   _type: "authors";
@@ -285,6 +344,7 @@ export type Authors = {
   _rev: string;
   firstName?: string;
   lastName?: string;
+  email?: string;
   authorImage?: {
     asset?: {
       _ref: string;
@@ -306,6 +366,7 @@ export type BlogPost = {
   _rev: string;
   privatePost?: boolean;
   title?: string;
+  slug?: Slug;
   excerpt?: Array<
     | {
         children?: Array<{
@@ -406,7 +467,6 @@ export type BlogPost = {
     _key: string;
     [internalGroqTypeReferenceTo]?: "authors";
   }>;
-  slug?: Slug;
 };
 
 export type Page = {
@@ -547,6 +607,33 @@ export type Slug = {
   current?: string;
   source?: string;
 };
+
+export type AllSanitySchemaTypes =
+  | SanityImagePaletteSwatch
+  | SanityImagePalette
+  | SanityImageDimensions
+  | Geopoint
+  | MyIcon
+  | Twitter
+  | Youtube
+  | Settings
+  | DocumentMenu
+  | FileOtherDocuments
+  | FileMeetingMinutes
+  | SanityFileAsset
+  | FrontpageServices
+  | FrontpageShowcase
+  | FrontpageHero
+  | Message
+  | Authors
+  | BlogPost
+  | Page
+  | SanityImageCrop
+  | SanityImageHotspot
+  | SanityImageAsset
+  | SanityAssetSourceData
+  | SanityImageMetadata
+  | Slug;
 export declare const internalGroqTypeReferenceTo: unique symbol;
 // Source: ./src/sanity/lib/queries.ts
 // Variable: DOCUMENTMENU_QUERY
@@ -701,23 +788,6 @@ export type PAGE_BY_SLUG_QUERYResult = {
   }> | null;
   body: Array<
     | {
-        _key: string;
-      }
-    | {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
-        hotspot?: SanityImageHotspot;
-        crop?: SanityImageCrop;
-        caption?: string;
-        alt?: string;
-        _type: "image";
-        lqip: string | null;
-      }
-    | {
         children?: Array<{
           marks?: Array<string>;
           text?: string;
@@ -733,6 +803,33 @@ export type PAGE_BY_SLUG_QUERYResult = {
         }>;
         level?: number;
         _type: "block";
+        _key: string;
+      }
+    | {
+        asset?: {
+          _ref: string;
+          _type: "reference";
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+        };
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        caption?: string;
+        alt?: string;
+        _type: "image";
+        _key: string;
+        lqip: string | null;
+      }
+    | {
+        _key: string;
+        _type: "twitter";
+        tweetId?: string;
+        twitterTitle?: string;
+      }
+    | {
+        _key: string;
+        _type: "youtube";
+        url?: string;
       }
   > | null;
   slug: string | null;
@@ -746,18 +843,6 @@ export type BLOG_BY_SLUG_QUERYResult = {
   privatePost: boolean | null;
   title: string | null;
   excerpt: Array<
-    | {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
-        hotspot?: SanityImageHotspot;
-        crop?: SanityImageCrop;
-        _type: "image";
-        _key: string;
-      }
     | {
         children?: Array<{
           marks?: Array<string>;
@@ -784,6 +869,18 @@ export type BLOG_BY_SLUG_QUERYResult = {
         _type: "block";
         _key: string;
       }
+    | {
+        asset?: {
+          _ref: string;
+          _type: "reference";
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+        };
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        _type: "image";
+        _key: string;
+      }
   > | null;
   featuredImage: {
     asset?: {
@@ -801,23 +898,6 @@ export type BLOG_BY_SLUG_QUERYResult = {
   } | null;
   bodyText: Array<
     | {
-        _key: string;
-      }
-    | {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
-        hotspot?: SanityImageHotspot;
-        crop?: SanityImageCrop;
-        caption?: string;
-        alt?: string;
-        _type: "image";
-        lqip: string | null;
-      }
-    | {
         children?: Array<{
           marks?: Array<string>;
           text?: string;
@@ -833,6 +913,33 @@ export type BLOG_BY_SLUG_QUERYResult = {
         }>;
         level?: number;
         _type: "block";
+        _key: string;
+      }
+    | {
+        asset?: {
+          _ref: string;
+          _type: "reference";
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+        };
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        caption?: string;
+        alt?: string;
+        _type: "image";
+        _key: string;
+        lqip: string | null;
+      }
+    | {
+        _key: string;
+        _type: "twitter";
+        tweetId?: string;
+        twitterTitle?: string;
+      }
+    | {
+        _key: string;
+        _type: "youtube";
+        url?: string;
       }
   > | null;
   slug: string | null;
@@ -844,6 +951,7 @@ export type BLOG_BY_SLUG_QUERYResult = {
     _rev: string;
     firstName?: string;
     lastName?: string;
+    email?: string;
     authorImage?: {
       asset?: {
         _ref: string;
@@ -867,18 +975,6 @@ export type PRIVATE_BLOG_BY_SLUG_QUERYResult = {
   title: string | null;
   excerpt: Array<
     | {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
-        hotspot?: SanityImageHotspot;
-        crop?: SanityImageCrop;
-        _type: "image";
-        _key: string;
-      }
-    | {
         children?: Array<{
           marks?: Array<string>;
           text?: string;
@@ -904,6 +1000,18 @@ export type PRIVATE_BLOG_BY_SLUG_QUERYResult = {
         _type: "block";
         _key: string;
       }
+    | {
+        asset?: {
+          _ref: string;
+          _type: "reference";
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+        };
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        _type: "image";
+        _key: string;
+      }
   > | null;
   featuredImage: {
     asset?: {
@@ -921,23 +1029,6 @@ export type PRIVATE_BLOG_BY_SLUG_QUERYResult = {
   } | null;
   bodyText: Array<
     | {
-        _key: string;
-      }
-    | {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
-        hotspot?: SanityImageHotspot;
-        crop?: SanityImageCrop;
-        caption?: string;
-        alt?: string;
-        _type: "image";
-        lqip: string | null;
-      }
-    | {
         children?: Array<{
           marks?: Array<string>;
           text?: string;
@@ -953,6 +1044,33 @@ export type PRIVATE_BLOG_BY_SLUG_QUERYResult = {
         }>;
         level?: number;
         _type: "block";
+        _key: string;
+      }
+    | {
+        asset?: {
+          _ref: string;
+          _type: "reference";
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+        };
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        caption?: string;
+        alt?: string;
+        _type: "image";
+        _key: string;
+        lqip: string | null;
+      }
+    | {
+        _key: string;
+        _type: "twitter";
+        tweetId?: string;
+        twitterTitle?: string;
+      }
+    | {
+        _key: string;
+        _type: "youtube";
+        url?: string;
       }
   > | null;
   slug: string | null;
@@ -964,6 +1082,7 @@ export type PRIVATE_BLOG_BY_SLUG_QUERYResult = {
     _rev: string;
     firstName?: string;
     lastName?: string;
+    email?: string;
     authorImage?: {
       asset?: {
         _ref: string;
@@ -988,18 +1107,6 @@ export type SHOWCASE_QUERYResult = {
     _id: string;
     title: string | null;
     excerpt: Array<
-      | {
-          asset?: {
-            _ref: string;
-            _type: "reference";
-            _weak?: boolean;
-            [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-          };
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: "image";
-          _key: string;
-        }
       | {
           children?: Array<{
             marks?: Array<string>;
@@ -1026,6 +1133,18 @@ export type SHOWCASE_QUERYResult = {
           _type: "block";
           _key: string;
         }
+      | {
+          asset?: {
+            _ref: string;
+            _type: "reference";
+            _weak?: boolean;
+            [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+          };
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          _type: "image";
+          _key: string;
+        }
     > | null;
     featuredImage: {
       asset?: {
@@ -1050,3 +1169,57 @@ export type COUNT_PUBLIC_BLOG_POSTSResult = number;
 // Variable: COUNT_PRIVATE_BLOG_POSTS
 // Query:   count(*[_type=="blogPost" && privatePost==true])
 export type COUNT_PRIVATE_BLOG_POSTSResult = number;
+// Variable: MESSAGEBOARD_QUERY
+// Query: *[_type == "message"] | order(_createdAt desc) {  _id,  _updatedAt,  _createdAt,  title,  messageImage,  bodyText,  tags,  comments[]{    _key,      commentText,    commentTitle,    commentAuthor->{_id, firstName, lastName}  },  fromAdmin,  author->{firstName, lastName}}
+export type MESSAGEBOARD_QUERYResult = Array<{
+  _id: string;
+  _updatedAt: string;
+  _createdAt: string;
+  title: string | null;
+  messageImage: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  } | null;
+  bodyText: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "h2" | "normal";
+    listItem?: "bullet" | "number";
+    markDefs?: Array<{
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  }> | null;
+  tags: Array<string> | null;
+  comments: Array<{
+    _key: string;
+    commentText: string | null;
+    commentTitle: string | null;
+    commentAuthor: {
+      _id: string;
+      firstName: string | null;
+      lastName: string | null;
+    } | null;
+  }> | null;
+  fromAdmin: boolean | null;
+  author: {
+    firstName: string | null;
+    lastName: string | null;
+  } | null;
+}>;

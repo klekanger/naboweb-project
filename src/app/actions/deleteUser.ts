@@ -44,3 +44,6 @@ export async function deleteUser(
     };
   }
 }
+
+// TODO: Delete user from sanity as well
+// Should have the same _id as the user in Clerk

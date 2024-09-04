@@ -25,6 +25,16 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "slug",
+      type: "slug",
+      title: "Slug",
+      description:
+        "Dette er den siste delen av URL-en som gir bloggposten en unik adresse. Trykk 'Generer' for å opprette automatisk, eller skriv inn en manuell slug.",
+      validation: (Rule) => Rule.required(),
+      options: { source: "title" },
+      hidden: ({ document }) => !document?.title,
+    }),
+    defineField({
       name: "excerpt",
       type: "array",
       of: [{ type: "block" }, { type: "image" }],
@@ -143,16 +153,6 @@ export default defineType({
       of: [{ type: "reference", to: [{ type: "authors" }] }],
       title: "Forfatter",
       hidden: false,
-    }),
-    defineField({
-      name: "slug",
-      type: "slug",
-      title: "Slug",
-      hidden: false,
-      description:
-        "Dette er den siste delen av URL-en som gir bloggposten en unik adresse. Genereres automagisk!",
-      validation: (Rule) => Rule.required(),
-      options: { source: "title" },
     }),
   ],
   preview: {

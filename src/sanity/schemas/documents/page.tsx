@@ -13,17 +13,15 @@ export default defineType({
       title: "Tittel",
       validation: (rule) => rule.required(),
     }),
-
     defineField({
-      type: "slug",
       name: "slug",
+      type: "slug",
       title: "Slug",
       description:
-        "Slug er det som kommer i slutten av URL-en. For eksempel 'about-us' i URL-en 'mittnettsted.no/about-us'.",
-      options: {
-        source: "title",
-      },
-      validation: (rule) => rule.required(),
+        "Dette er den siste delen av URL-en som gir bloggposten en unik adresse. Trykk 'Generer' for å opprette automatisk, eller skriv inn en manuell slug.",
+      validation: (Rule) => Rule.required(),
+      options: { source: "title" },
+      hidden: ({ document }) => !document?.title,
     }),
     defineField({
       name: "overview",

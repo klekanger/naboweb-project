@@ -173,6 +173,30 @@ export const COUNT_PRIVATE_BLOG_POSTS = groq`
   count(*[_type=="blogPost" && privatePost==true])
 `;
 
+export const MESSAGEBOARD_QUERY = groq`
+*[_type == "message"] | order(_createdAt desc) {
+  _id,
+  _updatedAt,
+  _createdAt,
+  title,
+  messageImage,
+  bodyText,
+  tags,
+  comments[]{
+    _key,
+      commentText,
+    commentTitle,
+    commentAuthor->{_id, firstName, lastName}
+  },
+  fromAdmin,
+  author->{firstName, lastName}
+}
+`;
+
+export const COUNT_MESSAGES = groq`
+  count(*[_type=="message"])
+`;
+
 export async function countBlogPosts({
   privatePosts,
 }: {
@@ -183,6 +207,10 @@ export async function countBlogPosts({
   } else {
     return client.fetch<number>(COUNT_PUBLIC_BLOG_POSTS);
   }
+}
+
+export async function countMessages() {
+  return client.fetch<number>(COUNT_MESSAGES);
 }
 
 export async function fetchBlogCollection({

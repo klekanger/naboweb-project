@@ -13,7 +13,7 @@ export default function BlogPage(props: BlogPageProps) {
     <>
       <Article
         title={title}
-        bodyText={bodyText}
+        bodyText={bodyText as any}
         createdAt={_createdAt}
         updatedAt={_updatedAt}
         mainImage={featuredImage as Image & { alt?: string }}

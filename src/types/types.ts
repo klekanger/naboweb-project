@@ -1,6 +1,6 @@
 import type { User } from "@clerk/nextjs/dist/types/server";
-import type { Image, PortableTextBlock } from "sanity";
-import {
+import type { Image } from "sanity";
+import type {
   Authors,
   BlogPost,
   FRONTPAGE_HERO_QUERYResult,
@@ -8,14 +8,9 @@ import {
   Page,
   SHOWCASE_QUERYResult,
 } from "./sanity.types";
+import { PortableTextBlock } from "@portabletext/types";
 
 export type UserRoles = "admin" | "editor" | "user";
-
-export type Slug = {
-  _type: "slug";
-  current?: string;
-  source?: string;
-};
 
 export type DeleteUserSuccessType = {
   success: {
@@ -167,25 +162,6 @@ export type UserWithRoles = User & {
   };
 };
 
-export type ContentImage = {
-  title: string;
-  url: string;
-  description: string;
-  width: number;
-  height: number;
-  fields: {
-    file: {
-      url: string;
-      details: {
-        image: {
-          width: number;
-          height: number;
-        };
-      };
-    };
-  };
-};
-
 export type ClerkError = {
   name: string;
   errors: Array<{
@@ -280,31 +256,6 @@ export type HeroProps = {
   data: FRONTPAGE_HERO_QUERYResult;
 };
 
-export type Services = {
-  title1: string;
-  title2: string;
-  title3: string;
-  description1: string;
-  description2: string;
-  description3: string;
-  icon1: string;
-  icon2: string;
-  icon3: string;
-  url1: string;
-  url2: string;
-  url3: string;
-  private1: boolean;
-  private2: boolean;
-  private3: boolean;
-};
-
-export type Showcase = {
-  _id: string;
-  showcaseTitle?: string;
-  excerpt: PortableTextBlock[];
-  showcaseBlogposts: BlogPost[];
-};
-
 export type ServicesProps = {
   data: FRONTPAGE_SERVICES_QUERYResult;
 };
@@ -328,27 +279,6 @@ export type SanityReference = {
   _ref: string;
 };
 
-export type FigureProps = {
-  value: {
-    alt?: string;
-    caption?: string;
-    asset: SanityReference;
-    _key: string;
-    _type: string;
-  };
-};
-
-export type PagePayload = {
-  _id: string;
-  _createdAt: string;
-  _updatedAt: string;
-  title: string;
-  mainImage: Image & { alt?: string };
-  overview: PortableTextBlock[];
-  body: PortableTextBlock[];
-  slug: Slug;
-};
-
 export type PageProps = {
   data?: Page;
 };
@@ -360,37 +290,22 @@ export type BlogPageProps = {
 export type ArticleProps = {
   title: string | undefined;
   authors?: Array<Authors>;
-  bodyText: PortableTextBlock[] | undefined;
+  // bodyText: PortableTextBlock[] | undefined;
+  bodyText: any; // TODO fix type later
   createdAt: string | undefined;
   updatedAt: string | undefined;
   mainImage: Image & { alt?: string; caption?: string; lqip?: string };
   buttonLink: string | undefined;
 };
 
-export type BlogPagePayload = {
-  _id: string;
-  _createdAt: string;
-  _updatedAt: string;
-  privatePost?: boolean;
-  title?: string;
-  excerpt: PortableTextBlock[];
-  featuredImage: Image & { alt: string };
-  bodyText: PortableTextBlock[];
-  slug: Slug;
+export type MessageType = {
+  title: string;
+  bodyText: PortableTextBlock[] | undefined | null;
   author: {
     firstName: string;
     lastName: string;
-    authorImage: Image;
   };
-};
-
-export type DocumentMenu = {
-  button1Text: string;
-  button2Text: string;
-  button3Text: string;
-  button4Text: string;
-  file1: { url: string };
-  file2: { url: string };
-  file3: { url: string };
-  file4: { url: string };
+  userId?: string;
+  messageImage: any; // TODO replace any with Image
+  fromAdmin: boolean;
 };

@@ -1,5 +1,6 @@
 import CustomButton from "@/components/CustomButton";
 import RoleDisplay from "@/components/userAdmin/RoleDisplay";
+import { currentUserRoles } from "@/lib/currentUserRoles";
 import { type UserCardProps } from "@/types/types";
 
 export default function UserOveview({ user, ...rest }: UserCardProps) {
@@ -9,11 +10,8 @@ export default function UserOveview({ user, ...rest }: UserCardProps) {
   }
 
   const { firstName, lastName } = user;
-
+  const { isAdmin, isEditor } = currentUserRoles(user);
   const roles = (user?.publicMetadata?.roles as string[]) || [];
-
-  const isAdmin = roles.includes("admin") || false;
-  const isEditor = roles.includes("editor") || false;
 
   return (
     <>
