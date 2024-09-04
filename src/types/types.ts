@@ -1,6 +1,6 @@
 import type { User } from "@clerk/nextjs/dist/types/server";
 import type { Image } from "sanity";
-import {
+import type {
   Authors,
   BlogPost,
   FRONTPAGE_HERO_QUERYResult,
@@ -290,7 +290,8 @@ export type BlogPageProps = {
 export type ArticleProps = {
   title: string | undefined;
   authors?: Array<Authors>;
-  bodyText: PortableTextBlock[] | undefined;
+  // bodyText: PortableTextBlock[] | undefined;
+  bodyText: any; // TODO fix type later
   createdAt: string | undefined;
   updatedAt: string | undefined;
   mainImage: Image & { alt?: string; caption?: string; lqip?: string };
@@ -303,8 +304,8 @@ export type MessageType = {
   author: {
     firstName: string;
     lastName: string;
-    userId: string;
   };
+  userId?: string;
   messageImage: any; // TODO replace any with Image
   fromAdmin: boolean;
 };
