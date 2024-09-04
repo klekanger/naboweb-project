@@ -109,8 +109,8 @@ export default function NewMessage() {
     author: {
       firstName: "",
       lastName: "",
-      userId: id,
     },
+    userId: id,
     fromAdmin: false,
     messageImage: null,
   });
@@ -200,8 +200,8 @@ export default function NewMessage() {
           author: {
             firstName: firstName ?? "",
             lastName: lastName ?? "",
-            userId: id,
           },
+          userId: id,
           image: imageRef ?? null,
           fromAdmin: message.fromAdmin,
         }),
@@ -211,10 +211,8 @@ export default function NewMessage() {
 
       if ("success" in data) {
         setModalTitle("Innlegget ble opprettet");
-        setModalBody(
-          "Du blir nå tatt tilbake til oppslagstavlen, der du kan se innlegget ditt.",
-        );
-        setModalOkUrl(`/messageboard?${data?._id}`);
+        setModalBody("Du blir nå tatt tilbake til oppslagstavlen.");
+        setModalOkUrl(`/messageboard`);
         setModalCancelDisabled(true);
 
         modalForMessages.onOpen();
