@@ -7,10 +7,10 @@ export async function POST(request: NextRequest) {
   const userRoles = (user?.publicMetadata as { roles: string[] }) ?? [];
 
   if (!user || !userRoles.roles.includes("user")) {
-    return {
+    return NextResponse.json({
       error: { message: "Unauthorized" },
       status: 401,
-    };
+    });
   }
 
   const res = await request.json();
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const { title, bodyText, author, image, fromAdmin } = res;
+  const { title, bodyText, userId, image, fromAdmin } = res;
 
   // Create a new message in Sanity
 
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     fromAdmin,
     author: {
       _type: "reference",
-      _ref: author?.userId,
+      _ref: userId,
     },
   };
 
