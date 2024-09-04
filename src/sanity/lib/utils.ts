@@ -38,7 +38,7 @@ export function resolveHref(
   }
 }
 
-export function toPreviewText(blocks = []) {
+export function toPreviewText(blocks: { _type: string; children: any[] }[]) {
   return (
     blocks
       // loop through each block
