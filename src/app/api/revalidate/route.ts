@@ -45,6 +45,7 @@ export async function POST(req: NextRequest) {
 
     revalidateTag(body._type);
     revalidatePath("/");
+
     if (body.slug) {
       revalidateTag(`${body._type}:${body.slug}`);
     }
