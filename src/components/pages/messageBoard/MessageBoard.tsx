@@ -17,6 +17,7 @@ export default function MessageBoard({
   messages: MESSAGEBOARD_QUERYResult;
 }) {
   if (!messages) return null;
+
   const [showOnlyFromAdmin, setShowOnlyFromAdmin] = useState(false);
   const { user, isLoaded } = useUser();
 
@@ -63,35 +64,43 @@ export default function MessageBoard({
         </Checkbox>
       </div>
       <section className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {messages
-          ?.filter((message) => (showOnlyFromAdmin ? message.fromAdmin : true))
-          .map((message) => {
-            const imageUrl = urlForImage(message?.messageImage as SanityImage)
-              ?.width(800)
-              .height(600)
-              .fit("crop")
-              .url();
+        {messages.length > 0 ? (
+          messages
+            ?.filter((message) =>
+              showOnlyFromAdmin ? message.fromAdmin : true,
+            )
+            .map((message) => {
+              const imageUrl = urlForImage(message?.messageImage as SanityImage)
+                ?.width(800)
+                .height(600)
+                .fit("crop")
+                .url();
 
-            const author = message.fromAdmin
-              ? { firstName: "Styret", lastName: "" }
-              : message.author;
+              const author = message.fromAdmin
+                ? { firstName: "Styret", lastName: "" }
+                : message.author;
 
-            return (
-              <MessageCard
-                key={message._id}
-                id={message._id}
-                title={message.title ?? ""}
-                description={message?.bodyText as any}
-                commentCount={message?.comments?.length ?? 0}
-                url="/"
-                imageUrl={imageUrl ?? null}
-                author={author as any}
-                fromAdmin={message?.fromAdmin ?? false}
-                createdAt={message._createdAt}
-                comments={message?.comments ?? []}
-              />
-            );
-          })}
+              return (
+                <MessageCard
+                  key={message._id}
+                  id={message._id}
+                  title={message.title ?? ""}
+                  description={message?.bodyText as any}
+                  commentCount={message?.comments?.length ?? 0}
+                  url="/"
+                  imageUrl={imageUrl ?? null}
+                  author={author as any}
+                  fromAdmin={message?.fromAdmin ?? false}
+                  createdAt={message._createdAt}
+                  comments={message?.comments ?? []}
+                />
+              );
+            })
+        ) : (
+          <p className="text-brand-black font-light">
+            Det er ingen innlegg ennå. Kanskje du vil opprette det første?
+          </p>
+        )}
       </section>
     </>
   );
