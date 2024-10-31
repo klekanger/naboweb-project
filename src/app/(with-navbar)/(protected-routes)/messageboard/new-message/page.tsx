@@ -156,7 +156,9 @@ export default function NewMessage() {
     // 1: If there is a message image, upload it to Sanity
     if (messageImageFile !== null) {
       const fileData = new FormData();
+
       fileData.set("messageImage", messageImageFile as File);
+      fileData.set("title", message.title);
 
       setIsUploadingImage(true);
       try {

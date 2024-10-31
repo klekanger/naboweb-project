@@ -12,6 +12,7 @@ export async function POST(request: NextRequest) {
 
   const data = await request.formData();
   const messageImage = data.get("messageImage") as unknown as File;
+  const messageImageTitle = data.get("title") as string;
 
   if (!messageImage) {
     return NextResponse.json({
@@ -38,6 +39,7 @@ export async function POST(request: NextRequest) {
   try {
     const result = await clientWithWriteAccess.assets.upload("image", buffer, {
       filename: messageImage.name,
+      title: messageImageTitle,
     });
 
     if (!result) {
