@@ -82,8 +82,8 @@ export default function MessageCard({
         </div>
         {imageUrl && (
           <Image
-            alt="Card background"
-            className="object-cover rounded-xl"
+            alt={title}
+            className="object-cover rounded-xl max-h-[200px]"
             src={imageUrl}
             width={800}
             height={600}

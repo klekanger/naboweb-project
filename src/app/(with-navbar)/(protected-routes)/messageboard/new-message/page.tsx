@@ -4,7 +4,6 @@ import ImageUploader from "@/components/shared/ImageUploader";
 import { currentUserRoles } from "@/lib/currentUserRoles";
 import type { MessageType } from "@/types/types";
 import { useUser } from "@clerk/nextjs";
-import { revalidateTag } from "next/cache";
 import {
   Button,
   Card,
@@ -37,7 +36,7 @@ import {
   UploadIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const MAX_CHARACTERS = 1000;
@@ -182,13 +181,13 @@ export default function NewMessage() {
         setModalTitle("Det har oppstått en feil");
         setModalBody(`${error?.message ?? "Bildeopplasting feilet"}`);
         modalForMessages.onOpen();
+        return;
       } finally {
         setIsUploadingImage(false);
       }
     }
 
     // Create the message in Sanity
-
     setIsSubmittingMessage(true);
     try {
       const response = await fetch("/api/create-new-message", {
@@ -217,6 +216,14 @@ export default function NewMessage() {
         setModalOkUrl(`/messageboard`);
         setModalCancelDisabled(true);
 
+        try {
+          await fetch("/api/revalidate-messageboard", {
+            method: "POST",
+          });
+        } catch (error: any) {
+          throw new Error(`Revalidation failed. Server response: ${error}`);
+        }
+
         modalForMessages.onOpen();
       }
 
@@ -227,8 +234,8 @@ export default function NewMessage() {
       console.error(error);
       setModalTitle("Det oppsto en feil");
       setModalBody(`${error?.message ?? "Ukjent feil"}`);
-
       modalForMessages.onOpen();
+      return;
     } finally {
       setIsSubmittingMessage(false);
     }
