@@ -1,13 +1,17 @@
 import Page from "@/components/pages/page/Page";
-import { loadPageBySlug } from "@/sanity/loader/loadQuery";
+import { urlForOpenGraphImage } from "@/sanity/lib/utils";
 import { generateStaticSlugs } from "@/sanity/loader/generateStaticSlugs";
-import { notFound } from "next/navigation";
-import PagePreview from "@/components/pages/page/PagePreview";
-import { draftMode } from "next/headers";
+import { loadPageBySlug } from "@/sanity/loader/loadQuery";
 import { Metadata, ResolvingMetadata } from "next";
 import { toPlainText } from "next-sanity";
-import { urlForOpenGraphImage } from "@/sanity/lib/utils";
+import dynamic from "next/dynamic";
+import { draftMode } from "next/headers";
+import { notFound } from "next/navigation";
 import type { Image as SanityImage } from "sanity";
+
+const PagePreview = dynamic(
+  () => import("@/components/pages/page/PagePreview"),
+);
 
 type Props = {
   params: { slug: string };
