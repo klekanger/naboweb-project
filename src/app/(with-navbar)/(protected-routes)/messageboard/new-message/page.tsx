@@ -160,6 +160,7 @@ export default function NewMessage() {
       fileData.set("title", message.title);
 
       setIsUploadingImage(true);
+
       try {
         const fileUploadResponse = await fetch("/api/upload-image-to-sanity", {
           method: "POST",

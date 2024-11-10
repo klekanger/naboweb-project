@@ -10,25 +10,53 @@ export default function ImageUploader({
 }) {
   const [uploadImagePreview, setUploadImage] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const setPreviewImage = (file: File[] | FileList | null) => {
-    if (file === null || file === undefined) {
+    if (!file) {
       console.error("No file provided");
       setUploadImage(null);
       onImageSelect(null);
+      return;
     }
 
-    if (Array.isArray(file)) {
-      onImageSelect(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target?.result && isValidImage(e.target.result as string)) {
-          setUploadImage(e.target.result as string);
-        } else {
-          console.log("Not an image");
-          setUploadImage(null);
-        }
-      };
+    // When dragging and dropping, file is a FileList - convert to array
+    if (file instanceof FileList) {
+      file = Array.from(file);
+    }
+
+    // Validate file type
+    if (
+      !file.every((f) =>
+        ["image/jpeg", "image/png", "image/webp"].includes(f.type),
+      )
+    ) {
+      console.error("Unsupportet image type");
+      setError("Bildeformatet må være JPG, PNG eller WEBP");
+      setUploadImage(null);
+      onImageSelect(null);
+      return;
+    } else {
+      setError(null);
+    }
+
+    // Run callback with the image file
+    onImageSelect(file);
+
+    // Set preview image
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (e.target?.result && isValidImage(e.target.result as string)) {
+        setUploadImage(e.target.result as string);
+      } else {
+        console.log("Not an image");
+        setUploadImage(null);
+      }
+    };
+
+    // Check if there are files to read
+    if (file.length > 0) {
       reader.readAsDataURL(file[0]);
     }
   };
@@ -101,11 +129,17 @@ export default function ImageUploader({
               <div className="text-xs my-0">
                 Bildet beskjæres automatisk til 4/3 breddeformat.
               </div>
+              {error ? (
+                <div className="text-xs text-red-500">{error}</div>
+              ) : (
+                <div className="text-xs h-[1rem]"></div>
+              )}
             </div>
             <input
               id="file-input"
               type="file"
               onChange={handleFileSelect}
+              onDragOver={handleDrop}
               className="hidden"
             />
           </div>
