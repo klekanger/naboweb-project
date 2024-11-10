@@ -1,13 +1,18 @@
 import { generateStaticSlugs } from "@/sanity/loader/generateStaticSlugs";
 import { loadBlogPageBySlug } from "@/sanity/loader/loadQuery";
 import BlogPage from "@/components/pages/blog/BlogPage";
-import BlogPagePreview from "@/components/pages/blog/BlogPagePreview";
+// import BlogPagePreview from "@/components/pages/blog/BlogPagePreview";
 import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 import { Metadata, ResolvingMetadata } from "next";
 import { toPlainText } from "next-sanity";
 import { urlForOpenGraphImage } from "@/sanity/lib/utils";
 import type { Image as SanityImage } from "sanity";
+import dynamic from "next/dynamic";
+
+const BlogPagePreview = dynamic(
+  () => import("@/components/pages/blog/BlogPagePreview"),
+);
 
 type Props = {
   params: { slug: string };
@@ -55,7 +60,7 @@ export async function generateStaticParams() {
 //
 // Generate the blog page
 //
-export default async function PageBlogRoute({
+export default async function BlogRoute({
   params,
 }: {
   params: { slug: string };

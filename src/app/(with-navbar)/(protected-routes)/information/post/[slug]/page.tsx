@@ -1,9 +1,13 @@
 import BlogPage from "@/components/pages/blog/BlogPage";
-import BlogPagePreview from "@/components/pages/blog/BlogPagePreview";
 import { generateStaticSlugs } from "@/sanity/loader/generateStaticSlugs";
 import { loadPrivateBlogPageBySlug } from "@/sanity/loader/loadQuery";
+import dynamic from "next/dynamic";
 import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
+
+const BlogPagePreview = dynamic(
+  () => import("@/components/pages/blog/BlogPagePreview"),
+);
 
 type Props = {
   params: { slug: string };
@@ -19,7 +23,7 @@ export async function generateStaticParams() {
 //
 // Generate the blog page
 //
-export default async function PageBlogRoute({ params }: Props) {
+export default async function PrivateBlogRoute({ params }: Props) {
   const initial = await loadPrivateBlogPageBySlug(params?.slug);
 
   if (draftMode().isEnabled) {
