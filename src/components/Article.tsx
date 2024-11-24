@@ -24,12 +24,6 @@ export default function Article({
           )})`;
   }
 
-  let imageUrl: string;
-  let imageAlt = "";
-
-  imageUrl = urlForImage(mainImage)?.width(1600).height(1000).url() ?? "";
-  imageAlt = mainImage?.alt ?? "";
-
   return (
     <article>
       <h1 className="prose lg:prose-xl text-4xl lg:text-5xl mb-8 font-semibold ">
@@ -38,8 +32,15 @@ export default function Article({
       {mainImage && (
         <div className="relative mb-16 md:max-w-4xl">
           <Image
-            src={imageUrl}
-            alt={imageAlt}
+            src={
+              urlForImage(mainImage)
+                ?.width(1600)
+                .height(1000)
+                .fit("max")
+                .dpr(2)
+                .url() ?? ""
+            }
+            alt={mainImage?.alt ?? ""}
             sizes="100vw"
             width={1600}
             height={1000}
