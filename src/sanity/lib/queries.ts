@@ -210,7 +210,28 @@ export const MESSAGEBOARD_QUERY = groq`
     commentAuthor->{_id, firstName, lastName}
   },
   fromAdmin,
-  author->{firstName, lastName}
+  author->{_id, firstName, lastName}
+}
+`;
+
+export const MESSAGE_BY_ID_QUERY = groq`
+*[_type == "message" && _id == $id][0] {
+  _id,
+  _updatedAt,
+  _createdAt,
+  title,
+  messageImage,
+  bodyText,
+  tags,
+  comments[]{
+    _key,
+      commentText,
+    commentTitle,
+    commentAuthor->{_id, firstName, lastName},
+    published
+  },
+  fromAdmin,
+  author->{_id, firstName, lastName}
 }
 `;
 

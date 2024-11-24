@@ -112,7 +112,15 @@ export const message = defineType({
               name: "commentAuthor",
               to: [{ type: "authors" }],
             },
+            {
+              type: "datetime",
+              name: "published",
+              hidden: true,
+            },
           ],
+          initialValue: () => ({
+            published: new Date().toISOString(),
+          }),
         }),
       ],
     }),

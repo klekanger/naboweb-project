@@ -1,26 +1,26 @@
-import { countMessages } from "@/sanity/lib/queries";
+import MessagePage from "@/components/pages/messageBoard/MessagePage";
+import { generateStaticSlugs } from "@/sanity/loader/generateStaticSlugs";
+import { loadMessageById } from "@/sanity/loader/loadQuery";
+import { notFound } from "next/navigation";
 
 type MessagePageParams = {
-  params: { id: number | undefined };
+  params: { id: string };
 };
 
 export async function generateStaticParams() {
-  const numberOfMessages = await countMessages();
-
-  return Array.from({ length: numberOfMessages }).map((_, i) => ({
-    id: `${i + 1}`,
-  }));
+  return await generateStaticSlugs("message");
 }
 
-export default function MessagePage({ params }: MessagePageParams) {
-  const blogId = params?.id;
+export default async function MessagePageIdRoute({
+  params,
+}: MessagePageParams) {
+  const initial = await loadMessageById(params?.id);
 
-  // const data = await fetchMessage(params?.id);
+  if (!initial.data) {
+    notFound();
+  }
 
-  return (
-    <section>
-      <h1 className="lg:prose-xl pb-16 font-thin">Melding</h1>
-      {params.id}
-    </section>
-  );
+  return <MessagePage data={initial.data} />;
 }
+
+// TODO make sanity preview page for visual editing

@@ -82,7 +82,7 @@ export default function ImageUploader({
   };
 
   return (
-    <div className="w-full md:w-1/2">
+    <div className="w-full">
       <div className="relative rounded-lg overflow-hidden group">
         {uploadImagePreview ? (
           <div>
@@ -90,7 +90,7 @@ export default function ImageUploader({
               src={uploadImagePreview}
               alt={"Bilde for opplasting"}
               width={800}
-              height={450}
+              height={600}
               className="object-cover rounded-xl aspect-[4/3]"
             />
             <button

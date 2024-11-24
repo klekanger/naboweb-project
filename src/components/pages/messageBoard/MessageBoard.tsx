@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { type Image as SanityImage } from "sanity";
 import MessageCard from "./MessageCard";
+import { compareClerkAndSanityUser } from "@/lib/compareClerkAndSanityUser";
 
 export default function MessageBoard({
   messages,
@@ -19,6 +20,7 @@ export default function MessageBoard({
   if (!messages) return null;
 
   const [showOnlyFromAdmin, setShowOnlyFromAdmin] = useState(false);
+  const [showOnlyMyMessages, setShowOnlyMyMessages] = useState(false);
   const { user, isLoaded } = useUser();
 
   const { firstName, lastName, publicMetadata } = user ?? {};
@@ -51,8 +53,12 @@ export default function MessageBoard({
             Opprett innlegg
           </Button>
 
-          <Button color="primary" startContent={<CircleUser />}>
-            Se mine innlegg
+          <Button
+            color="primary"
+            startContent={<CircleUser />}
+            onPress={() => setShowOnlyMyMessages(!showOnlyMyMessages)}
+          >
+            {`Se ${showOnlyMyMessages ? "alle" : "mine"} innlegg`}
           </Button>
         </div>
 
@@ -66,8 +72,10 @@ export default function MessageBoard({
       <section className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {messages.length > 0 ? (
           messages
-            ?.filter((message) =>
-              showOnlyFromAdmin ? message.fromAdmin : true,
+            ?.filter(
+              (message) =>
+                (showOnlyFromAdmin ? message.fromAdmin : true) &&
+                (showOnlyMyMessages ? user?.id === message.author?._id : true),
             )
             .map((message) => {
               const imageUrl = urlForImage(message?.messageImage as SanityImage)
@@ -93,6 +101,7 @@ export default function MessageBoard({
                   fromAdmin={message?.fromAdmin ?? false}
                   createdAt={message._createdAt}
                   comments={message?.comments ?? []}
+                  userIsMessageAuthor={user?.id === message.author?._id}
                 />
               );
             })

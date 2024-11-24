@@ -17,6 +17,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Spacer,
   Spinner,
   useDisclosure,
 } from "@nextui-org/react";
@@ -273,34 +274,35 @@ export default function NewMessage() {
               Opprett nytt innlegg
             </h1>
           </div>
-
-          <Input
-            type="text"
-            label="Tittel"
-            size="lg"
-            isRequired
-            value={message.title}
-            onValueChange={(e) => setMessage({ ...message, title: e })}
-          />
-
-          <div className="w-full mt-4">
-            <MenuBar editor={editor} percentage={percentage} />
-          </div>
         </CardHeader>
-        <CardBody className="mt-0 pt-0">
-          <EditorContent
-            editor={editor}
-            aria-label="Teksteditor for å opprette nytt innlegg"
-            className="mb-4 md:mb-8"
-          />
+        <CardBody className="pt-0 grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div>
+            <Input
+              type="text"
+              label="Tittel"
+              size="lg"
+              isRequired
+              value={message.title}
+              onValueChange={(e) => setMessage({ ...message, title: e })}
+            />
+            <Spacer y={4} />
 
+            <MenuBar editor={editor} percentage={percentage} />
+
+            <EditorContent
+              editor={editor}
+              aria-label="Teksteditor for å opprette nytt innlegg"
+              className="mb-4 md:mb-8 "
+            />
+          </div>
           <ImageUploader onImageSelect={handleImageSelect} />
         </CardBody>
 
         <CardFooter>
           <div>
             <p className="text-xs mt-4 mb-4">
-              Du publiserer som: {firstName} {lastName}
+              Du publiserer som:{" "}
+              {`${!message.fromAdmin ? `${firstName} ${lastName}` : "Styret"}`}
             </p>
             <div className="flex gap-4 flex-col md:flex-row">
               <Button

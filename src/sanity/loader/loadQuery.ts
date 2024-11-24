@@ -9,6 +9,7 @@ import {
   type OTHER_DOCUMENTS_QUERYResult,
   type Page,
   type SHOWCASE_QUERYResult,
+  MESSAGE_BY_ID_QUERYResult,
 } from "@/types/sanity.types";
 import {
   BLOG_BY_SLUG_QUERY,
@@ -17,6 +18,7 @@ import {
   FRONTPAGE_SERVICES_QUERY,
   MEETING_MINUTES_BY_ID_QUERY,
   MEETING_MINUTES_QUERY,
+  MESSAGE_BY_ID_QUERY,
   MESSAGEBOARD_QUERY,
   OTHER_DOCUMENTS_QUERY,
   PAGE_BY_SLUG_QUERY,
@@ -116,6 +118,14 @@ export async function loadMessageBoard() {
   return loadQuery<MESSAGEBOARD_QUERYResult>(
     MESSAGEBOARD_QUERY,
     {},
+    { next: { tags: ["message"] } },
+  );
+}
+
+export async function loadMessageById(id: string) {
+  return loadQuery<MESSAGE_BY_ID_QUERYResult>(
+    MESSAGE_BY_ID_QUERY,
+    { id },
     { next: { tags: ["message"] } },
   );
 }

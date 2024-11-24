@@ -9,32 +9,10 @@ import {
   Image,
   Tooltip,
 } from "@nextui-org/react";
-import { PortableTextBlock } from "@portabletext/types";
+import { MessageCardProps } from "@/types/types";
 import { CircleUser, MessagesSquare, Shield } from "lucide-react";
 import { toPlainText } from "next-sanity";
 import { useRouter } from "next/navigation";
-
-type MessageCardProps = {
-  title: string;
-  id: string;
-  description: PortableTextBlock;
-  commentCount: number;
-  url?: string;
-  imageUrl: string | null;
-  author?: { firstName?: string; lastName?: string };
-  fromAdmin?: boolean;
-  createdAt: string;
-  comments: Array<{
-    _key: string;
-    commentText: string | null;
-    commentTitle: string | null;
-    commentAuthor: {
-      _id: string;
-      firstName: string | null;
-      lastName: string | null;
-    } | null;
-  }> | null;
-};
 
 export default function MessageCard({
   title,
@@ -47,6 +25,7 @@ export default function MessageCard({
   fromAdmin,
   createdAt,
   comments,
+  userIsMessageAuthor,
 }: MessageCardProps) {
   const router = useRouter();
   const textLength = imageUrl ? 100 : 300;
@@ -78,7 +57,11 @@ export default function MessageCard({
           ) : (
             <CircleUser className="h-auto pr-2" />
           )}
-          {author?.firstName} {author?.lastName}
+          <span
+            className={`${userIsMessageAuthor ? "text-brand-secondary font-normal" : ""}`}
+          >
+            {author?.firstName} {author?.lastName}
+          </span>
         </div>
         {imageUrl && (
           <Image
