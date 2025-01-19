@@ -1,6 +1,6 @@
 "use client";
 
-import { divider } from "@nextui-org/react";
+import { divider } from "@heroui/react";
 import ReactPlayer from "react-player";
 
 export default function YouTubePlayer({ url }: { url: string }) {

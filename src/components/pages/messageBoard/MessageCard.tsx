@@ -8,7 +8,7 @@ import {
   CardHeader,
   Image,
   Tooltip,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { MessageCardProps } from "@/types/types";
 import { CircleUser, MessagesSquare, Shield } from "lucide-react";
 import { toPlainText } from "next-sanity";

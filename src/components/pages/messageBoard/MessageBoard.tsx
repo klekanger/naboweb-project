@@ -4,13 +4,12 @@ import InfoBox from "@/components/InfoBox";
 import { urlForImage } from "@/sanity/lib/utils";
 import { MESSAGEBOARD_QUERYResult } from "@/types/sanity.types";
 import { useUser } from "@clerk/nextjs";
-import { Button, Checkbox } from "@nextui-org/react";
+import { Button, Checkbox } from "@heroui/react";
 import { CirclePlus, CircleUser, MessagesSquare } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { type Image as SanityImage } from "sanity";
 import MessageCard from "./MessageCard";
-import { compareClerkAndSanityUser } from "@/lib/compareClerkAndSanityUser";
 
 export default function MessageBoard({
   messages,
@@ -114,3 +113,5 @@ export default function MessageBoard({
     </>
   );
 }
+
+// TODO: Add tag feature

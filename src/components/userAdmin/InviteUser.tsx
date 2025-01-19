@@ -12,7 +12,7 @@ import {
   ModalFooter,
   ModalHeader,
   useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useContext, useMemo, useState } from "react";
 import RoleDisplay from "./RoleDisplay";
 

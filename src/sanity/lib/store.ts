@@ -1,5 +1,5 @@
 import * as queryStore from "@sanity/react-loader";
-import { draftMode } from "next/headers";
+import { draftMode, type UnsafeUnwrappedDraftMode } from "next/headers";
 import { client } from "../lib/client";
 import { token } from "../lib/token";
 
@@ -23,7 +23,9 @@ const usingCdn = serverClient.config().useCdn;
 
 export const loadQuery = ((query, params = {}, options = {}) => {
   const {
-    perspective = draftMode().isEnabled ? "previewDrafts" : "published",
+    perspective = (draftMode() as unknown as UnsafeUnwrappedDraftMode).isEnabled
+      ? "previewDrafts"
+      : "published",
   } = options;
   // Don't cache by default
   let revalidate: NextFetchRequestConfig["revalidate"] = 0;

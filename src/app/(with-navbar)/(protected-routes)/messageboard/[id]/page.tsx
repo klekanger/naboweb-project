@@ -4,16 +4,15 @@ import { loadMessageById } from "@/sanity/loader/loadQuery";
 import { notFound } from "next/navigation";
 
 type MessagePageParams = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export async function generateStaticParams() {
   return await generateStaticSlugs("message");
 }
 
-export default async function MessagePageIdRoute({
-  params,
-}: MessagePageParams) {
+export default async function MessagePageIdRoute(props: MessagePageParams) {
+  const params = await props.params;
   const initial = await loadMessageById(params?.id);
 
   if (!initial.data) {
@@ -23,4 +22,5 @@ export default async function MessagePageIdRoute({
   return <MessagePage data={initial.data} />;
 }
 
-// TODO make sanity preview page for visual editing
+// No need for a sanity preview page for visual editing,
+// as we're using our own editor for editing message board messages

@@ -2,7 +2,7 @@
 import UserOverview from "@/components/UserOverview";
 import { UserProfile } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";
-import { Spinner } from "@nextui-org/spinner";
+import { Spinner } from "@heroui/spinner";
 
 export default async function Page() {
   const user = await currentUser();

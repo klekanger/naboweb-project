@@ -7,7 +7,7 @@ import {
   CardFooter,
   CardHeader,
   Input,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { PortableTextBlock } from "@portabletext/types";
 import { Schema } from "@sanity/schema";
 import CharacterCount from "@tiptap/extension-character-count";

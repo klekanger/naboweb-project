@@ -3,7 +3,7 @@
 import CustomButton from "@/components/CustomButton";
 import { urlForImage } from "@/sanity/lib/utils";
 import type { HeroProps } from "@/types/types";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { HeartOffIcon } from "lucide-react";
 import Image from "next/image";
 import type { Image as SanityImage } from "sanity";
@@ -21,7 +21,7 @@ export default function Hero({ content }: { content: HeroProps }) {
   const { alt, lqip } = content.data.heroImage ?? {};
 
   return (
-    <section className="grid grid-rows-[auto,1fr] grid-cols-1 sm:grid-rows-1 sm:grid-cols-12 sm:grid-flow-col gap-y-8 sm:gap-8 px-0 py-8 sm:py-16 max-w-8xl m-auto ">
+    <section className="grid grid-rows-[auto,1fr] grid-cols-1 sm:grid-rows-1 sm:grid-cols-12 sm:grid-flow-col gap-y-8 sm:gap-8 px-0 py-8 sm:py-16 max-w-7xl m-auto ">
       <div className="row-span-1 col-span-12 sm:col-span-6 lg:col-span-5 prose lg:prose-lg 2xl:prose-xl">
         <motion.h1
           style={{ y: 50, opacity: 0 }}

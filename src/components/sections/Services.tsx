@@ -10,7 +10,7 @@ import {
   DocumentIcon,
 } from "@/components/icons";
 import type { IconProps, ServicesProps } from "@/types/types";
-import { Card, CardBody, CardHeader } from "@nextui-org/react";
+import { Card, CardBody, CardHeader } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { type FunctionComponent } from "react";
 
@@ -97,7 +97,7 @@ export default function Services({ content }: { content: ServicesProps }) {
 
   return (
     <>
-      <section className="py-8 sm:py-16 max-w-8xl m-auto">
+      <section className="py-8 sm:py-16 max-w-7xl m-auto">
         <div className="gap-8 grid grid-cols-12 grid-rows-1">
           <StyledCard
             title={title1 ?? ""}

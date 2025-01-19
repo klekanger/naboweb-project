@@ -3,7 +3,7 @@ import UserAdmin from "@/components/userAdmin/UserAdmin";
 import { validRoles, validateUserRoles } from "@/lib/validateUserRoles";
 import type { UserWithEmails, UserWithRoles } from "@/types/types";
 import { clerkClient } from "@clerk/nextjs/server";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import { ArrowBigLeft } from "lucide-react";
 import Link from "next/link";
 

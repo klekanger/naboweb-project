@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 const POSTS_PER_PAGE = 5;
 
 type BlogCollectionParams = {
-  params: { blogPage: number | undefined };
+  params: Promise<{ blogPage: number | undefined }>;
 };
 
 export const metadata = {
@@ -36,9 +36,8 @@ export async function generateStaticParams() {
 //
 // Generate static page for each route with blogposts
 //
-export default async function BlogCollectionRoute({
-  params,
-}: BlogCollectionParams) {
+export default async function BlogCollectionRoute(props: BlogCollectionParams) {
+  const params = await props.params;
   const pageNumber = Number(params.blogPage);
 
   if (Number.isNaN(pageNumber)) {

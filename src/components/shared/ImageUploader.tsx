@@ -1,12 +1,21 @@
 "use client";
+import { urlForImage } from "@/sanity/lib/utils";
+import { cn } from "@heroui/react";
 import { Upload as UploadIcon, XIcon } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { Image as SanityImage } from "sanity";
 
 export default function ImageUploader({
   onImageSelect,
+  className,
+  messageImage,
+  editMode = false,
 }: {
   onImageSelect: (file: File[] | null) => void;
+  className?: string;
+  messageImage?: SanityImage;
+  editMode?: boolean;
 }) {
   const [uploadImagePreview, setUploadImage] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
@@ -61,6 +70,17 @@ export default function ImageUploader({
     }
   };
 
+  // Set preview image if in edit mode and message image is provided
+  // We want to show the image already uploaded in the editor
+  useEffect(() => {
+    if (editMode && messageImage) {
+      const imageUrl =
+        urlForImage(messageImage)?.width(800).height(600).fit("max").url() ??
+        null;
+      setUploadImage(imageUrl);
+    }
+  }, [messageImage, editMode]);
+
   const isValidImage = (file: string) => {
     const imageType = /^data:image\/(\w+);base64,/;
     return imageType.test(file);
@@ -82,7 +102,7 @@ export default function ImageUploader({
   };
 
   return (
-    <div className="w-full">
+    <div className={cn("w-full", className)}>
       <div className="relative rounded-lg overflow-hidden group">
         {uploadImagePreview ? (
           <div>

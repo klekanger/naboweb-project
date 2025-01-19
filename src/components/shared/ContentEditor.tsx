@@ -1,13 +1,7 @@
 "use client";
 
-import {
-  Button,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Input,
-} from "@nextui-org/react";
+import { Button, Input } from "@heroui/react";
+import { toHTML } from "@portabletext/to-html";
 import { PortableTextBlock } from "@portabletext/types";
 import { Schema } from "@sanity/schema";
 import CharacterCount from "@tiptap/extension-character-count";
@@ -15,18 +9,12 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Underline from "@tiptap/extension-underline";
 import { Editor, EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import {
-  ArrowLeftIcon,
-  Bold,
-  Italic,
-  MessagesSquare,
-  UnderlineIcon,
-  UploadIcon,
-} from "lucide-react";
-import Link from "next/link";
-import { toHTML } from "@portabletext/to-html";
-import { useMemo, useState } from "react";
+import { ArrowLeftIcon, Bold, Italic, UnderlineIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useContext, useMemo, useState } from "react";
+import { MessageEditorContext } from "@/context/messageEditorContext";
+import type { Image as SanityImage } from "sanity";
+import ImageUploader from "./ImageUploader";
 
 const MAX_CHARACTERS = 1000;
 
@@ -56,20 +44,19 @@ const blockContentType = defaultSchema
  * Editor for creating and editing content
  *
  * @param editorTitle - The title of the editor window
- * @param title - The title of the content
  * @param content - The initial content of the editor
  *
  */
 export default function ContentEditor({
-  title,
-  editorTitle,
   editorContent,
+  messageImage,
 }: {
-  title: string;
-  editorTitle?: string;
   editorContent: PortableTextBlock[];
+  messageImage?: SanityImage;
 }) {
   const [isSubmittingMessage, setIsSubmittingMessage] = useState(false);
+  const { message, messageImageFile, setMessage, setMessageImageFile } =
+    useContext(MessageEditorContext);
   const router = useRouter();
 
   if (!editorContent) {
@@ -90,13 +77,12 @@ export default function ContentEditor({
     );
   }
 
+  const handleImageSelect = (selectedImages: File[] | null) => {
+    setMessageImageFile(selectedImages?.[0] ?? null);
+  };
+
   // convert from sanity PortableTextBlock[] to HTML string
   const htmlContent = useMemo(() => toHTML(editorContent), [editorContent]);
-
-  const [message, setMessage] = useState({
-    title: editorTitle ?? "",
-    bodyText: htmlContent,
-  });
 
   const editor = useEditor({
     extensions: [
@@ -143,11 +129,12 @@ export default function ContentEditor({
         aria-label="Teksteditor for å opprette nytt innlegg"
         className="mb-4 md:mb-8"
       />
+      <ImageUploader onImageSelect={handleImageSelect} className="" />
     </>
   );
 }
 
-// Text editor menu
+// Text editor toolbar
 const MenuBar = ({
   editor,
   percentage,

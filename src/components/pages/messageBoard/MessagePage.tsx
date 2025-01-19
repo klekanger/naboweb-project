@@ -1,6 +1,7 @@
 "use client";
 
-import ContentEditor from "@/components/shared/ContentEditor";
+import MessageEditor from "@/components/pages/messageBoard/MessageEditor";
+import { MessageEditorContext } from "@/context/messageEditorContext";
 import { compareClerkAndSanityUser } from "@/lib/compareClerkAndSanityUser";
 import { currentUserRoles } from "@/lib/currentUserRoles";
 import { CustomPortableText } from "@/lib/CustomPortableText";
@@ -14,8 +15,16 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  useDisclosure,
   Spacer,
-} from "@nextui-org/react";
+} from "@heroui/react";
+import { htmlToBlocks } from "@sanity/block-tools";
+import { Schema } from "@sanity/schema";
 import {
   ArrowLeftIcon,
   CircleUser,
@@ -27,18 +36,61 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import type { Image as SanityImage } from "sanity";
+import { useRouter } from "next/navigation";
+import { PortableTextBlock } from "next-sanity";
 
 const IMAGE_WIDTH = 800;
 const IMAGE_HEIGHT = 600;
+const DEFAULT_REDIRECT_URL = "/messageboard/";
+
+const defaultSchema = Schema.compile({
+  name: "myMessage",
+  types: [
+    {
+      type: "object",
+      name: "message",
+      fields: [
+        {
+          title: "Body",
+          name: "bodyText",
+          type: "array",
+          of: [{ type: "block" }],
+        },
+      ],
+    },
+  ],
+});
+
+const blockContentType = defaultSchema
+  .get("message")
+  .fields.find((field: { name: string }) => field.name === "bodyText").type;
 
 export default function MessagePage(props: MessagePageProps) {
   const { data } = props;
+
   const userData = useUser();
+  const { firstName, lastName, id } = userData?.user ?? {};
   const { isAdmin } = currentUserRoles(userData?.user as any);
+
   const [isEditingMessage, setIsEditingMessage] = useState(false);
   const [isSubmittingMessage, setIsSubmittingMessage] = useState(false);
+
+  // Set up everything we need for the modal
+  const modalForMessages = useDisclosure();
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalBody, setModalBody] = useState("");
+  const [modalOkText, setModalOkText] = useState("Ok");
+  const [modalCancelText, setModalCancelText] = useState("Avbryt");
+  const [modalCancelDisabled, setModalCancelDisabled] = useState(false);
+  const [modalOkUrl, setModalOkUrl] = useState(DEFAULT_REDIRECT_URL);
+
+  const router = useRouter();
+
+  const { editor, message, messageImageFile, setMessage, setMessageImageFile } =
+    useContext(MessageEditorContext);
 
   const userIsMessageAuthor = compareClerkAndSanityUser({
     clerkUser: userData?.user?.id ?? "",
@@ -46,6 +98,7 @@ export default function MessagePage(props: MessagePageProps) {
   });
 
   const {
+    _id,
     messageImage,
     tags,
     title,
@@ -61,16 +114,149 @@ export default function MessagePage(props: MessagePageProps) {
     notFound();
   }
 
-  const commentCount = comments?.length ?? 0;
+  if (!userData) {
+    console.error("No user data found");
+    return null;
+  }
 
+  const commentCount = comments?.length ?? 0;
+  // *********************************************************************
+  // Submit the message to Sanity
+  // *********************************************************************
   const handleSubmit = async () => {
-    console.log("clicked");
+    if (message.title === "") {
+      setModalTitle("Feil: Ugyldig tittel");
+      setModalBody("Meldingen din trenger en tittel.");
+      setModalCancelDisabled(true);
+
+      modalForMessages.onOpen();
+      return;
+    }
+
+    if (!editor) return;
+
+    if (editor.storage.characterCount.characters() < 10) {
+      setModalTitle("Feil: For kort tekst");
+      setModalBody(
+        "Det er alltid fint å fatte seg i korthet, men innlegget ditt må være litt lenger (mer enn 10 tegn).",
+      );
+      setModalCancelDisabled(true);
+
+      modalForMessages.onOpen();
+      return;
+    }
+
+    const bodyText = editor.getHTML();
+
+    const textBlocks = htmlToBlocks(bodyText, blockContentType);
+    let imageRef: string | null = null;
+
+    // 1: If there is a message image, upload it to Sanity
+    if (messageImageFile !== null) {
+      const fileData = new FormData();
+
+      fileData.set("messageImage", messageImageFile as File);
+      fileData.set("title", message.title);
+
+      setIsUploadingImage(true);
+
+      try {
+        const fileUploadResponse = await fetch("/api/upload-image-to-sanity", {
+          method: "POST",
+          body: fileData,
+        });
+
+        const fileUploadData = await fileUploadResponse.json();
+
+        if ("success" in fileUploadData) {
+          imageRef = fileUploadData.success?.imageId;
+        }
+
+        if ("error" in fileUploadData) {
+          throw new Error(fileUploadData.error?.message ?? "Noe gikk galt");
+        }
+      } catch (error: any) {
+        console.error("Image upload failed. Server response:  ", error);
+
+        setModalTitle("Det har oppstått en feil");
+        setModalBody(`${error?.message ?? "Bildeopplasting feilet"}`);
+        modalForMessages.onOpen();
+        return;
+      } finally {
+        setIsUploadingImage(false);
+      }
+    }
+
+    // Create the message in Sanity
+    setIsSubmittingMessage(true);
+    try {
+      const response = await fetch("/api/update-message", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          _id: _id,
+          title: message.title,
+          bodyText: textBlocks as PortableTextBlock[],
+          author: {
+            firstName: author?.firstName ?? "", // If the message has an author, use that. Otherwise, use the current user's first name.
+            lastName: author?.lastName ?? "", // If the message has an author, use that. Otherwise, use the current user's last name.
+          },
+          userId: author?._id ?? null,
+          isAdmin: isAdmin,
+          image: imageRef ?? null,
+          fromAdmin: message.fromAdmin,
+        }),
+      });
+
+      const data = await response.json();
+
+      if ("success" in data) {
+        setModalTitle("Innlegget ble oppdatert");
+        setModalBody("Du blir nå tatt tilbake til oppslagstavlen.");
+        setModalOkUrl(`/messageboard`);
+        setModalCancelDisabled(true);
+
+        try {
+          await fetch("/api/revalidate-messageboard", {
+            method: "POST",
+          });
+        } catch (error: any) {
+          throw new Error(`Revalidation failed. Server response: ${error}`);
+        }
+
+        modalForMessages.onOpen();
+      }
+
+      if ("error" in data) {
+        throw new Error(data.error?.message ?? "Noe gikk galt");
+      }
+    } catch (error: any) {
+      console.error(error);
+      setModalTitle("Det oppsto en feil");
+      setModalBody(`${error?.message ?? "Ukjent feil"}`);
+      setModalOkUrl("");
+      modalForMessages.onOpen();
+      return;
+    } finally {
+      setIsSubmittingMessage(false);
+    }
+  };
+
+  const resetModal = () => {
+    setModalTitle("");
+    setModalBody("");
+    setModalOkText("Ok");
+    setModalCancelText("Avbryt");
+    setModalOkUrl(DEFAULT_REDIRECT_URL);
+    setModalCancelDisabled(false);
   };
 
   return (
     <>
       <Card className="p-2 py-8 mb-16">
-        <CardHeader className="flex flex-col mb-0 pb-0">
+        <CardHeader className="flex flex-col items-start">
           {isEditingMessage ? (
             <div className="pb-4 pr-4 md:pb-8 flex gap-3 w-full">
               <div className="border-r-1 border-black/20 pr-4">
@@ -98,67 +284,76 @@ export default function MessagePage(props: MessagePageProps) {
         </CardHeader>
 
         <CardBody className="pt-0 grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="prose lg:prose-xl pb-8">
-            {!isEditingMessage && (
-              <h1 className="text-xl lg:text-3xl prose lg:prose-lg">{title}</h1>
-            )}
-
-            {isEditingMessage ? (
-              <ContentEditor
-                title="Rediger innhold"
-                editorTitle={title ?? ""}
-                editorContent={bodyText ?? ([] as any)}
-              />
-            ) : (
-              <CustomPortableText
-                value={bodyText}
-                paragraphClasses="prose lg:prose-xl"
-              />
-            )}
-          </div>
-          {messageImage && (
-            <Image
-              src={
-                urlForImage(messageImage as SanityImage)
-                  ?.width(IMAGE_WIDTH)
-                  .height(IMAGE_HEIGHT)
-                  .fit("max")
-                  .dpr(2)
-                  .url() ?? ""
-              }
-              alt={messageImage?.alt ?? ""}
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              width={IMAGE_WIDTH}
-              height={IMAGE_HEIGHT}
-              style={{
-                objectFit: "cover",
-              }}
-              priority
-              className="rounded-large mb-0 pb-0"
+          {!isEditingMessage ? (
+            <>
+              <div className="prose lg:prose-xl pb-8">
+                <h1 className="text-xl lg:text-3xl prose lg:prose-lg">
+                  {title}
+                </h1>
+                <CustomPortableText
+                  value={bodyText}
+                  paragraphClasses="prose lg:prose-xl"
+                />
+              </div>
+              {messageImage && (
+                <Image
+                  src={
+                    urlForImage(messageImage as SanityImage)
+                      ?.width(IMAGE_WIDTH)
+                      .height(IMAGE_HEIGHT)
+                      .fit("max")
+                      .dpr(2)
+                      .url() ?? ""
+                  }
+                  alt={messageImage?.alt ?? ""}
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  width={IMAGE_WIDTH}
+                  height={IMAGE_HEIGHT}
+                  style={{
+                    objectFit: "cover",
+                  }}
+                  priority
+                  className="rounded-large mb-0 pb-0"
+                />
+              )}
+            </>
+          ) : (
+            <MessageEditor
+              editorContent={bodyText ?? ([] as any)}
+              messageImage={messageImage as SanityImage}
+              title={title ?? ""}
+              maxCharacters={1000}
             />
           )}
         </CardBody>
         <CardFooter>
           <div className="flex gap-4 flex-col md:flex-row">
             {isEditingMessage ? (
-              <>
-                <Button
-                  color="danger"
-                  onPress={() => setIsEditingMessage(false)}
-                  className="no-underline"
-                >
-                  Avbryt
-                </Button>
-                <Button
-                  color="primary"
-                  onPress={handleSubmit}
-                  isLoading={isSubmittingMessage}
-                  startContent={!isSubmittingMessage && <UploadIcon />}
-                  className="w-32"
-                >
-                  Send inn
-                </Button>
-              </>
+              <div className="flex flex-col gap-4">
+                <p className="text-xs mt-4 ">
+                  Du publiserer som:{" "}
+                  {`${!message.fromAdmin ? `${author?.firstName ?? firstName} ${author?.lastName ?? lastName}` : "Styret"}`}
+                </p>
+
+                <div className="flex gap-4">
+                  <Button
+                    color="danger"
+                    onPress={() => setIsEditingMessage(false)}
+                    className="no-underline"
+                  >
+                    Avbryt
+                  </Button>
+                  <Button
+                    color="primary"
+                    onPress={handleSubmit}
+                    isLoading={isSubmittingMessage}
+                    startContent={!isSubmittingMessage && <UploadIcon />}
+                    className="w-32"
+                  >
+                    Send inn
+                  </Button>
+                </div>
+              </div>
             ) : (
               <>
                 <Button
@@ -194,7 +389,6 @@ export default function MessagePage(props: MessagePageProps) {
       <Card className="lg:p-4">
         <CardHeader className="flex-col !items-start ">
           <h2 className="text-lg font-semibold flex">
-            {" "}
             <MessageSquare className="h-auto mr-2" />
             Kommentarer ({commentCount})
           </h2>
@@ -225,8 +419,53 @@ export default function MessagePage(props: MessagePageProps) {
           </div>
         </CardBody>
       </Card>
+
+      {/*
+        Modal for errors and messages
+      */}
+      <Modal
+        isOpen={modalForMessages.isOpen}
+        onOpenChange={modalForMessages.onOpenChange}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                {modalTitle}
+              </ModalHeader>
+              <ModalBody>{modalBody}</ModalBody>
+              <ModalFooter>
+                <Button
+                  color="danger"
+                  variant="light"
+                  className={`${modalCancelDisabled ? "hidden" : ""}`}
+                  isDisabled={modalCancelDisabled}
+                  onPress={() => {
+                    resetModal();
+                    modalForMessages.onClose();
+                  }}
+                >
+                  {modalCancelText}
+                </Button>
+                <Button
+                  color="primary"
+                  onPress={() => {
+                    resetModal();
+                    modalForMessages.onClose();
+                    router.push(modalOkUrl);
+                  }}
+                >
+                  {modalOkText}
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 }
 
 // TODO: Add more advanced comment functionality. Reply to comments, edit comments, delete comments, etc.
+
+// TODO: Add tag feature

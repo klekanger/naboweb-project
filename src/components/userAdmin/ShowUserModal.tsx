@@ -12,7 +12,7 @@ import {
   ModalFooter,
   ModalHeader,
   Spinner,
-} from "@nextui-org/react";
+} from "@heroui/react";
 
 export default function ShowUserModal({
   userDataToShow,
