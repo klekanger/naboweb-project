@@ -23,7 +23,9 @@ const usingCdn = serverClient.config().useCdn;
 
 export const loadQuery = ((query, params = {}, options = {}) => {
   const {
-    perspective = (draftMode() as unknown as UnsafeUnwrappedDraftMode).isEnabled
+    perspective = (
+      draftMode() as unknown as UnsafeUnwrappedDraftMode as unknown as UnsafeUnwrappedDraftMode
+    ).isEnabled
       ? "previewDrafts"
       : "published",
   } = options;
