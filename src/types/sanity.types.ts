@@ -331,6 +331,7 @@ export type Message = {
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "authors";
     };
+    published?: string;
     _type: "comment";
     _key: string;
   }>;
@@ -965,6 +966,137 @@ export type BLOG_BY_SLUG_QUERYResult = {
     };
   }> | null;
 } | null;
+// Variable: ALL_BLOG_BY_SLUG_QUERY
+// Query: *[_type=="blogPost" && slug.current == $slug ][0]{    _id,    _createdAt,    _updatedAt,    privatePost,    title,    excerpt,    featuredImage{..., "lqip": asset->metadata.lqip},    bodyText[]{    ...,    _type == "image" => {      ...,      "lqip": asset->metadata.lqip    }  },    "slug": slug.current,    author[]->{...},  }
+export type ALL_BLOG_BY_SLUG_QUERYResult = {
+  _id: string;
+  _createdAt: string;
+  _updatedAt: string;
+  privatePost: boolean | null;
+  title: string | null;
+  excerpt: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: "span";
+          _key: string;
+        }>;
+        style?:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
+        listItem?: "bullet" | "number";
+        markDefs?: Array<{
+          href?: string;
+          _type: "link";
+          _key: string;
+        }>;
+        level?: number;
+        _type: "block";
+        _key: string;
+      }
+    | {
+        asset?: {
+          _ref: string;
+          _type: "reference";
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+        };
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        _type: "image";
+        _key: string;
+      }
+  > | null;
+  featuredImage: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    caption?: string;
+    alt?: string;
+    _type: "image";
+    lqip: string | null;
+  } | null;
+  bodyText: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: "span";
+          _key: string;
+        }>;
+        style?: "blockquote" | "h2" | "h3" | "h4" | "normal";
+        listItem?: "bullet" | "number";
+        markDefs?: Array<{
+          href?: string;
+          _type: "link";
+          _key: string;
+        }>;
+        level?: number;
+        _type: "block";
+        _key: string;
+      }
+    | {
+        asset?: {
+          _ref: string;
+          _type: "reference";
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+        };
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        caption?: string;
+        alt?: string;
+        _type: "image";
+        _key: string;
+        lqip: string | null;
+      }
+    | {
+        _key: string;
+        _type: "twitter";
+        tweetId?: string;
+        twitterTitle?: string;
+      }
+    | {
+        _key: string;
+        _type: "youtube";
+        url?: string;
+      }
+  > | null;
+  slug: string | null;
+  author: Array<{
+    _id: string;
+    _type: "authors";
+    _createdAt: string;
+    _updatedAt: string;
+    _rev: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    authorImage?: {
+      asset?: {
+        _ref: string;
+        _type: "reference";
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+      };
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    };
+  }> | null;
+} | null;
 // Variable: PRIVATE_BLOG_BY_SLUG_QUERY
 // Query: *[_type=="blogPost" && slug.current == $slug && privatePost == true][0]{    _id,    _createdAt,    _updatedAt,    privatePost,    title,    excerpt,    featuredImage{..., "lqip": asset->metadata.lqip},    bodyText[]{    ...,    _type == "image" => {      ...,      "lqip": asset->metadata.lqip    }  },    "slug": slug.current,    author[]->{...},  }
 export type PRIVATE_BLOG_BY_SLUG_QUERYResult = {
@@ -1170,7 +1302,7 @@ export type COUNT_PUBLIC_BLOG_POSTSResult = number;
 // Query: count(*[_type=="blogPost" && privatePost==true])
 export type COUNT_PRIVATE_BLOG_POSTSResult = number;
 // Variable: MESSAGEBOARD_QUERY
-// Query: *[_type == "message"] | order(_createdAt desc) {  _id,  _updatedAt,  _createdAt,  title,  messageImage,  bodyText,  tags,  comments[]{    _key,      commentText,    commentTitle,    commentAuthor->{_id, firstName, lastName}  },  fromAdmin,  author->{firstName, lastName}}
+// Query: *[_type == "message"] | order(_createdAt desc) {  _id,  _updatedAt,  _createdAt,  title,  messageImage,  bodyText,  tags,  comments[]{    _key,      commentText,    commentTitle,    commentAuthor->{_id, firstName, lastName}  },  fromAdmin,  author->{_id, firstName, lastName}}
 export type MESSAGEBOARD_QUERYResult = Array<{
   _id: string;
   _updatedAt: string;
@@ -1219,10 +1351,67 @@ export type MESSAGEBOARD_QUERYResult = Array<{
   }> | null;
   fromAdmin: boolean | null;
   author: {
+    _id: string;
     firstName: string | null;
     lastName: string | null;
   } | null;
 }>;
+// Variable: MESSAGE_BY_ID_QUERY
+// Query: *[_type == "message" && _id == $id][0] {  _id,  _updatedAt,  _createdAt,  title,  messageImage,  bodyText,  tags,  comments[]{    _key,      commentText,    commentTitle,    commentAuthor->{_id, firstName, lastName},    published  },  fromAdmin,  author->{_id, firstName, lastName}}
+export type MESSAGE_BY_ID_QUERYResult = {
+  _id: string;
+  _updatedAt: string;
+  _createdAt: string;
+  title: string | null;
+  messageImage: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  } | null;
+  bodyText: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "h2" | "normal";
+    listItem?: "bullet" | "number";
+    markDefs?: Array<{
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  }> | null;
+  tags: Array<string> | null;
+  comments: Array<{
+    _key: string;
+    commentText: string | null;
+    commentTitle: string | null;
+    commentAuthor: {
+      _id: string;
+      firstName: string | null;
+      lastName: string | null;
+    } | null;
+    published: string | null;
+  }> | null;
+  fromAdmin: boolean | null;
+  author: {
+    _id: string;
+    firstName: string | null;
+    lastName: string | null;
+  } | null;
+} | null;
 // Variable: COUNT_MESSAGES
 // Query: count(*[_type=="message"])
 export type COUNT_MESSAGESResult = number;
@@ -1239,11 +1428,13 @@ declare module "@sanity/client" {
     '\n  *[_type=="frontpage-services"]{\n    title1,title2,title3,\n      url1,url2,url3,\n      description1,description2,description3,\n      url1,url2,url3,\n      icon1,icon2,icon3,\n      private1,private2,private3\n  }[0]\n': FRONTPAGE_SERVICES_QUERYResult;
     '\n  *[_type=="page" && slug.current == $slug][0]{\n    _id,\n    _createdAt,\n    _updatedAt,\n      title,\n      mainImage{..., "lqip": asset->metadata.lqip},\n      overview,\n      body[]{\n      ...,\n      _type == "image" => {\n        ...,\n        "lqip": asset->metadata.lqip\n      }\n  },\n    "slug": slug.current\n  }\n': PAGE_BY_SLUG_QUERYResult;
     '\n  *[_type=="blogPost" && slug.current == $slug && privatePost != true][0]{\n    _id,\n    _createdAt,\n    _updatedAt,\n    privatePost,\n    title,\n    excerpt,\n    featuredImage{..., "lqip": asset->metadata.lqip},\n    bodyText[]{\n    ...,\n    _type == "image" => {\n      ...,\n      "lqip": asset->metadata.lqip\n    }\n  },\n    "slug": slug.current,\n    author[]->{...},\n  }\n': BLOG_BY_SLUG_QUERYResult;
+    '\n  *[_type=="blogPost" && slug.current == $slug ][0]{\n    _id,\n    _createdAt,\n    _updatedAt,\n    privatePost,\n    title,\n    excerpt,\n    featuredImage{..., "lqip": asset->metadata.lqip},\n    bodyText[]{\n    ...,\n    _type == "image" => {\n      ...,\n      "lqip": asset->metadata.lqip\n    }\n  },\n    "slug": slug.current,\n    author[]->{...},\n  }\n': ALL_BLOG_BY_SLUG_QUERYResult;
     '\n  *[_type=="blogPost" && slug.current == $slug && privatePost == true][0]{\n    _id,\n    _createdAt,\n    _updatedAt,\n    privatePost,\n    title,\n    excerpt,\n    featuredImage{..., "lqip": asset->metadata.lqip},\n    bodyText[]{\n    ...,\n    _type == "image" => {\n      ...,\n      "lqip": asset->metadata.lqip\n    }\n  },\n    "slug": slug.current,\n    author[]->{...},\n  }\n': PRIVATE_BLOG_BY_SLUG_QUERYResult;
     '\n  *[_type=="frontpage-showcase" ][0]{\n    _id,\n    _createdAt,\n      _updatedAt,\n      showcaseTitle,\n      showcaseBlogposts[]->{\n        _id, \n        title, \n        excerpt, \n        featuredImage{..., "lqip": asset->metadata.lqip}, \n        slug},\n  }\n': SHOWCASE_QUERYResult;
     '\n  count(*[_type=="blogPost" && privatePost==false])\n': COUNT_PUBLIC_BLOG_POSTSResult;
     '\n  count(*[_type=="blogPost" && privatePost==true])\n': COUNT_PRIVATE_BLOG_POSTSResult;
-    '\n*[_type == "message"] | order(_createdAt desc) {\n  _id,\n  _updatedAt,\n  _createdAt,\n  title,\n  messageImage,\n  bodyText,\n  tags,\n  comments[]{\n    _key,\n      commentText,\n    commentTitle,\n    commentAuthor->{_id, firstName, lastName}\n  },\n  fromAdmin,\n  author->{firstName, lastName}\n}\n': MESSAGEBOARD_QUERYResult;
+    '\n*[_type == "message"] | order(_createdAt desc) {\n  _id,\n  _updatedAt,\n  _createdAt,\n  title,\n  messageImage,\n  bodyText,\n  tags,\n  comments[]{\n    _key,\n      commentText,\n    commentTitle,\n    commentAuthor->{_id, firstName, lastName}\n  },\n  fromAdmin,\n  author->{_id, firstName, lastName}\n}\n': MESSAGEBOARD_QUERYResult;
+    '\n*[_type == "message" && _id == $id][0] {\n  _id,\n  _updatedAt,\n  _createdAt,\n  title,\n  messageImage,\n  bodyText,\n  tags,\n  comments[]{\n    _key,\n      commentText,\n    commentTitle,\n    commentAuthor->{_id, firstName, lastName},\n    published\n  },\n  fromAdmin,\n  author->{_id, firstName, lastName}\n}\n': MESSAGE_BY_ID_QUERYResult;
     '\n  count(*[_type=="message"])\n': COUNT_MESSAGESResult;
   }
 }

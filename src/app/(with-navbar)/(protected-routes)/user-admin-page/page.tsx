@@ -3,13 +3,15 @@ import UserAdmin from "@/components/userAdmin/UserAdmin";
 import { validRoles, validateUserRoles } from "@/lib/validateUserRoles";
 import type { UserWithEmails, UserWithRoles } from "@/types/types";
 import { clerkClient } from "@clerk/nextjs/server";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/button";
 import { ArrowBigLeft } from "lucide-react";
 import Link from "next/link";
 
 async function fetchUsers() {
+  const client = await clerkClient();
+
   try {
-    const { data: users } = await clerkClient.users.getUserList({
+    const { data: users } = await client.users.getUserList({
       limit: 500, // We're getting the maximum allowed by ClerkJS, as we want to be able to search locally for users on the client.
       // Minimize the number of API requests using the free version of Clerk.
       // Considering filtering users on the server later (https://clerk.com/docs/references/backend/user/get-user-list )

@@ -8,6 +8,8 @@ import {
 import { User } from "@clerk/nextjs/dist/types/server";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 
+const client = await clerkClient();
+
 function mapUsersWithEmails(user: User) {
   return {
     id: user.id,
@@ -45,7 +47,7 @@ export async function searchUser({
   }
 
   try {
-    const { data: foundUsers } = await clerkClient.users.getUserList({
+    const { data: foundUsers } = await client.users.getUserList({
       query: searchTerm,
       limit: maxResults,
     });

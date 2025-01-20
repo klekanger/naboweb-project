@@ -10,7 +10,7 @@ const BlogPagePreview = dynamic(
 );
 
 type Props = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 //
@@ -23,10 +23,11 @@ export async function generateStaticParams() {
 //
 // Generate the blog page
 //
-export default async function PrivateBlogRoute({ params }: Props) {
+export default async function PrivateBlogRoute(props: Props) {
+  const params = await props.params;
   const initial = await loadPrivateBlogPageBySlug(params?.slug);
 
-  if (draftMode().isEnabled) {
+  if ((await draftMode()).isEnabled) {
     return <BlogPagePreview params={params} initial={initial} />;
   }
 

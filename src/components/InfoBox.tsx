@@ -1,4 +1,6 @@
-import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/react";
+"use client";
+
+import { Card, CardBody, CardFooter, CardHeader } from "@heroui/react";
 
 type InfoBoxProps = {
   title: string;

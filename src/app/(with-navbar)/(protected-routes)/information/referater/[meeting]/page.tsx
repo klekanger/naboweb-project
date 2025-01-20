@@ -4,7 +4,7 @@ import { loadMeetingMinutesById } from "@/sanity/loader/loadQuery";
 import { notFound } from "next/navigation";
 
 type Props = {
-  params: { meeting: string };
+  params: Promise<{ meeting: string }>;
 };
 
 //
@@ -19,9 +19,8 @@ export async function generateStaticParams() {
 //
 // Generate the meeting minutes details page
 //
-export default async function PageMeetingMinutesDetailsRoute({
-  params,
-}: Props) {
+export default async function PageMeetingMinutesDetailsRoute(props: Props) {
+  const params = await props.params;
   const initial = await loadMeetingMinutesById(params?.meeting);
 
   if (!initial.data) {

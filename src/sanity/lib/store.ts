@@ -1,3 +1,4 @@
+import type { ClientPerspective } from "@sanity/client";
 import * as queryStore from "@sanity/react-loader";
 import { draftMode } from "next/headers";
 import { client } from "../lib/client";
@@ -21,9 +22,13 @@ queryStore.setServerClient(serverClient);
 
 const usingCdn = serverClient.config().useCdn;
 
-export const loadQuery = ((query, params = {}, options = {}) => {
+export const loadQuery = (async (
+  query: string,
+  params = {},
+  options: { perspective?: ClientPerspective; next?: { tags?: string[] } } = {},
+) => {
   const {
-    perspective = draftMode().isEnabled ? "previewDrafts" : "published",
+    perspective = (await draftMode()).isEnabled ? "previewDrafts" : "published",
   } = options;
   // Don't cache by default
   let revalidate: NextFetchRequestConfig["revalidate"] = 0;

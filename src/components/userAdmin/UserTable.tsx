@@ -9,7 +9,7 @@ import {
   type ShowUserProps,
   type UserTableProps,
 } from "@/types/types";
-import { Input } from "@nextui-org/input";
+import { Input } from "@heroui/input";
 import {
   Button,
   Dropdown,
@@ -25,7 +25,7 @@ import {
   TableRow,
   Tooltip,
   useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { MoreVertical, SearchIcon } from "lucide-react";
 import { useCallback, useContext, useMemo, useState } from "react";
 

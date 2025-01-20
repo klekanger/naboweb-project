@@ -1,6 +1,8 @@
 "use server";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 
+const client = await clerkClient();
+
 export async function inviteUser({
   email,
   roles,
@@ -27,7 +29,7 @@ export async function inviteUser({
 
   // Invite user
   try {
-    const invitedUser = await clerkClient.invitations.createInvitation({
+    const invitedUser = await client.invitations.createInvitation({
       emailAddress: email,
       ignoreExisting: false,
       publicMetadata: {

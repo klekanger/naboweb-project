@@ -6,13 +6,13 @@ import RoleDisplay from "@/components/userAdmin/RoleDisplay";
 import { countBlogPosts, fetchBlogCollection } from "@/sanity/lib/queries";
 import { loadDocumentMenu } from "@/sanity/loader/loadQuery";
 import { currentUser } from "@clerk/nextjs/server";
-import { Spacer } from "@nextui-org/react";
+import { Spacer } from "@heroui/react";
 import { Info, Pencil, RefreshCw, User } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 type Props = {
-  params: { page: number | undefined };
+  params: Promise<{ page: number | undefined }>;
 };
 
 const POSTS_PER_PAGE = 5;
@@ -32,7 +32,8 @@ export async function generateStaticParams() {
 //
 // Information page for logged in users with file downloads and private blog posts
 //
-export default async function PrivateInfoPage({ params }: Props) {
+export default async function PrivateInfoPage(props: Props) {
+  const params = await props.params;
   const user = await currentUser();
   const { firstName, lastName } = user ?? {};
   const roles = (user?.publicMetadata?.roles as string[]) || [];
@@ -114,7 +115,7 @@ export default async function PrivateInfoPage({ params }: Props) {
         </div>
         {isAdmin && (
           <div className="pl-1 font-semibold">
-            <a
+            <Link
               className="animate duration-100 hover:text-brand-black/70 "
               href="/studio/structure/dokumentmeny"
             >
@@ -122,7 +123,7 @@ export default async function PrivateInfoPage({ params }: Props) {
                 <Pencil className="text-brand-secondary" />
                 Rediger denne dokumentmenyen
               </span>
-            </a>
+            </Link>
           </div>
         )}
         <Spacer y={8} />
@@ -146,3 +147,5 @@ export default async function PrivateInfoPage({ params }: Props) {
     </>
   );
 }
+
+// TODO Søk i alle dokumenter

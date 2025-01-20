@@ -14,13 +14,11 @@ const PagePreview = dynamic(
 );
 
 type Props = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
-export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata,
-): Promise<Metadata> {
+export async function generateMetadata(props: Props, parent: ResolvingMetadata): Promise<Metadata> {
+  const params = await props.params;
   const { data: pageData } = await loadPageBySlug(params.slug);
   const description = toPlainText(pageData?.overview ?? []) ?? "";
   let ogImage = "/og_naboweb.webp";
@@ -45,14 +43,15 @@ export async function generateStaticParams() {
   return await generateStaticSlugs("page");
 }
 
-export default async function PageSlugRoute({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function PageSlugRoute(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const initial = await loadPageBySlug(params?.slug);
 
-  if (draftMode().isEnabled) {
+  if ((await draftMode()).isEnabled) {
     return <PagePreview params={params} initial={initial} />;
   }
 
