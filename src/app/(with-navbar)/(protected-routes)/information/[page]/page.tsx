@@ -115,7 +115,7 @@ export default async function PrivateInfoPage(props: Props) {
         </div>
         {isAdmin && (
           <div className="pl-1 font-semibold">
-            <a
+            <Link
               className="animate duration-100 hover:text-brand-black/70 "
               href="/studio/structure/dokumentmeny"
             >
@@ -123,7 +123,7 @@ export default async function PrivateInfoPage(props: Props) {
                 <Pencil className="text-brand-secondary" />
                 Rediger denne dokumentmenyen
               </span>
-            </a>
+            </Link>
           </div>
         )}
         <Spacer y={8} />
