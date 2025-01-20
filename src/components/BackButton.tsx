@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@heroui/react";
+import { Button } from "@heroui/button";
 import { ArrowBigLeft } from "lucide-react";
 import Link from "next/link";
 

@@ -3,6 +3,8 @@
 import { type UpdateUserReturnType, type UpdateUserType } from "@/types/types";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 
+const client = await clerkClient();
+
 export async function updateUser(
   userToUpdate: UpdateUserType,
 ): Promise<UpdateUserReturnType> {
@@ -28,7 +30,7 @@ export async function updateUser(
   }
 
   try {
-    userWhoWasUpdated = await clerkClient.users.updateUser(id, {
+    userWhoWasUpdated = await client.users.updateUser(id, {
       firstName: firstName ?? "",
       lastName: lastName ?? "",
       publicMetadata: {
