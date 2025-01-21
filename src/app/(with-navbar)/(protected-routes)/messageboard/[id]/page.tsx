@@ -4,7 +4,7 @@ import { loadMessageById } from "@/sanity/loader/loadQuery";
 import { notFound } from "next/navigation";
 
 type MessagePageParams = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export async function generateStaticParams() {
@@ -15,9 +15,8 @@ export async function generateStaticParams() {
   }));
 }
 
-export default async function MessagePageIdRoute({
-  params,
-}: MessagePageParams) {
+export default async function MessagePageIdRoute(props: MessagePageParams) {
+  const params = await props.params;
   const initial = await loadMessageById(params.id);
 
   if (!initial.data) {
