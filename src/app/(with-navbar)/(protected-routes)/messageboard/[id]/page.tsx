@@ -1,5 +1,5 @@
 import MessagePage from "@/components/pages/messageBoard/MessagePage";
-import { generateStaticSlugs } from "@/sanity/loader/generateStaticSlugs";
+import { generateStaticIdPages } from "@/sanity/loader/generateStaticSlugs";
 import { loadMessageById } from "@/sanity/loader/loadQuery";
 import { notFound } from "next/navigation";
 
@@ -8,12 +8,16 @@ type MessagePageParams = {
 };
 
 export async function generateStaticParams() {
-  return await generateStaticSlugs("message");
+  const messages = await generateStaticIdPages("message");
+
+  return messages.map((message) => ({
+    id: message._id,
+  }));
 }
 
 export default async function MessagePageIdRoute(props: MessagePageParams) {
   const params = await props.params;
-  const initial = await loadMessageById(params?.id);
+  const initial = await loadMessageById(params.id);
 
   if (!initial.data) {
     notFound();
