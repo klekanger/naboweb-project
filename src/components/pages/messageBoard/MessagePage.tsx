@@ -221,6 +221,12 @@ export default function MessagePage(props: MessagePageProps) {
         try {
           await fetch("/api/revalidate-messageboard", {
             method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id: _id,
+            }),
           });
         } catch (error: any) {
           throw new Error(`Revalidation failed. Server response: ${error}`);
