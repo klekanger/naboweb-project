@@ -40,6 +40,7 @@ import { useContext, useState } from "react";
 import type { Image as SanityImage } from "sanity";
 import { useRouter } from "next/navigation";
 import { PortableTextBlock } from "next-sanity";
+import MessageComments from "./Messagecomments";
 
 const IMAGE_WIDTH = 800;
 const IMAGE_HEIGHT = 600;
@@ -391,40 +392,7 @@ export default function MessagePage(props: MessagePageProps) {
         </CardFooter>
       </Card>
 
-      <Spacer y={8} />
-      <Card className="lg:p-4">
-        <CardHeader className="flex-col !items-start ">
-          <h2 className="text-lg font-semibold flex">
-            <MessageSquare className="h-auto mr-2" />
-            Kommentarer ({commentCount})
-          </h2>
-        </CardHeader>
-
-        <CardBody>
-          <div className="prose lg:prose-xl pb-8">
-            {comments &&
-              comments.length > 0 &&
-              comments.map((comment) => (
-                <div key={comment._key}>
-                  <h3 className="mt-4 font-semibold ">
-                    {comment.commentTitle}
-                  </h3>
-                  <p>{comment.commentText}</p>
-                  <div className="text-xs h-auto text-brand-black/60 italic">
-                    &ndash; {comment.commentAuthor?.firstName}{" "}
-                    {comment.commentAuthor?.lastName}
-                    {comment?.published && (
-                      <span className="not-italic">
-                        {" "}
-                        | {formatDate(comment?.published ?? "")}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
-          </div>
-        </CardBody>
-      </Card>
+      <MessageComments comments={comments} commentCount={commentCount} />
 
       {/*
         Modal for errors and messages
