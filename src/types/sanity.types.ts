@@ -332,6 +332,18 @@ export type Message = {
       [internalGroqTypeReferenceTo]?: "authors";
     };
     published?: string;
+    replies?: Array<{
+      replyText?: string;
+      replyAuthor?: {
+        _ref: string;
+        _type: "reference";
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: "authors";
+      };
+      published?: string;
+      _type: "reply";
+      _key: string;
+    }>;
     _type: "comment";
     _key: string;
   }>;
@@ -1357,7 +1369,7 @@ export type MESSAGEBOARD_QUERYResult = Array<{
   } | null;
 }>;
 // Variable: MESSAGE_BY_ID_QUERY
-// Query: *[_type == "message" && _id == $id][0] {  _id,  _updatedAt,  _createdAt,  title,  messageImage,  bodyText,  tags,  comments[]{    _key,      commentText,    commentTitle,    commentAuthor->{_id, firstName, lastName},    published  },  fromAdmin,  author->{_id, firstName, lastName}}
+// Query: *[_type == "message" && _id == $id][0] {  _id,  _updatedAt,  _createdAt,  title,  messageImage,  bodyText,  tags,  comments[]{    _key,      commentText,    commentTitle,    commentAuthor->{_id, firstName, lastName},    published,    replies[]{      _key,      published,      replyAuthor,      replyText    }  },  fromAdmin,  author->{_id, firstName, lastName},}
 export type MESSAGE_BY_ID_QUERYResult = {
   _id: string;
   _updatedAt: string;
@@ -1404,6 +1416,17 @@ export type MESSAGE_BY_ID_QUERYResult = {
       lastName: string | null;
     } | null;
     published: string | null;
+    replies: Array<{
+      _key: string;
+      published: string | null;
+      replyAuthor: {
+        _ref: string;
+        _type: "reference";
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: "authors";
+      } | null;
+      replyText: string | null;
+    }> | null;
   }> | null;
   fromAdmin: boolean | null;
   author: {
@@ -1434,7 +1457,7 @@ declare module "@sanity/client" {
     '\n  count(*[_type=="blogPost" && privatePost==false])\n': COUNT_PUBLIC_BLOG_POSTSResult;
     '\n  count(*[_type=="blogPost" && privatePost==true])\n': COUNT_PRIVATE_BLOG_POSTSResult;
     '\n*[_type == "message"] | order(_createdAt desc) [$start...$end] {\n  _id,\n  _updatedAt,\n  _createdAt,\n  title,\n  messageImage,\n  bodyText,\n  tags,\n  comments[]{\n    _key,\n    commentText,\n    commentTitle,\n    commentAuthor->{_id, firstName, lastName}\n  },\n  fromAdmin,\n  author->{_id, firstName, lastName}\n}\n': MESSAGEBOARD_QUERYResult;
-    '\n*[_type == "message" && _id == $id][0] {\n  _id,\n  _updatedAt,\n  _createdAt,\n  title,\n  messageImage,\n  bodyText,\n  tags,\n  comments[]{\n    _key,\n      commentText,\n    commentTitle,\n    commentAuthor->{_id, firstName, lastName},\n    published\n  },\n  fromAdmin,\n  author->{_id, firstName, lastName}\n}\n': MESSAGE_BY_ID_QUERYResult;
+    '\n*[_type == "message" && _id == $id][0] {\n  _id,\n  _updatedAt,\n  _createdAt,\n  title,\n  messageImage,\n  bodyText,\n  tags,\n  comments[]{\n    _key,\n      commentText,\n    commentTitle,\n    commentAuthor->{_id, firstName, lastName},\n    published,\n    replies[]{\n      _key,\n      published,\n      replyAuthor,\n      replyText\n    }\n  },\n  fromAdmin,\n  author->{_id, firstName, lastName},\n}\n': MESSAGE_BY_ID_QUERYResult;
     '\n  count(*[_type=="message"])\n': COUNT_MESSAGESResult;
   }
 }

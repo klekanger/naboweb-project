@@ -228,10 +228,16 @@ export const MESSAGE_BY_ID_QUERY = groq`
       commentText,
     commentTitle,
     commentAuthor->{_id, firstName, lastName},
-    published
+    published,
+    replies[]{
+      _key,
+      published,
+      replyAuthor,
+      replyText
+    }
   },
   fromAdmin,
-  author->{_id, firstName, lastName}
+  author->{_id, firstName, lastName},
 }
 `;
 

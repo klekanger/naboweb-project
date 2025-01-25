@@ -14,9 +14,6 @@ export default function MessageComments({
 }) {
   const userData = useUser();
 
-  console.log("comment count", commentCount);
-  console.log("comments", comments);
-
   return (
     <Card className="lg:p-4">
       <CardHeader className="flex-col !items-start ">
