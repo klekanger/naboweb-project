@@ -1,4 +1,4 @@
-import type { User } from "@clerk/nextjs/dist/types/server";
+import type { UserData, UserResource } from "@clerk/types";
 import type { Image } from "sanity";
 import type {
   Authors,
@@ -156,7 +156,7 @@ export type UserTableProps = {
   className?: string;
 };
 
-export type UserWithRoles = User & {
+export type UserWithRoles = UserResource & {
   email?: string;
   publicMetadata?: {
     roles?: UserRoles[];

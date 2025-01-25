@@ -3,9 +3,11 @@ import UserOverview from "@/components/UserOverview";
 import { UserProfile } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";
 import { Spinner } from "@heroui/spinner";
+import type { UserData } from "@clerk/types";
+import { UserWithRoles } from "@/types/types";
 
 export default async function Page() {
-  const user = await currentUser();
+  const user = (await currentUser()) as UserData;
 
   return (
     <section className="flex flex-col items-center">
@@ -14,7 +16,7 @@ export default async function Page() {
       </h1>
       {user ? (
         <div className="self-start w-full">
-          <UserOverview user={user} className="mb-16" />
+          <UserOverview user={user as UserWithRoles} className="mb-16" />
 
           <UserProfile />
         </div>

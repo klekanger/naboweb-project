@@ -7,20 +7,19 @@ import { redirect } from "next/navigation";
 export default async function MessageBoardRoute({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const page =
-    typeof searchParams.page === "string" ? Number(searchParams.page) : 0;
+  const { page = "0" } = await searchParams;
   const messagesPerPage = 10;
 
   const [initial, totalMessages] = await Promise.all([
-    loadMessageBoard(page),
+    loadMessageBoard(Number(page)),
     countMessages(),
   ]);
 
   const totalPages = Math.ceil(totalMessages / messagesPerPage);
 
-  if (page + 1 > totalPages) {
+  if (Number(page) + 1 > totalPages) {
     return redirect(`/messageboard?page=${totalPages - 1}`);
   }
 
@@ -29,7 +28,7 @@ export default async function MessageBoardRoute({
       <MessageBoard messages={initial.data} />
       <PaginationControls
         totalPages={totalPages}
-        currentPage={page}
+        currentPage={Number(page)}
         baseUrl="/messageboard"
       />
     </div>

@@ -1,8 +1,9 @@
 import BackButton from "@/components/BackButton";
 import UserAdmin from "@/components/userAdmin/UserAdmin";
 import { validRoles, validateUserRoles } from "@/lib/validateUserRoles";
-import type { UserWithEmails, UserWithRoles } from "@/types/types";
+import type { UserWithEmails } from "@/types/types";
 import { clerkClient } from "@clerk/nextjs/server";
+import type { UserResource } from "@clerk/types";
 import { Button } from "@heroui/button";
 import { ArrowBigLeft } from "lucide-react";
 import Link from "next/link";
@@ -34,15 +35,15 @@ async function fetchUsers() {
   }
 }
 
-function mapUsersWithEmails(user: UserWithRoles) {
+function mapUsersWithEmails(user: UserResource) {
   return {
     id: user.id,
     createdAt: user.createdAt,
     firstName: user.firstName,
     lastName: user.lastName,
-    roles: user.publicMetadata.roles,
-    email: user.emailAddresses[0].emailAddress,
-    imageUrl: user.imageUrl,
+    roles: (user.publicMetadata?.roles as string[]) ?? [],
+    email: user.emailAddresses[0]?.emailAddress ?? "",
+    imageUrl: user.imageUrl ?? "",
   };
 }
 
@@ -73,7 +74,9 @@ export default async function Page() {
   }
 
   const users = userData.users;
-  const usersWithEmails: UserWithEmails[] = users.map(mapUsersWithEmails);
+  const usersWithEmails: UserWithEmails[] = (
+    users as unknown as UserResource[]
+  ).map(mapUsersWithEmails);
 
   return (
     <div className="text-center">

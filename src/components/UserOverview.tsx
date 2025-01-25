@@ -2,6 +2,7 @@ import CustomButton from "@/components/CustomButton";
 import RoleDisplay from "@/components/userAdmin/RoleDisplay";
 import { currentUserRoles } from "@/lib/currentUserRoles";
 import { type UserCardProps } from "@/types/types";
+import type { UserData } from "@clerk/types";
 
 export default function UserOveview({ user, ...rest }: UserCardProps) {
   if (!user) {
