@@ -19,8 +19,6 @@ export default async function MessagePageIdRoute(props: MessagePageParams) {
   const params = await props.params;
   const initial = await loadMessageById(params.id);
 
-  console.log("Initial ", initial.data?.comments[0]);
-
   if (!initial.data) {
     notFound();
   }
