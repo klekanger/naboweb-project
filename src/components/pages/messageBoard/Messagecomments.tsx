@@ -63,12 +63,6 @@ export default function MessageComments({
                   </h3>
                   <p className="prose">{comment.commentText}</p>
                   <div className="flex justify-end gap-2">
-                    {!userIsMessageAuthor && (
-                      <Button size="sm" variant="bordered" className="mt-2">
-                        Svar
-                      </Button>
-                    )}
-
                     {userIsMessageAuthor && (
                       <>
                         <Button size="sm" variant="bordered" className="mt-2">
@@ -90,6 +84,9 @@ export default function MessageComments({
             })}
         </div>
       </CardBody>
+      <CardFooter>
+        <Button>Nytt innlegg</Button>
+      </CardFooter>
     </Card>
   );
 }
