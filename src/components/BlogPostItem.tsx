@@ -12,17 +12,6 @@ export type BlogPostItemProps = {
 export default function BlogPostItem({ post }: BlogPostItemProps) {
   const { title, excerpt, featuredImage, slug, privatePost } = post ?? {};
 
-  let imageUrl: string;
-  let imageAlt = "";
-
-  imageUrl =
-    urlForImage(featuredImage as SanityImage)
-      ?.height(1600)
-      .width(900)
-      .fit("crop")
-      .url() ?? "";
-  imageAlt = featuredImage?.alt ?? "";
-
   if (!title || !excerpt || !featuredImage || !slug) {
     console.warn("[blog-post.item.tsx] Missing data in post prop.");
     return null;
@@ -37,13 +26,20 @@ export default function BlogPostItem({ post }: BlogPostItemProps) {
           <Link href={urlToPost} passHref>
             <Image
               className="aspect-[16/10] rounded-xl object-cover"
-              src={imageUrl}
-              alt={imageAlt}
+              src={
+                urlForImage(featuredImage as SanityImage)
+                  ?.height(1600)
+                  .width(1000)
+                  .fit("max")
+                  .dpr(2)
+                  .url() ?? ""
+              }
+              alt={featuredImage?.alt ?? ""}
               width={1600}
               height={900}
               placeholder="blur"
               blurDataURL={featuredImage?.lqip ?? ""}
-              sizes="(min-width: 1024px) 50vw,100vw"
+              sizes="(max-width: 1024px) 100vw, 50vw"
             />
           </Link>
         </div>

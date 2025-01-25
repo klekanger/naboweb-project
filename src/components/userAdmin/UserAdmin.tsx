@@ -20,10 +20,10 @@ import {
   ModalFooter,
   ModalHeader,
   useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { Crown, UserCheck, UserCog, UserPlus2, Users } from "lucide-react";
 import { useCallback, useContext, useEffect, useMemo } from "react";
-import { Spinner } from "@nextui-org/react";
+import { Spinner } from "@heroui/react";
 import EditUser from "./EditUser";
 import InviteUser from "./InviteUser";
 import RoleDisplay from "./RoleDisplay";

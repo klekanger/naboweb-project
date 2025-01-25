@@ -39,6 +39,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <ClerkProvider
+        dynamic
         localization={nbNO}
         appearance={{
           variables: {

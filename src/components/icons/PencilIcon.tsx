@@ -15,6 +15,7 @@ export default function HouseIcon({
       enableBackground="new 0 0 91 91"
       id="Layer_1"
       version="1.1"
+      className={`${rest?.className ?? ""}`}
     >
       <title>Pencil</title>
       <g>

@@ -1,6 +1,6 @@
 import { urlForImage } from "@/sanity/lib/utils";
 import { toPlainText } from "next-sanity";
-import { Spacer } from "@nextui-org/react";
+import { Spacer } from "@heroui/react";
 import Image from "next/image";
 import Link from "next/link";
 import { ShowcaseProps } from "@/types/types";
@@ -23,7 +23,7 @@ export default function Showcase({ content }: { content: ShowcaseProps }) {
   }
 
   return (
-    <section className="py-8 sm:py-16 max-w-8xl m-auto">
+    <section className="py-8 sm:py-16 max-w-7xl m-auto">
       <h2 className="prose text-3xl mb-8 font-semibold">{showcaseTitle}</h2>
       <div className="grid gap-16 px-1 md:grid-cols-2">
         {showcaseBlogposts.map((article) => {

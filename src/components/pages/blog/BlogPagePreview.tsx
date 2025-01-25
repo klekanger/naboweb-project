@@ -3,7 +3,7 @@
 import { type QueryResponseInitial } from "@sanity/react-loader";
 import BlogPage from "./BlogPage";
 import { useQuery } from "@/sanity/loader/useQuery";
-import { BLOG_BY_SLUG_QUERY } from "@/sanity/lib/queries";
+import { ALL_BLOG_BY_SLUG_QUERY } from "@/sanity/lib/queries";
 
 type Props = {
   params: { slug: string };
@@ -14,7 +14,7 @@ export default function BlogPagePreview(props: Props) {
   const { params, initial } = props;
 
   const { data } = useQuery(
-    BLOG_BY_SLUG_QUERY,
+    ALL_BLOG_BY_SLUG_QUERY,
     { slug: params.slug },
     { initial },
   );

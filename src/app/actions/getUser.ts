@@ -3,6 +3,8 @@
 import { ClerkError, GetUserReturnType } from "@/types/types";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 
+const client = await clerkClient();
+
 export async function getUser(userToFetch: string): Promise<GetUserReturnType> {
   const user = await currentUser();
   const userRoles = (user?.publicMetadata as { roles: string[] }) ?? [];
@@ -22,7 +24,7 @@ export async function getUser(userToFetch: string): Promise<GetUserReturnType> {
   }
 
   try {
-    const userWithId = await clerkClient.users.getUser(userToFetch);
+    const userWithId = await client.users.getUser(userToFetch);
 
     return {
       success: {

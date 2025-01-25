@@ -1,8 +1,8 @@
 "use client";
 
-import ImageUploader from "@/components/shared/ImageUploader";
+import MessageEditor from "@/components/pages/messageBoard/MessageEditor";
+import { MessageEditorContext } from "@/context/messageEditorContext";
 import { currentUserRoles } from "@/lib/currentUserRoles";
-import type { MessageType } from "@/types/types";
 import { useUser } from "@clerk/nextjs";
 import {
   Button,
@@ -11,7 +11,6 @@ import {
   CardFooter,
   CardHeader,
   Checkbox,
-  Input,
   Modal,
   ModalBody,
   ModalContent,
@@ -19,15 +18,11 @@ import {
   ModalHeader,
   Spinner,
   useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { PortableTextBlock } from "@portabletext/types";
 import { htmlToBlocks } from "@sanity/block-tools";
 import { Schema } from "@sanity/schema";
-import CharacterCount from "@tiptap/extension-character-count";
-import Placeholder from "@tiptap/extension-placeholder";
-import Underline from "@tiptap/extension-underline";
-import { Editor, EditorContent, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
+import { Editor } from "@tiptap/react";
 import {
   Bold,
   Italic,
@@ -37,7 +32,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 const MAX_CHARACTERS = 1000;
 const DEFAULT_REDIRECT_URL = "/messageboard/new-message";
@@ -69,50 +64,25 @@ const blockContentType = defaultSchema
 // *********************************************************************
 export default function NewMessage() {
   const userData = useUser();
-  const [messageImageFile, setMessageImageFile] = useState<File | null>(null);
   const { firstName, lastName, id } = userData?.user ?? {};
   const { isAdmin } = currentUserRoles(userData?.user as any);
+
+  // Set up everything we need for the modal
+  const modalForMessages = useDisclosure();
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isSubmittingMessage, setIsSubmittingMessage] = useState(false);
-  const modalForMessages = useDisclosure();
   const [modalTitle, setModalTitle] = useState("");
   const [modalBody, setModalBody] = useState("");
   const [modalOkText, setModalOkText] = useState("Ok");
   const [modalCancelText, setModalCancelText] = useState("Avbryt");
   const [modalCancelDisabled, setModalCancelDisabled] = useState(false);
   const [modalOkUrl, setModalOkUrl] = useState(DEFAULT_REDIRECT_URL);
+
   const router = useRouter();
 
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Underline,
-      CharacterCount.configure({
-        limit: 2000,
-      }),
-      Placeholder.configure({ placeholder: "Skriv et innlegg..." }),
-    ],
-    content: "",
-    immediatelyRender: false,
-    editorProps: {
-      attributes: {
-        class:
-          "h-64 md:h-96 bg-default-100 px-2 rounded-b-lg focus:outline-none block",
-      },
-    },
-  });
-
-  const [message, setMessage] = useState<MessageType>({
-    title: "",
-    bodyText: null,
-    author: {
-      firstName: "",
-      lastName: "",
-    },
-    userId: id,
-    fromAdmin: false,
-    messageImage: null,
-  });
+  // We're fetching everything we need for the message editor from the MessageEditorContext
+  const { editor, message, messageImageFile, setMessage, setMessageImageFile } =
+    useContext(MessageEditorContext);
 
   if (!userData || !id) {
     return (
@@ -149,6 +119,7 @@ export default function NewMessage() {
     }
 
     const bodyText = editor.getHTML();
+
     const textBlocks = htmlToBlocks(bodyText, blockContentType);
     let imageRef: string | null = null;
 
@@ -160,6 +131,7 @@ export default function NewMessage() {
       fileData.set("title", message.title);
 
       setIsUploadingImage(true);
+
       try {
         const fileUploadResponse = await fetch("/api/upload-image-to-sanity", {
           method: "POST",
@@ -272,34 +244,16 @@ export default function NewMessage() {
               Opprett nytt innlegg
             </h1>
           </div>
-
-          <Input
-            type="text"
-            label="Tittel"
-            size="lg"
-            isRequired
-            value={message.title}
-            onValueChange={(e) => setMessage({ ...message, title: e })}
-          />
-
-          <div className="w-full mt-4">
-            <MenuBar editor={editor} percentage={percentage} />
-          </div>
         </CardHeader>
-        <CardBody className="mt-0 pt-0">
-          <EditorContent
-            editor={editor}
-            aria-label="Teksteditor for å opprette nytt innlegg"
-            className="mb-4 md:mb-8"
-          />
-
-          <ImageUploader onImageSelect={handleImageSelect} />
+        <CardBody className="pt-0 grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <MessageEditor />
         </CardBody>
 
         <CardFooter>
           <div>
             <p className="text-xs mt-4 mb-4">
-              Du publiserer som: {firstName} {lastName}
+              Du publiserer som:{" "}
+              {`${!message.fromAdmin ? `${firstName} ${lastName}` : "Styret"}`}
             </p>
             <div className="flex gap-4 flex-col md:flex-row">
               <Button
@@ -382,7 +336,7 @@ export default function NewMessage() {
   );
 }
 
-// Text editor menu
+// Text editor toolbar
 const MenuBar = ({
   editor,
   percentage,

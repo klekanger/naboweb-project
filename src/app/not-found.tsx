@@ -1,4 +1,6 @@
-import { Button, Link, Spacer } from "@nextui-org/react";
+"use client";
+
+import { Button, Link, Spacer } from "@heroui/react";
 
 export default function NotFound() {
   return (

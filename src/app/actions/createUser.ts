@@ -3,6 +3,8 @@
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import type { NewUser, CreateNewUserReturnType } from "@/types/types";
 
+const client = await clerkClient();
+
 export async function createNewUser(
   newUser: NewUser,
 ): Promise<CreateNewUserReturnType> {
@@ -19,7 +21,7 @@ export async function createNewUser(
   const { email, firstName, lastName, password, roles } = newUser;
 
   try {
-    const { data: users } = await clerkClient.users.getUserList({
+    const { data: users } = await client.users.getUserList({
       limit: 1,
       emailAddress: [email],
     });
@@ -33,7 +35,7 @@ export async function createNewUser(
       };
     }
 
-    const userCreated = await clerkClient.users.createUser({
+    const userCreated = await client.users.createUser({
       emailAddress: [email],
       firstName: firstName,
       lastName: lastName,

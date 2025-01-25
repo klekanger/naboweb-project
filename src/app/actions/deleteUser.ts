@@ -3,6 +3,8 @@
 import { currentUser, clerkClient } from "@clerk/nextjs/server";
 import { type DeleteUserReturnType } from "@/types/types";
 
+const client = await clerkClient();
+
 export async function deleteUser(
   userIDToDelete: string,
 ): Promise<DeleteUserReturnType> {
@@ -26,7 +28,7 @@ export async function deleteUser(
   }
 
   try {
-    userWhoWasDeleted = await clerkClient.users.deleteUser(userIDToDelete);
+    userWhoWasDeleted = await client.users.deleteUser(userIDToDelete);
 
     return {
       success: {

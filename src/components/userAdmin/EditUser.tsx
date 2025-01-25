@@ -1,6 +1,6 @@
 import { searchUser } from "@/app/actions/searchUser";
 import { updateUser } from "@/app/actions/updateUser";
-import { Spinner } from "@nextui-org/react";
+import { Spinner } from "@heroui/react";
 import DeleteUserModal from "@/components/userAdmin/DeleteUserModal";
 import { UserAdminContext } from "@/context/userAdminContext";
 import { formatDate } from "@/lib/format-date";
@@ -31,7 +31,7 @@ import {
   TableRow,
   Tooltip,
   useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { SearchIcon } from "lucide-react";
 import { useContext, useState } from "react";
 

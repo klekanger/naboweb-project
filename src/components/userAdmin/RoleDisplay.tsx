@@ -1,4 +1,4 @@
-import { Chip, type ChipProps } from "@nextui-org/chip";
+import { Chip, type ChipProps } from "@heroui/chip";
 
 type FriendlyUserRole = {
   role: string;

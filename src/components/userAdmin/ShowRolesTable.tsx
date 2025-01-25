@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
   Tooltip,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { Crown, Edit } from "lucide-react";
 import { useContext } from "react";
 

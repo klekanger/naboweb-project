@@ -7,6 +7,7 @@ import type {
   FRONTPAGE_SERVICES_QUERYResult,
   Page,
   SHOWCASE_QUERYResult,
+  MESSAGE_BY_ID_QUERYResult,
 } from "./sanity.types";
 import { PortableTextBlock } from "@portabletext/types";
 
@@ -308,4 +309,31 @@ export type MessageType = {
   userId?: string;
   messageImage: any; // TODO replace any with Image
   fromAdmin: boolean;
+};
+
+export type MessageCardProps = {
+  title: string;
+  id: string;
+  description: PortableTextBlock;
+  commentCount: number;
+  url?: string;
+  imageUrl: string | null;
+  author?: { firstName?: string; lastName?: string };
+  fromAdmin?: boolean;
+  userIsMessageAuthor?: boolean;
+  createdAt: string;
+  comments: Array<{
+    _key: string;
+    commentText: string | null;
+    commentTitle: string | null;
+    commentAuthor: {
+      _id: string;
+      firstName: string | null;
+      lastName: string | null;
+    } | null;
+  }> | null;
+};
+
+export type MessagePageProps = {
+  data?: MESSAGE_BY_ID_QUERYResult;
 };

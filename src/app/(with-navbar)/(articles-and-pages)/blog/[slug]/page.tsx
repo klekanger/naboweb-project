@@ -1,25 +1,28 @@
 import { generateStaticSlugs } from "@/sanity/loader/generateStaticSlugs";
 import { loadBlogPageBySlug } from "@/sanity/loader/loadQuery";
 import BlogPage from "@/components/pages/blog/BlogPage";
-import BlogPagePreview from "@/components/pages/blog/BlogPagePreview";
+// import BlogPagePreview from "@/components/pages/blog/BlogPagePreview";
 import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 import { Metadata, ResolvingMetadata } from "next";
 import { toPlainText } from "next-sanity";
 import { urlForOpenGraphImage } from "@/sanity/lib/utils";
 import type { Image as SanityImage } from "sanity";
+import dynamic from "next/dynamic";
+
+const BlogPagePreview = dynamic(
+  () => import("@/components/pages/blog/BlogPagePreview"),
+);
 
 type Props = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 //
 // Generate metadata for the current page
 //
-export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata,
-): Promise<Metadata> {
+export async function generateMetadata(props: Props, parent: ResolvingMetadata): Promise<Metadata> {
+  const params = await props.params;
   const slug = params?.slug ?? "";
   const post = await loadBlogPageBySlug(slug);
 
@@ -55,14 +58,15 @@ export async function generateStaticParams() {
 //
 // Generate the blog page
 //
-export default async function PageBlogRoute({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function BlogRoute(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const initial = await loadBlogPageBySlug(params?.slug);
 
-  if (draftMode().isEnabled) {
+  if ((await draftMode()).isEnabled) {
     return <BlogPagePreview params={params} initial={initial} />;
   }
 

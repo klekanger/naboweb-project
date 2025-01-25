@@ -1,22 +1,24 @@
 import Page from "@/components/pages/page/Page";
-import { loadPageBySlug } from "@/sanity/loader/loadQuery";
+import { urlForOpenGraphImage } from "@/sanity/lib/utils";
 import { generateStaticSlugs } from "@/sanity/loader/generateStaticSlugs";
-import { notFound } from "next/navigation";
-import PagePreview from "@/components/pages/page/PagePreview";
-import { draftMode } from "next/headers";
+import { loadPageBySlug } from "@/sanity/loader/loadQuery";
 import { Metadata, ResolvingMetadata } from "next";
 import { toPlainText } from "next-sanity";
-import { urlForOpenGraphImage } from "@/sanity/lib/utils";
+import dynamic from "next/dynamic";
+import { draftMode } from "next/headers";
+import { notFound } from "next/navigation";
 import type { Image as SanityImage } from "sanity";
 
+const PagePreview = dynamic(
+  () => import("@/components/pages/page/PagePreview"),
+);
+
 type Props = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
-export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata,
-): Promise<Metadata> {
+export async function generateMetadata(props: Props, parent: ResolvingMetadata): Promise<Metadata> {
+  const params = await props.params;
   const { data: pageData } = await loadPageBySlug(params.slug);
   const description = toPlainText(pageData?.overview ?? []) ?? "";
   let ogImage = "/og_naboweb.webp";
@@ -41,14 +43,15 @@ export async function generateStaticParams() {
   return await generateStaticSlugs("page");
 }
 
-export default async function PageSlugRoute({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function PageSlugRoute(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const initial = await loadPageBySlug(params?.slug);
 
-  if (draftMode().isEnabled) {
+  if ((await draftMode()).isEnabled) {
     return <PagePreview params={params} initial={initial} />;
   }
 

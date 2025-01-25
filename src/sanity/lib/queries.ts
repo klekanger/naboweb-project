@@ -127,6 +127,27 @@ export const BLOG_BY_SLUG_QUERY = groq`
     author[]->{...},
   }
 `;
+// Fetch all blog posts by slug
+export const ALL_BLOG_BY_SLUG_QUERY = groq`
+  *[_type=="blogPost" && slug.current == $slug ][0]{
+    _id,
+    _createdAt,
+    _updatedAt,
+    privatePost,
+    title,
+    excerpt,
+    featuredImage{..., "lqip": asset->metadata.lqip},
+    bodyText[]{
+    ...,
+    _type == "image" => {
+      ...,
+      "lqip": asset->metadata.lqip
+    }
+  },
+    "slug": slug.current,
+    author[]->{...},
+  }
+`;
 
 // Fetch private blog post by slug
 export const PRIVATE_BLOG_BY_SLUG_QUERY = groq`
@@ -189,7 +210,28 @@ export const MESSAGEBOARD_QUERY = groq`
     commentAuthor->{_id, firstName, lastName}
   },
   fromAdmin,
-  author->{firstName, lastName}
+  author->{_id, firstName, lastName}
+}
+`;
+
+export const MESSAGE_BY_ID_QUERY = groq`
+*[_type == "message" && _id == $id][0] {
+  _id,
+  _updatedAt,
+  _createdAt,
+  title,
+  messageImage,
+  bodyText,
+  tags,
+  comments[]{
+    _key,
+      commentText,
+    commentTitle,
+    commentAuthor->{_id, firstName, lastName},
+    published
+  },
+  fromAdmin,
+  author->{_id, firstName, lastName}
 }
 `;
 
