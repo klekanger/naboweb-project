@@ -117,33 +117,6 @@ export const message = defineType({
               name: "published",
               hidden: true,
             },
-            defineField({
-              name: "replies",
-              type: "array",
-              title: "Svar",
-              of: [
-                defineArrayMember({
-                  name: "reply",
-                  type: "object",
-                  fields: [
-                    { type: "text", name: "replyText" },
-                    {
-                      type: "reference",
-                      name: "replyAuthor",
-                      to: [{ type: "authors" }],
-                    },
-                    {
-                      type: "datetime",
-                      name: "published",
-                      hidden: true,
-                    },
-                  ],
-                  initialValue: () => ({
-                    published: new Date().toISOString(),
-                  }),
-                }),
-              ],
-            }),
           ],
           initialValue: () => ({
             published: new Date().toISOString(),
