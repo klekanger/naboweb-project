@@ -27,7 +27,7 @@ export async function validateUserRoles({
 }): Promise<boolean> {
   if (!requiredRoles) return false;
 
-  const currentUserData: UserWithRoles | null = await currentUser();
+  const currentUserData = (await currentUser()) as UserWithRoles | null;
   const roles = currentUserData?.publicMetadata?.roles;
 
   if (!roles) return false;

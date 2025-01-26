@@ -232,11 +232,13 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
                 <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell className="hidden sm:table-cell">
-                  {new Date(user.createdAt).toLocaleDateString("nb-NO", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })}
+                  {user.createdAt
+                    ? new Date(user.createdAt).toLocaleDateString("nb-NO", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })
+                    : "-"}
                 </TableCell>
                 <TableCell className="hidden sm:table-cell">{roles}</TableCell>
                 <TableCell>
