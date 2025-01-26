@@ -374,7 +374,7 @@ export default function MessagePage(props: MessagePageProps) {
                     <Button
                       color="primary"
                       className="w-32"
-                      onClick={() => setIsEditingMessage(true)}
+                      onPress={() => setIsEditingMessage(true)}
                     >
                       Rediger
                     </Button>

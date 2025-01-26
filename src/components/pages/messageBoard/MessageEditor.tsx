@@ -118,7 +118,7 @@ const MenuBar = ({
         <Button
           size="sm"
           isIconOnly
-          onClick={() => editor.chain().focus().toggleBold().run()}
+          onPress={() => editor.chain().focus().toggleBold().run()}
           disabled={!editor.can().chain().focus().toggleBold().run()}
           className={editor.isActive("bold") ? "bg-brand-primary" : ""}
           aria-label="Bold"
@@ -129,7 +129,7 @@ const MenuBar = ({
         <Button
           size="sm"
           isIconOnly
-          onClick={() => editor.chain().focus().toggleItalic().run()}
+          onPress={() => editor.chain().focus().toggleItalic().run()}
           disabled={!editor.can().chain().focus().toggleItalic().run()}
           className={editor.isActive("italic") ? "bg-brand-primary" : ""}
           aria-label="Italic"
@@ -140,7 +140,7 @@ const MenuBar = ({
         <Button
           size="sm"
           isIconOnly
-          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          onPress={() => editor.chain().focus().toggleUnderline().run()}
           className={editor.isActive("underline") ? "bg-brand-primary" : ""}
           aria-label="Underline"
           title="Underline"
@@ -150,7 +150,7 @@ const MenuBar = ({
 
         <Button
           size="sm"
-          onClick={() =>
+          onPress={() =>
             editor.chain().focus().toggleHeading({ level: 2 }).run()
           }
           className={
