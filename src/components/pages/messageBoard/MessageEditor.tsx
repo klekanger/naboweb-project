@@ -2,30 +2,11 @@ import ImageUploader from "@/components/shared/ImageUploader";
 import { MessageEditorContext } from "@/context/messageEditorContext";
 import { Button, Input, Spacer } from "@heroui/react";
 import { toHTML } from "@portabletext/to-html";
-import { Schema } from "@sanity/schema";
 import { Editor, EditorContent } from "@tiptap/react";
 import { Bold, Italic, UnderlineIcon } from "lucide-react";
 import { useContext, useEffect, useMemo } from "react";
 import type { Image as SanityImage } from "sanity";
 import { PortableTextBlock } from "sanity";
-
-const defaultSchema = Schema.compile({
-  name: "myMessage",
-  types: [
-    {
-      type: "object",
-      name: "message",
-      fields: [
-        {
-          title: "Body",
-          name: "bodyText",
-          type: "array",
-          of: [{ type: "block" }],
-        },
-      ],
-    },
-  ],
-});
 
 export default function MessageEditor({
   editorContent,
