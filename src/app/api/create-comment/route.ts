@@ -56,7 +56,9 @@ export async function POST(request: NextRequest) {
       .patch(_id)
       .setIfMissing({ comments: [] })
       .append("comments", [newComment])
-      .commit();
+      .commit({
+        autoGenerateArrayKeys: true,
+      });
 
     return NextResponse.json({
       success: {
