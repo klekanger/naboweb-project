@@ -35,6 +35,7 @@ export default function MessageComments({
   const userId = userData?.user?.id ?? "";
   const [isCreatingComment, setIsCreatingComment] = useState(false);
   const [editingCommentKey, setEditingCommentKey] = useState<string>("");
+  const [deletingCommentKey, setDeletingCommentKey] = useState<string>("");
   const router = useRouter();
 
   // Modal state
@@ -44,6 +45,7 @@ export default function MessageComments({
   const [modalOkText, setModalOkText] = useState("Ok");
   const [modalCancelText, setModalCancelText] = useState("Avbryt");
   const [modalCancelDisabled, setModalCancelDisabled] = useState(false);
+  const [isConfirmDelete, setIsConfirmDelete] = useState(false);
 
   const resetModal = () => {
     setModalTitle("");
@@ -51,6 +53,7 @@ export default function MessageComments({
     setModalOkText("Ok");
     setModalCancelText("Avbryt");
     setModalCancelDisabled(false);
+    setIsConfirmDelete(false);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -76,7 +79,8 @@ export default function MessageComments({
 
       if ("success" in data) {
         setModalTitle("Kommentaren ble lagt til");
-        setModalBody("Siden vil bli oppdatert.");
+        setModalBody("");
+        setModalOkText("Ok");
         setModalCancelDisabled(true);
         modalForComments.onOpen();
 
@@ -170,6 +174,72 @@ export default function MessageComments({
       modalForComments.onOpen();
     } finally {
       setEditingCommentKey("");
+    }
+  };
+
+  const handleDelete = async (commentKey: string) => {
+    setDeletingCommentKey(commentKey);
+    setModalTitle("Slett kommentar");
+    setModalBody("Er du sikker på at du vil slette denne kommentaren?");
+    setModalOkText("Slett");
+    setModalCancelText("Avbryt");
+    setModalCancelDisabled(false);
+    setIsConfirmDelete(true);
+    modalForComments.onOpen();
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingCommentKey) return;
+
+    try {
+      const response = await fetch("/api/delete-comment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messageId,
+          commentKey: deletingCommentKey,
+          userId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if ("success" in data) {
+        setModalTitle("Kommentaren ble slettet");
+        setModalBody("");
+        setModalOkText("Ok");
+        setModalCancelDisabled(true);
+        setIsConfirmDelete(false);
+
+        // Revalidate the page to show the updated comments
+        try {
+          await fetch("/api/revalidate-messageboard", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id: messageId,
+            }),
+          });
+          router.refresh();
+        } catch (error: any) {
+          throw new Error(`Revalidation failed. Server response: ${error}`);
+        }
+      }
+
+      if ("error" in data) {
+        throw new Error(data.error?.message ?? "Noe gikk galt");
+      }
+    } catch (error: any) {
+      console.error(error);
+      setModalTitle("Det oppsto en feil");
+      setModalBody(`${error?.message ?? "Ukjent feil"}`);
+      setIsConfirmDelete(false);
+    } finally {
+      setDeletingCommentKey("");
     }
   };
 
@@ -276,6 +346,7 @@ export default function MessageComments({
                                 size="sm"
                                 variant="bordered"
                                 className="mt-2 border-brand-danger"
+                                onPress={() => handleDelete(comment._key ?? "")}
                               >
                                 Slett
                               </Button>
@@ -359,10 +430,14 @@ export default function MessageComments({
                   {modalCancelText}
                 </Button>
                 <Button
-                  color="primary"
+                  color={isConfirmDelete ? "danger" : "primary"}
                   onPress={() => {
-                    resetModal();
-                    modalForComments.onClose();
+                    if (isConfirmDelete) {
+                      handleConfirmDelete();
+                    } else {
+                      resetModal();
+                      modalForComments.onClose();
+                    }
                   }}
                 >
                   {modalOkText}
