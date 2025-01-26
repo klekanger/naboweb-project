@@ -21,25 +21,22 @@ import {
   ModalFooter,
   ModalHeader,
   useDisclosure,
-  Spacer,
 } from "@heroui/react";
 import { htmlToBlocks } from "@sanity/block-tools";
 import { Schema } from "@sanity/schema";
 import {
   ArrowLeftIcon,
   CircleUser,
-  MessageSquare,
   MessagesSquare,
   Shield,
   UploadIcon,
 } from "lucide-react";
+import { PortableTextBlock } from "next-sanity";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 import type { Image as SanityImage } from "sanity";
-import { useRouter } from "next/navigation";
-import { PortableTextBlock } from "next-sanity";
 import MessageComments from "./Messagecomments";
 
 const IMAGE_WIDTH = 800;
@@ -392,7 +389,11 @@ export default function MessagePage(props: MessagePageProps) {
         </CardFooter>
       </Card>
 
-      <MessageComments comments={comments} commentCount={commentCount} />
+      <MessageComments
+        comments={comments}
+        commentCount={commentCount}
+        messageId={_id ?? ""}
+      />
 
       {/*
         Modal for errors and messages

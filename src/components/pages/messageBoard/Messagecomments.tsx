@@ -1,18 +1,61 @@
 import { compareClerkAndSanityUser } from "@/lib/compareClerkAndSanityUser";
 import { formatDate } from "@/lib/format-date";
 import { MESSAGE_BY_ID_QUERYResult } from "@/types/sanity.types";
-import { Button, Card, CardBody, CardFooter, CardHeader } from "@heroui/react";
-import { MessageSquare, User } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Form,
+  Input,
+  Textarea,
+} from "@heroui/react";
+import { MessageSquare, User } from "lucide-react";
+import { useState } from "react";
 
 export default function MessageComments({
   comments,
   commentCount,
+  messageId,
 }: {
   comments: NonNullable<MESSAGE_BY_ID_QUERYResult>["comments"];
   commentCount: number;
+  messageId: string;
 }) {
   const userData = useUser();
+  const userId = userData?.user?.id ?? "";
+  const [isCreatingComment, setIsCreatingComment] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target as HTMLFormElement);
+
+    try {
+      const response = await fetch("/api/update-comment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          _id: messageId,
+          title: formData.get("title") as string,
+          bodyText: formData.get("bodyText") as string,
+          userId: userId,
+        }),
+      });
+
+      const data = await response.json();
+
+      console.log("[update-comment] data: ", data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsCreatingComment(false);
+    }
+  };
 
   return (
     <Card className="lg:p-4">
@@ -84,8 +127,45 @@ export default function MessageComments({
             })}
         </div>
       </CardBody>
-      <CardFooter>
-        <Button>Nytt innlegg</Button>
+      <CardFooter className="flex flex-col items-start gap-4">
+        {!isCreatingComment && (
+          <Button onPress={() => setIsCreatingComment(true)}>
+            Ny kommentar
+          </Button>
+        )}
+
+        {isCreatingComment && (
+          <Form
+            onSubmit={handleSubmit}
+            className="w-full max-w-xl"
+            validationBehavior="native"
+          >
+            <h3 className="text-lg font-semibold">Opprett ny kommentar</h3>
+            <Input
+              label="Tittel"
+              name="title"
+              isRequired
+              errorMessage="Du må skrive inn en tittel"
+            />
+            <Textarea
+              className="w-full"
+              name="bodyText"
+              label="Skriv kommentaren din her"
+              variant="faded"
+              isRequired
+              errorMessage="Du må skrive inn en kommentar"
+            />
+            <div className="flex gap-2">
+              <Button type="submit">Svar</Button>
+              <Button
+                variant="bordered"
+                onPress={() => setIsCreatingComment(false)}
+              >
+                Avbryt
+              </Button>
+            </div>
+          </Form>
+        )}
       </CardFooter>
     </Card>
   );
