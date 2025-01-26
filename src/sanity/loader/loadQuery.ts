@@ -114,10 +114,14 @@ export async function loadMeetingMinutesById(meeting: string) {
   );
 }
 
-export async function loadMessageBoard() {
+export async function loadMessageBoard(pageNumber = 0) {
+  const messagesPerPage = 10;
   return loadQuery<MESSAGEBOARD_QUERYResult>(
     MESSAGEBOARD_QUERY,
-    {},
+    {
+      start: pageNumber * messagesPerPage,
+      end: (pageNumber + 1) * messagesPerPage,
+    },
     { next: { tags: ["message"] } },
   );
 }

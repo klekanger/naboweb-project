@@ -1,24 +1,25 @@
 "use server";
 
-import {
+import type {
   ClerkError,
   SearchUserReturnType,
   SearchUserSuccessType,
 } from "@/types/types";
-import { User } from "@clerk/nextjs/dist/types/server";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
+import type { UserResource } from "@clerk/types";
 
 const client = await clerkClient();
 
-function mapUsersWithEmails(user: User) {
+function mapUsersWithEmails(user: any) {
+  const typedUser = user as UserResource;
   return {
-    id: user.id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    roles: user?.publicMetadata?.roles ?? [],
-    email: user?.emailAddresses?.[0]?.emailAddress ?? "",
-    imageUrl: user?.imageUrl ?? "",
-    createdAt: user?.createdAt ?? null,
+    id: typedUser.id,
+    firstName: typedUser.firstName,
+    lastName: typedUser.lastName,
+    roles: typedUser?.publicMetadata?.roles ?? [],
+    email: typedUser?.emailAddresses?.[0]?.emailAddress ?? "",
+    imageUrl: typedUser?.imageUrl ?? "",
+    createdAt: typedUser?.createdAt ?? null,
   };
 }
 
@@ -58,7 +59,8 @@ export async function searchUser({
       return {
         success: {
           message: "Successfully fetched user",
-          users: allUsers as SearchUserSuccessType["success"]["users"],
+          users:
+            allUsers as unknown as SearchUserSuccessType["success"]["users"],
           status: 200,
         },
       };

@@ -1,6 +1,7 @@
 "use client";
 
 import { formatDate } from "@/lib/format-date";
+import { MessageCardProps } from "@/types/types";
 import {
   Card,
   CardBody,
@@ -9,9 +10,8 @@ import {
   Image,
   Tooltip,
 } from "@heroui/react";
-import { MessageCardProps } from "@/types/types";
+import { toPlainText } from "@portabletext/react";
 import { CircleUser, MessagesSquare, Shield } from "lucide-react";
-import { toPlainText } from "next-sanity";
 import { useRouter } from "next/navigation";
 
 export default function MessageCard({

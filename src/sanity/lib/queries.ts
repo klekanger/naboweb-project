@@ -195,7 +195,7 @@ export const COUNT_PRIVATE_BLOG_POSTS = groq`
 `;
 
 export const MESSAGEBOARD_QUERY = groq`
-*[_type == "message"] | order(_createdAt desc) {
+*[_type == "message"] | order(_createdAt desc) [$start...$end] {
   _id,
   _updatedAt,
   _createdAt,
@@ -205,7 +205,7 @@ export const MESSAGEBOARD_QUERY = groq`
   tags,
   comments[]{
     _key,
-      commentText,
+    commentText,
     commentTitle,
     commentAuthor->{_id, firstName, lastName}
   },
@@ -228,10 +228,10 @@ export const MESSAGE_BY_ID_QUERY = groq`
       commentText,
     commentTitle,
     commentAuthor->{_id, firstName, lastName},
-    published
+    published,
   },
   fromAdmin,
-  author->{_id, firstName, lastName}
+  author->{_id, firstName, lastName},
 }
 `;
 
@@ -285,4 +285,18 @@ export async function fetchBlogCollection({
       isPrivate,
     },
   );
+}
+
+// Add a new function to fetch paginated messages
+export async function fetchPaginatedMessages({
+  pageNumber = 0,
+  messagesPerPage = 10,
+}: {
+  pageNumber?: number;
+  messagesPerPage?: number;
+}) {
+  return client.fetch(MESSAGEBOARD_QUERY, {
+    start: pageNumber * messagesPerPage,
+    end: (pageNumber + 1) * messagesPerPage,
+  });
 }

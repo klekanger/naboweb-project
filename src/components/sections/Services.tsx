@@ -10,7 +10,7 @@ import {
   DocumentIcon,
 } from "@/components/icons";
 import type { IconProps, ServicesProps } from "@/types/types";
-import { Card, CardBody, CardHeader } from "@heroui/react";
+import { Card, CardBody, CardHeader, Tooltip } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { type FunctionComponent } from "react";
 
@@ -87,7 +87,11 @@ export default function Services({ content }: { content: ServicesProps }) {
         <CardBody className="pt-0 prose">
           <h2 className="mt-4 text-xl font-semibold">
             {title.toUpperCase()}{" "}
-            {locked && <span className="pl-[0.5em]">🔐</span>}
+            {locked && (
+              <Tooltip content="Krever innlogging">
+                <span className="pl-[0.5em]">🔐</span>
+              </Tooltip>
+            )}
           </h2>
           <p>{description}</p>
         </CardBody>

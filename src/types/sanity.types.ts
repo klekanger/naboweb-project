@@ -1302,7 +1302,7 @@ export type COUNT_PUBLIC_BLOG_POSTSResult = number;
 // Query: count(*[_type=="blogPost" && privatePost==true])
 export type COUNT_PRIVATE_BLOG_POSTSResult = number;
 // Variable: MESSAGEBOARD_QUERY
-// Query: *[_type == "message"] | order(_createdAt desc) {  _id,  _updatedAt,  _createdAt,  title,  messageImage,  bodyText,  tags,  comments[]{    _key,      commentText,    commentTitle,    commentAuthor->{_id, firstName, lastName}  },  fromAdmin,  author->{_id, firstName, lastName}}
+// Query: *[_type == "message"] | order(_createdAt desc) [$start...$end] {  _id,  _updatedAt,  _createdAt,  title,  messageImage,  bodyText,  tags,  comments[]{    _key,    commentText,    commentTitle,    commentAuthor->{_id, firstName, lastName}  },  fromAdmin,  author->{_id, firstName, lastName}}
 export type MESSAGEBOARD_QUERYResult = Array<{
   _id: string;
   _updatedAt: string;
@@ -1357,7 +1357,7 @@ export type MESSAGEBOARD_QUERYResult = Array<{
   } | null;
 }>;
 // Variable: MESSAGE_BY_ID_QUERY
-// Query: *[_type == "message" && _id == $id][0] {  _id,  _updatedAt,  _createdAt,  title,  messageImage,  bodyText,  tags,  comments[]{    _key,      commentText,    commentTitle,    commentAuthor->{_id, firstName, lastName},    published  },  fromAdmin,  author->{_id, firstName, lastName}}
+// Query: *[_type == "message" && _id == $id][0] {  _id,  _updatedAt,  _createdAt,  title,  messageImage,  bodyText,  tags,  comments[]{    _key,      commentText,    commentTitle,    commentAuthor->{_id, firstName, lastName},    published,  },  fromAdmin,  author->{_id, firstName, lastName},}
 export type MESSAGE_BY_ID_QUERYResult = {
   _id: string;
   _updatedAt: string;
@@ -1433,8 +1433,8 @@ declare module "@sanity/client" {
     '\n  *[_type=="frontpage-showcase" ][0]{\n    _id,\n    _createdAt,\n      _updatedAt,\n      showcaseTitle,\n      showcaseBlogposts[]->{\n        _id, \n        title, \n        excerpt, \n        featuredImage{..., "lqip": asset->metadata.lqip}, \n        slug},\n  }\n': SHOWCASE_QUERYResult;
     '\n  count(*[_type=="blogPost" && privatePost==false])\n': COUNT_PUBLIC_BLOG_POSTSResult;
     '\n  count(*[_type=="blogPost" && privatePost==true])\n': COUNT_PRIVATE_BLOG_POSTSResult;
-    '\n*[_type == "message"] | order(_createdAt desc) {\n  _id,\n  _updatedAt,\n  _createdAt,\n  title,\n  messageImage,\n  bodyText,\n  tags,\n  comments[]{\n    _key,\n      commentText,\n    commentTitle,\n    commentAuthor->{_id, firstName, lastName}\n  },\n  fromAdmin,\n  author->{_id, firstName, lastName}\n}\n': MESSAGEBOARD_QUERYResult;
-    '\n*[_type == "message" && _id == $id][0] {\n  _id,\n  _updatedAt,\n  _createdAt,\n  title,\n  messageImage,\n  bodyText,\n  tags,\n  comments[]{\n    _key,\n      commentText,\n    commentTitle,\n    commentAuthor->{_id, firstName, lastName},\n    published\n  },\n  fromAdmin,\n  author->{_id, firstName, lastName}\n}\n': MESSAGE_BY_ID_QUERYResult;
+    '\n*[_type == "message"] | order(_createdAt desc) [$start...$end] {\n  _id,\n  _updatedAt,\n  _createdAt,\n  title,\n  messageImage,\n  bodyText,\n  tags,\n  comments[]{\n    _key,\n    commentText,\n    commentTitle,\n    commentAuthor->{_id, firstName, lastName}\n  },\n  fromAdmin,\n  author->{_id, firstName, lastName}\n}\n': MESSAGEBOARD_QUERYResult;
+    '\n*[_type == "message" && _id == $id][0] {\n  _id,\n  _updatedAt,\n  _createdAt,\n  title,\n  messageImage,\n  bodyText,\n  tags,\n  comments[]{\n    _key,\n      commentText,\n    commentTitle,\n    commentAuthor->{_id, firstName, lastName},\n    published,\n  },\n  fromAdmin,\n  author->{_id, firstName, lastName},\n}\n': MESSAGE_BY_ID_QUERYResult;
     '\n  count(*[_type=="message"])\n': COUNT_MESSAGESResult;
   }
 }

@@ -2,10 +2,11 @@ import { revalidatePath } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
+  const { id } = await req.json();
+
   try {
-    // revalidate "/messageboard"
-    console.log("[revalidate-messageboard] Revalidating...");
-    revalidatePath("/messageboard");
+    revalidatePath(`/messageboard/${id}`);
+
     return NextResponse.json({
       status: 200,
       revalidated: true,
