@@ -20,7 +20,7 @@ import {
 } from "@heroui/react";
 import { MessageSquare, User } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function MessageComments({
   comments,
@@ -37,6 +37,11 @@ export default function MessageComments({
   const [editingCommentKey, setEditingCommentKey] = useState<string>("");
   const [deletingCommentKey, setDeletingCommentKey] = useState<string>("");
   const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Modal state
   const modalForComments = useDisclosure();
@@ -290,7 +295,7 @@ export default function MessageComments({
                       )}
                     </div>
 
-                    {isEditing ? (
+                    {isClient && isEditing ? (
                       <Form
                         onSubmit={handleEditSubmit}
                         className="w-full max-w-xl mt-4"
@@ -328,31 +333,29 @@ export default function MessageComments({
                           {comment.commentTitle}
                         </h3>
                         <p className="prose">{comment.commentText}</p>
-                        <div className="flex justify-end gap-2">
-                          {userIsMessageAuthor && (
-                            <>
-                              <Button
-                                size="sm"
-                                variant="bordered"
-                                className="mt-2"
-                                onPress={() =>
-                                  setEditingCommentKey(comment._key ?? "")
-                                }
-                              >
-                                Rediger
-                              </Button>
+                        {isClient && userIsMessageAuthor && (
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              size="sm"
+                              variant="bordered"
+                              className="mt-2"
+                              onPress={() =>
+                                setEditingCommentKey(comment._key ?? "")
+                              }
+                            >
+                              Rediger
+                            </Button>
 
-                              <Button
-                                size="sm"
-                                variant="bordered"
-                                className="mt-2 border-brand-danger"
-                                onPress={() => handleDelete(comment._key ?? "")}
-                              >
-                                Slett
-                              </Button>
-                            </>
-                          )}
-                        </div>
+                            <Button
+                              size="sm"
+                              variant="bordered"
+                              className="mt-2 border-brand-danger"
+                              onPress={() => handleDelete(comment._key ?? "")}
+                            >
+                              Slett
+                            </Button>
+                          </div>
+                        )}
                       </>
                     )}
                   </div>
@@ -361,92 +364,97 @@ export default function MessageComments({
           </div>
         </CardBody>
         <CardFooter className="flex flex-col items-start gap-4">
-          {!isCreatingComment && (
-            <Button onPress={() => setIsCreatingComment(true)}>
-              Ny kommentar
-            </Button>
-          )}
-
-          {isCreatingComment && (
-            <Form
-              onSubmit={handleSubmit}
-              className="w-full max-w-xl"
-              validationBehavior="native"
-            >
-              <h3 className="text-lg font-semibold">Opprett ny kommentar</h3>
-              <Input
-                label="Tittel"
-                name="title"
-                isRequired
-                errorMessage="Du må skrive inn en tittel"
-              />
-              <Textarea
-                className="w-full"
-                name="bodyText"
-                label="Skriv kommentaren din her"
-                variant="faded"
-                isRequired
-                errorMessage="Du må skrive inn en kommentar"
-              />
-              <div className="flex gap-2">
-                <Button type="submit">Svar</Button>
-                <Button
-                  variant="bordered"
-                  onPress={() => setIsCreatingComment(false)}
-                >
-                  Avbryt
+          {isClient && (
+            <>
+              {!isCreatingComment && (
+                <Button onPress={() => setIsCreatingComment(true)}>
+                  Ny kommentar
                 </Button>
-              </div>
-            </Form>
+              )}
+
+              {isCreatingComment && (
+                <Form
+                  onSubmit={handleSubmit}
+                  className="w-full max-w-xl"
+                  validationBehavior="native"
+                >
+                  <h3 className="text-lg font-semibold">
+                    Opprett ny kommentar
+                  </h3>
+                  <Input
+                    label="Tittel"
+                    name="title"
+                    isRequired
+                    errorMessage="Du må skrive inn en tittel"
+                  />
+                  <Textarea
+                    className="w-full"
+                    name="bodyText"
+                    label="Skriv kommentaren din her"
+                    variant="faded"
+                    isRequired
+                    errorMessage="Du må skrive inn en kommentar"
+                  />
+                  <div className="flex gap-2">
+                    <Button type="submit">Svar</Button>
+                    <Button
+                      variant="bordered"
+                      onPress={() => setIsCreatingComment(false)}
+                    >
+                      Avbryt
+                    </Button>
+                  </div>
+                </Form>
+              )}
+            </>
           )}
         </CardFooter>
       </Card>
 
-      {/*
-        Modal for errors and messages
-      */}
-      <Modal
-        isOpen={modalForComments.isOpen}
-        onOpenChange={modalForComments.onOpenChange}
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                {modalTitle}
-              </ModalHeader>
-              <ModalBody>{modalBody}</ModalBody>
-              <ModalFooter>
-                <Button
-                  color="danger"
-                  variant="light"
-                  className={`${modalCancelDisabled ? "hidden" : ""}`}
-                  isDisabled={modalCancelDisabled}
-                  onPress={() => {
-                    resetModal();
-                    modalForComments.onClose();
-                  }}
-                >
-                  {modalCancelText}
-                </Button>
-                <Button
-                  color={isConfirmDelete ? "danger" : "primary"}
-                  onPress={() => {
-                    if (isConfirmDelete) {
-                      handleConfirmDelete();
-                    } else {
+      {isClient && (
+        <Modal
+          isOpen={modalForComments.isOpen}
+          onOpenChange={modalForComments.onOpenChange}
+        >
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalHeader className="flex flex-col gap-1">
+                  {modalTitle}
+                </ModalHeader>
+                <ModalBody>{modalBody}</ModalBody>
+                <ModalFooter>
+                  <Button
+                    color="danger"
+                    variant="light"
+                    className={`${modalCancelDisabled ? "hidden" : ""}`}
+                    isDisabled={modalCancelDisabled}
+                    onPress={() => {
                       resetModal();
                       modalForComments.onClose();
-                    }
-                  }}
-                >
-                  {modalOkText}
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
+                    }}
+                  >
+                    {modalCancelText}
+                  </Button>
+                  <Button
+                    color={isConfirmDelete ? "danger" : "primary"}
+                    onPress={() => {
+                      if (isConfirmDelete) {
+                        handleConfirmDelete();
+                      } else {
+                        resetModal();
+                        modalForComments.onClose();
+                      }
+                    }}
+                  >
+                    {modalOkText}
+                  </Button>
+                </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        </Modal>
+      )}
     </>
   );
 }

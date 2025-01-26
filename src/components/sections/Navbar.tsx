@@ -35,6 +35,11 @@ export default function Navbar() {
   const { isSignedIn, user, isLoaded } = useUser();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, [pathname]);
 
   // When the user navigates to a new page, always close the hamburger menu
   useEffect(() => {
@@ -74,7 +79,7 @@ export default function Navbar() {
       </NavbarContent>
 
       <NavbarContent className="hidden gap-8 lg:flex" justify="end">
-        {user && (
+        {isClient && isLoaded && user && (
           <Dropdown className="hidden lg:block">
             <NavbarItem>
               <DropdownTrigger>
@@ -102,9 +107,8 @@ export default function Navbar() {
               <DropdownItem
                 as={Link}
                 key="informasjon"
-                description="Her finner du alle blogginnlegg fra styret, dokumenter, vedtekter, klippelister og annen informasjon."
-                startContent={<Info className="h-6 w-6 text-brand-secondary" />}
-                onPress={() => console.log("Dokumenter")}
+                description="Blogginnlegg, dokumenter og annet fra styret."
+                startContent={<Info />}
                 href="/information"
               >
                 Informasjon fra styret
@@ -114,9 +118,7 @@ export default function Navbar() {
                 as={Link}
                 key="oppslagstavle"
                 description="Oppslag om stort og smått fra beboere og styret."
-                startContent={
-                  <MessagesSquare className="h-6 w-6 text-brand-secondary" />
-                }
+                startContent={<MessagesSquare />}
                 href="/messageboard"
               >
                 Oppslagstavle
@@ -126,9 +128,7 @@ export default function Navbar() {
                 as={Link}
                 key="møtereferater"
                 description="Referater fra årsmøter."
-                startContent={
-                  <NotebookPen className="h-6 w-6 text-brand-secondary" />
-                }
+                startContent={<NotebookPen />}
                 href="/information/referater"
               >
                 Møtereferater
@@ -137,10 +137,8 @@ export default function Navbar() {
               <DropdownItem
                 as={Link}
                 key="diverse-dokumenter"
-                description="Diverse dokumenter fra styret, som husfarger og annet."
-                startContent={
-                  <Files className="h-6 w-6 text-brand-secondary" />
-                }
+                description="Husfarger og andre dokumenter fra styret."
+                startContent={<Files />}
                 href="/information/dokumenter"
               >
                 Diverse dokumenter
@@ -170,7 +168,7 @@ export default function Navbar() {
           <Link href="/styret">Styret</Link>
         </NavbarItem>
 
-        {user && (
+        {isClient && isLoaded && user && (
           <NavbarItem
             isActive={pathname.startsWith("/min-side")}
             className="hover:text-brand-secondary duration-200 transition"
@@ -179,38 +177,40 @@ export default function Navbar() {
           </NavbarItem>
         )}
 
-        <ButtonGroup>
-          <NavbarItem>
-            {isSignedIn ? (
-              <SignOutButton redirectUrl="/">
-                <Button
-                  variant="flat"
-                  className="ml-8 bg-secondary"
-                  startContent={<LogOut />}
-                >
-                  Logg ut
-                </Button>
-              </SignOutButton>
-            ) : (
-              <SignInButton>
-                <Button
-                  variant="flat"
-                  className="ml-8 bg-secondary"
-                  startContent={<LogIn />}
-                >
-                  Logg inn
-                </Button>
-              </SignInButton>
-            )}
-          </NavbarItem>
-        </ButtonGroup>
+        {isClient && isLoaded && (
+          <ButtonGroup>
+            <NavbarItem>
+              {isSignedIn ? (
+                <SignOutButton redirectUrl="/">
+                  <Button
+                    variant="flat"
+                    className="ml-8 bg-secondary"
+                    startContent={<LogOut />}
+                  >
+                    Logg ut
+                  </Button>
+                </SignOutButton>
+              ) : (
+                <SignInButton>
+                  <Button
+                    variant="flat"
+                    className="ml-8 bg-secondary"
+                    startContent={<LogIn />}
+                  >
+                    Logg inn
+                  </Button>
+                </SignInButton>
+              )}
+            </NavbarItem>
+          </ButtonGroup>
+        )}
       </NavbarContent>
 
       {/* ************** */}
       {/* HAMBURGER MENU */}
       {/* ************** */}
       <NavbarMenu className="pt-8 text-center">
-        {user && (
+        {isClient && isLoaded && user && (
           <NavbarItem
             isActive={pathname.startsWith("/information")}
             className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
@@ -223,30 +223,24 @@ export default function Navbar() {
           isActive={pathname.startsWith("/blog-collection")}
           className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
         >
-          <Link href="/blog-collection" className="">
-            Blogg
-          </Link>
+          <Link href="/blog-collection">Blogg</Link>
         </NavbarItem>
 
         <NavbarItem
           isActive={pathname.startsWith("/om-boligsameiet-gartnerihagen")}
           className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
         >
-          <Link href="/om-boligsameiet-gartnerihagen" className="">
-            Om oss
-          </Link>
+          <Link href="/om-boligsameiet-gartnerihagen">Om oss</Link>
         </NavbarItem>
 
         <NavbarItem
           isActive={pathname.startsWith("/styret")}
           className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
         >
-          <Link href="/styret" className="">
-            Styret
-          </Link>
+          <Link href="/styret">Styret</Link>
         </NavbarItem>
 
-        {user && (
+        {isClient && isLoaded && user && (
           <NavbarItem
             isActive={pathname.startsWith("/min-side")}
             className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
@@ -257,7 +251,7 @@ export default function Navbar() {
 
         <ButtonGroup className="mt-8">
           <NavbarMenuItem>
-            {user ? (
+            {isClient && isLoaded && user ? (
               <SignOutButton redirectUrl="/">
                 <Button
                   color="primary"
