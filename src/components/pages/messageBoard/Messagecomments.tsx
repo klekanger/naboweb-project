@@ -38,6 +38,7 @@ export default function MessageComments({
   const [deletingCommentKey, setDeletingCommentKey] = useState<string>("");
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -63,6 +64,7 @@ export default function MessageComments({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     const formData = new FormData(e.target as HTMLFormElement);
 
@@ -115,12 +117,14 @@ export default function MessageComments({
       setModalBody(`${error?.message ?? "Ukjent feil"}`);
       modalForComments.onOpen();
     } finally {
+      setIsSubmitting(false);
       setIsCreatingComment(false);
     }
   };
 
   const handleEditSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     if (editingCommentKey === "") {
       console.error("No comment key found");
@@ -178,6 +182,7 @@ export default function MessageComments({
       setModalBody(`${error?.message ?? "Ukjent feil"}`);
       modalForComments.onOpen();
     } finally {
+      setIsSubmitting(false);
       setEditingCommentKey("");
     }
   };
@@ -318,7 +323,9 @@ export default function MessageComments({
                           errorMessage="Du må skrive inn en kommentar"
                         />
                         <div className="flex gap-2">
-                          <Button type="submit">Lagre</Button>
+                          <Button type="submit" isLoading={isSubmitting}>
+                            Lagre
+                          </Button>
                           <Button
                             variant="bordered"
                             onPress={() => setEditingCommentKey("")}
@@ -396,7 +403,9 @@ export default function MessageComments({
                     errorMessage="Du må skrive inn en kommentar"
                   />
                   <div className="flex gap-2">
-                    <Button type="submit">Svar</Button>
+                    <Button type="submit" isLoading={isSubmitting}>
+                      Svar
+                    </Button>
                     <Button
                       variant="bordered"
                       onPress={() => setIsCreatingComment(false)}
