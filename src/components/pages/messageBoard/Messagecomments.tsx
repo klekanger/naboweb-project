@@ -16,11 +16,16 @@ import {
   ModalFooter,
   ModalHeader,
   Textarea,
-  useDisclosure,
 } from "@heroui/react";
 import { MessageSquare, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useModalState } from "@/hooks/useModalState";
+
+interface CommentFormData {
+  title: string;
+  bodyText: string;
+}
 
 export default function MessageComments({
   comments,
@@ -33,50 +38,56 @@ export default function MessageComments({
 }) {
   const userData = useUser();
   const userId = userData?.user?.id ?? "";
+  const router = useRouter();
+
+  // State
   const [isCreatingComment, setIsCreatingComment] = useState(false);
   const [editingCommentKey, setEditingCommentKey] = useState<string>("");
   const [deletingCommentKey, setDeletingCommentKey] = useState<string>("");
-  const router = useRouter();
   const [isClient, setIsClient] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Modal state using custom hook
+  const {
+    modal: modalForComments,
+    title: modalTitle,
+    setTitle: setModalTitle,
+    body: modalBody,
+    setBody: setModalBody,
+    okText: modalOkText,
+    setOkText: setModalOkText,
+    cancelText: modalCancelText,
+    setCancelText: setModalCancelText,
+    cancelDisabled: modalCancelDisabled,
+    setCancelDisabled: setModalCancelDisabled,
+    isConfirmDelete,
+    setIsConfirmDelete,
+    resetModal,
+  } = useModalState();
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // Modal state
-  const modalForComments = useDisclosure();
-  const [modalTitle, setModalTitle] = useState("");
-  const [modalBody, setModalBody] = useState("");
-  const [modalOkText, setModalOkText] = useState("Ok");
-  const [modalCancelText, setModalCancelText] = useState("Avbryt");
-  const [modalCancelDisabled, setModalCancelDisabled] = useState(false);
-  const [isConfirmDelete, setIsConfirmDelete] = useState(false);
-
-  const resetModal = () => {
-    setModalTitle("");
-    setModalBody("");
-    setModalOkText("Ok");
-    setModalCancelText("Avbryt");
-    setModalCancelDisabled(false);
-    setIsConfirmDelete(false);
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  // API Handlers
+  const handleCreateComment = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     const formData = new FormData(e.target as HTMLFormElement);
+    const commentData: CommentFormData = {
+      title: formData.get("title") as string,
+      bodyText: formData.get("bodyText") as string,
+    };
 
     try {
       const response = await fetch("/api/create-comment", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           _id: messageId,
-          title: formData.get("title") as string,
-          bodyText: formData.get("bodyText") as string,
-          userId: userId,
+          ...commentData,
+          userId,
         }),
       });
 
@@ -89,21 +100,7 @@ export default function MessageComments({
         setModalCancelDisabled(true);
         modalForComments.onOpen();
 
-        // Revalidate the page to show the new comment
-        try {
-          await fetch("/api/revalidate-messageboard", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              id: messageId,
-            }),
-          });
-          router.refresh();
-        } catch (error: any) {
-          throw new Error(`Revalidation failed. Server response: ${error}`);
-        }
+        await revalidateMessageboard();
       }
 
       if ("error" in data) {
@@ -115,31 +112,34 @@ export default function MessageComments({
       setModalBody(`${error?.message ?? "Ukjent feil"}`);
       modalForComments.onOpen();
     } finally {
+      setIsSubmitting(false);
       setIsCreatingComment(false);
     }
   };
 
-  const handleEditSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleEditComment = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    if (editingCommentKey === "") {
+    if (!editingCommentKey) {
       console.error("No comment key found");
       return;
     }
 
     const formData = new FormData(e.target as HTMLFormElement);
+    const commentData: CommentFormData = {
+      title: formData.get("title") as string,
+      bodyText: formData.get("bodyText") as string,
+    };
 
     try {
       const response = await fetch("/api/edit-comment", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messageId,
           commentKey: editingCommentKey,
-          title: formData.get("title") as string,
-          bodyText: formData.get("bodyText") as string,
+          ...commentData,
           userId,
         }),
       });
@@ -152,21 +152,7 @@ export default function MessageComments({
         setModalCancelDisabled(true);
         modalForComments.onOpen();
 
-        // Revalidate the page to show the updated comment
-        try {
-          await fetch("/api/revalidate-messageboard", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              id: messageId,
-            }),
-          });
-          router.refresh();
-        } catch (error: any) {
-          throw new Error(`Revalidation failed. Server response: ${error}`);
-        }
+        await revalidateMessageboard();
       }
 
       if ("error" in data) {
@@ -178,6 +164,7 @@ export default function MessageComments({
       setModalBody(`${error?.message ?? "Ukjent feil"}`);
       modalForComments.onOpen();
     } finally {
+      setIsSubmitting(false);
       setEditingCommentKey("");
     }
   };
@@ -199,9 +186,7 @@ export default function MessageComments({
     try {
       const response = await fetch("/api/delete-comment", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messageId,
           commentKey: deletingCommentKey,
@@ -218,21 +203,7 @@ export default function MessageComments({
         setModalCancelDisabled(true);
         setIsConfirmDelete(false);
 
-        // Revalidate the page to show the updated comments
-        try {
-          await fetch("/api/revalidate-messageboard", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              id: messageId,
-            }),
-          });
-          router.refresh();
-        } catch (error: any) {
-          throw new Error(`Revalidation failed. Server response: ${error}`);
-        }
+        await revalidateMessageboard();
       }
 
       if ("error" in data) {
@@ -248,6 +219,20 @@ export default function MessageComments({
     }
   };
 
+  // Helper function to revalidate the messageboard
+  const revalidateMessageboard = async () => {
+    try {
+      await fetch("/api/revalidate-messageboard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: messageId }),
+      });
+      router.refresh();
+    } catch (error: any) {
+      throw new Error(`Revalidation failed. Server response: ${error}`);
+    }
+  };
+
   return (
     <>
       <Card className="lg:p-4">
@@ -260,107 +245,107 @@ export default function MessageComments({
 
         <CardBody>
           <div className="prose lg:prose-xl pb-8">
-            {comments &&
-              comments.length > 0 &&
-              comments.map((comment) => {
-                const userIsMessageAuthor = compareClerkAndSanityUser({
-                  clerkUser: userData?.user?.id ?? "",
-                  sanityUser: comment?.commentAuthor?._id ?? "",
-                });
+            {comments?.map((comment) => {
+              const userIsMessageAuthor = compareClerkAndSanityUser({
+                clerkUser: userData?.user?.id ?? "",
+                sanityUser: comment?.commentAuthor?._id ?? "",
+              });
 
-                const isEditing = editingCommentKey === comment._key;
+              const isEditing = editingCommentKey === comment._key;
 
-                return (
-                  <div
-                    key={comment._key}
-                    className="border-b border-brand-black/10 mt-4 pb-8"
-                  >
-                    <div className="flex justify-start max-w-3xl mx-auto text-sm not-prose text-brand-black/50 pt-2">
-                      {comment?.commentAuthor && (
-                        <>
-                          <User className="inline-block mr-2" size={16} />
-                          <span className="inline-block">
-                            {`${comment?.commentAuthor?.firstName} ${comment?.commentAuthor?.lastName}`}
-                          </span>
-                          <span className="px-2 text-base"> · </span>
-                        </>
-                      )}
-                      {comment?.published && (
-                        <time
-                          dateTime={String(comment?.published)}
-                          className="inline-block"
-                        >
-                          {formatDate(comment?.published)}
-                        </time>
-                      )}
-                    </div>
-
-                    {isClient && isEditing ? (
-                      <Form
-                        onSubmit={handleEditSubmit}
-                        className="w-full max-w-xl mt-4"
-                        validationBehavior="native"
-                      >
-                        <Input
-                          label="Tittel"
-                          name="title"
-                          defaultValue={comment.commentTitle ?? ""}
-                          isRequired
-                          errorMessage="Du må skrive inn en tittel"
-                        />
-                        <Textarea
-                          className="w-full"
-                          name="bodyText"
-                          label="Skriv kommentaren din her"
-                          defaultValue={comment.commentText ?? ""}
-                          variant="faded"
-                          isRequired
-                          errorMessage="Du må skrive inn en kommentar"
-                        />
-                        <div className="flex gap-2">
-                          <Button type="submit">Lagre</Button>
-                          <Button
-                            variant="bordered"
-                            onPress={() => setEditingCommentKey("")}
-                          >
-                            Avbryt
-                          </Button>
-                        </div>
-                      </Form>
-                    ) : (
+              return (
+                <div
+                  key={comment._key}
+                  className="border-b border-brand-black/10 mt-4 pb-8"
+                >
+                  <div className="flex justify-start max-w-3xl mx-auto text-sm not-prose text-brand-black/50 pt-2">
+                    {comment?.commentAuthor && (
                       <>
-                        <h3 className="font-semibold not-prose text-xl md:text-2xl mb-4">
-                          {comment.commentTitle}
-                        </h3>
-                        <p className="prose">{comment.commentText}</p>
-                        {isClient && userIsMessageAuthor && (
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              size="sm"
-                              variant="bordered"
-                              className="mt-2"
-                              onPress={() =>
-                                setEditingCommentKey(comment._key ?? "")
-                              }
-                            >
-                              Rediger
-                            </Button>
-
-                            <Button
-                              size="sm"
-                              variant="bordered"
-                              className="mt-2 border-brand-danger"
-                              onPress={() => handleDelete(comment._key ?? "")}
-                            >
-                              Slett
-                            </Button>
-                          </div>
-                        )}
+                        <User className="inline-block mr-2" size={16} />
+                        <span className="inline-block">
+                          {`${comment?.commentAuthor?.firstName} ${comment?.commentAuthor?.lastName}`}
+                        </span>
+                        <span className="px-2 text-base"> · </span>
                       </>
                     )}
+                    {comment?.published && (
+                      <time
+                        dateTime={String(comment?.published)}
+                        className="inline-block"
+                      >
+                        {formatDate(comment?.published)}
+                      </time>
+                    )}
                   </div>
-                );
-              })}
+
+                  {isClient && isEditing ? (
+                    <Form
+                      onSubmit={handleEditComment}
+                      className="w-full max-w-xl mt-4"
+                      validationBehavior="native"
+                    >
+                      <Input
+                        label="Tittel"
+                        name="title"
+                        defaultValue={comment.commentTitle ?? ""}
+                        isRequired
+                        errorMessage="Du må skrive inn en tittel"
+                      />
+                      <Textarea
+                        className="w-full"
+                        name="bodyText"
+                        label="Skriv kommentaren din her"
+                        defaultValue={comment.commentText ?? ""}
+                        variant="faded"
+                        isRequired
+                        errorMessage="Du må skrive inn en kommentar"
+                      />
+                      <div className="flex gap-2">
+                        <Button type="submit" isLoading={isSubmitting}>
+                          Lagre
+                        </Button>
+                        <Button
+                          variant="bordered"
+                          onPress={() => setEditingCommentKey("")}
+                        >
+                          Avbryt
+                        </Button>
+                      </div>
+                    </Form>
+                  ) : (
+                    <>
+                      <h3 className="font-semibold not-prose text-xl md:text-2xl mb-4">
+                        {comment.commentTitle}
+                      </h3>
+                      <p className="prose">{comment.commentText}</p>
+                      {isClient && userIsMessageAuthor && (
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            size="sm"
+                            variant="bordered"
+                            className="mt-2"
+                            onPress={() =>
+                              setEditingCommentKey(comment._key ?? "")
+                            }
+                          >
+                            Rediger
+                          </Button>
+
+                          <Button
+                            size="sm"
+                            variant="bordered"
+                            className="mt-2 border-brand-danger"
+                            onPress={() => handleDelete(comment._key ?? "")}
+                          >
+                            Slett
+                          </Button>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </CardBody>
         <CardFooter className="flex flex-col items-start gap-4">
@@ -374,7 +359,7 @@ export default function MessageComments({
 
               {isCreatingComment && (
                 <Form
-                  onSubmit={handleSubmit}
+                  onSubmit={handleCreateComment}
                   className="w-full max-w-xl"
                   validationBehavior="native"
                 >
@@ -396,7 +381,9 @@ export default function MessageComments({
                     errorMessage="Du må skrive inn en kommentar"
                   />
                   <div className="flex gap-2">
-                    <Button type="submit">Svar</Button>
+                    <Button type="submit" isLoading={isSubmitting}>
+                      Svar
+                    </Button>
                     <Button
                       variant="bordered"
                       onPress={() => setIsCreatingComment(false)}

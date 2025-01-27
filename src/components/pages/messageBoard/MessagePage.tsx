@@ -331,7 +331,7 @@ export default function MessagePage(props: MessagePageProps) {
           )}
         </CardBody>
         <CardFooter>
-          <div className="flex gap-4 flex-col md:flex-row">
+          <div className="flex gap-4 flex-col md:flex-row w-full">
             {isEditingMessage ? (
               <div className="flex flex-col gap-4">
                 <p className="text-xs mt-4 ">
@@ -362,6 +362,7 @@ export default function MessagePage(props: MessagePageProps) {
               <>
                 <Button
                   color="primary"
+                  variant="bordered"
                   as={Link}
                   href="/messageboard"
                   startContent={<ArrowLeftIcon />}
@@ -373,14 +374,11 @@ export default function MessagePage(props: MessagePageProps) {
                   <>
                     <Button
                       color="primary"
-                      className="w-32"
                       onPress={() => setIsEditingMessage(true)}
                     >
                       Rediger
                     </Button>
-                    <Button color="danger" className="w-32">
-                      Slett
-                    </Button>
+                    <Button color="danger">Slett</Button>
                   </>
                 ) : null}
               </>
