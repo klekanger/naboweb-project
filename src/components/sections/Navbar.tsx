@@ -211,12 +211,37 @@ export default function Navbar() {
       {/* ************** */}
       <NavbarMenu className="pt-8 text-center">
         {isClient && isLoaded && user && (
-          <NavbarItem
-            isActive={pathname.startsWith("/information")}
-            className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
-          >
-            <Link href="/information">For beboere</Link>
-          </NavbarItem>
+          <>
+            <NavbarItem
+              isActive={pathname.startsWith("/information")}
+              className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
+            >
+              <Link href="/information">Informasjon fra styret</Link>
+            </NavbarItem>
+
+            <NavbarItem
+              isActive={pathname.startsWith("/messageboard")}
+              className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
+            >
+              <Link href="/messageboard">Oppslagstavle</Link>
+            </NavbarItem>
+
+            <NavbarItem
+              isActive={pathname.startsWith("/information/referater")}
+              className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
+            >
+              <Link href="/information/referater">Møtereferater</Link>
+            </NavbarItem>
+
+            <NavbarItem
+              isActive={pathname.startsWith("/information/dokumenter")}
+              className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
+            >
+              <Link href="/information/dokumenter">Diverse dokumenter</Link>
+            </NavbarItem>
+
+            <hr className="my-4" />
+          </>
         )}
 
         <NavbarItem
