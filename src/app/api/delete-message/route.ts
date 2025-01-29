@@ -1,16 +1,23 @@
 import { clientWithWriteAccess } from "@/sanity/lib/client";
-import { revalidatePath } from "next/cache";
-import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
     const user = await currentUser();
+    if (!user) {
+      return NextResponse.json({
+        error: { message: "Unauthorized" },
+        status: 401,
+      });
+    }
+
     const userRoles = (user?.publicMetadata as { roles: string[] }) ?? [];
-
     const isAdmin = userRoles.roles.includes("admin");
+    const isUser = userRoles.roles.includes("user");
 
-    if (!user || !userRoles.roles.includes("user") || !isAdmin) {
+    // Allow access if user is admin OR has user role
+    if (!isAdmin && !isUser) {
       return NextResponse.json({
         error: { message: "Unauthorized" },
         status: 401,
@@ -26,7 +33,8 @@ export async function POST(request: Request) {
       );
     }
 
-    if (user.id !== userId && !isAdmin) {
+    // Allow admins to delete any message, but regular users can only delete their own
+    if (!isAdmin && user.id !== userId) {
       return NextResponse.json({
         error: {
           message: "Unauthorized (user can only delete their own messages)",

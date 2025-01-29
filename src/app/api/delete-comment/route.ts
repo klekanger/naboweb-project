@@ -10,13 +10,19 @@ type DeleteCommentRequest = {
 
 export async function POST(request: NextRequest) {
   const user = await currentUser();
-  const userRoles = (user?.publicMetadata as { roles: string[] }) ?? [];
+  if (!user) {
+    return NextResponse.json({
+      error: { message: "Unauthorized" },
+      status: 401,
+    });
+  }
 
-  if (
-    !user ||
-    !userRoles.roles.includes("user") ||
-    !userRoles.roles.includes("admin")
-  ) {
+  const userRoles = (user?.publicMetadata as { roles: string[] }) ?? [];
+  const isAdmin = userRoles.roles.includes("admin");
+  const isUser = userRoles.roles.includes("user");
+
+  // Allow access if user is admin OR has user role
+  if (!isAdmin && !isUser) {
     return NextResponse.json({
       error: { message: "Unauthorized" },
       status: 401,
@@ -34,7 +40,8 @@ export async function POST(request: NextRequest) {
 
   const { messageId, commentKey, userId } = res;
 
-  if (user.id !== userId) {
+  // Allow admins to delete any comment, but regular users can only delete their own
+  if (!isAdmin && user.id !== userId) {
     return NextResponse.json({
       error: {
         message: "Unauthorized (user can only delete their own comments)",
