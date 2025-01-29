@@ -12,7 +12,11 @@ export async function POST(request: NextRequest) {
   const user = await currentUser();
   const userRoles = (user?.publicMetadata as { roles: string[] }) ?? [];
 
-  if (!user || !userRoles.roles.includes("user")) {
+  if (
+    !user ||
+    !userRoles.roles.includes("user") ||
+    !userRoles.roles.includes("admin")
+  ) {
     return NextResponse.json({
       error: { message: "Unauthorized" },
       status: 401,

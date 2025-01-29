@@ -11,10 +11,10 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  useDisclosure,
 } from "@heroui/react";
 import { useContext, useMemo, useState } from "react";
 import RoleDisplay from "./RoleDisplay";
+import { useModalState } from "@/hooks/useModalState";
 
 export default function InviteUser() {
   const [emailToInvite, setEmailToInvite] = useState<string>("");
@@ -24,9 +24,48 @@ export default function InviteUser() {
   const { newlyCreatedUser, setNewlyCreatedUser } =
     useContext(UserAdminContext);
 
-  const modalInviteUser = useDisclosure();
-  const modalInviteUserSuccess = useDisclosure();
-  const modalErrorMessage = useDisclosure();
+  // Modal state using custom hooks
+  const {
+    modal: modalInviteUser,
+    title: inviteTitle,
+    setTitle: setInviteTitle,
+    body: inviteBody,
+    setBody: setInviteBody,
+    okText: inviteOkText,
+    setOkText: setInviteOkText,
+    cancelText: inviteCancelText,
+    setCancelText: setInviteCancelText,
+  } = useModalState({
+    initialTitle: "Er du sikker?",
+    initialOkText: "Ok",
+    initialCancelText: "Avbryt",
+  });
+
+  const {
+    modal: modalInviteUserSuccess,
+    title: successTitle,
+    setTitle: setSuccessTitle,
+    body: successBody,
+    setBody: setSuccessBody,
+    okText: successOkText,
+    setOkText: setSuccessOkText,
+  } = useModalState({
+    initialTitle: "Brukeren er opprettet",
+    initialOkText: "Ok",
+  });
+
+  const {
+    modal: modalErrorMessage,
+    title: errorTitle,
+    setTitle: setErrorTitle,
+    body: errorBody,
+    setBody: setErrorBody,
+    okText: errorOkText,
+    setOkText: setErrorOkText,
+  } = useModalState({
+    initialTitle: "Det har oppstått en feil",
+    initialOkText: "Ok",
+  });
 
   const isInvalidEmail = useMemo(() => {
     const validateEmail = (value: string) =>
@@ -44,12 +83,14 @@ export default function InviteUser() {
     }
 
     setErrorMessage("");
+    setInviteBody(
+      `Du er i ferd med å invitere brukeren med e-postadressen ${emailToInvite}. Bekreft at du vil gjøre dette.`,
+    );
     modalInviteUser.onOpen();
   };
 
   const handleInviteUser = async () => {
     setErrorMessage("");
-
     setIsInvitingUser(true);
     const response = await inviteUser({
       email: emailToInvite,
@@ -59,7 +100,7 @@ export default function InviteUser() {
 
     if ("error" in response) {
       console.error("error ", response.error);
-      setErrorMessage(response.error?.longMessage ?? "Noe gikk galt");
+      setErrorBody(response.error?.longMessage ?? "Noe gikk galt");
       modalErrorMessage.onOpen();
     } else if ("success" in response) {
       setNewlyCreatedUser({
@@ -68,10 +109,13 @@ export default function InviteUser() {
         lastName: "",
         roles: response.success?.roles,
       });
+      setSuccessBody(
+        `Du har opprettet en bruker med e-postadressen ${newlyCreatedUser.email}.`,
+      );
       modalInviteUserSuccess.onOpen();
       setEmailToInvite("");
     } else {
-      setErrorMessage("Noe gikk galt");
+      setErrorBody("Noe gikk galt");
       modalErrorMessage.onOpen();
     }
   };
@@ -144,15 +188,9 @@ export default function InviteUser() {
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Er du sikker?
+                {inviteTitle}
               </ModalHeader>
-              <ModalBody>
-                <p>
-                  Du er i ferd med å invitere brukeren med e-postadressen{" "}
-                  <span className="text-brand-secondary">{emailToInvite}</span>.
-                  Bekreft at du vil gjøre dette.
-                </p>
-              </ModalBody>
+              <ModalBody>{inviteBody}</ModalBody>
               <ModalFooter>
                 <Button
                   onPress={() => {
@@ -160,10 +198,10 @@ export default function InviteUser() {
                     modalInviteUser.onClose();
                   }}
                 >
-                  Ok
+                  {inviteOkText}
                 </Button>
                 <Button color="danger" onPress={modalInviteUser.onClose}>
-                  Avbryt
+                  {inviteCancelText}
                 </Button>
               </ModalFooter>
             </>
@@ -180,29 +218,15 @@ export default function InviteUser() {
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Brukeren er opprettet
+                {successTitle}
               </ModalHeader>
-              <ModalBody>
-                <p>
-                  Du har opprettet en bruker med e-postadressen{" "}
-                  <span className="text-brand-secondary">
-                    {newlyCreatedUser.email}
-                  </span>
-                  .
-                </p>
-                <div className="flex flex-row gap-4 pt-4 py-8">
-                  <strong>Roller: </strong>
-                  <RoleDisplay roles={newlyCreatedUser.roles} />
-                </div>
-              </ModalBody>
+              <ModalBody>{successBody}</ModalBody>
               <ModalFooter>
                 <Button
                   color="primary"
-                  onPress={() => {
-                    modalInviteUserSuccess.onClose();
-                  }}
+                  onPress={modalInviteUserSuccess.onClose}
                 >
-                  Ok
+                  {successOkText}
                 </Button>
               </ModalFooter>
             </>
@@ -219,10 +243,10 @@ export default function InviteUser() {
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Det har oppstått en feil
+                {errorTitle}
               </ModalHeader>
               <ModalBody>
-                <p>{errorMessage}</p>
+                <p>{errorBody}</p>
                 <p>
                   Hvis du mener noe er galt, ta kontakt med styret eller
                   web-administrator.
@@ -236,7 +260,7 @@ export default function InviteUser() {
                     modalErrorMessage.onClose();
                   }}
                 >
-                  Ok
+                  {errorOkText}
                 </Button>
               </ModalFooter>
             </>

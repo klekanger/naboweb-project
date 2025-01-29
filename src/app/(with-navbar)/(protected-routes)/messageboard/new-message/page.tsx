@@ -33,6 +33,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
+import { useModalState } from "@/hooks/useModalState";
 
 const MAX_CHARACTERS = 1000;
 const DEFAULT_REDIRECT_URL = "/messageboard/new-message";
@@ -67,16 +68,26 @@ export default function NewMessage() {
   const { firstName, lastName, id } = userData?.user ?? {};
   const { isAdmin } = currentUserRoles(userData?.user as any);
 
-  // Set up everything we need for the modal
-  const modalForMessages = useDisclosure();
+  // State
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isSubmittingMessage, setIsSubmittingMessage] = useState(false);
-  const [modalTitle, setModalTitle] = useState("");
-  const [modalBody, setModalBody] = useState("");
-  const [modalOkText, setModalOkText] = useState("Ok");
-  const [modalCancelText, setModalCancelText] = useState("Avbryt");
-  const [modalCancelDisabled, setModalCancelDisabled] = useState(false);
   const [modalOkUrl, setModalOkUrl] = useState(DEFAULT_REDIRECT_URL);
+
+  // Modal state using custom hook
+  const {
+    modal: modalForMessages,
+    title: modalTitle,
+    setTitle: setModalTitle,
+    body: modalBody,
+    setBody: setModalBody,
+    okText: modalOkText,
+    setOkText: setModalOkText,
+    cancelText: modalCancelText,
+    setCancelText: setModalCancelText,
+    cancelDisabled: modalCancelDisabled,
+    setCancelDisabled: setModalCancelDisabled,
+    resetModal,
+  } = useModalState();
 
   const router = useRouter();
 
@@ -215,15 +226,6 @@ export default function NewMessage() {
 
   const handleImageSelect = (selectedImages: File[] | null) => {
     setMessageImageFile(selectedImages?.[0] ?? null);
-  };
-
-  const resetModal = () => {
-    setModalTitle("");
-    setModalBody("");
-    setModalOkText("Ok");
-    setModalCancelText("Avbryt");
-    setModalOkUrl(DEFAULT_REDIRECT_URL);
-    setModalCancelDisabled(false);
   };
 
   const percentage = editor

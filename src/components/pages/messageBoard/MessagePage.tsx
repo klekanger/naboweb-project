@@ -38,6 +38,7 @@ import { notFound, useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 import type { Image as SanityImage } from "sanity";
 import MessageComments from "./Messagecomments";
+import { useModalState } from "@/hooks/useModalState";
 
 const IMAGE_WIDTH = 800;
 const IMAGE_HEIGHT = 600;
@@ -74,16 +75,24 @@ export default function MessagePage(props: MessagePageProps) {
 
   const [isEditingMessage, setIsEditingMessage] = useState(false);
   const [isSubmittingMessage, setIsSubmittingMessage] = useState(false);
-
-  // Set up everything we need for the modal
-  const modalForMessages = useDisclosure();
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [modalTitle, setModalTitle] = useState("");
-  const [modalBody, setModalBody] = useState("");
-  const [modalOkText, setModalOkText] = useState("Ok");
-  const [modalCancelText, setModalCancelText] = useState("Avbryt");
-  const [modalCancelDisabled, setModalCancelDisabled] = useState(false);
   const [modalOkUrl, setModalOkUrl] = useState(DEFAULT_REDIRECT_URL);
+
+  // Modal state using custom hook
+  const {
+    modal: modalForMessages,
+    title: modalTitle,
+    setTitle: setModalTitle,
+    body: modalBody,
+    setBody: setModalBody,
+    okText: modalOkText,
+    setOkText: setModalOkText,
+    cancelText: modalCancelText,
+    setCancelText: setModalCancelText,
+    cancelDisabled: modalCancelDisabled,
+    setCancelDisabled: setModalCancelDisabled,
+    resetModal,
+  } = useModalState();
 
   const router = useRouter();
 
@@ -118,6 +127,7 @@ export default function MessagePage(props: MessagePageProps) {
   }
 
   const commentCount = comments?.length ?? 0;
+
   // *********************************************************************
   // Submit the message to Sanity
   // *********************************************************************
@@ -126,7 +136,6 @@ export default function MessagePage(props: MessagePageProps) {
       setModalTitle("Feil: Ugyldig tittel");
       setModalBody("Meldingen din trenger en tittel.");
       setModalCancelDisabled(true);
-
       modalForMessages.onOpen();
       return;
     }
@@ -139,7 +148,6 @@ export default function MessagePage(props: MessagePageProps) {
         "Det er alltid fint å fatte seg i korthet, men innlegget ditt må være litt lenger (mer enn 10 tegn).",
       );
       setModalCancelDisabled(true);
-
       modalForMessages.onOpen();
       return;
     }
@@ -248,13 +256,66 @@ export default function MessagePage(props: MessagePageProps) {
     }
   };
 
-  const resetModal = () => {
-    setModalTitle("");
-    setModalBody("");
-    setModalOkText("Ok");
+  // *********************************************************************
+  // Delete the message from Sanity
+  // *********************************************************************
+
+  const handleDelete = async () => {
+    setModalTitle("Bekreft sletting");
+    setModalBody(
+      "Er du sikker på at du vil slette dette innlegget? Dette kan ikke angres.",
+    );
+    setModalOkText("Slett");
     setModalCancelText("Avbryt");
-    setModalOkUrl(DEFAULT_REDIRECT_URL);
     setModalCancelDisabled(false);
+    setModalOkUrl("");
+    modalForMessages.onOpen();
+  };
+
+  const handleDeleteMessage = () => {
+    setModalTitle("Bekreft sletting");
+    setModalBody(
+      "Er du sikker på at du vil slette dette innlegget? Dette kan ikke angres.",
+    );
+    setModalOkText("Slett");
+    setModalCancelText("Avbryt");
+    setModalCancelDisabled(false);
+    setModalOkUrl("");
+    modalForMessages.onOpen();
+  };
+
+  const deleteMessageAfterConfirmation = async () => {
+    try {
+      const response = await fetch("/api/delete-message", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: _id,
+          userId: author?._id ?? null,
+        }),
+      });
+
+      const data = await response.json();
+
+      if ("success" in data) {
+        console.log("DEBUG: Successfully deleted message", data);
+        router.push("/messageboard");
+      }
+
+      if ("error" in data) {
+        throw new Error(data.error?.message ?? "Noe gikk galt");
+      }
+    } catch (error: any) {
+      console.error("Error deleting message:", error);
+      setModalTitle("Feil ved sletting");
+      setModalBody(error?.message ?? "Kunne ikke slette innlegget");
+      setModalOkText("OK");
+      setModalCancelDisabled(true);
+      modalForMessages.onOpen();
+    }
+    modalForMessages.onClose();
   };
 
   return (
@@ -277,12 +338,13 @@ export default function MessagePage(props: MessagePageProps) {
               ) : (
                 <CircleUser className="h-auto pr-2" />
               )}
-              {fromAdmin ? "Styret" : ""}
-              {`${author?.firstName ?? ""} ${author?.lastName ?? ""} | ${formatDate(_createdAt ?? "")} ${
-                _updatedAt !== _createdAt
-                  ? `(oppdatert ${formatDate(_updatedAt ?? null)})`
-                  : ""
-              }`}
+              {fromAdmin
+                ? "Styret"
+                : `${author?.firstName ?? ""} ${author?.lastName ?? ""} | ${formatDate(_createdAt ?? "")} ${
+                    _updatedAt !== _createdAt
+                      ? `(oppdatert ${formatDate(_updatedAt ?? null)})`
+                      : ""
+                  }`}
             </div>
           )}
         </CardHeader>
@@ -376,9 +438,11 @@ export default function MessagePage(props: MessagePageProps) {
                       color="primary"
                       onPress={() => setIsEditingMessage(true)}
                     >
-                      Rediger
+                      Rediger {!userIsMessageAuthor ? "(admin)" : ""}
                     </Button>
-                    <Button color="danger">Slett</Button>
+                    <Button color="danger" onPress={handleDeleteMessage}>
+                      Slett {!userIsMessageAuthor ? "(admin)" : ""}
+                    </Button>
                   </>
                 ) : null}
               </>
@@ -422,11 +486,7 @@ export default function MessagePage(props: MessagePageProps) {
                 </Button>
                 <Button
                   color="primary"
-                  onPress={() => {
-                    resetModal();
-                    modalForMessages.onClose();
-                    router.push(modalOkUrl);
-                  }}
+                  onPress={deleteMessageAfterConfirmation}
                 >
                   {modalOkText}
                 </Button>
@@ -438,7 +498,3 @@ export default function MessagePage(props: MessagePageProps) {
     </>
   );
 }
-
-// TODO: Add more advanced comment functionality. Reply to comments, edit comments, delete comments, etc.
-
-// TODO: Add tag feature

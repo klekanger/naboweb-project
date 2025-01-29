@@ -34,6 +34,7 @@ import {
 } from "@heroui/react";
 import { SearchIcon } from "lucide-react";
 import { useContext, useState } from "react";
+import { useModalState } from "@/hooks/useModalState";
 
 const MAX_RESULTS = 10;
 
@@ -66,8 +67,18 @@ export default function EditUser() {
     setGeneralError,
   } = useContext(UserAdminContext);
 
+  // Modal state using custom hook
+  const {
+    modal: modalUserUpdated,
+    title: modalTitle,
+    setTitle: setModalTitle,
+    body: modalBody,
+    setBody: setModalBody,
+  } = useModalState({
+    initialTitle: "Brukeren er oppdatert",
+  });
+
   const modalDeleteUser = useDisclosure();
-  const modalUserUpdated = useDisclosure();
 
   // This function is called when the user submits the search form.
   const handleSubmit = async (searchTerm: string) => {
@@ -105,6 +116,9 @@ export default function EditUser() {
             `Feil: ${response.error?.message || "Noe gikk galt"}`,
         );
       } else if ("success" in response) {
+        setModalBody(
+          `Du har oppdatert brukeren ${selectedUser?.firstName} ${selectedUser?.lastName}.`,
+        );
         modalUserUpdated.onOpen();
       } else {
         setGeneralError("Noe gikk galt");
@@ -354,15 +368,8 @@ export default function EditUser() {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader>Brukeren er oppdatert</ModalHeader>
-              <ModalBody>
-                <span>
-                  Du har oppdatert brukeren{" "}
-                  <span className="text-brand-secondary">
-                    {selectedUser?.firstName} {selectedUser?.lastName}.
-                  </span>
-                </span>
-              </ModalBody>
+              <ModalHeader>{modalTitle}</ModalHeader>
+              <ModalBody>{modalBody}</ModalBody>
               <ModalFooter>
                 <Button color="success" onPress={onClose}>
                   Lukk
