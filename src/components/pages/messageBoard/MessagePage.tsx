@@ -76,6 +76,7 @@ export default function MessagePage(props: MessagePageProps) {
   const [isEditingMessage, setIsEditingMessage] = useState(false);
   const [isSubmittingMessage, setIsSubmittingMessage] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isDeletingMessage, setIsDeletingMessage] = useState(false);
   const [modalOkUrl, setModalOkUrl] = useState(DEFAULT_REDIRECT_URL);
 
   // Modal state using custom hook
@@ -285,6 +286,7 @@ export default function MessagePage(props: MessagePageProps) {
   };
 
   const deleteMessageAfterConfirmation = async () => {
+    setIsDeletingMessage(true);
     try {
       const response = await fetch("/api/delete-message", {
         method: "POST",
@@ -314,6 +316,8 @@ export default function MessagePage(props: MessagePageProps) {
       setModalOkText("OK");
       setModalCancelDisabled(true);
       modalForMessages.onOpen();
+    } finally {
+      setIsDeletingMessage(false);
     }
     modalForMessages.onClose();
   };
@@ -487,6 +491,7 @@ export default function MessagePage(props: MessagePageProps) {
                 <Button
                   color="primary"
                   onPress={deleteMessageAfterConfirmation}
+                  isLoading={isDeletingMessage}
                 >
                   {modalOkText}
                 </Button>
