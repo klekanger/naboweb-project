@@ -302,7 +302,6 @@ export default function MessagePage(props: MessagePageProps) {
       const data = await response.json();
 
       if ("success" in data) {
-        console.log("DEBUG: Successfully deleted message", data);
         router.push("/messageboard");
       }
 
