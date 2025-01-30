@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
   try {
     const user = await currentUser();
+
     if (!user) {
       return NextResponse.json({
         error: { message: "Unauthorized" },
@@ -17,7 +18,7 @@ export async function POST(request: Request) {
     const isUser = userRoles.roles.includes("user");
 
     // Allow access if user is admin OR has user role
-    if (!isAdmin && !isUser) {
+    if (!(isAdmin || isUser)) {
       return NextResponse.json({
         error: { message: "Unauthorized" },
         status: 401,
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
     }
 
     // Allow admins to delete any message, but regular users can only delete their own
-    if (!isAdmin && user.id !== userId) {
+    if (!(isAdmin || user.id !== userId)) {
       return NextResponse.json({
         error: {
           message: "Unauthorized (user can only delete their own messages)",
