@@ -1947,6 +1947,13 @@
         },
         "optional": true
       },
+      "emailSubscription": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "boolean"
+        },
+        "optional": true
+      },
       "authorImage": {
         "type": "objectAttribute",
         "value": {

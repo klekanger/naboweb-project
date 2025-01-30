@@ -1,10 +1,9 @@
-// import UserCard from "@/components/UserCard";
 import UserOverview from "@/components/UserOverview";
+import { UserWithRoles } from "@/types/types";
 import { UserProfile } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";
-import { Spinner } from "@heroui/spinner";
 import type { UserData } from "@clerk/types";
-import { UserWithRoles } from "@/types/types";
+import { Spinner } from "@heroui/spinner";
 
 export default async function Page() {
   const user = (await currentUser()) as UserData;

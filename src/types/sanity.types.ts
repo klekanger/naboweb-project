@@ -346,6 +346,7 @@ export type Authors = {
   firstName?: string;
   lastName?: string;
   email?: string;
+  emailSubscription?: boolean;
   authorImage?: {
     asset?: {
       _ref: string;
@@ -637,6 +638,11 @@ export type AllSanitySchemaTypes =
   | Slug;
 export declare const internalGroqTypeReferenceTo: unique symbol;
 // Source: ./src/sanity/lib/queries.ts
+// Variable: USER_SUBSCRIPTION_STATUS_QUERY
+// Query: *[_type=="authors" && _id==$id][0] {    emailSubscription  }
+export type USER_SUBSCRIPTION_STATUS_QUERYResult = {
+  emailSubscription: boolean | null;
+} | null;
 // Variable: DOCUMENTMENU_QUERY
 // Query: *[_type=="documentMenu"] {    button1Text,    button2Text,    button3Text,    button4Text,    'file1': button1File->otherDocument.asset->{url},    'file2': button2File->otherDocument.asset->{url},    'file3': button3File->otherDocument.asset->{url},    'file4': button4File->otherDocument.asset->{url},  }[0]
 export type DOCUMENTMENU_QUERYResult = {
@@ -953,6 +959,7 @@ export type BLOG_BY_SLUG_QUERYResult = {
     firstName?: string;
     lastName?: string;
     email?: string;
+    emailSubscription?: boolean;
     authorImage?: {
       asset?: {
         _ref: string;
@@ -1084,6 +1091,7 @@ export type ALL_BLOG_BY_SLUG_QUERYResult = {
     firstName?: string;
     lastName?: string;
     email?: string;
+    emailSubscription?: boolean;
     authorImage?: {
       asset?: {
         _ref: string;
@@ -1215,6 +1223,7 @@ export type PRIVATE_BLOG_BY_SLUG_QUERYResult = {
     firstName?: string;
     lastName?: string;
     email?: string;
+    emailSubscription?: boolean;
     authorImage?: {
       asset?: {
         _ref: string;
@@ -1420,6 +1429,7 @@ export type COUNT_MESSAGESResult = number;
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
+    '\n  *[_type=="authors" && _id==$id][0] {\n    emailSubscription\n  }\n': USER_SUBSCRIPTION_STATUS_QUERYResult;
     "\n *[_type==\"documentMenu\"] {\n    button1Text,\n    button2Text,\n    button3Text,\n    button4Text,\n    'file1': button1File->otherDocument.asset->{url},\n    'file2': button2File->otherDocument.asset->{url},\n    'file3': button3File->otherDocument.asset->{url},\n    'file4': button4File->otherDocument.asset->{url},\n  }[0]\n": DOCUMENTMENU_QUERYResult;
     "\n *[_type==\"fileOtherDocuments\"] {\n    title,\n    description,\n    tags,\n    _createdAt,\n    _updatedAt,\n    'document': otherDocument{\n      asset->{url, _id, originalFilename}\n    }\n  }\n": OTHER_DOCUMENTS_QUERYResult;
     '\n *[_type=="fileMeetingMinutes"] | order(_createdAt asc) {\n  _id,\n    title,\n    description,\n      meetingDate,\n      meetingPlace,\n    tags,\n    _createdAt,\n    _updatedAt,\n    "documentCount": count(meetingDocuments)\n  }\n': MEETING_MINUTES_QUERYResult;
