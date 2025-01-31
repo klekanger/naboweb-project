@@ -2,6 +2,12 @@ import { BLOG_BY_SLUG_QUERYResult, BlogPost } from "@/types/sanity.types";
 import { groq } from "next-sanity";
 import { client } from "../lib/client";
 
+export const USER_SUBSCRIPTION_STATUS_QUERY = groq`
+  *[_type=="authors" && _id==$id][0] {
+    emailSubscription
+  }
+`;
+
 export const DOCUMENTMENU_QUERY = groq`
  *[_type=="documentMenu"] {
     button1Text,
