@@ -1,14 +1,22 @@
 import CustomButton from "@/components/CustomButton";
 import RoleDisplay from "@/components/userAdmin/RoleDisplay";
+import { getUserSubscriptionStatus } from "@/app/actions/getUserSubscriptionStatus";
 import { currentUserRoles } from "@/lib/currentUserRoles";
-import { type UserCardProps } from "@/types/types";
-import type { UserData } from "@clerk/types";
+import type { UserOverviewProps } from "@/types/types";
+import SubscriptionStatus from "./SubscriptionStatus";
 
-export default function UserOveview({ user, ...rest }: UserCardProps) {
+export default async function UserOveview({
+  user,
+  ...rest
+}: UserOverviewProps) {
   if (!user) {
     console.warn("No user");
     return null;
   }
+
+  const subscriptionResult = await getUserSubscriptionStatus(user.id);
+  const initialSubscriptionStatus =
+    subscriptionResult.success?.emailSubscription ?? false;
 
   const { firstName, lastName } = user;
   const { isAdmin, isEditor } = currentUserRoles(user);
@@ -25,6 +33,11 @@ export default function UserOveview({ user, ...rest }: UserCardProps) {
           administrator kan du også redigere innhold og administrere brukere som
           skal ha tilgang til de lukkede områdene av nettsidene.
         </p>
+
+        <SubscriptionStatus
+          userId={user.id}
+          initialSubscriptionStatus={initialSubscriptionStatus}
+        />
 
         <div className="flex gap-4">
           <div>

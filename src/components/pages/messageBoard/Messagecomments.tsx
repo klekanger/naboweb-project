@@ -46,6 +46,7 @@ export default function MessageComments({
   const [deletingCommentKey, setDeletingCommentKey] = useState<string>("");
   const [isClient, setIsClient] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeletingComment, setIsDeletingComment] = useState(false);
 
   // Modal state using custom hook
   const {
@@ -183,6 +184,8 @@ export default function MessageComments({
   const handleConfirmDelete = async () => {
     if (!deletingCommentKey) return;
 
+    setIsDeletingComment(true);
+
     try {
       const response = await fetch("/api/delete-comment", {
         method: "POST",
@@ -216,6 +219,7 @@ export default function MessageComments({
       setIsConfirmDelete(false);
     } finally {
       setDeletingCommentKey("");
+      setIsDeletingComment(false);
     }
   };
 
@@ -433,6 +437,7 @@ export default function MessageComments({
                         modalForComments.onClose();
                       }
                     }}
+                    isLoading={isDeletingComment}
                   >
                     {modalOkText}
                   </Button>

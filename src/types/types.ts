@@ -236,7 +236,7 @@ export type UpdateUserType = Omit<NewUser, "password" | "email"> & {
   id: string;
 };
 
-export type UserCardProps = {
+export type UserOverviewProps = {
   user: UserWithRoles;
   className?: string;
 };

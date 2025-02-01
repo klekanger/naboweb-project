@@ -29,6 +29,14 @@ export default defineType({
       title: "E-post",
     }),
     defineField({
+      name: "emailSubscription",
+      type: "boolean",
+      title: "Får oppdateringer på e-post",
+      hidden: false,
+      description:
+        "Om personen vil ha oppdatering på e-post når det har kommet nytt innhold eller nye meldinger.",
+    }),
+    defineField({
       name: "authorImage",
       type: "image",
       title: "Forfatter-bilde",

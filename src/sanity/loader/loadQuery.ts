@@ -1,15 +1,16 @@
-import {
-  type MESSAGEBOARD_QUERYResult,
-  type BlogPost,
-  type DOCUMENTMENU_QUERYResult,
-  type FRONTPAGE_HERO_QUERYResult,
-  type FRONTPAGE_SERVICES_QUERYResult,
-  type MEETING_MINUTES_BY_ID_QUERYResult,
-  type MEETING_MINUTES_QUERYResult,
-  type OTHER_DOCUMENTS_QUERYResult,
-  type Page,
-  type SHOWCASE_QUERYResult,
+import type {
+  MESSAGEBOARD_QUERYResult,
+  BlogPost,
+  DOCUMENTMENU_QUERYResult,
+  FRONTPAGE_HERO_QUERYResult,
+  FRONTPAGE_SERVICES_QUERYResult,
+  MEETING_MINUTES_BY_ID_QUERYResult,
+  MEETING_MINUTES_QUERYResult,
+  OTHER_DOCUMENTS_QUERYResult,
+  Page,
+  SHOWCASE_QUERYResult,
   MESSAGE_BY_ID_QUERYResult,
+  USER_SUBSCRIPTION_STATUS_QUERYResult,
 } from "@/types/sanity.types";
 import {
   BLOG_BY_SLUG_QUERY,
@@ -24,6 +25,7 @@ import {
   PAGE_BY_SLUG_QUERY,
   PRIVATE_BLOG_BY_SLUG_QUERY,
   SHOWCASE_QUERY,
+  USER_SUBSCRIPTION_STATUS_QUERY,
 } from "../lib/queries";
 import { loadQuery } from "../lib/store";
 
@@ -131,5 +133,13 @@ export async function loadMessageById(id: string) {
     MESSAGE_BY_ID_QUERY,
     { id },
     { next: { tags: ["message"] } },
+  );
+}
+
+export async function loadUserSubscriptionStatus(id: string) {
+  return loadQuery<USER_SUBSCRIPTION_STATUS_QUERYResult>(
+    USER_SUBSCRIPTION_STATUS_QUERY,
+    { id },
+    { next: { tags: ["userSubscriptionStatus"] } },
   );
 }
