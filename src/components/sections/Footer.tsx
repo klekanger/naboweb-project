@@ -52,3 +52,5 @@ export default function Footer() {
     </footer>
   );
 }
+
+// TODO fetch this from sanity
