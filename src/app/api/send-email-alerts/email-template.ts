@@ -1,6 +1,24 @@
 import { SITE_NAME } from "@/lib/constants";
 import { PortableTextBlock } from "@portabletext/types";
 import { toPlainText } from "@portabletext/react";
+import createDOMPurify from "dompurify";
+import { JSDOM } from "jsdom";
+
+const window = new JSDOM("").window;
+const DOMPurify = createDOMPurify(window);
+
+// Helper function to sanitize user-generated content
+const sanitizeHtml = (str: string | null | undefined): string => {
+  if (!str) return "";
+  return DOMPurify.sanitize(str, {
+    ALLOWED_TAGS: [], // Only allow text, strip all HTML tags
+    ALLOWED_ATTR: [], // Strip all attributes
+    RETURN_DOM: false,
+    RETURN_DOM_FRAGMENT: false,
+    RETURN_TRUSTED_TYPE: false,
+    WHOLE_DOCUMENT: false,
+  });
+};
 
 export interface Content {
   messages: {
@@ -238,9 +256,9 @@ export const emailTemplate = ({
                 (message) => `
               <div class="item">
                 <a href="${baseUrl}/messageboard/${message._id}" style="text-decoration: none; color: inherit;">
-                  <div class="item-title">${message.title}</div> 
+                  <div class="item-title">${sanitizeHtml(message.title)}</div> 
                   <div class="item-byline">
-                    <span>Av: ${message.author?.firstName || ""} ${message.author?.lastName || "-"}</span>
+                    <span>Av: ${sanitizeHtml(message.author?.firstName)} ${sanitizeHtml(message.author?.lastName) || "-"}</span>
                     <span> | ${new Date(message._createdAt).toLocaleDateString("nb-NO")}</span>
                   </div>
                 </a>
@@ -263,11 +281,11 @@ export const emailTemplate = ({
                 (comment) => `
               <div class="item">
                 <a href="${baseUrl}/messageboard/${comment.parentMessageId}" style="text-decoration: none; color: inherit;">
-                <div class="item-title">Kommentar til: <span class="item-title-light">${comment.parentMessageTitle}</span></div>
-                <div class="item-subtitle">${comment.commentTitle}</div>
-                  <div class="item-text">${comment.commentText || ""}</div>
+                <div class="item-title">Kommentar til: <span class="item-title-light">${sanitizeHtml(comment.parentMessageTitle)}</span></div>
+                <div class="item-subtitle">${sanitizeHtml(comment.commentTitle)}</div>
+                  <div class="item-text">${sanitizeHtml(comment.commentText)}</div>
                   <div class="item-byline">
-                    <span>Av: ${comment.commentAuthor?.firstName || ""} ${comment.commentAuthor?.lastName || ""}</span>
+                    <span>Av: ${sanitizeHtml(comment.commentAuthor?.firstName)} ${sanitizeHtml(comment.commentAuthor?.lastName)}</span>
                     <span> | ${new Date(comment._createdAt).toLocaleDateString("nb-NO")}</span>
                   </div>
                 </a>
@@ -290,8 +308,8 @@ export const emailTemplate = ({
                 (post) => `
               <div class="item">
                 <a href="${baseUrl}${post.privatePost ? `/information/post/${post.slug.current}` : `/blog/${post.slug.current}`}" style="text-decoration: none; color: inherit;">
-                  <div class="item-title">${post.title}</div>
-                  ${post.excerpt ? `<div class="item-meta">${toPlainText(post.excerpt)}</div>` : ""}
+                  <div class="item-title">${sanitizeHtml(post.title)}</div>
+                  ${post.excerpt ? `<div class="item-meta">${sanitizeHtml(toPlainText(post.excerpt))}</div>` : ""}
                   <div class="item-byline">
                     <span>Opprettet: ${new Date(post._createdAt).toLocaleDateString("nb-NO")}</span>
                   </div>
@@ -315,8 +333,8 @@ export const emailTemplate = ({
                 (meeting) => `
               <div class="item">
                 <a href="${baseUrl}/information/referater/${meeting._id}" style="text-decoration: none; color: inherit;">
-                  <div class="item-title">${meeting.title} | ${new Date(meeting.meetingDate).toLocaleDateString("nb-NO")} | ${meeting.meetingPlace}</div>
-                  ${meeting.description ? `<div class="item-meta">${meeting.description}</div>` : ""}
+                  <div class="item-title">${sanitizeHtml(meeting.title)} | ${new Date(meeting.meetingDate).toLocaleDateString("nb-NO")} | ${sanitizeHtml(meeting.meetingPlace)}</div>
+                  ${meeting.description ? `<div class="item-meta">${sanitizeHtml(meeting.description)}</div>` : ""}
                   <div class="item-byline">
                     <span>Oppdatert: ${new Date(meeting._updatedAt).toLocaleDateString("nb-NO")}</span>
                   </div>
@@ -340,8 +358,8 @@ export const emailTemplate = ({
                 (file) => `
               <div class="item">
                 <a href="${file.document?.asset?.url || ""}" style="text-decoration: none; color: inherit;">
-                 <div class="item-title">${file.title}</div>
-                ${file.description ? `<div class="item-meta">${file.description}</div>` : ""}
+                 <div class="item-title">${sanitizeHtml(file.title)}</div>
+                ${file.description ? `<div class="item-meta">${sanitizeHtml(file.description)}</div>` : ""}
                   <div class="item-byline">
                    <span>Oppdatert: ${new Date(file._updatedAt).toLocaleDateString("nb-NO")}</span>
                   </div>
