@@ -214,7 +214,7 @@ export async function POST() {
   }
 }
 
-// Example email sending function - replace with your actual email service
+// Send email using nodemailer
 async function sendEmail({
   bcc,
   subject,
