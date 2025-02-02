@@ -9,6 +9,7 @@ import { toPlainText } from "next-sanity";
 import { urlForOpenGraphImage } from "@/sanity/lib/utils";
 import type { Image as SanityImage } from "sanity";
 import dynamic from "next/dynamic";
+import { SITE_NAME, SITE_URL } from "@/lib/constants";
 
 const BlogPagePreview = dynamic(
   () => import("@/components/pages/blog/BlogPagePreview"),
@@ -21,7 +22,10 @@ type Props = {
 //
 // Generate metadata for the current page
 //
-export async function generateMetadata(props: Props, parent: ResolvingMetadata): Promise<Metadata> {
+export async function generateMetadata(
+  props: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
   const params = await props.params;
   const slug = params?.slug ?? "";
   const post = await loadBlogPageBySlug(slug);
@@ -42,8 +46,8 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
       title: title ?? "",
       description: plainTextExcerpt ?? "",
       locale: "nb_NO",
-      siteName: "Boligsameiet Gartnerihagen",
-      url: `https://gartnerihagen-askim.no/blog/${slug}`,
+      siteName: SITE_NAME,
+      url: `${SITE_URL}/blog/${slug}`,
     },
   };
 }
@@ -58,11 +62,9 @@ export async function generateStaticParams() {
 //
 // Generate the blog page
 //
-export default async function BlogRoute(
-  props: {
-    params: Promise<{ slug: string }>;
-  }
-) {
+export default async function BlogRoute(props: {
+  params: Promise<{ slug: string }>;
+}) {
   const params = await props.params;
   const initial = await loadBlogPageBySlug(params?.slug);
 
