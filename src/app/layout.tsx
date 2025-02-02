@@ -7,6 +7,7 @@ import { nbNO } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Montserrat, Open_Sans } from "next/font/google";
 import "./globals.css";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/constants";
 
 const openSans = Open_Sans({
   subsets: ["latin"],
@@ -22,9 +23,9 @@ const montserrat = Montserrat({
 });
 
 export const metadata = {
-  metadataBase: new URL("https://gartnerihagen-askim.no"),
-  title: "Boligsameiet Gartnerihagen",
-  description: "Askims hyggeligste nabolag",
+  metadataBase: new URL(SITE_URL),
+  title: SITE_NAME,
+  description: SITE_DESCRIPTION,
 };
 
 export default function RootLayout({

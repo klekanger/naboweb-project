@@ -5,12 +5,13 @@ import "@/app/globals.css";
 import { AutomaticVisualEditing } from "@/components/AutomaticVisualEditing";
 import Footer from "@/components/sections/Footer";
 import Navbar from "@/components/sections/Navbar";
+import { SITE_NAME, SITE_DESCRIPTION } from "@/lib/constants";
 import { draftMode } from "next/headers";
 import { Suspense } from "react";
 
 export const metadata = {
-  title: "Boligsameiet Gartnerihagen",
-  description: "Askims hyggeligste nabolag",
+  title: SITE_NAME,
+  description: SITE_DESCRIPTION,
 };
 
 export default async function ArticlePageLayout({
