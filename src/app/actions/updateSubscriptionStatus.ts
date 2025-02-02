@@ -40,8 +40,14 @@ export async function updateSubscriptionStatus(
       };
     }
 
-    const emailSubscription = data.emailSubscription ?? false;
-    console.log("Current subscription status:", { userId, emailSubscription });
+    const currentSubscriptionStatus = data.emailSubscription ?? false;
+    const newSubscriptionStatus = !currentSubscriptionStatus;
+
+    console.log("Subscription status:", {
+      userId,
+      currentStatus: currentSubscriptionStatus,
+      newStatus: newSubscriptionStatus,
+    });
 
     try {
       // Validate the user document exists before attempting to patch
@@ -54,19 +60,51 @@ export async function updateSubscriptionStatus(
         };
       }
 
-      const result = await clientWithWriteAccess
-        .patch(userId)
-        .set({
-          emailSubscription: !emailSubscription,
-        })
-        .commit();
+      console.log("Current user document:", userDoc);
+
+      // Create a transaction
+      const transaction = clientWithWriteAccess.transaction();
+
+      // Add the patch operation to the transaction
+      transaction.patch(userId, {
+        set: {
+          emailSubscription: newSubscriptionStatus,
+          _type: "authors", // Explicitly set the document type
+        },
+      });
+
+      // Commit the transaction
+      const result = await transaction.commit();
 
       console.log("Sanity write result:", result);
 
+      // Verify the update
+      const updatedDoc = await clientWithWriteAccess.getDocument(userId);
+      console.log("Updated user document:", updatedDoc);
+
+      // Double-check if the value was actually updated
+      if (
+        !updatedDoc ||
+        typeof updatedDoc.emailSubscription !== "boolean" ||
+        updatedDoc.emailSubscription !== newSubscriptionStatus
+      ) {
+        console.error("Value not updated correctly:", {
+          expected: newSubscriptionStatus,
+          actual: updatedDoc?.emailSubscription,
+          document: updatedDoc,
+        });
+        return {
+          error: {
+            message: "Failed to update subscription status - value mismatch",
+          },
+          status: 500,
+        };
+      }
+
       return {
         success: {
-          emailSubscription: !emailSubscription,
-          message: "Successfully updated subscription status",
+          emailSubscription: newSubscriptionStatus,
+          message: `Successfully ${newSubscriptionStatus ? "enabled" : "disabled"} email subscription`,
         },
         status: 200,
       };
@@ -77,7 +115,8 @@ export async function updateSubscriptionStatus(
           writeError instanceof Error ? writeError.message : "Unknown error",
         errorStack: writeError instanceof Error ? writeError.stack : undefined,
         userId,
-        attemptedValue: !emailSubscription,
+        currentStatus: currentSubscriptionStatus,
+        attemptedNewStatus: newSubscriptionStatus,
         token: process.env.SANITY_API_WRITE_TOKEN ? "Present" : "Missing",
         clientConfig: {
           projectId: clientWithWriteAccess.config().projectId,
