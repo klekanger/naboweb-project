@@ -3,7 +3,7 @@
 import { clientWithWriteAccess } from "@/sanity/lib/client";
 import { currentUser } from "@clerk/nextjs/server";
 import { type NextRequest, NextResponse } from "next/server";
-import { loadUserSubscriptionStatus } from "@/sanity/loader/loadQuery";
+import { USER_SUBSCRIPTION_STATUS_QUERY } from "@/sanity/lib/queries";
 
 export async function updateSubscriptionStatus(
   userId: string,
@@ -30,9 +30,13 @@ export async function updateSubscriptionStatus(
   }
 
   try {
-    const { data } = await loadUserSubscriptionStatus(userId);
+    // Get current subscription status directly from Sanity
+    const currentData = await clientWithWriteAccess.fetch(
+      USER_SUBSCRIPTION_STATUS_QUERY,
+      { id: userId },
+    );
 
-    if (!data) {
+    if (!currentData) {
       console.error("No subscription data found for userId:", userId);
       return {
         error: { message: "No subscription data found" },
@@ -40,7 +44,7 @@ export async function updateSubscriptionStatus(
       };
     }
 
-    const currentSubscriptionStatus = data.emailSubscription ?? false;
+    const currentSubscriptionStatus = currentData.emailSubscription ?? false;
     const newSubscriptionStatus = !currentSubscriptionStatus;
 
     console.log("Subscription status:", {
@@ -78,20 +82,24 @@ export async function updateSubscriptionStatus(
 
       console.log("Sanity write result:", result);
 
-      // Verify the update
-      const updatedDoc = await clientWithWriteAccess.getDocument(userId);
-      console.log("Updated user document:", updatedDoc);
+      // Verify the update by fetching directly from Sanity
+      const updatedData = await clientWithWriteAccess.fetch(
+        USER_SUBSCRIPTION_STATUS_QUERY,
+        { id: userId },
+      );
+
+      console.log("Updated subscription data:", updatedData);
 
       // Double-check if the value was actually updated
       if (
-        !updatedDoc ||
-        typeof updatedDoc.emailSubscription !== "boolean" ||
-        updatedDoc.emailSubscription !== newSubscriptionStatus
+        !updatedData ||
+        typeof updatedData.emailSubscription !== "boolean" ||
+        updatedData.emailSubscription !== newSubscriptionStatus
       ) {
         console.error("Value not updated correctly:", {
           expected: newSubscriptionStatus,
-          actual: updatedDoc?.emailSubscription,
-          document: updatedDoc,
+          actual: updatedData?.emailSubscription,
+          document: updatedData,
         });
         return {
           error: {
