@@ -6,12 +6,14 @@
  *
  */
 
+import { apiVersion, dataset, projectId } from "@/sanity/env";
 import { createClient } from "@sanity/client";
 import { Redis } from "@upstash/redis";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-
-import { apiVersion, dataset, projectId } from "@/sanity/env";
+import { emailTemplate } from "./email-template";
+import nodemailer from "nodemailer";
+import { SITE_NAME } from "@/lib/constants";
 
 const client = createClient({
   projectId,
@@ -22,6 +24,16 @@ const client = createClient({
 });
 
 const redis = Redis.fromEnv();
+
+const transporter = nodemailer.createTransport({
+  host: process.env.AWS_SMTP_HOST,
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.AWS_SMTP_USER,
+    pass: process.env.AWS_SMTP_PASSWORD,
+  },
+});
 
 export async function POST() {
   const headersList = await headers();
@@ -54,11 +66,39 @@ export async function POST() {
       `*[_type == "message" && dateTime(_createdAt) > dateTime($lastRunTime)]{
         title,
         _id,
-        author,
+        _createdAt,
+        _updatedAt,
+        author->{firstName, lastName},
+        comments[]{published, commentTitle, commentAuthor->{
+          firstName, 
+          lastName
+      }}
       }`,
       {
         lastRunTime: overrideDate || lastRunTime,
       },
+    );
+
+    // Query for new comments to messages
+    const messagesWithNewComments = await client.fetch(
+      `*[_type == "message" && comments != null && count(comments) > 0 && dateTime(_updatedAt) > dateTime($lastRunTime)]{
+        _id,
+        title,
+        _createdAt,
+        _updatedAt,
+        comments[]{
+          published, 
+          commentTitle, 
+          commentText,
+          _createdAt,
+          _updatedAt,
+          commentAuthor->{
+            firstName, 
+            lastName
+          }
+        }
+      }`,
+      { lastRunTime: overrideDate || lastRunTime },
     );
 
     // Query for new blog posts
@@ -67,6 +107,9 @@ export async function POST() {
         title,
         excerpt,
         slug,
+        privatePost,
+        _createdAt,
+        _updatedAt
       }`,
       {
         lastRunTime: overrideDate || lastRunTime,
@@ -76,10 +119,13 @@ export async function POST() {
     // Query for new meeting minutes
     const fileMeetingMinutes = await client.fetch(
       `*[_type == "fileMeetingMinutes" && dateTime(_updatedAt) > dateTime($lastRunTime)]{
-      _createdAt,
-      _updatedAt,
-      title, 
-      description,
+        _id,
+        _createdAt,
+        _updatedAt,
+        title, 
+        description,
+        meetingDate,
+        meetingPlace,
       }`,
       { lastRunTime: overrideDate || lastRunTime },
     );
@@ -87,35 +133,72 @@ export async function POST() {
     // Query for new documents
     const fileOtherDocuments = await client.fetch(
       `*[_type == "fileOtherDocuments" && dateTime(_updatedAt) > dateTime($lastRunTime)]{
-      _createdAt,
-      _updatedAt,
-      title, 
-      description,
+        _id,
+        _createdAt,
+        _updatedAt,
+        title, 
+        description,
+        'document': otherDocument{
+          asset->{url, _id, originalFilename}
+        }
       }`,
       { lastRunTime: overrideDate || lastRunTime },
     );
 
-    console.log("messages", messages);
-    console.log("posts", posts);
-    console.log("fileMeetingMinutes", fileMeetingMinutes);
-    console.log("fileOtherDocuments", fileOtherDocuments);
+    // Check if there is any new content
+    const hasNewContent =
+      messages.length > 0 ||
+      posts.length > 0 ||
+      fileMeetingMinutes.length > 0 ||
+      fileOtherDocuments.length > 0 ||
+      messagesWithNewComments.length > 0;
 
-    // Send email to each subscriber
-    for (const subscriber of subscribers) {
-      if (!subscriber.email) continue;
-
-      // Here you would integrate with your email service of choice
-      // Example with a hypothetical email service:
-      await sendEmail({
-        to: subscriber.email,
-        subject: "New Content Update",
-        body: `Hello ${subscriber.firstName},\n\nThere's new content available...`,
+    if (!hasNewContent) {
+      return NextResponse.json({
+        success: {
+          message: "No new content since last run.",
+        },
+        status: 200,
       });
     }
 
+    const emailContent = emailTemplate({
+      content: {
+        messages,
+        posts,
+        fileMeetingMinutes,
+        fileOtherDocuments,
+        messagesWithNewComments,
+      },
+      baseUrl: process.env.NEXT_PUBLIC_BASE_URL || "",
+    });
+
+    // Filter out subscribers without email addresses
+    const validSubscribers = subscribers.filter(
+      (subscriber: { email: string | null }) => subscriber.email,
+    );
+
+    if (validSubscribers.length === 0) {
+      return NextResponse.json({
+        success: {
+          message: "No subscribers with valid email addresses found.",
+        },
+        status: 200,
+      });
+    }
+
+    // Send one email to all subscribers using BCC
+    await sendEmail({
+      bcc: validSubscribers.map(
+        (subscriber: { email: string }) => subscriber.email,
+      ),
+      subject: `Nytt innhold på nettsidene til ${SITE_NAME}`,
+      body: emailContent,
+    });
+
     return NextResponse.json({
       success: {
-        message: `Sent emails to ${subscribers.length} subscribers`,
+        message: `Sent email to ${validSubscribers.length} subscribers`,
       },
       status: 200,
     });
@@ -133,19 +216,29 @@ export async function POST() {
 
 // Example email sending function - replace with your actual email service
 async function sendEmail({
-  to,
+  bcc,
   subject,
   body,
 }: {
-  to: string;
+  bcc: string[];
   subject: string;
   body: string;
 }) {
-  // Implement  email sending logic here
+  try {
+    const info = await transporter.sendMail({
+      from: process.env.AWS_SMTP_FROM_EMAIL,
+      to: process.env.AWS_SMTP_FROM_EMAIL, // Send to self
+      bcc, // BCC all subscribers
+      subject,
+      html: body,
+    });
 
-  console.log(`Sending email to ${to}`);
+    console.log(`Email sent to ${bcc.length} subscribers: ${info.messageId}`);
+    return info;
+  } catch (error) {
+    console.error(`Failed to send email to subscribers:`, error);
+    throw error;
+  }
 }
 
-// TODO add email sending logic
 // TODO add cron job to trigger this route
-// TODO add email sending logic
