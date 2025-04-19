@@ -7,8 +7,7 @@ import {
   UserAdminContext,
 } from "@/context/userAdminContext";
 import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
-import type { UserWithEmails } from "@/types/types";
-import { NewUser } from "@/types/types";
+import type { UserWithEmails, NewUser } from "@/types/types";
 import {
   Button,
   Checkbox,

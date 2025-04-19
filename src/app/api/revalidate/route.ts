@@ -36,11 +36,11 @@ export async function POST(req: NextRequest) {
     }>(req, revalidateSecret);
     if (!isValidSignature) {
       const message = "Invalid signature";
-      return new Response(message, { status: 401 });
+      return Response.json({ message }, { status: 401 });
     }
 
     if (!body?._type) {
-      return new Response("Bad Request", { status: 400 });
+      return Response.json({ message: "Bad Request" }, { status: 400 });
     }
 
     revalidateTag(body._type);
@@ -57,6 +57,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (err: any) {
     console.error(err);
-    return new Response(err.message, { status: 500 });
+    return Response.json({ message: err.message }, { status: 500 });
   }
 }

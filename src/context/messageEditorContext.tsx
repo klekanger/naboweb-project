@@ -1,13 +1,12 @@
 "use client";
 
-import { createContext, useState } from "react";
 import type { MessageType } from "@/types/types";
-import { EditorContent, useEditor, Editor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Underline from "@tiptap/extension-underline";
 import CharacterCount from "@tiptap/extension-character-count";
 import Placeholder from "@tiptap/extension-placeholder";
-import type { Message } from "@/types/sanity.types";
+import Underline from "@tiptap/extension-underline";
+import { Editor, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import { createContext, useState } from "react";
 
 type MessageEditorContextType = {
   editor: Editor | null;
