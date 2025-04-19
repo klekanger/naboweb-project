@@ -41,21 +41,21 @@
     "autoprefixer": "10.4.14",
     "dompurify": "^3.2.4",
     "eslint": "^9.19.0",
-    "eslint-config-next": "15.1.5",
+    "eslint-config-next": "15.3.1",
     "jsdom": "^26.0.0",
     "lucide-react": "^0.408.0",
     "motion": "^11.18.1",
-    "next": "15.1.5",
+    "next": "15.3.1",
     "next-sanity": "^9.8.30",
     "next-themes": "^0.2.1",
     "nodemailer": "^6.10.0",
     "postcss": "8.4.24",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "react-player": "^2.16.0",
     "react-tweet": "^3.2.1",
     "react-twitter-embed": "^4.0.4",
-    "sanity": "^3.68.3",
+    "sanity": "^3.85.1",
     "server-only": "^0.0.1",
     "styled-components": "^6.1.13",
     "tailwindcss": "3.4.3"
@@ -66,8 +66,8 @@
     "@tailwindcss/typography": "^0.5.15",
     "@types/node": "20.11.0",
     "@types/nodemailer": "^6.4.17",
-    "@types/react": "19.0.7",
-    "@types/react-dom": "19.0.3",
+    "@types/react": "19.1.2",
+    "@types/react-dom": "19.1.2",
     "eslint-config-prettier": "^10.0.1",
     "prettier": "3.3.1",
     "typescript": "^5.7.2"
@@ -75,8 +75,8 @@
   "packageManager": "pnpm@9.2.0+sha256.94fab213df221c55b6956b14a2264c21c6203cca9f0b3b95ff2fe9b84b120390",
   "pnpm": {
     "overrides": {
-      "@types/react": "19.0.7",
-      "@types/react-dom": "19.0.3"
+      "@types/react": "19.1.2",
+      "@types/react-dom": "19.1.2"
     }
   }
 }
