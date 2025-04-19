@@ -2,6 +2,7 @@
 
 import MessageEditor from "@/components/pages/messageBoard/MessageEditor";
 import { MessageEditorContext } from "@/context/messageEditorContext";
+import { useModalState } from "@/hooks/useModalState";
 import { compareClerkAndSanityUser } from "@/lib/compareClerkAndSanityUser";
 import { currentUserRoles } from "@/lib/currentUserRoles";
 import { CustomPortableText } from "@/lib/CustomPortableText";
@@ -20,7 +21,6 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  useDisclosure,
 } from "@heroui/react";
 import { htmlToBlocks } from "@sanity/block-tools";
 import { Schema } from "@sanity/schema";
@@ -38,7 +38,6 @@ import { notFound, useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 import type { Image as SanityImage } from "sanity";
 import MessageComments from "./Messagecomments";
-import { useModalState } from "@/hooks/useModalState";
 
 const IMAGE_WIDTH = 800;
 const IMAGE_HEIGHT = 600;
@@ -261,18 +260,6 @@ export default function MessagePage(props: MessagePageProps) {
   // Delete the message from Sanity
   // *********************************************************************
 
-  const handleDelete = async () => {
-    setModalTitle("Bekreft sletting");
-    setModalBody(
-      "Er du sikker på at du vil slette dette innlegget? Dette kan ikke angres.",
-    );
-    setModalOkText("Slett");
-    setModalCancelText("Avbryt");
-    setModalCancelDisabled(false);
-    setModalOkUrl("");
-    modalForMessages.onOpen();
-  };
-
   const handleDeleteMessage = () => {
     setModalTitle("Bekreft sletting");
     setModalBody(
@@ -302,7 +289,12 @@ export default function MessagePage(props: MessagePageProps) {
       const data = await response.json();
 
       if ("success" in data) {
-        router.push("/messageboard");
+        setModalTitle("Innlegget ble slettet");
+        setModalBody("Du blir nå tatt tilbake til oppslagstavlen.");
+        setModalOkText("OK");
+        setModalOkUrl("/messageboard");
+        setModalCancelDisabled(true);
+        modalForMessages.onOpen();
       }
 
       if ("error" in data) {
@@ -318,7 +310,6 @@ export default function MessagePage(props: MessagePageProps) {
     } finally {
       setIsDeletingMessage(false);
     }
-    modalForMessages.onClose();
   };
 
   return (
@@ -490,9 +481,13 @@ export default function MessagePage(props: MessagePageProps) {
                 <Button
                   color="primary"
                   onPress={() => {
-                    resetModal();
-                    modalForMessages.onClose();
-                    router.push(modalOkUrl);
+                    if (modalTitle === "Bekreft sletting") {
+                      deleteMessageAfterConfirmation();
+                    } else {
+                      resetModal();
+                      modalForMessages.onClose();
+                      router.push(modalOkUrl);
+                    }
                   }}
                 >
                   {modalOkText}
@@ -507,5 +502,3 @@ export default function MessagePage(props: MessagePageProps) {
 }
 
 // TODO Refresh the messageboard after updating a message
-
-// TODO Check that deleting messages work

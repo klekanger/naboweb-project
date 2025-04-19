@@ -1,15 +1,30 @@
 "use server";
 
 import { clientWithWriteAccess } from "@/sanity/lib/client";
-import { currentUser } from "@clerk/nextjs/server";
-import { type NextRequest, NextResponse } from "next/server";
 import { USER_SUBSCRIPTION_STATUS_QUERY } from "@/sanity/lib/queries";
+import { currentUser } from "@clerk/nextjs/server";
 
-export async function updateSubscriptionStatus(
-  userId: string,
-  isSubscribed: boolean,
-) {
-  // Validate that we have a write token
+type UpdateSubscriptionParams = {
+  userId: string;
+  isSubscribed: boolean;
+};
+
+type UpdateSubscriptionResponse = {
+  success?: {
+    emailSubscription: boolean;
+    message: string;
+  };
+  error?: {
+    message: string;
+    details?: string;
+  };
+  status: number;
+};
+
+export async function updateSubscriptionStatus({
+  userId,
+  isSubscribed,
+}: UpdateSubscriptionParams): Promise<UpdateSubscriptionResponse> {
   if (!process.env.SANITY_API_WRITE_TOKEN) {
     console.error("Missing SANITY_API_WRITE_TOKEN");
     return {
@@ -23,72 +38,52 @@ export async function updateSubscriptionStatus(
 
   if (!user || !userRoles.roles.includes("user")) {
     console.error("Authorization failed:", { user, userRoles });
-    return NextResponse.json({
+    return {
       error: { message: "Unauthorized" },
       status: 401,
-    });
+    };
   }
 
   try {
     // Get current subscription status directly from Sanity
-    const currentData = await clientWithWriteAccess.fetch(
-      USER_SUBSCRIPTION_STATUS_QUERY,
-      { id: userId },
-    );
+    const currentData = await clientWithWriteAccess.fetch<{
+      emailSubscription: boolean | null;
+    }>(USER_SUBSCRIPTION_STATUS_QUERY, { id: userId }, { useCdn: false });
 
-    if (!currentData) {
-      console.error("No subscription data found for userId:", userId);
-      return {
-        error: { message: "No subscription data found" },
-        status: 404,
-      };
-    }
-
-    const currentSubscriptionStatus = currentData.emailSubscription ?? false;
+    const currentSubscriptionStatus = currentData?.emailSubscription ?? false;
     const newSubscriptionStatus = !currentSubscriptionStatus;
 
-    console.log("Subscription status:", {
-      userId,
-      currentStatus: currentSubscriptionStatus,
-      newStatus: newSubscriptionStatus,
-    });
-
     try {
-      // Validate the user document exists before attempting to patch
-      const userDoc = await clientWithWriteAccess.getDocument(userId);
-      if (!userDoc) {
-        console.error("User document not found in Sanity:", userId);
-        return {
-          error: { message: "User not found in database" },
-          status: 404,
-        };
-      }
-
-      console.log("Current user document:", userDoc);
-
       // Create a transaction
       const transaction = clientWithWriteAccess.transaction();
 
-      // Add the patch operation to the transaction
+      // Add createIfNotExists to handle new users and patch for existing ones
+      // Should not be necessary as NEXT_PUBLIC_CLERK_SIGN_IN_FORCE_REDIRECT_URL is set in clerk redirecting to api/create-sanity-user
+      transaction.createIfNotExists({
+        _id: userId,
+        _type: "authors",
+        emailSubscription: newSubscriptionStatus,
+      });
+
       transaction.patch(userId, {
         set: {
           emailSubscription: newSubscriptionStatus,
-          _type: "authors", // Explicitly set the document type
         },
       });
 
-      // Commit the transaction
-      const result = await transaction.commit();
+      // Commit the transaction with a tag for tracking
+      await transaction.commit({
+        tag: "subscription-update",
+      });
 
-      console.log("Sanity write result:", result);
-
-      // Verify the update by fetching directly from Sanity
-      const updatedData = await clientWithWriteAccess.fetch(
+      // Verify the update by fetching directly from Sanity with cache disabled
+      const updatedData = await clientWithWriteAccess.fetch<{
+        emailSubscription: boolean | null;
+      }>(
         USER_SUBSCRIPTION_STATUS_QUERY,
         { id: userId },
+        { perspective: "published", useCdn: false },
       );
-
-      console.log("Updated subscription data:", updatedData);
 
       // Double-check if the value was actually updated
       if (
@@ -96,10 +91,9 @@ export async function updateSubscriptionStatus(
         typeof updatedData.emailSubscription !== "boolean" ||
         updatedData.emailSubscription !== newSubscriptionStatus
       ) {
-        console.error("Value not updated correctly:", {
+        console.error("Subscription status not updated correctly:", {
           expected: newSubscriptionStatus,
           actual: updatedData?.emailSubscription,
-          document: updatedData,
         });
         return {
           error: {
@@ -121,16 +115,7 @@ export async function updateSubscriptionStatus(
         error: writeError,
         errorMessage:
           writeError instanceof Error ? writeError.message : "Unknown error",
-        errorStack: writeError instanceof Error ? writeError.stack : undefined,
         userId,
-        currentStatus: currentSubscriptionStatus,
-        attemptedNewStatus: newSubscriptionStatus,
-        token: process.env.SANITY_API_WRITE_TOKEN ? "Present" : "Missing",
-        clientConfig: {
-          projectId: clientWithWriteAccess.config().projectId,
-          dataset: clientWithWriteAccess.config().dataset,
-          apiVersion: clientWithWriteAccess.config().apiVersion,
-        },
       });
       return {
         error: {
@@ -145,7 +130,6 @@ export async function updateSubscriptionStatus(
     console.error("Error updating subscription status:", {
       error,
       errorMessage: error instanceof Error ? error.message : "Unknown error",
-      errorStack: error instanceof Error ? error.stack : undefined,
       userId,
     });
     return {
