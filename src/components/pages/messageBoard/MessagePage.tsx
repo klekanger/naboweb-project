@@ -489,8 +489,11 @@ export default function MessagePage(props: MessagePageProps) {
                 </Button>
                 <Button
                   color="primary"
-                  onPress={deleteMessageAfterConfirmation}
-                  isLoading={isDeletingMessage}
+                  onPress={() => {
+                    resetModal();
+                    modalForMessages.onClose();
+                    router.push(modalOkUrl);
+                  }}
                 >
                   {modalOkText}
                 </Button>
@@ -502,3 +505,7 @@ export default function MessagePage(props: MessagePageProps) {
     </>
   );
 }
+
+// TODO Refresh the messageboard after updating a message
+
+// TODO Check that deleting messages work
