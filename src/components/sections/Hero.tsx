@@ -4,7 +4,6 @@ import CustomButton from "@/components/CustomButton";
 import { urlForImage } from "@/sanity/lib/utils";
 import type { HeroProps } from "@/types/types";
 import { motion } from "motion/react";
-import { HeartOffIcon } from "lucide-react";
 import Image from "next/image";
 import type { Image as SanityImage } from "sanity";
 

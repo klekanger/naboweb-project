@@ -4,13 +4,14 @@
 
 import {
   BookIcon,
+  DocumentIcon,
   HouseIcon,
   NewsIcon,
   PencilIcon,
-  DocumentIcon,
 } from "@/components/icons";
 import type { IconProps, ServicesProps } from "@/types/types";
 import { Card, CardBody, CardHeader, Tooltip } from "@heroui/react";
+import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { type FunctionComponent } from "react";
 
@@ -101,8 +102,14 @@ export default function Services({ content }: { content: ServicesProps }) {
 
   return (
     <>
-      <section className="py-8 sm:py-16 max-w-7xl m-auto">
-        <div className="gap-8 grid grid-cols-12 grid-rows-1">
+      <section className="py-8 sm:py-16 max-w-7xl m-auto gap-8 grid grid-cols-12 grid-rows-1">
+        <motion.div
+          className="col-span-12 lg:col-span-4"
+          initial={{ opacity: 0, y: 75 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
           <StyledCard
             title={title1 ?? ""}
             description={description1 ?? ""}
@@ -110,6 +117,14 @@ export default function Services({ content }: { content: ServicesProps }) {
             url={url1 ?? "/"}
             icon={icon1 ?? ""}
           />
+        </motion.div>
+        <motion.div
+          className="col-span-12 lg:col-span-4"
+          initial={{ opacity: 0, y: 75 }}
+          transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
           <StyledCard
             title={title2 ?? ""}
             description={description2 ?? ""}
@@ -117,6 +132,14 @@ export default function Services({ content }: { content: ServicesProps }) {
             url={url2 ?? "/"}
             icon={icon2 ?? ""}
           />
+        </motion.div>
+        <motion.div
+          className="col-span-12 lg:col-span-4"
+          initial={{ opacity: 0, y: 75 }}
+          transition={{ duration: 1, ease: "easeOut", delay: 0.4 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
           <StyledCard
             title={title3 ?? ""}
             description={description3 ?? ""}
@@ -124,7 +147,7 @@ export default function Services({ content }: { content: ServicesProps }) {
             url={url3 ?? "/"}
             icon={icon3 ?? ""}
           />
-        </div>
+        </motion.div>
       </section>
     </>
   );
