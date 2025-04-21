@@ -2,22 +2,25 @@
 
 import CustomButton from "@/components/CustomButton";
 import { urlForImage } from "@/sanity/lib/utils";
-import type { HeroProps } from "@/types/types";
+import { type FrontpageHeroQueryResult } from "@/types/sanity.types";
 import { motion } from "motion/react";
 import Image from "next/image";
 import type { Image as SanityImage } from "sanity";
 
-export default function Hero({ content }: { content: HeroProps }) {
-  if (!content || !content?.data) {
+export default function Hero({
+  content,
+}: {
+  content: FrontpageHeroQueryResult;
+}) {
+  if (!content) {
     console.error("Missing heroText from sanity");
     return null;
   }
 
-  const { title, showButton, buttonText, bodyText, buttonLink } =
-    content.data ?? {};
+  const { title, showButton, buttonText, bodyText, buttonLink } = content ?? {};
 
-  const imageUrl = urlForImage(content.data?.heroImage as SanityImage);
-  const { alt, lqip } = content.data.heroImage ?? {};
+  const imageUrl = urlForImage(content?.heroImage as SanityImage);
+  const { alt, lqip } = content.heroImage ?? {};
 
   return (
     <section className="grid grid-rows-[auto,1fr] grid-cols-1 sm:grid-rows-1 sm:grid-cols-12 sm:grid-flow-col gap-y-8 sm:gap-8 px-0 py-8 sm:py-16 max-w-7xl m-auto ">

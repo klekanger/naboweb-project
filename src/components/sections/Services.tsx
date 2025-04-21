@@ -9,28 +9,26 @@ import {
   NewsIcon,
   PencilIcon,
 } from "@/components/icons";
-import type { IconProps, ServicesProps } from "@/types/types";
+import { type FrontpageServicesQueryResult } from "@/types/sanity.types";
+import type { IconProps } from "@/types/types";
 import { Card, CardBody, CardHeader, Tooltip } from "@heroui/react";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { type FunctionComponent } from "react";
+import { stegaClean } from "@sanity/client/stega";
 
 type IconMapType = {
   [key: string]: FunctionComponent<IconProps>;
 };
 
-const iconMap: IconMapType = {
-  HouseIcon,
-  NewsIcon,
-  PencilIcon,
-  BookIcon,
-  DocumentIcon,
-};
-
-export default function Services({ content }: { content: ServicesProps }) {
+export default function Services({
+  content,
+}: {
+  content: FrontpageServicesQueryResult;
+}) {
   const router = useRouter();
 
-  if (!content || !content?.data) {
+  if (!content) {
     console.error("Missing heroText from sanity");
     return null;
   }
@@ -51,7 +49,7 @@ export default function Services({ content }: { content: ServicesProps }) {
     url1,
     url2,
     url3,
-  } = content.data ?? {};
+  } = content ?? {};
 
   function handlePress(url: string | undefined) {
     router.push(url || "/");
@@ -70,7 +68,16 @@ export default function Services({ content }: { content: ServicesProps }) {
     locked: boolean;
     url?: string;
   }) => {
-    const RenderedIcon = iconMap[icon] || iconMap["DocumentIcon"]; // Default to DocumentIcon if not found
+    const IconMap: IconMapType = {
+      HouseIcon,
+      BookIcon,
+      DocumentIcon,
+      NewsIcon,
+      PencilIcon,
+    };
+
+    const cleanIcon = stegaClean(icon);
+    const RenderedIcon = IconMap[cleanIcon as keyof IconMapType];
 
     return (
       <Card
@@ -80,8 +87,7 @@ export default function Services({ content }: { content: ServicesProps }) {
       >
         <CardHeader className="flex-col !items-start hover:">
           <div className=" flex items-center justify-center">
-            {" "}
-            <RenderedIcon width={3} height={3} />
+            {RenderedIcon && <RenderedIcon width={3} height={3} />}
           </div>
         </CardHeader>
 

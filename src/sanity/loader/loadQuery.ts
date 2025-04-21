@@ -1,31 +1,31 @@
 import type {
-  MESSAGEBOARD_QUERYResult,
+  MessageboardQueryResult,
   BlogPost,
-  DOCUMENTMENU_QUERYResult,
-  FRONTPAGE_HERO_QUERYResult,
-  FRONTPAGE_SERVICES_QUERYResult,
-  MEETING_MINUTES_BY_ID_QUERYResult,
-  MEETING_MINUTES_QUERYResult,
-  OTHER_DOCUMENTS_QUERYResult,
+  DocumentMenuQueryResult,
+  FrontpageHeroQueryResult,
+  FrontpageServicesQueryResult,
+  MeetingMinutesByIdQueryResult,
+  MeetingMinutesQueryResult,
+  OtherDocumentsQueryResult,
   Page,
-  SHOWCASE_QUERYResult,
-  MESSAGE_BY_ID_QUERYResult,
-  USER_SUBSCRIPTION_STATUS_QUERYResult,
+  ShowcaseQueryResult,
+  MessageByIdQueryResult,
+  UserSubscriptionStatusQueryResult,
 } from "@/types/sanity.types";
 import {
-  BLOG_BY_SLUG_QUERY,
-  DOCUMENTMENU_QUERY,
-  FRONTPAGE_HERO_QUERY,
-  FRONTPAGE_SERVICES_QUERY,
-  MEETING_MINUTES_BY_ID_QUERY,
-  MEETING_MINUTES_QUERY,
-  MESSAGE_BY_ID_QUERY,
-  MESSAGEBOARD_QUERY,
-  OTHER_DOCUMENTS_QUERY,
-  PAGE_BY_SLUG_QUERY,
-  PRIVATE_BLOG_BY_SLUG_QUERY,
-  SHOWCASE_QUERY,
-  USER_SUBSCRIPTION_STATUS_QUERY,
+  blogBySlugQuery,
+  documentMenuQuery,
+  frontpageHeroQuery,
+  frontpageServicesQuery,
+  meetingMinutesByIdQuery,
+  meetingMinutesQuery,
+  messageByIdQuery,
+  messageboardQuery,
+  otherDocumentsQuery,
+  pageBySlugQuery,
+  privateBlogBySlugQuery,
+  showcaseQuery,
+  userSubscriptionStatusQuery,
 } from "../lib/queries";
 import { loadQuery } from "../lib/store";
 
@@ -35,18 +35,18 @@ export async function loadHomePage() {
     frontpageServicesContent,
     frontpageShowcaseContent,
   ] = await Promise.all([
-    loadQuery<FRONTPAGE_HERO_QUERYResult | null>(
-      FRONTPAGE_HERO_QUERY,
+    loadQuery<FrontpageHeroQueryResult | null>(
+      frontpageHeroQuery,
       {},
       { next: { tags: ["frontpage-hero"] } },
     ),
-    loadQuery<FRONTPAGE_SERVICES_QUERYResult | null>(
-      FRONTPAGE_SERVICES_QUERY,
+    loadQuery<FrontpageServicesQueryResult | null>(
+      frontpageServicesQuery,
       {},
       { next: { tags: ["frontpage-services"] } },
     ),
-    loadQuery<SHOWCASE_QUERYResult>(
-      SHOWCASE_QUERY,
+    loadQuery<ShowcaseQueryResult>(
+      showcaseQuery,
       {},
       { next: { tags: ["showcase"] } },
     ),
@@ -63,7 +63,7 @@ export async function loadHomePage() {
 
 export async function loadPageBySlug(slug: string) {
   return loadQuery<Page | null>(
-    PAGE_BY_SLUG_QUERY,
+    pageBySlugQuery,
     { slug },
     { next: { tags: [`${slug}`] } },
   );
@@ -71,46 +71,47 @@ export async function loadPageBySlug(slug: string) {
 
 export async function loadBlogPageBySlug(slug: string) {
   return loadQuery<BlogPost | null>(
-    BLOG_BY_SLUG_QUERY,
+    blogBySlugQuery,
     { slug },
     { next: { tags: [`blog:${slug}`] } },
   );
 }
+
 export async function loadPrivateBlogPageBySlug(slug: string) {
   return loadQuery<BlogPost | null>(
-    PRIVATE_BLOG_BY_SLUG_QUERY,
+    privateBlogBySlugQuery,
     { slug },
     { next: { tags: [`blog:${slug}`] } },
   );
 }
 
 export async function loadDocumentMenu() {
-  return loadQuery<DOCUMENTMENU_QUERYResult | null>(
-    DOCUMENTMENU_QUERY,
+  return loadQuery<DocumentMenuQueryResult | null>(
+    documentMenuQuery,
     {},
     { next: { tags: ["documentMenu"] } },
   );
 }
 
 export async function loadOtherDocuments() {
-  return loadQuery<OTHER_DOCUMENTS_QUERYResult | null>(
-    OTHER_DOCUMENTS_QUERY,
+  return loadQuery<OtherDocumentsQueryResult | null>(
+    otherDocumentsQuery,
     {},
     { next: { tags: ["fileOtherDocuments"] } },
   );
 }
 
 export async function loadMeetingMinutes() {
-  return loadQuery<MEETING_MINUTES_QUERYResult | null>(
-    MEETING_MINUTES_QUERY,
+  return loadQuery<MeetingMinutesQueryResult | null>(
+    meetingMinutesQuery,
     {},
     { next: { tags: ["fileMeetingMinutes"] } },
   );
 }
 
 export async function loadMeetingMinutesById(meeting: string) {
-  return loadQuery<MEETING_MINUTES_BY_ID_QUERYResult | null>(
-    MEETING_MINUTES_BY_ID_QUERY,
+  return loadQuery<MeetingMinutesByIdQueryResult | null>(
+    meetingMinutesByIdQuery,
     { meeting },
     { next: { tags: ["fileMeetingMinutes"] } },
   );
@@ -118,8 +119,8 @@ export async function loadMeetingMinutesById(meeting: string) {
 
 export async function loadMessageBoard(pageNumber = 0) {
   const messagesPerPage = 10;
-  return loadQuery<MESSAGEBOARD_QUERYResult>(
-    MESSAGEBOARD_QUERY,
+  return loadQuery<MessageboardQueryResult>(
+    messageboardQuery,
     {
       start: pageNumber * messagesPerPage,
       end: (pageNumber + 1) * messagesPerPage,
@@ -129,16 +130,16 @@ export async function loadMessageBoard(pageNumber = 0) {
 }
 
 export async function loadMessageById(id: string) {
-  return loadQuery<MESSAGE_BY_ID_QUERYResult>(
-    MESSAGE_BY_ID_QUERY,
+  return loadQuery<MessageByIdQueryResult>(
+    messageByIdQuery,
     { id },
     { next: { tags: ["message"] } },
   );
 }
 
 export async function loadUserSubscriptionStatus(id: string) {
-  return loadQuery<USER_SUBSCRIPTION_STATUS_QUERYResult>(
-    USER_SUBSCRIPTION_STATUS_QUERY,
+  return loadQuery<UserSubscriptionStatusQueryResult>(
+    userSubscriptionStatusQuery,
     { id },
     { next: { tags: ["userSubscriptionStatus"] } },
   );

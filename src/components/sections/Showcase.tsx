@@ -5,19 +5,21 @@ import { ShowcaseProps } from "@/types/types";
 import { Spacer } from "@heroui/react";
 import { motion } from "motion/react";
 import { toPlainText } from "next-sanity";
+import { type ShowcaseQueryResult } from "@/types/sanity.types";
 import Image from "next/image";
 import Link from "next/link";
-export default function Showcase({ content }: { content: ShowcaseProps }) {
-  if (!content || !content?.data) {
+
+export default function Showcase({
+  content,
+}: {
+  content: ShowcaseQueryResult;
+}) {
+  if (!content) {
     console.error("Missing articles from sanity");
     return null;
   }
 
-  const {
-    showcaseBlogposts,
-    showcaseTitle = "nyheter",
-    _id,
-  } = content.data ?? {};
+  const { showcaseBlogposts, showcaseTitle = "nyheter", _id } = content ?? {};
 
   if (!showcaseBlogposts) {
     console.error("No articles is passed to Showcase component");

@@ -3,7 +3,12 @@ import DocumentMenu from "@/components/document-library/DocumentMenu";
 import InfoBox from "@/components/InfoBox";
 import Pagination from "@/components/Pagination";
 import RoleDisplay from "@/components/userAdmin/RoleDisplay";
-import { countBlogPosts, fetchBlogCollection } from "@/sanity/lib/queries";
+import { sanityFetch } from "@/sanity/lib/live";
+import {
+  blogCollectionQuery,
+  countBlogPosts,
+  documentMenuQuery,
+} from "@/sanity/lib/queries";
 import { loadDocumentMenu } from "@/sanity/loader/loadQuery";
 import { currentUser } from "@clerk/nextjs/server";
 import { Spacer } from "@heroui/react";
@@ -50,13 +55,19 @@ export default async function PrivateInfoPage(props: Props) {
     );
   }
 
-  const blogPosts =
-    (await fetchBlogCollection({
-      pageNumber: pageNumber - 1,
-      postsPerPage: POSTS_PER_PAGE,
+  const { data: blogPosts } = await sanityFetch({
+    query: blogCollectionQuery,
+    params: {
+      start: (pageNumber - 1) * POSTS_PER_PAGE,
+      end: pageNumber * POSTS_PER_PAGE,
       isPrivate: true,
-    })) ?? [];
-  const documentMenu = (await loadDocumentMenu()) ?? [];
+    },
+  });
+
+  // const documentMenu = (await loadDocumentMenu()) ?? [];
+  const { data: documentMenu } = await sanityFetch({
+    query: documentMenuQuery,
+  });
 
   const total = await countBlogPosts({ privatePosts: true });
   const totalPages = Math.ceil(total / POSTS_PER_PAGE);
@@ -113,7 +124,7 @@ export default async function PrivateInfoPage(props: Props) {
             </span>
           </Link>
         </div>
-        {isAdmin && (
+        {(isAdmin || isEditor) && (
           <div className="pl-1 font-semibold">
             <Link
               className="animate duration-100 hover:text-brand-black/70 "
@@ -127,7 +138,7 @@ export default async function PrivateInfoPage(props: Props) {
           </div>
         )}
         <Spacer y={8} />
-        <DocumentMenu content={documentMenu.data} />
+        <DocumentMenu content={documentMenu} />
       </div>
 
       <h2 className="lg:prose-xl font-thin ">

@@ -1,7 +1,7 @@
 "use server";
 
 import { clientWithWriteAccess } from "@/sanity/lib/client";
-import { USER_SUBSCRIPTION_STATUS_QUERY } from "@/sanity/lib/queries";
+import { userSubscriptionStatusQuery } from "@/sanity/lib/queries";
 import { currentUser } from "@clerk/nextjs/server";
 
 type UpdateSubscriptionParams = {
@@ -48,7 +48,7 @@ export async function updateSubscriptionStatus({
     // Get current subscription status directly from Sanity
     const currentData = await clientWithWriteAccess.fetch<{
       emailSubscription: boolean | null;
-    }>(USER_SUBSCRIPTION_STATUS_QUERY, { id: userId }, { useCdn: false });
+    }>(userSubscriptionStatusQuery, { id: userId }, { useCdn: false });
 
     const currentSubscriptionStatus = currentData?.emailSubscription ?? false;
     const newSubscriptionStatus = !currentSubscriptionStatus;
@@ -79,11 +79,7 @@ export async function updateSubscriptionStatus({
       // Verify the update by fetching directly from Sanity with cache disabled
       const updatedData = await clientWithWriteAccess.fetch<{
         emailSubscription: boolean | null;
-      }>(
-        USER_SUBSCRIPTION_STATUS_QUERY,
-        { id: userId },
-        { perspective: "published", useCdn: false },
-      );
+      }>(userSubscriptionStatusQuery, { id: userId }, { useCdn: false });
 
       // Double-check if the value was actually updated
       if (

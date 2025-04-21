@@ -20,3 +20,5 @@ export async function GET(request: Request) {
 
   redirect(redirectTo);
 }
+
+// TODO: Remove this later - we're using draft-mode/enable

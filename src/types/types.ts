@@ -1,15 +1,17 @@
-import type { UserData, UserResource } from "@clerk/types";
+import type { UserResource } from "@clerk/types";
+import { PortableTextBlock } from "@portabletext/types";
 import type { Image } from "sanity";
+import { type SanityImageAsset } from "@/types/sanity.types";
 import type {
   Authors,
   BlogPost,
-  FRONTPAGE_HERO_QUERYResult,
-  FRONTPAGE_SERVICES_QUERYResult,
   Page,
-  SHOWCASE_QUERYResult,
-  MESSAGE_BY_ID_QUERYResult,
+  MessageByIdQueryResult,
+  FrontpageHeroQueryResult,
+  FrontpageServicesQueryResult,
+  ShowcaseQueryResult,
 } from "./sanity.types";
-import { PortableTextBlock } from "@portabletext/types";
+import type { Image as SanityImage } from "sanity";
 
 export type UserRoles = "admin" | "editor" | "user";
 
@@ -254,21 +256,21 @@ export type UserWithEmails = Pick<
 // ************
 
 export type HeroProps = {
-  data: FRONTPAGE_HERO_QUERYResult;
+  data: FrontpageHeroQueryResult;
 };
 
 export type ServicesProps = {
-  data: FRONTPAGE_SERVICES_QUERYResult;
+  data: FrontpageServicesQueryResult;
 };
 
 export type ShowcaseProps = {
-  data: SHOWCASE_QUERYResult;
+  data: ShowcaseQueryResult;
 };
 
 export type HomePagePayload = {
-  frontpageHeroContent: { data: FRONTPAGE_HERO_QUERYResult };
-  frontpageServicesContent: { data: FRONTPAGE_SERVICES_QUERYResult };
-  frontpageShowcaseContent: { data: SHOWCASE_QUERYResult };
+  frontpageHeroContent: { data: FrontpageHeroQueryResult };
+  frontpageServicesContent: { data: FrontpageServicesQueryResult };
+  frontpageShowcaseContent: { data: ShowcaseQueryResult };
 };
 
 export type HomePageProps = {
@@ -295,7 +297,7 @@ export type ArticleProps = {
   bodyText: any; // TODO fix type later
   createdAt: string | undefined;
   updatedAt: string | undefined;
-  mainImage: Image & { alt?: string; caption?: string; lqip?: string };
+  mainImage: SanityImage & { lqip?: string | null };
   buttonLink: string | undefined;
 };
 
@@ -307,7 +309,7 @@ export type MessageType = {
     lastName: string;
   };
   userId?: string;
-  messageImage: any; // TODO replace any with Image
+  messageImage: SanityImageAsset;
   fromAdmin: boolean;
 };
 
@@ -335,5 +337,5 @@ export type MessageCardProps = {
 };
 
 export type MessagePageProps = {
-  data?: MESSAGE_BY_ID_QUERYResult;
+  data?: MessageByIdQueryResult;
 };

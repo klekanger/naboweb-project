@@ -42,3 +42,5 @@ export function generateStaticIdPages(type: string) {
       },
     );
 }
+
+// TODO: check if we need this after we've moved to sanityFetch

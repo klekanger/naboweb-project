@@ -1,12 +1,15 @@
 import AlertUser from "@/components/AlertUser";
 import DocumentTable from "@/components/document-library/DocumentTable";
-import { loadOtherDocuments } from "@/sanity/loader/loadQuery";
+import { sanityFetch } from "@/sanity/lib/live";
+import { otherDocumentsQuery } from "@/sanity/lib/queries";
 import Link from "next/link";
 
 export default async function Page() {
-  const documents = await loadOtherDocuments();
+  const { data: documents } = await sanityFetch({
+    query: otherDocumentsQuery,
+  });
 
-  if (!documents.data) {
+  if (!documents) {
     return (
       <section className="flex flex-col justify-center align-middle">
         <AlertUser
@@ -26,7 +29,7 @@ export default async function Page() {
         Diverse dokumenter
       </h1>
 
-      <DocumentTable documents={documents.data} />
+      <DocumentTable documents={documents} />
     </section>
   );
 }
