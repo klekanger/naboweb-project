@@ -9,7 +9,6 @@ import {
   countBlogPosts,
   documentMenuQuery,
 } from "@/sanity/lib/queries";
-import { loadDocumentMenu } from "@/sanity/loader/loadQuery";
 import { currentUser } from "@clerk/nextjs/server";
 import { Spacer } from "@heroui/react";
 import { Info, Pencil, RefreshCw, User } from "lucide-react";

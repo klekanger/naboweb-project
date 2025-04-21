@@ -4,7 +4,6 @@ import {
   meetingMinutesByIdQuery,
   meetingMinutesIds,
 } from "@/sanity/lib/queries";
-import { loadMeetingMinutesById } from "@/sanity/loader/loadQuery";
 import { notFound } from "next/navigation";
 
 type Props = {
