@@ -2,6 +2,10 @@
   "javascript.preferences.quoteStyle": "single",
   "typescript.preferences.quoteStyle": "single",
   "editor.formatOnSave": true,
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  "tailwindCSS.emmetCompletions": true,
   "workbench.colorCustomizations": {
     "titleBar.activeBackground": "#832561",
     "titleBar.activeForeground": "#e7e7e7",
