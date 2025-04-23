@@ -1,6 +1,10 @@
 import MessageBoard from "@/components/pages/messageBoard/MessageBoard";
-import { loadMessageBoard } from "@/sanity/loader/loadQuery";
-import { countMessages } from "@/sanity/lib/queries";
+import {
+  countMessages,
+  countMessagesQuery,
+  messageboardQuery,
+} from "@/sanity/lib/queries";
+import { sanityFetch } from "@/sanity/lib/live";
 import PaginationControls from "@/components/common/PaginationControls";
 import { redirect } from "next/navigation";
 
@@ -12,9 +16,21 @@ export default async function MessageBoardRoute({
   const { page = "0" } = await searchParams;
   const messagesPerPage = 10;
 
-  const [initial, totalMessages] = await Promise.all([
-    loadMessageBoard(Number(page)),
-    countMessages(),
+  const [{ data: messages }, { data: totalMessages }] = await Promise.all([
+    sanityFetch({
+      query: messageboardQuery,
+      params: {
+        start: Number(page) * messagesPerPage,
+        end: (Number(page) + 1) * messagesPerPage,
+      },
+      perspective: "published",
+      stega: false,
+    }),
+    sanityFetch({
+      query: countMessagesQuery,
+      perspective: "published",
+      stega: false,
+    }),
   ]);
 
   const totalPages = Math.ceil(totalMessages / messagesPerPage);
@@ -25,7 +41,7 @@ export default async function MessageBoardRoute({
 
   return (
     <div>
-      <MessageBoard messages={initial.data} />
+      <MessageBoard messages={messages} />
       <PaginationControls
         totalPages={totalPages}
         currentPage={Number(page)}
@@ -34,3 +50,6 @@ export default async function MessageBoardRoute({
     </div>
   );
 }
+
+// No need for a sanity preview page for visual editing,
+// as we're using our own editor for editing message board messages

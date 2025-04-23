@@ -1,31 +1,29 @@
-import HomePage from "@/components/pages/home/HomePage";
-import { studioUrl } from "@/sanity/env";
-import { loadHomePage } from "@/sanity/loader/loadQuery";
-import dynamic from "next/dynamic";
-import { draftMode } from "next/headers";
-import Link from "next/link";
-
-const HomePagePreview = dynamic(
-  () => import("@/components/pages/home/HomePagePreview"),
-);
+import Hero from "@/components/sections/Hero";
+import Services from "@/components/sections/Services";
+import Showcase from "@/components/sections/Showcase";
+import { sanityFetch } from "@/sanity/lib/live";
+import {
+  frontpageHeroQuery,
+  frontpageServicesQuery,
+  showcaseQuery,
+} from "@/sanity/lib/queries";
 
 export default async function Home() {
-  const initial = await loadHomePage();
+  const [
+    { data: heroContent },
+    { data: servicesContent },
+    { data: showcaseContent },
+  ] = await Promise.all([
+    sanityFetch({ query: frontpageHeroQuery }),
+    sanityFetch({ query: frontpageServicesQuery }),
+    sanityFetch({ query: showcaseQuery }),
+  ]);
 
-  if ((await draftMode()).isEnabled) {
-    return <HomePagePreview initial={initial as any} />;
-  }
-
-  if (!initial.data) {
-    return (
-      <div className="text-center">
-        Du mangler innhold for å kunne vise forsiden.{" "}
-        <Link href={`${studioUrl}/desk/home`} className="underline">
-          Opprett innhold nå
-        </Link>
-      </div>
-    );
-  }
-
-  return <HomePage data={initial?.data} />;
+  return (
+    <>
+      <Hero content={heroContent} />
+      <Services content={servicesContent} />
+      <Showcase content={showcaseContent} />
+    </>
+  );
 }

@@ -1,6 +1,8 @@
 import BlogPostList from "@/components/BlogPostList";
 import Pagination from "@/components/Pagination";
-import { countBlogPosts, fetchBlogCollection } from "@/sanity/lib/queries";
+import { countBlogPosts } from "@/sanity/lib/queries";
+import { sanityFetch } from "@/sanity/lib/live";
+import { blogCollectionQuery } from "@/sanity/lib/queries";
 import { redirect } from "next/navigation";
 
 const POSTS_PER_PAGE = 5;
@@ -48,16 +50,18 @@ export default async function BlogCollectionRoute(props: BlogCollectionParams) {
     );
   }
 
-  const data =
-    (await fetchBlogCollection({
-      pageNumber: pageNumber - 1,
-      postsPerPage: POSTS_PER_PAGE,
+  const { data } = await sanityFetch({
+    query: blogCollectionQuery,
+    params: {
+      start: (pageNumber - 1) * POSTS_PER_PAGE,
+      end: pageNumber * POSTS_PER_PAGE,
       isPrivate: false,
-    })) ?? [];
+    },
+  });
 
   const total = await countBlogPosts({ privatePosts: false });
   const totalPages = Math.ceil(total / POSTS_PER_PAGE);
-  const numberOfBlogPosts = data.length;
+  const numberOfBlogPosts = data?.length ?? 0;
 
   if (pageNumber > totalPages || pageNumber < 1) {
     redirect("/blog-collection/1");

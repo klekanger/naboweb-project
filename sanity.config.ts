@@ -26,7 +26,11 @@ import { presentationTool } from "sanity/presentation";
 import { structureTool } from "sanity/structure";
 
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
-import { apiVersion, dataset, projectId } from "@/sanity/env";
+import { apiVersion, dataset, projectId } from "@/sanity/lib/api";
+
+// URL for preview functionality, defaults to localhost:3000 if not set
+const SANITY_STUDIO_PREVIEW_URL =
+  process.env.SANITY_STUDIO_PREVIEW_URL || "http://localhost:3000";
 
 export default defineConfig({
   title: `gartnerihagen-askim.no [dataset: ${dataset}]`,
@@ -79,10 +83,13 @@ export default defineConfig({
     visionTool({ defaultApiVersion: apiVersion }),
 
     nbNOLocale(),
+    // Presentation tool configuration for Visual Editing
     presentationTool({
+      title: "Presentasjon",
       previewUrl: {
-        draftMode: {
-          enable: "/api/draft",
+        origin: SANITY_STUDIO_PREVIEW_URL,
+        previewMode: {
+          enable: "/api/draft-mode/enable",
         },
       },
     }),

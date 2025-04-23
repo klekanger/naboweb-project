@@ -1,6 +1,6 @@
 import MessagePage from "@/components/pages/messageBoard/MessagePage";
-import { generateStaticIdPages } from "@/sanity/loader/generateStaticSlugs";
-import { loadMessageById } from "@/sanity/loader/loadQuery";
+import { sanityFetch } from "@/sanity/lib/live";
+import { allMessageIdsQuery, messageByIdQuery } from "@/sanity/lib/queries";
 import { notFound } from "next/navigation";
 
 type MessagePageParams = {
@@ -8,22 +8,33 @@ type MessagePageParams = {
 };
 
 export async function generateStaticParams() {
-  const messages = await generateStaticIdPages("message");
+  const { data } = await sanityFetch({
+    query: allMessageIdsQuery,
+    // Use the published perspective in generateStaticParams
+    perspective: "published",
+    stega: false,
+  });
 
-  return messages.map((message) => ({
+  return data.map((message) => ({
     id: message._id,
   }));
 }
 
 export default async function MessagePageIdRoute(props: MessagePageParams) {
   const params = await props.params;
-  const initial = await loadMessageById(params.id);
 
-  if (!initial.data) {
+  const { data } = await sanityFetch({
+    query: messageByIdQuery,
+    params: { id: params.id },
+    perspective: "published",
+    stega: false,
+  });
+
+  if (!data) {
     notFound();
   }
 
-  return <MessagePage data={initial.data} />;
+  return <MessagePage data={data} />;
 }
 
 // No need for a sanity preview page for visual editing,

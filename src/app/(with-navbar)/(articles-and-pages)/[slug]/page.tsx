@@ -1,25 +1,29 @@
-import Page from "@/components/pages/page/Page";
+import Article from "@/components/Article";
+import { sanityFetch } from "@/sanity/lib/live";
+import { pageBySlugQuery, pageSlugs } from "@/sanity/lib/queries";
 import { urlForOpenGraphImage } from "@/sanity/lib/utils";
-import { generateStaticSlugs } from "@/sanity/loader/generateStaticSlugs";
-import { loadPageBySlug } from "@/sanity/loader/loadQuery";
 import { Metadata, ResolvingMetadata } from "next";
 import { toPlainText } from "next-sanity";
-import dynamic from "next/dynamic";
-import { draftMode } from "next/headers";
-import { notFound } from "next/navigation";
 import type { Image as SanityImage } from "sanity";
-
-const PagePreview = dynamic(
-  () => import("@/components/pages/page/PagePreview"),
-);
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
-export async function generateMetadata(props: Props, parent: ResolvingMetadata): Promise<Metadata> {
+export async function generateMetadata(
+  props: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
   const params = await props.params;
-  const { data: pageData } = await loadPageBySlug(params.slug);
+
+  const { data: pageData } = await sanityFetch({
+    query: pageBySlugQuery,
+    params: { slug: params.slug },
+    // Use the published perspective in generateMetadata
+    perspective: "published",
+    stega: false,
+  });
+
   const description = toPlainText(pageData?.overview ?? []) ?? "";
   let ogImage = "/og_naboweb.webp";
 
@@ -40,24 +44,30 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
 }
 
 export async function generateStaticParams() {
-  return await generateStaticSlugs("page");
+  const { data } = await sanityFetch({
+    query: pageSlugs,
+    // Use the published perspective in generateStaticParams
+    perspective: "published",
+    stega: false,
+  });
+  return data;
 }
 
-export default async function PageSlugRoute(
-  props: {
-    params: Promise<{ slug: string }>;
-  }
-) {
+export default async function PageSlugRoute(props: Props) {
   const params = await props.params;
-  const initial = await loadPageBySlug(params?.slug);
+  const { data } = await sanityFetch({
+    query: pageBySlugQuery,
+    params: { slug: params.slug },
+  });
 
-  if ((await draftMode()).isEnabled) {
-    return <PagePreview params={params} initial={initial} />;
-  }
-
-  if (!initial.data) {
-    notFound();
-  }
-
-  return <Page data={initial.data} />;
+  return (
+    <Article
+      title={data?.title ?? ""}
+      bodyText={data?.body}
+      createdAt={data?._createdAt}
+      updatedAt={data?._updatedAt}
+      mainImage={data?.mainImage as SanityImage & { lqip: string | null }}
+      buttonLink="/"
+    />
+  );
 }

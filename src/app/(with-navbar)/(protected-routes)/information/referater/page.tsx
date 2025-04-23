@@ -1,12 +1,15 @@
 import AlertUser from "@/components/AlertUser";
 import MeetingMinutes from "@/components/document-library/MeetingMinutes";
-import { loadMeetingMinutes } from "@/sanity/loader/loadQuery";
+import { sanityFetch } from "@/sanity/lib/live";
+import { meetingMinutesQuery } from "@/sanity/lib/queries";
 import Link from "next/link";
 
 export default async function Page() {
-  const documents = await loadMeetingMinutes();
+  const { data: documents } = await sanityFetch({
+    query: meetingMinutesQuery,
+  });
 
-  if (!documents.data) {
+  if (!documents) {
     return (
       <section className="flex flex-col justify-center align-middle">
         <AlertUser
@@ -25,7 +28,7 @@ export default async function Page() {
       <h1 className="text-center text-2xl md:text-left md:text-4xl prose lg:prose-xl mb-8">
         Dokumenter fra årsmøter
       </h1>
-      <MeetingMinutes documents={documents.data} />
+      <MeetingMinutes documents={documents} />
     </section>
   );
 }

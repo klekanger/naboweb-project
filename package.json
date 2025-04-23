@@ -17,7 +17,7 @@
     "@portabletext/to-html": "^2.0.13",
     "@sanity/asset-utils": "^2.2.1",
     "@sanity/block-tools": "^3.68.3",
-    "@sanity/client": "^6.24.1",
+    "@sanity/client": "^6.29.0",
     "@sanity/icons": "^3.5.6",
     "@sanity/image-url": "^1.1.0",
     "@sanity/locale-nb-no": "^1.1.17",
@@ -38,7 +38,6 @@
     "@types/dompurify": "^3.2.0",
     "@types/jsdom": "^21.1.7",
     "@upstash/redis": "^1.34.3",
-    "autoprefixer": "10.4.14",
     "dompurify": "^3.2.4",
     "eslint": "^9.19.0",
     "eslint-config-next": "15.3.1",
@@ -46,10 +45,9 @@
     "lucide-react": "^0.408.0",
     "motion": "^11.18.1",
     "next": "15.3.1",
-    "next-sanity": "^9.8.30",
+    "next-sanity": "^9.10.2",
     "next-themes": "^0.2.1",
     "nodemailer": "^6.10.0",
-    "postcss": "8.4.24",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-player": "^2.16.0",
@@ -57,8 +55,8 @@
     "react-twitter-embed": "^4.0.4",
     "sanity": "^3.85.1",
     "server-only": "^0.0.1",
-    "styled-components": "^6.1.13",
-    "tailwindcss": "3.4.3"
+    "sonner": "^2.0.3",
+    "styled-components": "^6.1.13"
   },
   "devDependencies": {
     "@clerk/types": "^4.41.2",
@@ -68,15 +66,11 @@
     "@types/nodemailer": "^6.4.17",
     "@types/react": "19.1.2",
     "@types/react-dom": "19.1.2",
+    "autoprefixer": "10.4.21",
     "eslint-config-prettier": "^10.0.1",
+    "postcss": "8.5.3",
     "prettier": "3.3.1",
+    "tailwindcss": "3.4.3",
     "typescript": "^5.7.2"
-  },
-  "packageManager": "pnpm@9.2.0+sha256.94fab213df221c55b6956b14a2264c21c6203cca9f0b3b95ff2fe9b84b120390",
-  "pnpm": {
-    "overrides": {
-      "@types/react": "19.1.2",
-      "@types/react-dom": "19.1.2"
-    }
   }
 }

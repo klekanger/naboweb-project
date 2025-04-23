@@ -6,7 +6,7 @@
  *
  */
 
-import { apiVersion, dataset, projectId } from "@/sanity/env";
+import { apiVersion, dataset, projectId } from "@/sanity/lib/api";
 import { createClient } from "@sanity/client";
 import { Redis } from "@upstash/redis";
 import { headers } from "next/headers";

@@ -1,21 +1,24 @@
+"use client";
+
 import { urlForImage } from "@/sanity/lib/utils";
-import { toPlainText } from "next-sanity";
+import { type ShowcaseQueryResult } from "@/types/sanity.types";
 import { Spacer } from "@heroui/react";
+import { motion } from "motion/react";
+import { toPlainText } from "next-sanity";
 import Image from "next/image";
 import Link from "next/link";
-import { ShowcaseProps } from "@/types/types";
 
-export default function Showcase({ content }: { content: ShowcaseProps }) {
-  if (!content || !content?.data) {
+export default function Showcase({
+  content,
+}: {
+  content: ShowcaseQueryResult;
+}) {
+  if (!content) {
     console.error("Missing articles from sanity");
     return null;
   }
 
-  const {
-    showcaseBlogposts,
-    showcaseTitle = "nyheter",
-    _id,
-  } = content.data ?? {};
+  const { showcaseBlogposts, showcaseTitle = "nyheter", _id } = content ?? {};
 
   if (!showcaseBlogposts) {
     console.error("No articles is passed to Showcase component");
@@ -23,7 +26,13 @@ export default function Showcase({ content }: { content: ShowcaseProps }) {
   }
 
   return (
-    <section className="py-8 sm:py-16 max-w-7xl m-auto">
+    <motion.section
+      className="py-8 sm:py-16 max-w-7xl m-auto"
+      initial={{ opacity: 0, y: 75 }}
+      transition={{ duration: 1, ease: "easeOut" }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+    >
       <h2 className="prose text-3xl mb-8 font-semibold">{showcaseTitle}</h2>
       <div className="grid gap-16 px-1 md:grid-cols-2">
         {showcaseBlogposts.map((article) => {
@@ -83,6 +92,6 @@ export default function Showcase({ content }: { content: ShowcaseProps }) {
           <em>Gå til nyhetsarkivet »</em>
         </Link>
       </div>
-    </section>
+    </motion.section>
   );
 }

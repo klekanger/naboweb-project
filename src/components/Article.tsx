@@ -40,19 +40,19 @@ export default function Article({
                 .dpr(2)
                 .url() ?? ""
             }
-            alt={mainImage?.alt ?? ""}
+            alt={(mainImage?.alt as string) ?? ""}
             sizes="100vw"
             width={1600}
             height={1000}
-            blurDataURL={mainImage.lqip}
+            blurDataURL={mainImage.lqip ?? undefined}
             placeholder="blur"
             priority
             className="rounded-large w-full h-full mb-0 pb-0"
           />
 
-          {mainImage?.caption && (
+          {(mainImage?.caption as string) && (
             <div className="absolute bottom-0 left-0 right-0 rounded-b-large text-sm py-4 !pl-4 pr-16 bg-slate-200/70">
-              <em>{mainImage.caption}</em>
+              <em>{mainImage?.caption as string}</em>
             </div>
           )}
         </div>
@@ -91,3 +91,5 @@ export default function Article({
     </article>
   );
 }
+
+// TODO fix types for mainImage (or ArticleProps)
