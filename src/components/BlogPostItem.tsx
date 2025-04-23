@@ -1,12 +1,12 @@
 import { urlForImage } from "@/sanity/lib/utils";
-import { BLOG_BY_SLUG_QUERYResult } from "@/types/sanity.types";
+import { BlogBySlugQueryResult } from "@/types/sanity.types";
 import { toPlainText } from "next-sanity";
 import Image from "next/image";
 import Link from "next/link";
 import type { Image as SanityImage } from "sanity";
 
 export type BlogPostItemProps = {
-  post: BLOG_BY_SLUG_QUERYResult;
+  post: BlogBySlugQueryResult;
 };
 
 export default function BlogPostItem({ post }: BlogPostItemProps) {

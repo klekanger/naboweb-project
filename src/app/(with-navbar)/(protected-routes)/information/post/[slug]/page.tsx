@@ -19,7 +19,6 @@ export async function generateStaticParams() {
     stega: false,
   });
 
-  console.log(data);
   return data;
 }
 

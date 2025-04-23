@@ -1,11 +1,10 @@
 "use client";
 
 import { urlForImage } from "@/sanity/lib/utils";
-import { ShowcaseProps } from "@/types/types";
+import { type ShowcaseQueryResult } from "@/types/sanity.types";
 import { Spacer } from "@heroui/react";
 import { motion } from "motion/react";
 import { toPlainText } from "next-sanity";
-import { type ShowcaseQueryResult } from "@/types/sanity.types";
 import Image from "next/image";
 import Link from "next/link";
 

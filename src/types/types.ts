@@ -1,17 +1,16 @@
+import { type SanityImageAsset } from "@/types/sanity.types";
 import type { UserResource } from "@clerk/types";
 import { PortableTextBlock } from "@portabletext/types";
-import type { Image } from "sanity";
-import { type SanityImageAsset } from "@/types/sanity.types";
+import type { Image as SanityImage } from "sanity";
 import type {
   Authors,
   BlogPost,
-  Page,
-  MessageByIdQueryResult,
   FrontpageHeroQueryResult,
   FrontpageServicesQueryResult,
+  MessageByIdQueryResult,
+  Page,
   ShowcaseQueryResult,
 } from "./sanity.types";
-import type { Image as SanityImage } from "sanity";
 
 export type UserRoles = "admin" | "editor" | "user";
 

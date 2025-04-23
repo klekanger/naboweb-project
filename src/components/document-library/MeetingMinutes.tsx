@@ -8,7 +8,7 @@ import {
   WordIcon,
 } from "@/components/icons";
 import { formatDate } from "@/lib/format-date";
-import { MEETING_MINUTES_QUERYResult } from "@/types/sanity.types";
+import { MeetingMinutesQueryResult } from "@/types/sanity.types";
 import {
   Button,
   Input,
@@ -30,7 +30,7 @@ import BackButton from "../BackButton";
 type Props = {
   documents: Array<
     Pick<
-      MEETING_MINUTES_QUERYResult[0],
+      MeetingMinutesQueryResult[0],
       | "_id"
       | "title"
       | "description"

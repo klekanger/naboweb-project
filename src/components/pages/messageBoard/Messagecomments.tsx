@@ -1,6 +1,6 @@
 import { compareClerkAndSanityUser } from "@/lib/compareClerkAndSanityUser";
 import { formatDate } from "@/lib/format-date";
-import { MESSAGE_BY_ID_QUERYResult } from "@/types/sanity.types";
+import { MessageByIdQueryResult } from "@/types/sanity.types";
 import { useUser } from "@clerk/nextjs";
 import {
   Button,
@@ -32,7 +32,7 @@ export default function MessageComments({
   commentCount,
   messageId,
 }: {
-  comments: NonNullable<MESSAGE_BY_ID_QUERYResult>["comments"];
+  comments: NonNullable<MessageByIdQueryResult>["comments"];
   commentCount: number;
   messageId: string;
 }) {

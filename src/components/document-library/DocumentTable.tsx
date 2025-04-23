@@ -8,7 +8,7 @@ import {
   WordIcon,
 } from "@/components/icons";
 import { formatDate } from "@/lib/format-date";
-import { OTHER_DOCUMENTS_QUERYResult } from "@/types/sanity.types";
+import { OtherDocumentsQueryResult } from "@/types/sanity.types";
 import {
   Button,
   Input,
@@ -29,7 +29,7 @@ import BackButton from "../BackButton";
 type Props = {
   documents: Array<
     Pick<
-      OTHER_DOCUMENTS_QUERYResult[0],
+      OtherDocumentsQueryResult[0],
       | "title"
       | "description"
       | "tags"
