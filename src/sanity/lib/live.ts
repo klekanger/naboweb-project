@@ -1,6 +1,12 @@
 import { defineLive } from "next-sanity";
 import { client } from "./client";
-import { token } from "./token";
+// import { token } from "./token";
+
+const token = process.env.SANITY_API_READ_TOKEN;
+
+if (!token) {
+  throw new Error("Missing SANITY_API_READ_TOKEN");
+}
 
 /**
  * Use defineLive to enable automatic revalidation and refreshing of your fetched content
