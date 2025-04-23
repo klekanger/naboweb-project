@@ -1,7 +1,6 @@
 import MessagePage from "@/components/pages/messageBoard/MessagePage";
-import { messageByIdQuery } from "@/sanity/lib/queries";
 import { sanityFetch } from "@/sanity/lib/live";
-import { generateStaticIdPages } from "@/sanity/loader/generateStaticSlugs";
+import { allMessageIdsQuery, messageByIdQuery } from "@/sanity/lib/queries";
 import { notFound } from "next/navigation";
 
 type MessagePageParams = {
@@ -9,16 +8,20 @@ type MessagePageParams = {
 };
 
 export async function generateStaticParams() {
-  const messages = await generateStaticIdPages("message");
+  const { data } = await sanityFetch({
+    query: allMessageIdsQuery,
+    // Use the published perspective in generateStaticParams
+    perspective: "published",
+    stega: false,
+  });
 
-  return messages.map((message) => ({
+  return data.map((message) => ({
     id: message._id,
   }));
 }
 
 export default async function MessagePageIdRoute(props: MessagePageParams) {
   const params = await props.params;
-  //   const initial = await loadMessageById(params.id);
 
   const { data } = await sanityFetch({
     query: messageByIdQuery,

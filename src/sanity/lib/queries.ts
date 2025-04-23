@@ -239,6 +239,10 @@ export const messageByIdQuery = defineQuery(`
   }
 `);
 
+export const allMessageIdsQuery = defineQuery(`
+  *[_type == "message"]{_id}
+`);
+
 export const countMessagesQuery = defineQuery(`
   count(*[_type=="message"])
 `);

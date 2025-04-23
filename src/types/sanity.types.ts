@@ -1451,6 +1451,11 @@ export type MessageByIdQueryResult = {
     lastName: string | null;
   } | null;
 } | null;
+// Variable: allMessageIdsQuery
+// Query: *[_type == "message"]{_id}
+export type AllMessageIdsQueryResult = Array<{
+  _id: string;
+}>;
 // Variable: countMessagesQuery
 // Query: count(*[_type=="message"])
 export type CountMessagesQueryResult = number;
@@ -1564,6 +1569,7 @@ declare module "@sanity/client" {
     '\n  count(*[_type=="blogPost" && privatePost==true])\n': CountPrivateBlogPostsQueryResult;
     '\n  *[_type == "message"] | order(_createdAt desc) [$start...$end] {\n    _id,\n    _updatedAt,\n    _createdAt,\n    title,\n    messageImage,\n    bodyText,\n    tags,\n    comments[]{\n      _key,\n      commentText,\n      commentTitle,\n      commentAuthor->{_id, firstName, lastName}\n    },\n    fromAdmin,\n    author->{_id, firstName, lastName}\n  }\n': MessageboardQueryResult;
     '\n  *[_type == "message" && _id == $id][0] {\n    _id,\n    _updatedAt,\n    _createdAt,\n    title,\n    messageImage,\n    bodyText,\n    tags,\n    comments[]{\n      _key,\n      commentText,\n      commentTitle,\n      commentAuthor->{_id, firstName, lastName},\n      published,\n    },\n    fromAdmin,\n    author->{_id, firstName, lastName},\n  }\n': MessageByIdQueryResult;
+    '\n  *[_type == "message"]{_id}\n': AllMessageIdsQueryResult;
     '\n  count(*[_type=="message"])\n': CountMessagesQueryResult;
     '\n  *[_type=="blogPost" && \n  privatePost==$isPrivate] | order(_createdAt asc) [$start...$end]\n  {\n    _id,\n    _createdAt,\n    _updatedAt,\n    featuredImage{..., "lqip": asset->metadata.lqip},\n    excerpt,\n    privatePost,\n    title,\n    "slug": slug.current\n  }      \n': BlogCollectionQueryResult;
     '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PageSlugsResult;
