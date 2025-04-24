@@ -1,3 +1,5 @@
+"use client";
+
 // Description of how to render this in the frontend:
 // https://www.sanity.io/guides/portable-text-how-to-add-a-custom-youtube-embed-block
 
