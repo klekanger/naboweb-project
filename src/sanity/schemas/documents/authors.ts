@@ -35,6 +35,7 @@ export default defineType({
       hidden: false,
       description:
         "Om personen vil ha oppdatering på e-post når det har kommet nytt innhold eller nye meldinger.",
+      initialValue: true,
     }),
     defineField({
       name: "authorImage",

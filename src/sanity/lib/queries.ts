@@ -1,15 +1,14 @@
-import { BLOG_BY_SLUG_QUERYResult, BlogPost } from "@/types/sanity.types";
-import { groq } from "next-sanity";
+import { defineQuery, groq } from "next-sanity";
 import { client } from "../lib/client";
 
-export const USER_SUBSCRIPTION_STATUS_QUERY = groq`
+export const userSubscriptionStatusQuery = defineQuery(`
   *[_type=="authors" && _id==$id][0] {
     emailSubscription
   }
-`;
+`);
 
-export const DOCUMENTMENU_QUERY = groq`
- *[_type=="documentMenu"] {
+export const documentMenuQuery = defineQuery(`
+  *[_type=="documentMenu"] {
     button1Text,
     button2Text,
     button3Text,
@@ -19,10 +18,10 @@ export const DOCUMENTMENU_QUERY = groq`
     'file3': button3File->otherDocument.asset->{url},
     'file4': button4File->otherDocument.asset->{url},
   }[0]
-`;
+`);
 
-export const OTHER_DOCUMENTS_QUERY = groq`
- *[_type=="fileOtherDocuments"] {
+export const otherDocumentsQuery = defineQuery(`
+  *[_type=="fileOtherDocuments"] {
     title,
     description,
     tags,
@@ -32,23 +31,23 @@ export const OTHER_DOCUMENTS_QUERY = groq`
       asset->{url, _id, originalFilename}
     }
   }
-`;
+`);
 
-export const MEETING_MINUTES_QUERY = groq`
- *[_type=="fileMeetingMinutes"] | order(_createdAt asc) {
-  _id,
+export const meetingMinutesQuery = defineQuery(`
+  *[_type=="fileMeetingMinutes"] | order(_createdAt asc) {
+    _id,
     title,
     description,
-      meetingDate,
-      meetingPlace,
+    meetingDate,
+    meetingPlace,
     tags,
     _createdAt,
     _updatedAt,
     "documentCount": count(meetingDocuments)
   }
-`;
+`);
 
-export const MEETING_MINUTES_BY_ID_QUERY = groq`
+export const meetingMinutesByIdQuery = defineQuery(`
   *[_type=="fileMeetingMinutes" && _id == $meeting] | order(_createdAt asc)[0] {
     _id,
     title,
@@ -66,11 +65,11 @@ export const MEETING_MINUTES_BY_ID_QUERY = groq`
       size,
       _createdAt, 
       _updatedAt
-      }}
+    }}
   }
-`;
+`);
 
-export const FRONTPAGE_HERO_QUERY = groq`
+export const frontpageHeroQuery = defineQuery(`
   *[_type=="frontpage-hero"]{
     title,
     subtitle,
@@ -80,40 +79,39 @@ export const FRONTPAGE_HERO_QUERY = groq`
     heroImage{..., "lqip": asset->metadata.lqip},
     bodyText
   }[0]
-`;
+`);
 
-export const FRONTPAGE_SERVICES_QUERY = groq`
+export const frontpageServicesQuery = defineQuery(`
   *[_type=="frontpage-services"]{
     title1,title2,title3,
-      url1,url2,url3,
-      description1,description2,description3,
-      url1,url2,url3,
-      icon1,icon2,icon3,
-      private1,private2,private3
+    url1,url2,url3,
+    description1,description2,description3,
+    url1,url2,url3,
+    icon1,icon2,icon3,
+    private1,private2,private3
   }[0]
-`;
+`);
 
-export const PAGE_BY_SLUG_QUERY = groq`
+export const pageBySlugQuery = defineQuery(`
   *[_type=="page" && slug.current == $slug][0]{
     _id,
     _createdAt,
     _updatedAt,
-      title,
-      mainImage{..., "lqip": asset->metadata.lqip},
-      overview,
-      body[]{
+    title,
+    mainImage{..., "lqip": asset->metadata.lqip},
+    overview,
+    body[]{
       ...,
       _type == "image" => {
         ...,
         "lqip": asset->metadata.lqip
       }
-  },
+    },
     "slug": slug.current
   }
-`;
+`);
 
-// Fetch blog by slug, except if private post
-export const BLOG_BY_SLUG_QUERY = groq`
+export const blogBySlugQuery = defineQuery(`
   *[_type=="blogPost" && slug.current == $slug && privatePost != true][0]{
     _id,
     _createdAt,
@@ -123,19 +121,19 @@ export const BLOG_BY_SLUG_QUERY = groq`
     excerpt,
     featuredImage{..., "lqip": asset->metadata.lqip},
     bodyText[]{
-    ...,
-    _type == "image" => {
       ...,
-      "lqip": asset->metadata.lqip
-    }
-  },
+      _type == "image" => {
+        ...,
+        "lqip": asset->metadata.lqip
+      }
+    },
     "slug": slug.current,
     author[]->{...},
   }
-`;
-// Fetch all blog posts by slug
-export const ALL_BLOG_BY_SLUG_QUERY = groq`
-  *[_type=="blogPost" && slug.current == $slug ][0]{
+`);
+
+export const allBlogBySlugQuery = defineQuery(`
+  *[_type=="blogPost" && slug.current == $slug][0]{
     _id,
     _createdAt,
     _updatedAt,
@@ -144,19 +142,18 @@ export const ALL_BLOG_BY_SLUG_QUERY = groq`
     excerpt,
     featuredImage{..., "lqip": asset->metadata.lqip},
     bodyText[]{
-    ...,
-    _type == "image" => {
       ...,
-      "lqip": asset->metadata.lqip
-    }
-  },
+      _type == "image" => {
+        ...,
+        "lqip": asset->metadata.lqip
+      }
+    },
     "slug": slug.current,
     author[]->{...},
   }
-`;
+`);
 
-// Fetch private blog post by slug
-export const PRIVATE_BLOG_BY_SLUG_QUERY = groq`
+export const privateBlogBySlugQuery = defineQuery(`
   *[_type=="blogPost" && slug.current == $slug && privatePost == true][0]{
     _id,
     _createdAt,
@@ -166,143 +163,142 @@ export const PRIVATE_BLOG_BY_SLUG_QUERY = groq`
     excerpt,
     featuredImage{..., "lqip": asset->metadata.lqip},
     bodyText[]{
-    ...,
-    _type == "image" => {
       ...,
-      "lqip": asset->metadata.lqip
-    }
-  },
+      _type == "image" => {
+        ...,
+        "lqip": asset->metadata.lqip
+      }
+    },
     "slug": slug.current,
     author[]->{...},
   }
-`;
+`);
 
-export const SHOWCASE_QUERY = groq`
-  *[_type=="frontpage-showcase" ][0]{
+export const showcaseQuery = defineQuery(`
+  *[_type=="frontpage-showcase"][0]{
     _id,
     _createdAt,
-      _updatedAt,
-      showcaseTitle,
-      showcaseBlogposts[]->{
-        _id, 
-        title, 
-        excerpt, 
-        featuredImage{..., "lqip": asset->metadata.lqip}, 
-        slug},
+    _updatedAt,
+    showcaseTitle,
+    showcaseBlogposts[]->{
+      _id, 
+      title, 
+      excerpt, 
+      featuredImage{..., "lqip": asset->metadata.lqip}, 
+      slug
+    },
   }
-`;
+`);
 
-export const COUNT_PUBLIC_BLOG_POSTS = groq`
+export const countPublicBlogPostsQuery = defineQuery(`
   count(*[_type=="blogPost" && privatePost==false])
-`;
+`);
 
-export const COUNT_PRIVATE_BLOG_POSTS = groq`
+export const countPrivateBlogPostsQuery = defineQuery(`
   count(*[_type=="blogPost" && privatePost==true])
-`;
+`);
 
-export const MESSAGEBOARD_QUERY = groq`
-*[_type == "message"] | order(_createdAt desc) [$start...$end] {
-  _id,
-  _updatedAt,
-  _createdAt,
-  title,
-  messageImage,
-  bodyText,
-  tags,
-  comments[]{
-    _key,
-    commentText,
-    commentTitle,
-    commentAuthor->{_id, firstName, lastName}
-  },
-  fromAdmin,
-  author->{_id, firstName, lastName}
-}
-`;
-
-export const MESSAGE_BY_ID_QUERY = groq`
-*[_type == "message" && _id == $id][0] {
-  _id,
-  _updatedAt,
-  _createdAt,
-  title,
-  messageImage,
-  bodyText,
-  tags,
-  comments[]{
-    _key,
+export const messageboardQuery = defineQuery(`
+  *[_type == "message"] | order(_createdAt desc) [$start...$end] {
+    _id,
+    _updatedAt,
+    _createdAt,
+    title,
+    messageImage,
+    bodyText,
+    tags,
+    comments[]{
+      _key,
       commentText,
-    commentTitle,
-    commentAuthor->{_id, firstName, lastName},
-    published,
-  },
-  fromAdmin,
-  author->{_id, firstName, lastName},
-}
-`;
+      commentTitle,
+      commentAuthor->{_id, firstName, lastName}
+    },
+    fromAdmin,
+    author->{_id, firstName, lastName}
+  }
+`);
 
-export const COUNT_MESSAGES = groq`
+export const messageByIdQuery = defineQuery(`
+  *[_type == "message" && _id == $id][0] {
+    _id,
+    _updatedAt,
+    _createdAt,
+    title,
+    messageImage,
+    bodyText,
+    tags,
+    comments[]{
+      _key,
+      commentText,
+      commentTitle,
+      commentAuthor->{_id, firstName, lastName},
+      published,
+    },
+    fromAdmin,
+    author->{_id, firstName, lastName},
+  }
+`);
+
+export const allMessageIdsQuery = defineQuery(`
+  *[_type == "message"]{_id}
+`);
+
+export const countMessagesQuery = defineQuery(`
   count(*[_type=="message"])
-`;
+`);
 
+// Helper functions that use the defined queries
 export async function countBlogPosts({
   privatePosts,
 }: {
   privatePosts: boolean;
 }) {
   if (privatePosts) {
-    return client.fetch<number>(COUNT_PRIVATE_BLOG_POSTS);
+    return client.fetch(countPrivateBlogPostsQuery);
   } else {
-    return client.fetch<number>(COUNT_PUBLIC_BLOG_POSTS);
+    return client.fetch(countPublicBlogPostsQuery);
   }
 }
 
 export async function countMessages() {
-  return client.fetch<number>(COUNT_MESSAGES);
+  return client.fetch(countMessagesQuery);
 }
 
-export async function fetchBlogCollection({
-  pageNumber = 1,
-  postsPerPage = 5,
-  isPrivate = false,
-}: {
-  pageNumber?: number;
-  postsPerPage?: number;
-  isPrivate?: boolean;
-}): Promise<BLOG_BY_SLUG_QUERYResult[]> {
-  return client.fetch(
-    groq`
-      *[_type=="blogPost" && 
-      privatePost==$isPrivate] | order(_createdAt asc) [$start...$end]
-      {
-        _id,
-        _createdAt,
-        _updatedAt,
-        featuredImage{..., "lqip": asset->metadata.lqip},
-        excerpt,
-        privatePost,
-        title,
-        "slug": slug.current
-      }      
-    `,
-    {
-      start: pageNumber * postsPerPage,
-      end: (pageNumber + 1) * postsPerPage,
-      isPrivate,
-    },
-  );
-}
+export const blogCollectionQuery = groq`
+  *[_type=="blogPost" && 
+  privatePost==$isPrivate] | order(_createdAt asc) [$start...$end]
+  {
+    _id,
+    _createdAt,
+    _updatedAt,
+    featuredImage{..., "lqip": asset->metadata.lqip},
+    excerpt,
+    privatePost,
+    title,
+    "slug": slug.current
+  }      
+`;
 
-// Add a new function to fetch paginated messages
-export async function fetchPaginatedMessages({
-  pageNumber = 0,
-  messagesPerPage = 10,
-}: {
-  pageNumber?: number;
-  messagesPerPage?: number;
-}) {
-  return client.fetch(MESSAGEBOARD_QUERY, {
-    start: pageNumber * messagesPerPage,
-    end: (pageNumber + 1) * messagesPerPage,
-  });
-}
+export const pageSlugs = defineQuery(`
+  *[_type == "page" && defined(slug.current)]
+  {"slug": slug.current}
+`);
+
+export const blogSlugs = defineQuery(`
+  *[_type == "blogPost" && defined(slug.current)]
+  {"slug": slug.current}
+`);
+
+export const privateBlogSlugs = defineQuery(`
+  *[_type == "blogPost" && defined(slug.current) && privatePost == true]
+  {"slug": slug.current}
+`);
+
+export const messageSlugs = defineQuery(`
+  *[_type == "message" && defined(slug.current)]
+  {"slug": slug.current}
+`);
+
+export const meetingMinutesIds = defineQuery(`
+  *[_type == "fileMeetingMinutes"]{_id}
+`);

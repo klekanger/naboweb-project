@@ -37,39 +37,70 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  // Create a new message in Sanity
+  try {
+    // First get the existing document to ensure it exists
+    const existingMessage = await clientWithWriteAccess.getDocument(_id);
 
-  const messageData: any = {
-    _id,
-    _type: "message",
-    title,
-    bodyText,
-    fromAdmin,
-    author: {
-      _type: "reference",
-      _ref: userId,
-    },
-  };
+    if (!existingMessage) {
+      return NextResponse.json({
+        error: { message: "Message not found" },
+        status: 404,
+      });
+    }
 
-  if (image) {
-    messageData.messageImage = {
-      _type: "image",
-      asset: {
+    // Create the update document
+    const updateDoc: {
+      _id: string;
+      _type: string;
+      title: any;
+      bodyText: any;
+      fromAdmin: boolean;
+      author: {
+        _type: string;
+        _ref: string;
+      };
+      messageImage?: {
+        _type: string;
+        asset: {
+          _type: string;
+          _ref: string;
+        };
+      };
+    } = {
+      _id,
+      _type: "message",
+      title,
+      bodyText,
+      fromAdmin,
+      author: {
         _type: "reference",
-        _ref: image,
+        _ref: userId,
       },
     };
-  }
 
-  try {
-    const result = await clientWithWriteAccess.createOrReplace(messageData);
+    if (image) {
+      updateDoc.messageImage = {
+        _type: "image",
+        asset: {
+          _type: "reference",
+          _ref: image,
+        },
+      };
+    }
+
+    // Update using transaction
+    const transaction = clientWithWriteAccess.transaction();
+    transaction.createOrReplace(updateDoc);
+
+    const result = await transaction.commit().then((result) => {
+      console.log("Result: ", result);
+    });
 
     return NextResponse.json({
       success: {
         message: "Message updated",
-        id: result?._id,
-        title: result?.title,
-        createdAt: result?._createdAt,
+        id: _id,
+        title: title,
       },
       status: 200,
     });
@@ -77,7 +108,7 @@ export async function POST(request: NextRequest) {
     console.error("Error: ", error);
     return NextResponse.json({
       error: {
-        message: "Error: Message could not be created",
+        message: "Error: Message could not be updated",
         longMessage: error,
       },
       status: 500,

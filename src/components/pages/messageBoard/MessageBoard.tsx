@@ -2,7 +2,7 @@
 
 import InfoBox from "@/components/InfoBox";
 import { urlForImage } from "@/sanity/lib/utils";
-import { MESSAGEBOARD_QUERYResult } from "@/types/sanity.types";
+import { MessageboardQueryResult } from "@/types/sanity.types";
 import { useUser } from "@clerk/nextjs";
 import { Button, Checkbox } from "@heroui/react";
 import { CirclePlus, CircleUser, MessagesSquare } from "lucide-react";
@@ -14,7 +14,7 @@ import MessageCard from "./MessageCard";
 export default function MessageBoard({
   messages,
 }: {
-  messages: MESSAGEBOARD_QUERYResult;
+  messages: MessageboardQueryResult;
 }) {
   if (!messages) return null;
 

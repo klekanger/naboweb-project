@@ -25,7 +25,10 @@ export default function SubscriptionStatus({
     setIsPending(true);
 
     try {
-      const result = await updateSubscriptionStatus(userId, isSelected);
+      const result = await updateSubscriptionStatus({
+        userId,
+        isSubscribed: isSelected,
+      });
 
       if ("error" in result) {
         // If there's an error, revert to the previous state

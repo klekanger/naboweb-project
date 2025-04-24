@@ -1,6 +1,7 @@
 "use server";
 
-import { loadUserSubscriptionStatus } from "@/sanity/loader/loadQuery";
+import { sanityFetch } from "@/sanity/lib/live";
+import { userSubscriptionStatusQuery } from "@/sanity/lib/queries";
 
 export type GetUserSubscriptionStatusReturn = {
   success?: {
@@ -24,7 +25,12 @@ export async function getUserSubscriptionStatus(
   }
 
   try {
-    const { data } = await loadUserSubscriptionStatus(userId);
+    const { data } = await sanityFetch({
+      query: userSubscriptionStatusQuery,
+      params: { id: userId },
+      perspective: "published",
+      stega: false,
+    });
 
     if (!data) {
       return {

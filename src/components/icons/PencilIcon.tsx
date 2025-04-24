@@ -1,6 +1,6 @@
 import type { IconProps } from "@/types/types";
 
-export default function HouseIcon({
+export default function PencilIcon({
   fill,
   stroke,
   width = 1,

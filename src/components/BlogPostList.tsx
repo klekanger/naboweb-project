@@ -1,8 +1,8 @@
 import BlogPostItem from "@/components/BlogPostItem";
-import { BLOG_BY_SLUG_QUERYResult, BlogPost } from "@/types/sanity.types";
+import { BlogBySlugQueryResult } from "@/types/sanity.types";
 
 export default function BlogPostList(props: {
-  posts: BLOG_BY_SLUG_QUERYResult[];
+  posts: BlogBySlugQueryResult[];
   className?: string;
 }) {
   const { posts, className } = props ?? {};

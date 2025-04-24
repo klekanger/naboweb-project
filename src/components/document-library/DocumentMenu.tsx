@@ -1,12 +1,12 @@
 "use client";
 
 import CustomButton from "../CustomButton";
-import type { DOCUMENTMENU_QUERYResult } from "@/types/sanity.types";
+import { type DocumentMenuQueryResult } from "@/types/sanity.types";
 
 export default function DocumentMenu({
   content,
 }: {
-  content: DOCUMENTMENU_QUERYResult;
+  content: DocumentMenuQueryResult;
 }) {
   const {
     button1Text,

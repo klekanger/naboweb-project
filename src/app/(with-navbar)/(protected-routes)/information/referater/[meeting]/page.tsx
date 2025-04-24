@@ -1,6 +1,9 @@
 import MeetingMinutesDetails from "@/components/document-library/MeetingMinutesDetails";
-import { generateStaticIdPages } from "@/sanity/loader/generateStaticSlugs";
-import { loadMeetingMinutesById } from "@/sanity/loader/loadQuery";
+import { sanityFetch } from "@/sanity/lib/live";
+import {
+  meetingMinutesByIdQuery,
+  meetingMinutesIds,
+} from "@/sanity/lib/queries";
 import { notFound } from "next/navigation";
 
 type Props = {
@@ -11,7 +14,11 @@ type Props = {
 // Generate all possible routes
 //
 export async function generateStaticParams() {
-  const meetings = await generateStaticIdPages("fileMeetingMinutes");
+  const { data: meetings } = await sanityFetch({
+    query: meetingMinutesIds,
+    perspective: "published",
+    stega: false,
+  });
 
   return meetings.map((meeting) => ({ meeting: meeting._id }));
 }
@@ -21,11 +28,14 @@ export async function generateStaticParams() {
 //
 export default async function PageMeetingMinutesDetailsRoute(props: Props) {
   const params = await props.params;
-  const initial = await loadMeetingMinutesById(params?.meeting);
+  const { data } = await sanityFetch({
+    query: meetingMinutesByIdQuery,
+    params: { meeting: params?.meeting },
+  });
 
-  if (!initial.data) {
+  if (!data) {
     notFound();
   }
 
-  return <MeetingMinutesDetails data={initial.data} />;
+  return <MeetingMinutesDetails data={data} />;
 }

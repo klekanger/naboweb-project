@@ -1,39 +1,34 @@
-import { generateStaticSlugs } from "@/sanity/loader/generateStaticSlugs";
-import { loadBlogPageBySlug } from "@/sanity/loader/loadQuery";
-import BlogPage from "@/components/pages/blog/BlogPage";
-// import BlogPagePreview from "@/components/pages/blog/BlogPagePreview";
-import { draftMode } from "next/headers";
-import { notFound } from "next/navigation";
+import Article from "@/components/Article";
+import { SITE_NAME, SITE_URL } from "@/lib/constants";
+import { sanityFetch } from "@/sanity/lib/live";
+import { blogBySlugQuery, blogSlugs } from "@/sanity/lib/queries";
+import { urlForOpenGraphImage } from "@/sanity/lib/utils";
+import { Authors } from "@/types/sanity.types";
 import { Metadata, ResolvingMetadata } from "next";
 import { toPlainText } from "next-sanity";
-import { urlForOpenGraphImage } from "@/sanity/lib/utils";
 import type { Image as SanityImage } from "sanity";
-import dynamic from "next/dynamic";
-import { SITE_NAME, SITE_URL } from "@/lib/constants";
-
-const BlogPagePreview = dynamic(
-  () => import("@/components/pages/blog/BlogPagePreview"),
-);
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
-//
-// Generate metadata for the current page
-//
 export async function generateMetadata(
   props: Props,
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
   const params = await props.params;
-  const slug = params?.slug ?? "";
-  const post = await loadBlogPageBySlug(slug);
+
+  const { data } = await sanityFetch({
+    query: blogBySlugQuery,
+    params: { slug: params.slug },
+    perspective: "published",
+    stega: false,
+  });
 
   const parentResult = await parent;
   const previousImages = parentResult.openGraph?.images ?? [];
 
-  const { title, excerpt, featuredImage } = post.data ?? {};
+  const { title, excerpt, featuredImage } = data ?? {};
   const plainTextExcerpt = toPlainText(excerpt ?? []);
   const ogImage = urlForOpenGraphImage(featuredImage as SanityImage) ?? "";
 
@@ -47,7 +42,7 @@ export async function generateMetadata(
       description: plainTextExcerpt ?? "",
       locale: "nb_NO",
       siteName: SITE_NAME,
-      url: `${SITE_URL}/blog/${slug}`,
+      url: `${SITE_URL}/blog/${params.slug}`,
     },
   };
 }
@@ -56,25 +51,34 @@ export async function generateMetadata(
 // Generate all possible routes
 //
 export async function generateStaticParams() {
-  return await generateStaticSlugs("blogPost");
+  const { data } = await sanityFetch({
+    query: blogSlugs,
+    perspective: "published",
+    stega: false,
+  });
+  return data;
 }
 
 //
 // Generate the blog page
 //
-export default async function BlogRoute(props: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function BlogRoute(props: Props) {
   const params = await props.params;
-  const initial = await loadBlogPageBySlug(params?.slug);
 
-  if ((await draftMode()).isEnabled) {
-    return <BlogPagePreview params={params} initial={initial} />;
-  }
+  const { data } = await sanityFetch({
+    query: blogBySlugQuery,
+    params: { slug: params.slug },
+  });
 
-  if (!initial.data) {
-    notFound();
-  }
-
-  return <BlogPage data={initial.data} />;
+  return (
+    <Article
+      title={data?.title ?? ""}
+      bodyText={data?.bodyText}
+      createdAt={data?._createdAt}
+      updatedAt={data?._updatedAt}
+      mainImage={data?.featuredImage as SanityImage & { lqip: string | null }}
+      authors={data?.author as Authors[] | undefined}
+      buttonLink="/blog"
+    />
+  );
 }

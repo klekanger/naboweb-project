@@ -14,7 +14,7 @@ import {
 import { ArrowBigLeft } from "lucide-react";
 import Link from "next/link";
 import BackButton from "../BackButton";
-import type { MEETING_MINUTES_BY_ID_QUERYResult } from "@/types/sanity.types";
+import { type MeetingMinutesByIdQueryResult } from "@/types/sanity.types";
 
 type Props = {
   data: {

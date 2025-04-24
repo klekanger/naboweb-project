@@ -1,13 +1,9 @@
-import BlogPage from "@/components/pages/blog/BlogPage";
-import { generateStaticSlugs } from "@/sanity/loader/generateStaticSlugs";
-import { loadPrivateBlogPageBySlug } from "@/sanity/loader/loadQuery";
-import dynamic from "next/dynamic";
-import { draftMode } from "next/headers";
+import Article from "@/components/Article";
+import { sanityFetch } from "@/sanity/lib/live";
+import { privateBlogBySlugQuery, privateBlogSlugs } from "@/sanity/lib/queries";
+import { Authors } from "@/types/sanity.types";
 import { notFound } from "next/navigation";
-
-const BlogPagePreview = dynamic(
-  () => import("@/components/pages/blog/BlogPagePreview"),
-);
+import type { Image as SanityImage } from "sanity";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -17,7 +13,13 @@ type Props = {
 // Generate all possible routes
 //
 export async function generateStaticParams() {
-  return await generateStaticSlugs("blogPost");
+  const { data } = await sanityFetch({
+    query: privateBlogSlugs,
+    perspective: "published",
+    stega: false,
+  });
+
+  return data;
 }
 
 //
@@ -25,15 +27,25 @@ export async function generateStaticParams() {
 //
 export default async function PrivateBlogRoute(props: Props) {
   const params = await props.params;
-  const initial = await loadPrivateBlogPageBySlug(params?.slug);
 
-  if ((await draftMode()).isEnabled) {
-    return <BlogPagePreview params={params} initial={initial} />;
-  }
+  const { data } = await sanityFetch({
+    query: privateBlogBySlugQuery,
+    params: { slug: params.slug },
+  });
 
-  if (!initial.data) {
+  if (!data) {
     notFound();
   }
 
-  return <BlogPage data={initial.data} />;
+  return (
+    <Article
+      title={data?.title ?? ""}
+      bodyText={data?.bodyText}
+      createdAt={data?._createdAt}
+      updatedAt={data?._updatedAt}
+      mainImage={data?.featuredImage as SanityImage & { lqip: string | null }}
+      authors={data?.author as Authors[] | undefined}
+      buttonLink="/information"
+    />
+  );
 }

@@ -1,19 +1,39 @@
 import { revalidatePath } from "next/cache";
-import { NextResponse, type NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { id } = await req.json();
-
   try {
-    revalidatePath(`/messageboard/${id}`);
+    const { id } = await req.json();
 
-    return NextResponse.json({
-      status: 200,
+    // Construct and validate the path
+    const path = `/messageboard/${id}`;
+    if (path.length >= 1024) {
+      return Response.json(
+        {
+          revalidated: false,
+          now: Date.now(),
+          message: "Path exceeds maximum length of 1024 characters",
+        },
+        { status: 400 },
+      );
+    }
+
+    // Revalidate the path
+    revalidatePath(path);
+
+    return Response.json({
       revalidated: true,
       now: Date.now(),
     });
-  } catch (error: any) {
-    console.error("Something went wrong:", error);
-    return new Response(error.message, { status: 500 });
+  } catch (error) {
+    console.error("Revalidation error:", error);
+    return Response.json(
+      {
+        revalidated: false,
+        now: Date.now(),
+        message: "Failed to revalidate path",
+      },
+      { status: 500 },
+    );
   }
 }
