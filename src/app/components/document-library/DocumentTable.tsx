@@ -6,7 +6,7 @@ import {
   PdfIcon,
   PowerPointIcon,
   WordIcon,
-} from "@/components/icons";
+} from "@/app/components/icons";
 import { formatDate } from "@/lib/format-date";
 import { OtherDocumentsQueryResult } from "@/types/sanity.types";
 import {

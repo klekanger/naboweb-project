@@ -2,8 +2,8 @@
  * Layout for all pages and articles - including blog posts
  */
 import "@/app/globals.css";
-import Footer from "@/components/sections/Footer";
-import Navbar from "@/components/sections/Navbar";
+import Footer from "@/app/components/sections/Footer";
+import Navbar from "@/app/components/sections/Navbar";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/constants";
 import { Suspense } from "react";
 

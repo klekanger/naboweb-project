@@ -1,4 +1,4 @@
-import MeetingMinutesDetails from "@/components/document-library/MeetingMinutesDetails";
+import MeetingMinutesDetails from "@/app/components/document-library/MeetingMinutesDetails";
 import { sanityFetch } from "@/sanity/lib/live";
 import {
   meetingMinutesByIdQuery,

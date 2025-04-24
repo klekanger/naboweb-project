@@ -1,4 +1,4 @@
-import Article from "@/components/Article";
+import Article from "@/app/components/Article";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import { sanityFetch } from "@/sanity/lib/live";
 import { blogBySlugQuery, blogSlugs } from "@/sanity/lib/queries";

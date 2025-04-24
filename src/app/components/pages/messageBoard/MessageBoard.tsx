@@ -1,6 +1,6 @@
 "use client";
 
-import InfoBox from "@/components/InfoBox";
+import InfoBox from "@/app/components/InfoBox";
 import { urlForImage } from "@/sanity/lib/utils";
 import { MessageboardQueryResult } from "@/types/sanity.types";
 import { useUser } from "@clerk/nextjs";

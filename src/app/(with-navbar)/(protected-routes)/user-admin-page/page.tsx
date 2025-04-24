@@ -1,5 +1,5 @@
-import BackButton from "@/components/BackButton";
-import UserAdmin from "@/components/userAdmin/UserAdmin";
+import BackButton from "@/app/components/BackButton";
+import UserAdmin from "@/app/components/userAdmin/UserAdmin";
 import { validRoles, validateUserRoles } from "@/lib/validateUserRoles";
 import type { UserWithEmails } from "@/types/types";
 import { clerkClient } from "@clerk/nextjs/server";

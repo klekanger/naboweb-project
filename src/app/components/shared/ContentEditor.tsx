@@ -12,7 +12,7 @@ import StarterKit from "@tiptap/starter-kit";
 import { ArrowLeftIcon, Bold, Italic, UnderlineIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useContext, useMemo, useState } from "react";
-import { MessageEditorContext } from "@/context/messageEditorContext";
+import { MessageEditorContext } from "@/app/context/messageEditorContext";
 import type { Image as SanityImage } from "sanity";
 import ImageUploader from "./ImageUploader";
 

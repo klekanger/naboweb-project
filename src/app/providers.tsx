@@ -1,6 +1,6 @@
 "use client";
 
-import UserAdminProvider from "@/context/userAdminContext";
+import UserAdminProvider from "@/app/context/userAdminContext";
 import { HeroUIProvider } from "@heroui/react";
 import { ThemeProvider } from "next-themes";
 

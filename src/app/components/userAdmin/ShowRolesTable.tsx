@@ -1,6 +1,6 @@
 "use client";
 
-import { SidebarMenu, UserAdminContext } from "@/context/userAdminContext";
+import { SidebarMenu, UserAdminContext } from "@/app/context/userAdminContext";
 import { UserTableProps, UserWithEmails } from "@/types/types";
 import {
   Table,

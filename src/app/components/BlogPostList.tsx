@@ -1,4 +1,4 @@
-import BlogPostItem from "@/components/BlogPostItem";
+import BlogPostItem from "@/app/components/BlogPostItem";
 import { BlogBySlugQueryResult } from "@/types/sanity.types";
 
 export default function BlogPostList(props: {

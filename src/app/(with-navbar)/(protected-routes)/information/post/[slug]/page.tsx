@@ -1,4 +1,4 @@
-import Article from "@/components/Article";
+import Article from "@/app/components/Article";
 import { sanityFetch } from "@/sanity/lib/live";
 import { privateBlogBySlugQuery, privateBlogSlugs } from "@/sanity/lib/queries";
 import { Authors } from "@/types/sanity.types";

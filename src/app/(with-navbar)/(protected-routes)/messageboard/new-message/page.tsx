@@ -1,7 +1,7 @@
 "use client";
 
-import MessageEditor from "@/components/pages/messageBoard/MessageEditor";
-import { MessageEditorContext } from "@/context/messageEditorContext";
+import MessageEditor from "@/app/components/pages/messageBoard/MessageEditor";
+import { MessageEditorContext } from "@/app/context/messageEditorContext";
 import { currentUserRoles } from "@/lib/currentUserRoles";
 import { useUser } from "@clerk/nextjs";
 import {
@@ -33,7 +33,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
-import { useModalState } from "@/hooks/useModalState";
+import { useModalState } from "@/app/hooks/useModalState";
 
 const MAX_CHARACTERS = 1000;
 const DEFAULT_REDIRECT_URL = "/messageboard/new-message";

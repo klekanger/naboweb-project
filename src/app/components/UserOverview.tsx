@@ -1,5 +1,5 @@
-import CustomButton from "@/components/CustomButton";
-import RoleDisplay from "@/components/userAdmin/RoleDisplay";
+import CustomButton from "@/app/components/CustomButton";
+import RoleDisplay from "@/app/components/userAdmin/RoleDisplay";
 import { getUserSubscriptionStatus } from "@/app/actions/getUserSubscriptionStatus";
 import { currentUserRoles } from "@/lib/currentUserRoles";
 import type { UserOverviewProps } from "@/types/types";

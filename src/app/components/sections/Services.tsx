@@ -8,7 +8,7 @@ import {
   HouseIcon,
   NewsIcon,
   PencilIcon,
-} from "@/components/icons";
+} from "@/app/components/icons";
 import { type FrontpageServicesQueryResult } from "@/types/sanity.types";
 import type { IconProps } from "@/types/types";
 import { Card, CardBody, CardHeader, Tooltip } from "@heroui/react";

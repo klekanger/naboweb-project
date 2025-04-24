@@ -29,7 +29,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import logoLight from "../../../public/logo-light.svg";
+import logoLight from "public/logo-light.svg";
 
 export default function Navbar() {
   const { isSignedIn, user, isLoaded } = useUser();

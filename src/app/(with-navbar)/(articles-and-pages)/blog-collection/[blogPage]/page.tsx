@@ -1,5 +1,5 @@
-import BlogPostList from "@/components/BlogPostList";
-import Pagination from "@/components/Pagination";
+import BlogPostList from "@/app/components/BlogPostList";
+import Pagination from "@/app/components/Pagination";
 import { countBlogPosts } from "@/sanity/lib/queries";
 import { sanityFetch } from "@/sanity/lib/live";
 import { blogCollectionQuery } from "@/sanity/lib/queries";

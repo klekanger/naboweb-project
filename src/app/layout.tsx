@@ -13,7 +13,7 @@ import { handleError } from "./client-utils";
 import { draftMode } from "next/headers";
 import { Toaster } from "sonner";
 import { VisualEditing } from "next-sanity";
-import DraftModeToast from "@/components/DraftModeToast";
+import DraftModeToast from "@/app/components/DraftModeToast";
 
 const openSans = Open_Sans({
   subsets: ["latin"],

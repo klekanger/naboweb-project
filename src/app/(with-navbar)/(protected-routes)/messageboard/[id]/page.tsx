@@ -1,4 +1,4 @@
-import MessagePage from "@/components/pages/messageBoard/MessagePage";
+import MessagePage from "@/app/components/pages/messageBoard/MessagePage";
 import { sanityFetch } from "@/sanity/lib/live";
 import { allMessageIdsQuery, messageByIdQuery } from "@/sanity/lib/queries";
 import { notFound } from "next/navigation";

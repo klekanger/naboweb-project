@@ -1,4 +1,4 @@
-import NotLoggedIn from "@/components/NotLoggedIn";
+import NotLoggedIn from "@/app/components/NotLoggedIn";
 import { validRoles, validateUserRoles } from "@/lib/validateUserRoles";
 
 export default async function ProtectedRouteLayout({

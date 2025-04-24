@@ -1,8 +1,8 @@
 import { searchUser } from "@/app/actions/searchUser";
 import { updateUser } from "@/app/actions/updateUser";
 import { Spinner } from "@heroui/react";
-import DeleteUserModal from "@/components/userAdmin/DeleteUserModal";
-import { UserAdminContext } from "@/context/userAdminContext";
+import DeleteUserModal from "@/app/components/userAdmin/DeleteUserModal";
+import { UserAdminContext } from "@/app/context/userAdminContext";
 import { formatDate } from "@/lib/format-date";
 import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 import {
@@ -34,7 +34,7 @@ import {
 } from "@heroui/react";
 import { SearchIcon } from "lucide-react";
 import { useContext, useState } from "react";
-import { useModalState } from "@/hooks/useModalState";
+import { useModalState } from "@/app/hooks/useModalState";
 
 const MAX_RESULTS = 10;
 

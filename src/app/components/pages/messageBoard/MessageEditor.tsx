@@ -1,5 +1,5 @@
-import ImageUploader from "@/components/shared/ImageUploader";
-import { MessageEditorContext } from "@/context/messageEditorContext";
+import ImageUploader from "@/app/components/shared/ImageUploader";
+import { MessageEditorContext } from "@/app/context/messageEditorContext";
 import { Button, Input, Spacer } from "@heroui/react";
 import { toHTML } from "@portabletext/to-html";
 import { Editor, EditorContent } from "@tiptap/react";

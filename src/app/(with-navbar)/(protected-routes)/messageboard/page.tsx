@@ -1,11 +1,11 @@
-import MessageBoard from "@/components/pages/messageBoard/MessageBoard";
+import MessageBoard from "@/app/components/pages/messageBoard/MessageBoard";
 import {
   countMessages,
   countMessagesQuery,
   messageboardQuery,
 } from "@/sanity/lib/queries";
 import { sanityFetch } from "@/sanity/lib/live";
-import PaginationControls from "@/components/common/PaginationControls";
+import PaginationControls from "@/app/components/common/PaginationControls";
 import { redirect } from "next/navigation";
 
 export default async function MessageBoardRoute({

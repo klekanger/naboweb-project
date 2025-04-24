@@ -20,7 +20,7 @@ import {
 import { MessageSquare, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { useModalState } from "@/hooks/useModalState";
+import { useModalState } from "@/app/hooks/useModalState";
 
 interface CommentFormData {
   title: string;

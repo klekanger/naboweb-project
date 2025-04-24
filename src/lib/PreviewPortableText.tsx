@@ -1,4 +1,4 @@
-import ImageBox from "@/components/shared/ImageBox";
+import ImageBox from "@/app/components/shared/ImageBox";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
 import {
   type SanityImageSource,

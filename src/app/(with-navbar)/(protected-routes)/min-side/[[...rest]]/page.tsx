@@ -1,4 +1,4 @@
-import UserOverview from "@/components/UserOverview";
+import UserOverview from "@/app/components/UserOverview";
 import { UserWithRoles } from "@/types/types";
 import { UserProfile } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";

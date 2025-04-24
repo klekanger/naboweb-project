@@ -1,5 +1,5 @@
-import AlertUser from "@/components/AlertUser";
-import DocumentTable from "@/components/document-library/DocumentTable";
+import AlertUser from "@/app/components/AlertUser";
+import DocumentTable from "@/app/components/document-library/DocumentTable";
 import { sanityFetch } from "@/sanity/lib/live";
 import { otherDocumentsQuery } from "@/sanity/lib/queries";
 import Link from "next/link";

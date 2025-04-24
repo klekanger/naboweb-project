@@ -1,8 +1,8 @@
-import BlogPostList from "@/components/BlogPostList";
-import DocumentMenu from "@/components/document-library/DocumentMenu";
-import InfoBox from "@/components/InfoBox";
-import Pagination from "@/components/Pagination";
-import RoleDisplay from "@/components/userAdmin/RoleDisplay";
+import BlogPostList from "@/app/components/BlogPostList";
+import DocumentMenu from "@/app/components/document-library/DocumentMenu";
+import InfoBox from "@/app/components/InfoBox";
+import Pagination from "@/app/components/Pagination";
+import RoleDisplay from "@/app/components/userAdmin/RoleDisplay";
 import { sanityFetch } from "@/sanity/lib/live";
 import {
   blogCollectionQuery,

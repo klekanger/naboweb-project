@@ -1,6 +1,6 @@
 "use client";
 
-import RoleDisplay from "@/components/userAdmin/RoleDisplay";
+import RoleDisplay from "@/app/components/userAdmin/RoleDisplay";
 import { formatDate } from "@/lib/format-date";
 import { ShowUserProps } from "@/types/types";
 import {

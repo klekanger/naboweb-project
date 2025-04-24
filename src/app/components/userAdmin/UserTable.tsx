@@ -1,9 +1,9 @@
 "use client";
 
 import { getUser } from "@/app/actions/getUser";
-import DeleteUserModal from "@/components/userAdmin/DeleteUserModal";
-import ShowUserModal from "@/components/userAdmin/ShowUserModal";
-import { SidebarMenu, UserAdminContext } from "@/context/userAdminContext";
+import DeleteUserModal from "@/app/components/userAdmin/DeleteUserModal";
+import ShowUserModal from "@/app/components/userAdmin/ShowUserModal";
+import { SidebarMenu, UserAdminContext } from "@/app/context/userAdminContext";
 import {
   UserWithEmails,
   type ShowUserProps,

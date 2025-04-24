@@ -5,7 +5,7 @@ import {
   CreateUserScreenType,
   SidebarMenu,
   UserAdminContext,
-} from "@/context/userAdminContext";
+} from "@/app/context/userAdminContext";
 import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 import type { UserWithEmails, NewUser } from "@/types/types";
 import {

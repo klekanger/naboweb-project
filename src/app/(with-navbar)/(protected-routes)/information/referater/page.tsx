@@ -1,5 +1,5 @@
-import AlertUser from "@/components/AlertUser";
-import MeetingMinutes from "@/components/document-library/MeetingMinutes";
+import AlertUser from "@/app/components/AlertUser";
+import MeetingMinutes from "@/app/components/document-library/MeetingMinutes";
 import { sanityFetch } from "@/sanity/lib/live";
 import { meetingMinutesQuery } from "@/sanity/lib/queries";
 import Link from "next/link";

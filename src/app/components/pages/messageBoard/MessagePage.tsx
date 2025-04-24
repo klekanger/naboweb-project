@@ -1,8 +1,8 @@
 "use client";
 
-import MessageEditor from "@/components/pages/messageBoard/MessageEditor";
-import { MessageEditorContext } from "@/context/messageEditorContext";
-import { useModalState } from "@/hooks/useModalState";
+import MessageEditor from "@/app/components/pages/messageBoard/MessageEditor";
+import { MessageEditorContext } from "@/app/context/messageEditorContext";
+import { useModalState } from "@/app/hooks/useModalState";
 import { compareClerkAndSanityUser } from "@/lib/compareClerkAndSanityUser";
 import { currentUserRoles } from "@/lib/currentUserRoles";
 import { CustomPortableText } from "@/lib/CustomPortableText";

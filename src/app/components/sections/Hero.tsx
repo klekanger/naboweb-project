@@ -1,6 +1,6 @@
 "use client";
 
-import CustomButton from "@/components/CustomButton";
+import CustomButton from "@/app/components/CustomButton";
 import { urlForImage } from "@/sanity/lib/utils";
 import { type FrontpageHeroQueryResult } from "@/types/sanity.types";
 import { motion } from "motion/react";

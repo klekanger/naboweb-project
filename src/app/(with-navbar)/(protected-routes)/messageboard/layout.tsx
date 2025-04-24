@@ -1,4 +1,4 @@
-import MessageEditorProvider from "@/context/messageEditorContext";
+import MessageEditorProvider from "@/app/context/messageEditorContext";
 
 export default function MessageBoardLayout({
   children,

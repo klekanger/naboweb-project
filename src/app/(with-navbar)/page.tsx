@@ -1,6 +1,6 @@
-import Hero from "@/components/sections/Hero";
-import Services from "@/components/sections/Services";
-import Showcase from "@/components/sections/Showcase";
+import Hero from "@/app/components/sections/Hero";
+import Services from "@/app/components/sections/Services";
+import Showcase from "@/app/components/sections/Showcase";
 import { sanityFetch } from "@/sanity/lib/live";
 import {
   frontpageHeroQuery,

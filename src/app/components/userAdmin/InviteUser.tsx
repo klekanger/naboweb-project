@@ -1,5 +1,5 @@
 import { inviteUser } from "@/app/actions/inviteUser";
-import { UserAdminContext } from "@/context/userAdminContext";
+import { UserAdminContext } from "@/app/context/userAdminContext";
 import {
   Button,
   Checkbox,
@@ -14,7 +14,7 @@ import {
 } from "@heroui/react";
 import { useContext, useMemo, useState } from "react";
 import RoleDisplay from "./RoleDisplay";
-import { useModalState } from "@/hooks/useModalState";
+import { useModalState } from "@/app/hooks/useModalState";
 
 export default function InviteUser() {
   const [emailToInvite, setEmailToInvite] = useState<string>("");

@@ -1,4 +1,4 @@
-import Article from "@/components/Article";
+import Article from "@/app/components/Article";
 import { sanityFetch } from "@/sanity/lib/live";
 import { pageBySlugQuery, pageSlugs } from "@/sanity/lib/queries";
 import { urlForOpenGraphImage } from "@/sanity/lib/utils";

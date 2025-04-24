@@ -1,4 +1,4 @@
-import BackButton from "@/components/BackButton";
+import BackButton from "@/app/components/BackButton";
 import { formatDate } from "@/lib/format-date";
 import { urlForImage } from "@/sanity/lib/utils";
 import { CustomPortableText } from "@/lib/CustomPortableText";
