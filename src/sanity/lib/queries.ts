@@ -154,7 +154,7 @@ export const allBlogBySlugQuery = defineQuery(`
 `);
 
 export const privateBlogBySlugQuery = defineQuery(`
-  *[_type=="blogPost" && slug.current == $slug && privatePost == true][0]{
+  *[_type=="blogPost" && slug.current == $slug && privatePost == true][0] {
     _id,
     _createdAt,
     _updatedAt,
@@ -266,7 +266,7 @@ export async function countMessages() {
 
 export const blogCollectionQuery = groq`
   *[_type=="blogPost" && 
-  privatePost==$isPrivate] | order(_createdAt asc) [$start...$end]
+  privatePost==$isPrivate] | order(_createdAt desc) [$start...$end]
   {
     _id,
     _createdAt,
