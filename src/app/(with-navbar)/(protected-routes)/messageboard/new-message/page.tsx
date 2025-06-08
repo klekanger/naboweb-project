@@ -221,6 +221,21 @@ export default function NewMessage() {
       return;
     } finally {
       setIsSubmittingMessage(false);
+
+      // Reset the message editor state
+      setMessage({
+        title: "",
+        bodyText: null,
+        author: {
+          firstName: "",
+          lastName: "",
+        },
+        userId: "",
+        fromAdmin: false,
+        messageImage: null,
+      });
+      setMessageImageFile(null);
+      editor?.commands.setContent("");
     }
   };
 
