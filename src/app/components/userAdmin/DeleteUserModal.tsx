@@ -1,7 +1,7 @@
 "use client";
 
 import { deleteUser } from "@/app/actions/deleteUser";
-import { UserAdminContext } from "@/app/context/userAdminContext";
+import { SidebarMenu, UserAdminContext } from "@/app/context/userAdminContext";
 import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 import { ShowUserProps } from "@/types/types";
 import {
@@ -14,22 +14,25 @@ import {
   Spinner,
 } from "@heroui/react";
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 export default function DeleteUserModal({
   userDataToDelete,
   onClose,
   isOpen,
   onOpenChange,
+  onDeleted,
 }: {
   userDataToDelete: ShowUserProps | undefined;
   onClose: () => void;
   isOpen: boolean;
   onOpenChange: () => void;
+  onDeleted?: () => void;
 }) {
   const [errorToShow, setErrorToShow] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const { setSelectedMenu, setSelectedUser } = useContext(UserAdminContext);
 
   if (!userDataToDelete) {
     onClose();
@@ -59,6 +62,12 @@ export default function DeleteUserModal({
         setSuccessMessage(
           `Bruker ${userDataToDelete.firstName} ${userDataToDelete.lastName} ble slettet`,
         );
+        // After successful deletion, navigate back to the users list and clear any selected user
+        setSelectedUser(null);
+        setSelectedMenu(SidebarMenu.USERS);
+        // Notify parent components when they need to take additional actions
+        if (onDeleted) onDeleted();
+        onClose();
       } else {
         setErrorToShow("Ukjent feil");
       }

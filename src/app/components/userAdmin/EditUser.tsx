@@ -2,6 +2,7 @@ import { searchUser } from "@/app/actions/searchUser";
 import { updateUser } from "@/app/actions/updateUser";
 import { Spinner } from "@heroui/react";
 import DeleteUserModal from "@/app/components/userAdmin/DeleteUserModal";
+import { SidebarMenu } from "@/app/context/userAdminContext";
 import { UserAdminContext } from "@/app/context/userAdminContext";
 import { formatDate } from "@/lib/format-date";
 import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
@@ -64,6 +65,7 @@ export default function EditUser() {
     setSelectedUser,
     isCreatingUser,
     setIsCreatingUser,
+    setSelectedMenu,
     setGeneralError,
   } = useContext(UserAdminContext);
 
@@ -361,6 +363,11 @@ export default function EditUser() {
         onClose={modalDeleteUser.onClose}
         isOpen={modalDeleteUser.isOpen}
         onOpenChange={modalDeleteUser.onOpenChange}
+        onDeleted={() => {
+          setSelectedUser(null);
+          setIsCreatingUser(false);
+          setSelectedMenu(SidebarMenu.USERS);
+        }}
       />
       <Modal
         isOpen={modalUserUpdated.isOpen}
