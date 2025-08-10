@@ -46,3 +46,4 @@ gartnerihagen-auth0-brukere.js
 # debug files
 email-content.html
 .vscode/settings.json
+.env*.local
