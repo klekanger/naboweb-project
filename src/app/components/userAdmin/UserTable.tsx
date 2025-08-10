@@ -308,7 +308,12 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
         onClose={modalDeleteUser.onClose}
         isOpen={modalDeleteUser.isOpen}
         onOpenChange={modalDeleteUser.onOpenChange}
+        onDeleted={() => {
+          console.log("deleted user");
+        }}
       />
     </div>
   );
 }
+
+// TODO refresh the user list after a user has been deleted
