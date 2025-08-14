@@ -63,16 +63,16 @@
     - Update text to reflect server-side pagination (e.g., "Viser side X av Y (Z brukere totalt)")
     - _Requirements: 2.1, 2.2_
 
-- [ ] 5. Maintain search functionality with pagination
+- [x] 5. Maintain search functionality with pagination
 
-  - [ ] 5.1 Update search to work with paginated data
+  - [x] 5.1 Update search to work with paginated data
 
     - Modify search logic to filter only current page users (10 users max)
     - Ensure search reset doesn't interfere with pagination
     - Update search result count to reflect filtered results from current page
     - _Requirements: 3.1, 3.4_
 
-  - [ ] 5.2 Handle search state with pagination
+  - [x] 5.2 Handle search state with pagination
     - Ensure search functionality works on current page data
     - Maintain existing search UX while working with smaller dataset
     - Update search placeholder and help text if needed
