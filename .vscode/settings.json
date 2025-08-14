@@ -6,5 +6,6 @@
   "less.validate": false,
   "scss.validate": false,
   "tailwindCSS.emmetCompletions": true,
-  "kiroAgent.configureMCP": "Enabled"
+  "kiroAgent.configureMCP": "Enabled",
+  "oxc.enable": true
 }

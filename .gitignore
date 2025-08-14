@@ -48,8 +48,3 @@ email-content.html
 .vscode/settings.json
 .env*.local
 .vscode/settings.json
-.kiro/settings/mcp.json
-.kiro/steering/product.md
-.kiro/steering/structure.md
-.kiro/steering/tech.md
-.vscode/settings.json
