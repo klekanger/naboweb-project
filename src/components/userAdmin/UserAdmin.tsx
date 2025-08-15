@@ -101,30 +101,6 @@ export default function UserAdmin({
   const modalCreateUser = useDisclosure();
   const modalErrorMessage = useDisclosure();
 
-  const handleMenuClick = (menuId: number) => {
-    setSelectedUser(null);
-    // Use explicit enum values instead of casting
-    switch (menuId) {
-      case 0:
-        setSelectedMenu(SidebarMenu.USERS);
-        break;
-      case 1:
-        setSelectedMenu(SidebarMenu.INVITE_USER);
-        break;
-      case 2:
-        setSelectedMenu(SidebarMenu.CREATE_USER);
-        break;
-      case 3:
-        setSelectedMenu(SidebarMenu.EDIT_USER);
-        break;
-      case 4:
-        setSelectedMenu(SidebarMenu.SHOW_SUPER_USERS);
-        break;
-      default:
-        setSelectedMenu(SidebarMenu.USERS);
-    }
-  };
-
   const validateEmail = useCallback(
     (value: string) => value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i),
     [],
@@ -190,7 +166,10 @@ export default function UserAdmin({
               <Button
                 key={`menu-${element.id}`}
                 variant="light"
-                onPress={() => handleMenuClick(element.id)}
+                onPress={(e) => {
+                  setSelectedUser(null);
+                  setSelectedMenu(element.id);
+                }}
                 className={`h-24 lg:py-2 lg:justify-start lg:h-auto flex flex-col lg:flex-row rounded-none text-sm text-brand-black hover:text-brand-black/80 dark:text-brand-white dark:hover:text-brand-white/80 lg:border-none ${
                   element.id !== 0 &&
                   "border-l border-black/10 dark:border-white/10"
