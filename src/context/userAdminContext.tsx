@@ -57,7 +57,7 @@ const userAdminInitialValue = {
     email: "",
     firstName: "",
     lastName: "",
-    roles: [],
+    roles: ["user"],
   },
   screenToDisplay: CreateUserScreenType.FORM,
   selectedUser: null,

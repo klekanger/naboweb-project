@@ -7,7 +7,7 @@ import {
   UserAdminContext,
 } from "@/context/userAdminContext";
 import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
-import type { UserWithEmails, NewUser } from "@/types/types";
+import type { UserWithEmails, NewUser, UserAdminProps } from "@/types/types";
 import {
   Button,
   Checkbox,
@@ -21,7 +21,14 @@ import {
   useDisclosure,
 } from "@heroui/react";
 import { Crown, UserCheck, UserCog, UserPlus2, Users } from "lucide-react";
-import { useCallback, useContext, useEffect, useMemo } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Spinner } from "@heroui/react";
 import EditUser from "./EditUser";
 import InviteUser from "./InviteUser";
@@ -66,7 +73,11 @@ const menuElements = [
   },
 ];
 
-export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
+export default function UserAdmin({
+  users,
+  pagination,
+  isSearchResult = false,
+}: UserAdminProps & { isSearchResult?: boolean }) {
   const {
     generalError,
     setGeneralError,
@@ -90,10 +101,29 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
   const modalCreateUser = useDisclosure();
   const modalErrorMessage = useDisclosure();
 
-  useEffect(() => {
-    resetUserAdminContext();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const handleMenuClick = (menuId: number) => {
+    setSelectedUser(null);
+    // Use explicit enum values instead of casting
+    switch (menuId) {
+      case 0:
+        setSelectedMenu(SidebarMenu.USERS);
+        break;
+      case 1:
+        setSelectedMenu(SidebarMenu.INVITE_USER);
+        break;
+      case 2:
+        setSelectedMenu(SidebarMenu.CREATE_USER);
+        break;
+      case 3:
+        setSelectedMenu(SidebarMenu.EDIT_USER);
+        break;
+      case 4:
+        setSelectedMenu(SidebarMenu.SHOW_SUPER_USERS);
+        break;
+      default:
+        setSelectedMenu(SidebarMenu.USERS);
+    }
+  };
 
   const validateEmail = useCallback(
     (value: string) => value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i),
@@ -160,10 +190,7 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
               <Button
                 key={`menu-${element.id}`}
                 variant="light"
-                onPress={(e) => {
-                  setSelectedUser(null);
-                  setSelectedMenu(element.id);
-                }}
+                onPress={() => handleMenuClick(element.id)}
                 className={`h-24 lg:py-2 lg:justify-start lg:h-auto flex flex-col lg:flex-row rounded-none text-sm text-brand-black hover:text-brand-black/80 dark:text-brand-white dark:hover:text-brand-white/80 lg:border-none ${
                   element.id !== 0 &&
                   "border-l border-black/10 dark:border-white/10"
@@ -186,9 +213,15 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
               __html: menuElements[selectedMenu].description,
             }}
           />
+
           {/* SHOW USERS SCREEN */}
           {selectedMenu === SidebarMenu.USERS && (
-            <UserTable users={users} className="lg:px-2" />
+            <UserTable
+              users={users}
+              pagination={pagination}
+              isSearchResult={isSearchResult}
+              className="lg:px-2"
+            />
           )}
 
           {/* CREATE NEW USER SCREEN - SHOW FORM */}
@@ -365,14 +398,18 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
             )}
 
           {/* INVITE USER TO CREATE ACCOUNT */}
-          {selectedMenu === SidebarMenu.INVITE_USER && <InviteUser />}
+          {selectedMenu === 1 && <InviteUser />}
 
           {/* EDIT EXISTING USER */}
-          {selectedMenu === SidebarMenu.EDIT_USER && <EditUser />}
+          {selectedMenu === 3 && <EditUser />}
 
           {/* SHOW USERS WITH ADMIN OR OTHER SUPER USER ROLES */}
-          {selectedMenu === SidebarMenu.SHOW_SUPER_USERS && (
-            <AssignRolesTable users={users} className="lg:px-2" />
+          {selectedMenu === 4 && (
+            <AssignRolesTable
+              users={users}
+              pagination={pagination}
+              className="lg:px-2"
+            />
           )}
         </section>
       </div>

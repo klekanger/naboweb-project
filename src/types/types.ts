@@ -152,9 +152,23 @@ export type SearchUserType = {
   }[];
 };
 
+export type PaginationData = {
+  currentPage: number;
+  totalPages: number;
+  totalCount: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+};
+
 export type UserTableProps = {
   users: UserWithEmails[];
   className?: string;
+  pagination?: PaginationData;
+};
+
+export type UserAdminProps = {
+  users: UserWithEmails[];
+  pagination?: PaginationData;
 };
 
 export type UserWithRoles = UserResource & {
