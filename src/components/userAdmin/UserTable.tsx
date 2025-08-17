@@ -27,9 +27,8 @@ import {
   useDisclosure,
 } from "@heroui/react";
 import { MoreVertical, SearchIcon } from "lucide-react";
-import { useCallback, useContext, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 
 const CircleAdmin = () => (
   <Tooltip content="Administrator">
@@ -172,9 +171,9 @@ export default function UserTable({
     return (
       <div className="space-y-4">
         {/* Global Search */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 max-w-md">
           <Input
-            placeholder="Søk gjennom alle brukere..."
+            placeholder="Søk etter bruker"
             type="search"
             startContent={<SearchIcon />}
             value={globalSearchValue}
@@ -193,22 +192,10 @@ export default function UserTable({
         </div>
 
         <div className="pl-2 text-left">
-          {isSearchResult ? (
+          {isSearchResult && (
             <span>
               <span className="font-semibold">Søkeresultater:</span>{" "}
               {sortedUsers.length} brukere funnet
-            </span>
-          ) : pagination ? (
-            <span>
-              <span className="font-semibold">
-                Viser side {pagination.currentPage} av {pagination.totalPages}
-              </span>{" "}
-              ({pagination.totalCount} brukere totalt)
-            </span>
-          ) : (
-            <span>
-              <span className="font-semibold">Antall brukere:</span>{" "}
-              {sortedUsers.length.toString()}
             </span>
           )}
         </div>
