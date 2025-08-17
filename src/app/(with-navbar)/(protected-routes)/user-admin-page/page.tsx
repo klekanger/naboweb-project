@@ -1,14 +1,15 @@
 import BackButton from "@/components/BackButton";
 import UserAdmin from "@/components/userAdmin/UserAdmin";
-
 import { validRoles, validateUserRoles } from "@/lib/validateUserRoles";
-import type { UserWithEmails, PaginationData } from "@/types/types";
+import type { PaginationData, UserWithEmails } from "@/types/types";
 import { clerkClient } from "@clerk/nextjs/server";
 import type { UserResource } from "@clerk/types";
 import { Button } from "@heroui/button";
 import { ArrowBigLeft } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+
+const MAX_USERS_PER_PAGE = 30;
 
 function calculatePaginationData(
   currentPage: number,
@@ -32,8 +33,6 @@ async function fetchUsers(page: number = 1, searchQuery?: string) {
   const client = await clerkClient();
 
   try {
-    const limit = 10;
-
     if (searchQuery) {
       // Use global search when search query is provided
       const { data: users, totalCount } = await client.users.getUserList({
@@ -60,14 +59,18 @@ async function fetchUsers(page: number = 1, searchQuery?: string) {
       };
     } else {
       // Use pagination when no search query
-      const offset = (page - 1) * limit;
+      const offset = (page - 1) * MAX_USERS_PER_PAGE;
 
       const { data: users, totalCount } = await client.users.getUserList({
-        limit,
+        limit: MAX_USERS_PER_PAGE,
         offset,
       });
 
-      const paginationData = calculatePaginationData(page, totalCount, limit);
+      const paginationData = calculatePaginationData(
+        page,
+        totalCount,
+        MAX_USERS_PER_PAGE,
+      );
 
       return {
         userData: {
@@ -120,7 +123,6 @@ export default async function Page({
     );
   }
 
-  // Parse page and search parameters from searchParams
   const params = await searchParams;
   const pageParam = params.page;
   const searchParam = params.search;
