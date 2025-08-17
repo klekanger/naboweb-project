@@ -7,7 +7,7 @@ import {
   UserAdminContext,
 } from "@/context/userAdminContext";
 import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
-import type { UserWithEmails, NewUser, UserAdminProps } from "@/types/types";
+import type { NewUser, UserAdminProps } from "@/types/types";
 import {
   Button,
   Checkbox,
@@ -18,18 +18,11 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Spinner,
   useDisclosure,
 } from "@heroui/react";
 import { Crown, UserCheck, UserCog, UserPlus2, Users } from "lucide-react";
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { Spinner } from "@heroui/react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import EditUser from "./EditUser";
 import InviteUser from "./InviteUser";
 import RoleDisplay from "./RoleDisplay";
@@ -93,13 +86,12 @@ export default function UserAdmin({
     setNewlyCreatedUser,
     screenToDisplay,
     setScreenToDisplay,
-    selectedUser,
     setSelectedUser,
-    resetUserAdminContext,
   } = useContext(UserAdminContext);
 
   const modalCreateUser = useDisclosure();
   const modalErrorMessage = useDisclosure();
+  const [longMessage, setLongMessage] = useState("");
 
   const validateEmail = useCallback(
     (value: string) => value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i),
@@ -132,6 +124,7 @@ export default function UserAdmin({
   const handleCreateNewUser = async () => {
     setIsCreatingUser(true);
     const response = await createNewUser(newUser);
+
     setIsCreatingUser(false);
 
     if ("error" in response) {
@@ -139,6 +132,13 @@ export default function UserAdmin({
         (e) => e.code === response.error.message,
       );
       console.error("error ", response.error);
+
+      if (response.error.code === "form_password_not_strong_enough") {
+        setLongMessage("velg et sikrere passord");
+      } else {
+        setLongMessage(response.error?.longMessage || "");
+      }
+
       setGeneralError(
         errorInNorwegian?.message ??
           `Feil: ${response.error?.message || "Noe gikk galt"}`,
@@ -213,6 +213,28 @@ export default function UserAdmin({
               >
                 <div className="mb-5 flex flex-col gap-5 lg:flex-row">
                   <Input
+                    type="text"
+                    name="firstName"
+                    label="Fornavn"
+                    isRequired
+                    value={newUser.firstName}
+                    onChange={(e) => {
+                      setNewUser({ ...newUser, firstName: e.target.value });
+                    }}
+                  />
+                  <Input
+                    type="text"
+                    name="lastName"
+                    label="Etternavn"
+                    isRequired
+                    value={newUser.lastName}
+                    onChange={(e) => {
+                      setNewUser({ ...newUser, lastName: e.target.value });
+                    }}
+                  />
+                </div>
+                <div className="mb-5 flex flex-col gap-5  lg:flex-row">
+                  <Input
                     type="email"
                     name="email"
                     label="E-post"
@@ -228,30 +250,6 @@ export default function UserAdmin({
                       setNewUser({ ...newUser, email: e.target.value });
                     }}
                     onValueChange={setEmailValue} // Only for visual validation feedback in the input field
-                  />
-
-                  <Input
-                    type="text"
-                    name="firstName"
-                    label="Fornavn"
-                    isRequired
-                    value={newUser.firstName}
-                    onChange={(e) => {
-                      setNewUser({ ...newUser, firstName: e.target.value });
-                    }}
-                  />
-                </div>
-
-                <div className="mb-5 flex flex-col gap-5  lg:flex-row">
-                  <Input
-                    type="text"
-                    name="lastName"
-                    label="Etternavn"
-                    isRequired
-                    value={newUser.lastName}
-                    onChange={(e) => {
-                      setNewUser({ ...newUser, lastName: e.target.value });
-                    }}
                   />
 
                   <Input
@@ -436,7 +434,9 @@ export default function UserAdmin({
                 Det har oppstått en feil
               </ModalHeader>
               <ModalBody>
-                <p>{generalError}</p>
+                <p>
+                  {generalError} {`${longMessage ? `(${longMessage})` : ""}`}
+                </p>
                 <p>
                   Hvis du mener noe er galt, ta kontakt med styret eller
                   web-administrator.
