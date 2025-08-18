@@ -49,34 +49,45 @@ export async function inviteUser({
       });
 
       return {
-        success: {
-          message: "User already exists. Updated roles.",
-          email: email,
-          roles: roles,
-          status: 200,
+        error: {
+          code: "USER_ALREADY_EXISTS",
+          message: "Brukeren eksisterer fra før.",
+          longMessage:
+            "Det finnes allerede en bruker med denne e-postadressen. Rollen(e) er oppdatert.",
         },
+        status: 409,
       };
     }
 
-    // Check for existing pending invitations
-    const pendingInvitations = await client.invitations.getInvitationList();
-    const existingInvitation = pendingInvitations.data.find(
-      (invitation) => invitation.emailAddress === email,
-    );
+    // Check for existing invitations (pending or revoked) and revoke them
+    const pendingInvitations = await client.invitations.getInvitationList({
+      status: "pending",
+    });
 
-    // If there's a pending invitation, revoke it
-    if (existingInvitation) {
-      await client.invitations.revokeInvitation(existingInvitation.id);
+    console.log("pendingInvitations ", pendingInvitations);
+    const revokedInvitations = await client.invitations.getInvitationList({
+      status: "revoked",
+    });
+    console.log("revokedInvitations ", revokedInvitations);
+
+    const invitationsToRevoke = [
+      ...pendingInvitations.data,
+      ...revokedInvitations.data,
+    ].filter((invitation) => invitation.emailAddress === email);
+
+    for (const invitation of invitationsToRevoke) {
+      await client.invitations.revokeInvitation(invitation.id);
     }
 
     // Create new invitation
 
     const invitedUser = await client.invitations.createInvitation({
       emailAddress: email,
-      ignoreExisting: false, // Changed to false to get proper error if user exists
+      ignoreExisting: true, // Changed to false to get proper error if user exists
       publicMetadata: {
         roles: roles,
       },
+      redirectUrl: "/min-side",
       // redirectUrl: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL,
     });
 

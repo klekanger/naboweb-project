@@ -1,5 +1,7 @@
+import { useUser } from "@clerk/nextjs";
 import { inviteUser } from "@/app/actions/inviteUser";
 import { UserAdminContext } from "@/context/userAdminContext";
+import { useModalState } from "@/hooks/useModalState";
 import {
   Button,
   Checkbox,
@@ -13,10 +15,9 @@ import {
   ModalHeader,
 } from "@heroui/react";
 import { useContext, useMemo, useState } from "react";
-import RoleDisplay from "./RoleDisplay";
-import { useModalState } from "@/hooks/useModalState";
 
 export default function InviteUser() {
+  const loggedInUser = useUser();
   const [emailToInvite, setEmailToInvite] = useState<string>("");
   const [roles, setRoles] = useState<string[]>(["user"]);
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -28,13 +29,10 @@ export default function InviteUser() {
   const {
     modal: modalInviteUser,
     title: inviteTitle,
-    setTitle: setInviteTitle,
     body: inviteBody,
     setBody: setInviteBody,
     okText: inviteOkText,
-    setOkText: setInviteOkText,
     cancelText: inviteCancelText,
-    setCancelText: setInviteCancelText,
   } = useModalState({
     initialTitle: "Er du sikker?",
     initialOkText: "Ok",
@@ -44,24 +42,20 @@ export default function InviteUser() {
   const {
     modal: modalInviteUserSuccess,
     title: successTitle,
-    setTitle: setSuccessTitle,
     body: successBody,
     setBody: setSuccessBody,
     okText: successOkText,
-    setOkText: setSuccessOkText,
   } = useModalState({
-    initialTitle: "Brukeren er opprettet",
+    initialTitle: "Brukeren er invitert",
     initialOkText: "Ok",
   });
 
   const {
     modal: modalErrorMessage,
     title: errorTitle,
-    setTitle: setErrorTitle,
     body: errorBody,
     setBody: setErrorBody,
     okText: errorOkText,
-    setOkText: setErrorOkText,
   } = useModalState({
     initialTitle: "Det har oppstått en feil",
     initialOkText: "Ok",
@@ -79,6 +73,14 @@ export default function InviteUser() {
     e.preventDefault();
     if (emailToInvite === "") {
       setErrorMessage("E-postadressen må fylles ut");
+      return;
+    }
+
+    if (
+      loggedInUser.user?.primaryEmailAddress?.emailAddress?.toLowerCase() ===
+      emailToInvite.trim().toLowerCase()
+    ) {
+      setErrorMessage("Du kan ikke invitere deg selv");
       return;
     }
 
@@ -110,7 +112,7 @@ export default function InviteUser() {
         roles: response.success?.roles,
       });
       setSuccessBody(
-        `Du har opprettet en bruker med e-postadressen ${newlyCreatedUser.email}.`,
+        `Du har invitert en bruker med e-postadressen ${newlyCreatedUser.email}.`,
       );
       modalInviteUserSuccess.onOpen();
       setEmailToInvite("");
