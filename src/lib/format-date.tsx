@@ -1,21 +1,23 @@
 /**
- * Convert a date from ISO date format to a more readable date
+ * Convert a date value to a readable string (dd.mm.yyyy)
  *
- * @param {string } dateToFormat A date in ISO 8601 format
- * @param {string } [locale] Locale - default is 'nb-no' (Norwegian bokmål)
- * @returns {string}
+ * @param {string | number | Date | null} dateToFormat - Date in ISO 8601 format, timestamp, or Date object
+ * @param {string} [locale] - Locale, default is 'nb-NO' (Norwegian bokmål)
+ * @returns {string} Formatted date string or empty string if invalid
  */
 
 export function formatDate(
-  dateToFormat: string | number | null,
-  locale = "no-NO",
+  dateToFormat: string | number | null | Date,
+  locale = "nb-NO",
 ): string {
-  if (!dateToFormat || dateToFormat === null) {
+  if (!dateToFormat) {
     return "";
   }
-
-  // Format the dates shown at the bottom of every article page
-  return new Date(dateToFormat).toLocaleDateString(locale, {
+  const date = new Date(dateToFormat);
+  if (isNaN(date.getTime())) {
+    return "";
+  }
+  return date.toLocaleDateString(locale, {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
