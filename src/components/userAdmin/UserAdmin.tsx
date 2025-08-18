@@ -120,7 +120,6 @@ export default function UserAdmin({
     }
   };
 
-  // Call the createNewUser server action
   const handleCreateNewUser = async () => {
     setIsCreatingUser(true);
     const response = await createNewUser(newUser);
