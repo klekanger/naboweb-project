@@ -117,7 +117,7 @@ export default async function Page({
 
   if (!isAdmin) {
     return (
-      <div className="mt-32 flex justify-center">
+      <div className="mt-32 flex justify-center" id="no-admin">
         <p>Du er ikke administrator</p>
       </div>
     );

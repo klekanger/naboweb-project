@@ -14,5 +14,9 @@ applyTo: "**"
 - Implement proper error boundaries in React components
 - Always log errors with contextual information
 
+## Testing
+- ALWAYS use Vitest and React Testing Library for testing
+- NEVER use Jest
+
 ## Context7
-- Always use context7 MCP server for up to date documentation and examples
+- ALWAYS use context7 MCP server for up to date documentation and examples where applicable
