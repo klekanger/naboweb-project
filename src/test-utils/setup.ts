@@ -63,6 +63,42 @@ vi.mock("@heroui/react", () => ({
     onClose: vi.fn(),
     onOpenChange: vi.fn(),
   }),
+  // Table components
+  Table: ({ children, ...props }: any) =>
+    createElement("table", props, children),
+  TableHeader: ({ children, ...props }: any) =>
+    createElement("thead", props, children),
+  TableBody: ({ children, ...props }: any) =>
+    createElement("tbody", props, children),
+  TableRow: ({ children, ...props }: any) =>
+    createElement("tr", props, children),
+  TableCell: ({ children, ...props }: any) =>
+    createElement("td", props, children),
+  TableColumn: ({ children, ...props }: any) =>
+    createElement("th", props, children),
+  // Dropdown components
+  Dropdown: ({ children, ...props }: any) =>
+    createElement("div", props, children),
+  DropdownTrigger: ({ children, ...props }: any) =>
+    createElement("div", props, children),
+  DropdownMenu: ({ children, ...props }: any) =>
+    createElement("div", props, children),
+  DropdownItem: ({ children, ...props }: any) =>
+    createElement("div", props, children),
+  // Pagination components
+  Pagination: ({ ...props }: any) =>
+    createElement("div", { "data-testid": "pagination", ...props }),
+  // Chip component
+  Chip: ({ children, ...props }: any) => createElement("span", props, children),
+  // User component
+  User: ({ name, description, avatarProps, ...props }: any) =>
+    createElement("div", props, [
+      createElement("img", { key: "avatar", ...avatarProps }),
+      createElement("div", { key: "info" }, [
+        createElement("div", { key: "name" }, name),
+        createElement("div", { key: "desc" }, description),
+      ]),
+    ]),
 }));
 
 // Mock Lucide React icons
@@ -73,6 +109,15 @@ vi.mock("lucide-react", () => ({
   UserCog: () => createElement("span", {}, "UserCog Icon"),
   Crown: () => createElement("span", {}, "Crown Icon"),
   ArrowBigLeft: () => createElement("span", {}, "ArrowBigLeft Icon"),
+  SearchIcon: () => createElement("span", {}, "Search Icon"),
+  Search: () => createElement("span", {}, "Search Icon"),
+  ChevronDown: () => createElement("span", {}, "ChevronDown Icon"),
+  ChevronUp: () => createElement("span", {}, "ChevronUp Icon"),
+  MoreVertical: () => createElement("span", {}, "MoreVertical Icon"),
+  Edit: () => createElement("span", {}, "Edit Icon"),
+  Trash2: () => createElement("span", {}, "Trash2 Icon"),
+  Eye: () => createElement("span", {}, "Eye Icon"),
+  EyeOff: () => createElement("span", {}, "EyeOff Icon"),
 }));
 
 // Mock Next.js Link
@@ -80,6 +125,29 @@ vi.mock("next/link", () => ({
   __esModule: true,
   default: ({ children, href, ...props }: any) =>
     createElement("a", { href: href, ...props }, children),
+}));
+
+// Mock Next.js navigation
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+  }),
+  useSearchParams: () => ({
+    get: vi.fn(),
+    getAll: vi.fn(),
+    has: vi.fn(),
+    keys: vi.fn(),
+    values: vi.fn(),
+    entries: vi.fn(),
+    forEach: vi.fn(),
+    toString: vi.fn(),
+  }),
+  usePathname: () => "/test-path",
 }));
 
 // Mock server actions

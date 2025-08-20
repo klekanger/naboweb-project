@@ -1,8 +1,17 @@
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
-import { UserAdminContext, SidebarMenu, CreateUserScreenType } from "@/context/userAdminContext";
-import type { UserAdminProps, UserWithEmails, PaginationData, NewUser } from "@/types/types";
+import {
+  UserAdminContext,
+  SidebarMenu,
+  CreateUserScreenType,
+} from "../../context/userAdminContext";
+import type {
+  UserAdminProps,
+  UserWithEmails,
+  PaginationData,
+  NewUser,
+} from "../../types/types";
 import UserAdmin from "./UserAdmin";
 
 // Mock UserAdminContext with all required properties
@@ -39,7 +48,9 @@ export const createMockUserAdminContext = (overrides: Partial<any> = {}) => ({
 });
 
 // Mock user data factory functions
-export const createMockUser = (overrides: Partial<UserWithEmails> = {}): UserWithEmails => ({
+export const createMockUser = (
+  overrides: Partial<UserWithEmails> = {},
+): UserWithEmails => ({
   id: "user-123",
   firstName: "John",
   lastName: "Doe",
@@ -51,18 +62,20 @@ export const createMockUser = (overrides: Partial<UserWithEmails> = {}): UserWit
 });
 
 export const createMockUsers = (count: number = 3): UserWithEmails[] => {
-  return Array.from({ length: count }, (_, index) => 
+  return Array.from({ length: count }, (_, index) =>
     createMockUser({
       id: `user-${index + 1}`,
       firstName: `User${index + 1}`,
       lastName: `Lastname${index + 1}`,
       email: `user${index + 1}@example.com`,
-    })
+    }),
   );
 };
 
 // Mock pagination data for testing
-export const createMockPagination = (overrides: Partial<PaginationData> = {}): PaginationData => ({
+export const createMockPagination = (
+  overrides: Partial<PaginationData> = {},
+): PaginationData => ({
   currentPage: 1,
   totalPages: 3,
   totalCount: 75,
@@ -72,7 +85,9 @@ export const createMockPagination = (overrides: Partial<PaginationData> = {}): P
 });
 
 // Mock NewUser data factory
-export const createMockNewUser = (overrides: Partial<NewUser> = {}): NewUser => ({
+export const createMockNewUser = (
+  overrides: Partial<NewUser> = {},
+): NewUser => ({
   email: "new.user@example.com",
   firstName: "New",
   lastName: "User",
@@ -84,7 +99,7 @@ export const createMockNewUser = (overrides: Partial<NewUser> = {}): NewUser => 
 // Utility function to render UserAdmin component with context
 export const renderUserAdminWithContext = (
   props: Partial<UserAdminProps> = {},
-  contextOverrides: Partial<any> = {}
+  contextOverrides: Partial<any> = {},
 ) => {
   const defaultProps: UserAdminProps = {
     users: createMockUsers(),
@@ -97,7 +112,7 @@ export const renderUserAdminWithContext = (
   const renderResult = render(
     <UserAdminContext.Provider value={mockContextValue}>
       <UserAdmin {...defaultProps} />
-    </UserAdminContext.Provider>
+    </UserAdminContext.Provider>,
   );
 
   return {
@@ -248,13 +263,13 @@ export const createMockErrorResponse = (errorData: Partial<any> = {}) => ({
 export const accessibilityQueries = {
   getFormInputByLabel: (container: HTMLElement, labelText: string) => {
     const label = container.querySelector(`label:contains("${labelText}")`);
-    return label?.querySelector('input');
+    return label?.querySelector("input");
   },
   getRequiredFields: (container: HTMLElement) => {
-    return container.querySelectorAll('input[required]');
+    return container.querySelectorAll("input[required]");
   },
   getAriaLabels: (container: HTMLElement) => {
-    return container.querySelectorAll('[aria-label]');
+    return container.querySelectorAll("[aria-label]");
   },
 };
 
@@ -262,29 +277,17 @@ export const accessibilityQueries = {
 export const norwegianTextContent = {
   menuItems: [
     "Vis brukere",
-    "Inviter bruker", 
+    "Inviter bruker",
     "Ny bruker",
     "Endre bruker",
-    "Superbrukere"
+    "Superbrukere",
   ],
-  formLabels: [
-    "Fornavn",
-    "Etternavn", 
-    "E-post",
-    "Passord"
-  ],
-  buttons: [
-    "Legg til",
-    "Avbryt",
-    "Tilbake",
-    "Opprett"
-  ],
+  formLabels: ["Fornavn", "Etternavn", "E-post", "Passord"],
+  buttons: ["Legg til", "Avbryt", "Tilbake", "Opprett"],
   errorMessages: [
     "Tast inn en gyldig e-postadresse",
     "Det har oppstått en feil",
-    "velg et sikrere passord"
+    "velg et sikrere passord",
   ],
-  successMessages: [
-    "Brukeren har blitt opprettet"
-  ]
+  successMessages: ["Brukeren har blitt opprettet"],
 };
