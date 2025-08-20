@@ -9,7 +9,7 @@ import {
   createMockUsers,
   createMockPagination,
 } from "./UserAdmin.test-utils";
-import { UserAdminContext } from "@/context/userAdminContext";
+import { UserAdminContext } from "../../context/userAdminContext";
 import UserAdmin from "./UserAdmin";
 
 // Test individual pieces of the UserAdmin component logic
@@ -251,13 +251,20 @@ describe("UserAdmin Component - Rendering Tests", () => {
         const { rerender } = renderUserAdminWithContext();
 
         // Should show UserTable component content
-        expect(screen.getByText(/Viser alle brukere som er registrert/)).toBeDefined();
+        expect(
+          screen.getByText(/Viser alle brukere som er registrert/),
+        ).toBeDefined();
 
         // Re-render with CREATE_USER menu selected
         rerender(
-          <UserAdminContext.Provider value={createMockUserAdminContext({ selectedMenu: 2 })}>
-            <UserAdmin users={createMockUsers()} pagination={createMockPagination()} />
-          </UserAdminContext.Provider>
+          <UserAdminContext.Provider
+            value={createMockUserAdminContext({ selectedMenu: 2 })}
+          >
+            <UserAdmin
+              users={createMockUsers()}
+              pagination={createMockPagination()}
+            />
+          </UserAdminContext.Provider>,
         );
 
         // Should show create user form content
@@ -288,7 +295,9 @@ describe("UserAdmin Component - Rendering Tests", () => {
         }
 
         // Should have been called once for each menu item
-        expect(mockContextValue.setSelectedMenu).toHaveBeenCalledTimes(menuElements.length);
+        expect(mockContextValue.setSelectedMenu).toHaveBeenCalledTimes(
+          menuElements.length,
+        );
       });
 
       it("resets selected user when switching between menus", async () => {
