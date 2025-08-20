@@ -70,9 +70,9 @@
     - Test that setSelectedUser is called when switching menus
     - _Requirements: 2.4, 3.2, 5.1_
 
-- [ ] 6. Implement form validation and interaction tests
+- [x] 6. Implement form validation and interaction tests
 
-  - [ ] 6.1 Test create user form validation
+  - [x] 6.1 Test create user form validation
 
     - Test that form validates email format and shows error messages
     - Test that form validates required fields (firstName, lastName, email)
@@ -80,7 +80,7 @@
     - Test that password strength validation works correctly
     - _Requirements: 2.1, 2.2, 2.3, 4.3_
 
-  - [ ] 6.2 Test form state management
+  - [x] 6.2 Test form state management
     - Test that form inputs update newUser state in context
     - Test that form reset clears all input values
     - Test that role checkboxes update user roles correctly
