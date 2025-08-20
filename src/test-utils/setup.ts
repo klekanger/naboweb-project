@@ -1,5 +1,17 @@
-import { vi } from "vitest";
+import { vi, beforeEach, afterEach } from "vitest";
 import { createElement } from "react";
+import { cleanup } from "@testing-library/react";
+
+// Setup and cleanup for each test
+beforeEach(() => {
+  // Reset all mocks before each test
+  vi.clearAllMocks();
+});
+
+afterEach(() => {
+  // Cleanup DOM after each test
+  cleanup();
+});
 
 // Mock HeroUI components
 vi.mock("@heroui/react", () => ({
@@ -68,4 +80,72 @@ vi.mock("next/link", () => ({
   __esModule: true,
   default: ({ children, href, ...props }: any) =>
     createElement("a", { href: href, ...props }, children),
+}));
+
+// Mock server actions
+vi.mock("@/app/actions/createUser", () => ({
+  createNewUser: vi.fn(),
+}));
+
+vi.mock("@/app/actions/updateUser", () => ({
+  updateUser: vi.fn(),
+}));
+
+vi.mock("@/app/actions/deleteUser", () => ({
+  deleteUser: vi.fn(),
+}));
+
+vi.mock("@/app/actions/searchUser", () => ({
+  searchUser: vi.fn(),
+}));
+
+vi.mock("@/app/actions/inviteUser", () => ({
+  inviteUser: vi.fn(),
+}));
+
+// Mock Norwegian error messages
+vi.mock("@/lib/norwegianErrorMessages", () => ({
+  errorsToNorwegian: [
+    {
+      code: "form_password_not_strong_enough",
+      message: "Passordet er ikke sterkt nok",
+    },
+    {
+      code: "email_address_not_available",
+      message: "E-postadressen er ikke tilgjengelig",
+    },
+    {
+      code: "form_identifier_exists",
+      message: "En bruker med denne e-postadressen eksisterer allerede",
+    },
+  ],
+}));
+
+// Global test configuration
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: vi.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
+// Mock IntersectionObserver
+global.IntersectionObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
+
+// Mock ResizeObserver
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
 }));

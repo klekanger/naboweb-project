@@ -3,6 +3,7 @@
     "noImplicitAny": true,
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["vitest/globals"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -30,7 +31,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/lib/is-hotkey.js"
+    "src/lib/is-hotkey.js",
+    "src/test-utils/setup.ts"
   ],
   "exclude": ["node_modules"]
 }

@@ -92,6 +92,7 @@ describe("User Admin Page", () => {
   });
 
   describe("User Data Fetching", () => {
+    const testDate = new Date("2022-01-01").getTime();
     beforeEach(() => {
       validateUserRolesMock.mockResolvedValue(true);
     });
@@ -103,7 +104,7 @@ describe("User Admin Page", () => {
           firstName: "Fredrik",
           lastName: "Andersen",
           emailAddresses: [{ emailAddress: "fredrik@example.com" }],
-          createdAt: 1640995200000,
+          createdAt: testDate,
           publicMetadata: { roles: ["user"] },
           imageUrl: "",
         },
@@ -112,7 +113,7 @@ describe("User Admin Page", () => {
           firstName: "Baldur",
           lastName: "Baldersen",
           emailAddresses: [{ emailAddress: "baldur@example.com" }],
-          createdAt: 1640995200000,
+          createdAt: testDate,
           publicMetadata: { roles: ["user", "admin"] },
           imageUrl: "",
         },
@@ -141,7 +142,7 @@ describe("User Admin Page", () => {
         firstName: `User${i}`,
         lastName: "Test",
         emailAddresses: [{ emailAddress: `user${i}@example.com` }],
-        createdAt: 1640995200000,
+        createdAt: testDate,
         publicMetadata: { roles: ["user"] },
         imageUrl: "",
       }));
@@ -174,7 +175,7 @@ describe("User Admin Page", () => {
           firstName: "Fredrik",
           lastName: "Andersen",
           emailAddresses: [{ emailAddress: "fredrik@example.com" }],
-          createdAt: 1640995200000,
+          createdAt: testDate,
           publicMetadata: { roles: ["user"] },
           imageUrl: "",
         },
@@ -234,6 +235,7 @@ describe("User Admin Page", () => {
   });
 
   describe("Component Integration", () => {
+    const testDate = new Date("2022-01-01").getTime();
     beforeEach(() => {
       validateUserRolesMock.mockResolvedValue(true);
     });
@@ -262,7 +264,7 @@ describe("User Admin Page", () => {
           firstName: "Fredrik",
           lastName: "Andersen",
           emailAddresses: [{ emailAddress: "fredrik@example.com" }],
-          createdAt: 1640995200000,
+          createdAt: testDate,
           publicMetadata: { roles: ["user"] },
           imageUrl: "",
         },

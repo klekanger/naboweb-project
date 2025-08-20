@@ -1,49 +1,44 @@
 import { describe, it, expect } from "vitest";
+import { Crown, UserCheck, UserCog, UserPlus2, Users } from "lucide-react";
+import { menuElements, validateEmail, validateForm } from "./UserAdmin.logic";
 
 // Test individual pieces of the UserAdmin component logic
 describe("UserAdmin Component - Logic Tests", () => {
   describe("Menu Configuration", () => {
-    it("has correct menu structure", () => {
-      const menuItems = [
-        { id: 0, name: "Vis brukere", icon: "Users" },
-        { id: 1, name: "Inviter bruker", icon: "UserCheck" },
-        { id: 2, name: "Ny bruker", icon: "UserPlus2" },
-        { id: 3, name: "Endre bruker", icon: "UserCog" },
-        { id: 4, name: "Superbrukere", icon: "Crown" },
-      ];
+    it("has correct menu structure from actual component", () => {
+      expect(menuElements).toHaveLength(5);
+      expect(menuElements[0].name).toBe("Vis brukere");
+      expect(menuElements[1].name).toBe("Inviter bruker");
+      expect(menuElements[2].name).toBe("Ny bruker");
+      expect(menuElements[3].name).toBe("Endre bruker");
+      expect(menuElements[4].name).toBe("Superbrukere");
+    });
 
-      expect(menuItems).toHaveLength(5);
-      expect(menuItems[0].name).toBe("Vis brukere");
-      expect(menuItems[1].name).toBe("Inviter bruker");
-      expect(menuItems[2].name).toBe("Ny bruker");
+    it("has correct icon components from actual component", () => {
+      expect(menuElements[0].menuIcon).toBe(Users);
+      expect(menuElements[1].menuIcon).toBe(UserCheck);
+      expect(menuElements[2].menuIcon).toBe(UserPlus2);
+      expect(menuElements[3].menuIcon).toBe(UserCog);
+      expect(menuElements[4].menuIcon).toBe(Crown);
     });
   });
 
   describe("Form Validation Logic", () => {
-    it("validates email format correctly", () => {
-      const validateEmail = (value: string) =>
-        value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i);
-
-      expect(validateEmail("valid@example.com")).toBeTruthy();
-      expect(validateEmail("user@domain.co.uk")).toBeTruthy();
-      expect(validateEmail("invalid-email")).toBeFalsy();
-      expect(validateEmail("")).toBeFalsy();
-      expect(validateEmail("@domain.com")).toBeFalsy();
+    it("validates email format correctly using actual component logic", () => {
+      expect(validateEmail("valid@example.com")).toBe(true);
+      expect(validateEmail("user@domain.co.uk")).toBe(true);
+      expect(validateEmail("invalid-email")).toBe(false);
+      expect(validateEmail("")).toBe(false);
+      expect(validateEmail("@domain.com")).toBe(false);
     });
 
-    it("validates form completeness", () => {
-      const validateForm = (user: any) => {
-        const emailValid = user?.email?.match(
-          /^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i,
-        );
-        return !!emailValid && user?.firstName !== "" && user?.lastName !== "";
-      };
-
+    it("validates form completeness using actual component logic", () => {
       const validUser = {
         email: "test@example.com",
         firstName: "John",
         lastName: "Doe",
         password: "password123",
+        roles: ["user"],
       };
 
       const invalidUserEmail = {
@@ -51,6 +46,7 @@ describe("UserAdmin Component - Logic Tests", () => {
         firstName: "John",
         lastName: "Doe",
         password: "password123",
+        roles: ["user"],
       };
 
       const invalidUserName = {
@@ -58,6 +54,7 @@ describe("UserAdmin Component - Logic Tests", () => {
         firstName: "",
         lastName: "Doe",
         password: "password123",
+        roles: ["user"],
       };
 
       expect(validateForm(validUser)).toBe(true);
