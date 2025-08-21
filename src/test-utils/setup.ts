@@ -171,44 +171,6 @@ vi.mock("@/app/actions/inviteUser", () => ({
   inviteUser: vi.fn(),
 }));
 
-// Mock Norwegian error messages
-vi.mock("@/lib/norwegianErrorMessages", () => ({
-  errorsToNorwegian: [
-    {
-      code: "form_password_length_too_short",
-      message: "Passordet er for kort",
-    },
-    {
-      code: "form_password_pwned",
-      message: "Passordet er funnet i en datalekkasje - velg et annet",
-    },
-    {
-      code: "User already exists",
-      message: "Brukeren eksisterer allerede",
-    },
-    {
-      code: "User is not admin",
-      message: "Du er ikke administrator",
-    },
-    {
-      code: "Unauthorized",
-      message: "Du har ikke tilgang",
-    },
-    {
-      code: "Failed to delete user",
-      message: "Kunne ikke slette brukeren.",
-    },
-    {
-      code: "Not Found",
-      message: "Brukeren ble ikke funnet",
-    },
-    {
-      code: "Unprocessable Entity",
-      message: "Kunne ikke invitere brukeren",
-    },
-  ],
-}));
-
 // Global test configuration
 Object.defineProperty(window, "matchMedia", {
   writable: true,
