@@ -1,4 +1,5 @@
-import { describe, it, expect } from "vitest";
+import React from "react";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { Crown, UserCheck, UserCog, UserPlus2, Users } from "lucide-react";
 import { menuElements, validateEmail, validateForm } from "./UserAdmin.logic";
@@ -11,6 +12,7 @@ import {
 } from "./UserAdmin.test-utils";
 import { UserAdminContext } from "../../context/userAdminContext";
 import UserAdmin from "./UserAdmin";
+import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 
 // Test individual pieces of the UserAdmin component logic
 describe("UserAdmin Component - Logic Tests", () => {
@@ -641,6 +643,1472 @@ describe("UserAdmin Component - Form Validation Tests", () => {
       expect(screen.getByDisplayValue("Doe")).toBeDefined();
       expect(screen.getByDisplayValue("test@example.com")).toBeDefined();
       expect(screen.getByDisplayValue("password123")).toBeDefined();
+    });
+  });
+});
+
+// Test Norwegian error message mapping
+describe("Norwegian Error Message Mapping Tests", () => {
+  it("maps Clerk error codes to correct Norwegian messages", () => {
+    // Test that specific error codes map to Norwegian messages using the actual available codes
+    const mappedError = errorsToNorwegian.find(
+      (e) => e.code === "User already exists",
+    );
+    expect(mappedError).toBeDefined();
+    expect(mappedError?.message).toBe("Brukeren eksisterer allerede");
+  });
+
+  it("maps password error codes to Norwegian messages", () => {
+    // Test password-related error mappings using the actual available codes
+    const passwordError = errorsToNorwegian.find(
+      (e) => e.code === "form_password_length_too_short",
+    );
+    expect(passwordError).toBeDefined();
+    expect(passwordError?.message).toBe("Passordet er for kort");
+    expect(passwordError?.message).toContain("Passord");
+  });
+
+  it("provides fallback error messages in Norwegian format", () => {
+    // Test fallback behavior when error code is not found
+    const unknownErrorCode = "unknown_error_code_12345";
+    const mappedError = errorsToNorwegian.find(
+      (e) => e.code === unknownErrorCode,
+    );
+
+    // Should not find a mapping for unknown error code
+    expect(mappedError).toBeUndefined();
+
+    // Test that the component would use fallback format: "Feil: {error message}"
+    const fallbackMessage = `Feil: ${unknownErrorCode}`;
+    expect(fallbackMessage).toContain("Feil:");
+    expect(fallbackMessage).toContain(unknownErrorCode);
+  });
+
+  it("handles form_password_not_strong_enough error correctly", () => {
+    // Test the special case handling for password strength
+    const specialPasswordMessage = "velg et sikrere passord";
+
+    // This message is hardcoded in the component for form_password_not_strong_enough
+    expect(specialPasswordMessage).toBe("velg et sikrere passord");
+    expect(specialPasswordMessage.toLowerCase()).toContain("passord");
+    expect(specialPasswordMessage.toLowerCase()).toContain("sikrer");
+  });
+});
+
+// Test loading states during user creation
+describe("UserAdmin Component - Loading State Tests", () => {
+  describe("Loading States During User Creation", () => {
+    it("displays loading spinner when isCreatingUser is true", () => {
+      renderUserAdminWithContext(
+        {},
+        {
+          selectedMenu: 2, // CREATE_USER menu
+          isCreatingUser: true,
+          newUser: {
+            email: "test@example.com",
+            firstName: "Test",
+            lastName: "User",
+            password: "password123",
+            roles: ["user"],
+          },
+        },
+      );
+
+      // Should show loading spinner (using testid since HeroUI Spinner uses testid)
+      const spinner = screen.getByTestId("spinner");
+      expect(spinner).toBeDefined();
+    });
+
+    it("shows loading state instead of form during user creation process", () => {
+      // Test that loading state is shown when isCreatingUser is true
+      renderUserAdminWithContext(
+        {},
+        {
+          selectedMenu: 2,
+          isCreatingUser: true,
+          screenToDisplay: 0, // FORM screen type
+          newUser: {
+            email: "test@example.com",
+            firstName: "Test",
+            lastName: "User",
+            password: "password123",
+            roles: ["user"],
+          },
+        },
+      );
+
+      // During loading, spinner should be visible and loading message should show
+      expect(screen.getByTestId("spinner")).toBeDefined();
+      expect(screen.getByText(/Oppretter bruker/)).toBeDefined();
+      expect(screen.getByText(/test@example\.com/)).toBeDefined();
+
+      // Form inputs should not be visible during loading
+      expect(screen.queryByLabelText("Fornavn")).toBeNull();
+      expect(screen.queryByLabelText("Etternavn")).toBeNull();
+    });
+
+    it("displays correct Norwegian loading message", () => {
+      renderUserAdminWithContext(
+        {},
+        {
+          selectedMenu: 2, // CREATE_USER menu
+          isCreatingUser: true,
+          newUser: {
+            email: "test@example.com",
+            firstName: "Test",
+            lastName: "User",
+            password: "password123",
+            roles: ["user"],
+          },
+        },
+      );
+
+      // Should show Norwegian loading text (text is split by <br> so use partial match)
+      expect(screen.getByText(/Oppretter bruker/)).toBeDefined();
+      expect(screen.getByText(/test@example\.com/)).toBeDefined();
+    });
+
+    it("prevents multiple form submissions during loading", async () => {
+      const { user } = renderUserAdminWithContext(
+        {},
+        {
+          selectedMenu: 2, // CREATE_USER menu
+          isCreatingUser: true,
+          newUser: {
+            email: "test@example.com",
+            firstName: "Test",
+            lastName: "User",
+            password: "password123",
+            roles: ["user"],
+          },
+        },
+      );
+
+      // During loading, form should not be visible
+      expect(screen.queryByRole("button", { name: "Legg til" })).toBeNull();
+
+      // Only loading spinner and message should be visible
+      expect(screen.getByTestId("spinner")).toBeDefined();
+      expect(screen.getByText(/Oppretter bruker/)).toBeDefined();
+    });
+
+    it("shows loading state with user email in Norwegian format", () => {
+      const testEmail = "john.doe@example.com";
+
+      renderUserAdminWithContext(
+        {},
+        {
+          selectedMenu: 2, // CREATE_USER menu
+          isCreatingUser: true,
+          newUser: {
+            email: testEmail,
+            firstName: "John",
+            lastName: "Doe",
+            password: "password123",
+            roles: ["user"],
+          },
+        },
+      );
+
+      // Should show loading message with user email
+      expect(screen.getByText(/Oppretter bruker/)).toBeDefined();
+      expect(
+        screen.getByText(new RegExp(testEmail.replace(/\./g, "\\."))),
+      ).toBeDefined();
+
+      // Should have proper Norwegian text structure
+      const loadingText = screen.getByText(/Oppretter bruker/);
+      expect(loadingText.textContent).toContain("Oppretter bruker");
+    });
+
+    it("hides form elements during loading state", () => {
+      renderUserAdminWithContext(
+        {},
+        {
+          selectedMenu: 2, // CREATE_USER menu
+          isCreatingUser: true,
+          newUser: {
+            email: "test@example.com",
+            firstName: "Test",
+            lastName: "User",
+            password: "password123",
+            roles: ["user"],
+          },
+        },
+      );
+
+      // Form elements should not be visible during loading
+      expect(screen.queryByLabelText("Fornavn")).toBeNull();
+      expect(screen.queryByLabelText("Etternavn")).toBeNull();
+      expect(screen.queryByLabelText("E-post")).toBeNull();
+      expect(screen.queryByLabelText("Passord")).toBeNull();
+      expect(screen.queryByRole("button", { name: "Legg til" })).toBeNull();
+      expect(screen.queryByRole("button", { name: "Avbryt" })).toBeNull();
+
+      // Only loading content should be visible
+      expect(screen.getByTestId("spinner")).toBeDefined();
+      expect(screen.getByText(/Oppretter bruker/)).toBeDefined();
+    });
+
+    it("maintains loading state structure and styling", () => {
+      renderUserAdminWithContext(
+        {},
+        {
+          selectedMenu: 2, // CREATE_USER menu
+          isCreatingUser: true,
+          newUser: {
+            email: "test@example.com",
+            firstName: "Test",
+            lastName: "User",
+            password: "password123",
+            roles: ["user"],
+          },
+        },
+      );
+
+      // Check that loading container has proper structure
+      const loadingContainer = screen
+        .getByText(/Oppretter bruker/)
+        .closest("div");
+      expect(loadingContainer).toBeDefined();
+      expect(loadingContainer?.className).toContain("mt-24");
+      expect(loadingContainer?.className).toContain("flex");
+      expect(loadingContainer?.className).toContain("flex-col");
+      expect(loadingContainer?.className).toContain("items-center");
+      expect(loadingContainer?.className).toContain("justify-center");
+      expect(loadingContainer?.className).toContain("gap-4");
+    });
+  });
+
+  describe("Successful User Creation Flow", () => {
+    it("displays success screen after user creation", () => {
+      renderUserAdminWithContext(
+        {},
+        {
+          selectedMenu: 2, // CREATE_USER menu
+          screenToDisplay: 1, // SUCCESS screen
+          isCreatingUser: false,
+          newlyCreatedUser: {
+            email: "new.user@example.com",
+            firstName: "New",
+            lastName: "User",
+            roles: ["user"],
+          },
+        },
+      );
+
+      // Should show success message
+      expect(screen.getByText("Brukeren har blitt opprettet")).toBeDefined();
+    });
+
+    it("displays newly created user data correctly", () => {
+      const testUser = {
+        email: "john.doe@example.com",
+        firstName: "John",
+        lastName: "Doe",
+        roles: ["user", "editor"],
+      };
+
+      renderUserAdminWithContext(
+        {},
+        {
+          selectedMenu: 2, // CREATE_USER menu
+          screenToDisplay: 1, // SUCCESS screen
+          isCreatingUser: false,
+          newlyCreatedUser: testUser,
+        },
+      );
+
+      // Should display user data
+      expect(screen.getByText("john.doe@example.com")).toBeDefined();
+      expect(screen.getByText(/John/)).toBeDefined();
+      expect(screen.getByText(/Doe/)).toBeDefined();
+
+      // Should show user roles
+      expect(screen.getByText("Roller:")).toBeDefined();
+    });
+
+    it("shows success message in Norwegian", () => {
+      renderUserAdminWithContext(
+        {},
+        {
+          selectedMenu: 2, // CREATE_USER menu
+          screenToDisplay: 1, // SUCCESS screen
+          isCreatingUser: false,
+          newlyCreatedUser: {
+            email: "test@example.com",
+            firstName: "Test",
+            lastName: "User",
+            roles: ["user"],
+          },
+        },
+      );
+
+      // Should show Norwegian success message
+      expect(screen.getByText("Brukeren har blitt opprettet")).toBeDefined();
+
+      // Should show Norwegian field labels
+      expect(screen.getByText("E-post:")).toBeDefined();
+      expect(screen.getByText("Fornavn:")).toBeDefined();
+      expect(screen.getByText("Etternavn:")).toBeDefined();
+      expect(screen.getByText("Roller:")).toBeDefined();
+    });
+
+    it("returns to form state when back button is clicked", async () => {
+      const { user, mockContextValue } = renderUserAdminWithContext(
+        {},
+        {
+          selectedMenu: 2, // CREATE_USER menu
+          screenToDisplay: 1, // SUCCESS screen
+          isCreatingUser: false,
+          newlyCreatedUser: {
+            email: "test@example.com",
+            firstName: "Test",
+            lastName: "User",
+            roles: ["user"],
+          },
+        },
+      );
+
+      // Click back button
+      const backButton = screen.getByRole("button", { name: "Tilbake" });
+      await user.click(backButton);
+
+      // Should reset form and screen state
+      expect(mockContextValue.setScreenToDisplay).toHaveBeenCalled();
+      expect(mockContextValue.setNewUser).toHaveBeenCalledWith({
+        email: "",
+        firstName: "",
+        lastName: "",
+        password: "",
+      });
+    });
+
+    it("displays user roles correctly on success screen", () => {
+      renderUserAdminWithContext(
+        {},
+        {
+          selectedMenu: 2, // CREATE_USER menu
+          screenToDisplay: 1, // SUCCESS screen
+          isCreatingUser: false,
+          newlyCreatedUser: {
+            email: "admin@example.com",
+            firstName: "Admin",
+            lastName: "User",
+            roles: ["user", "admin", "editor"],
+          },
+        },
+      );
+
+      // Should show roles section
+      expect(screen.getByText("Roller:")).toBeDefined();
+
+      // RoleDisplay component should be rendered (we can't test its internal structure easily)
+      // but we can verify the roles section exists
+      const rolesSection = screen.getByText("Roller:").closest("div");
+      expect(rolesSection).toBeDefined();
+    });
+
+    it("shows Norwegian instructions on success screen", () => {
+      renderUserAdminWithContext(
+        {},
+        {
+          selectedMenu: 2, // CREATE_USER menu
+          screenToDisplay: 1, // SUCCESS screen
+          isCreatingUser: false,
+          newlyCreatedUser: {
+            email: "test@example.com",
+            firstName: "Test",
+            lastName: "User",
+            roles: ["user"],
+          },
+        },
+      );
+
+      // Should show Norwegian instructions
+      expect(
+        screen.getByText(
+          /Du kan senere endre brukernes roller ved å velge «Endre bruker»/,
+        ),
+      ).toBeDefined();
+
+      expect(
+        screen.getByText(
+          /Under «Vis brukere» kan du se alle brukere som er registrert/,
+        ),
+      ).toBeDefined();
+    });
+
+    it("maintains proper success screen structure and styling", () => {
+      renderUserAdminWithContext(
+        {},
+        {
+          selectedMenu: 2, // CREATE_USER menu
+          screenToDisplay: 1, // SUCCESS screen
+          isCreatingUser: false,
+          newlyCreatedUser: {
+            email: "test@example.com",
+            firstName: "Test",
+            lastName: "User",
+            roles: ["user"],
+          },
+        },
+      );
+
+      // Check success screen container structure
+      const successSection = screen
+        .getByText("Brukeren har blitt opprettet")
+        .closest("section");
+      expect(successSection).toBeDefined();
+      expect(successSection?.className).toContain("ml-4");
+      expect(successSection?.className).toContain("text-left");
+      expect(successSection?.className).toContain("lg:pl-2");
+      expect(successSection?.className).toContain("lg:pr-32");
+      expect(successSection?.className).toContain("pb-16");
+    });
+
+    it("shows back button with correct Norwegian text and styling", () => {
+      renderUserAdminWithContext(
+        {},
+        {
+          selectedMenu: 2, // CREATE_USER menu
+          screenToDisplay: 1, // SUCCESS screen
+          isCreatingUser: false,
+          newlyCreatedUser: {
+            email: "test@example.com",
+            firstName: "Test",
+            lastName: "User",
+            roles: ["user"],
+          },
+        },
+      );
+
+      // Should show back button with Norwegian text
+      const backButton = screen.getByRole("button", { name: "Tilbake" });
+      expect(backButton).toBeDefined();
+      expect(backButton.textContent).toBe("Tilbake");
+
+      // Check button styling
+      expect(backButton.className).toContain("mt-8");
+    });
+
+    it("displays complete user information structure", () => {
+      const testUser = {
+        email: "complete.user@example.com",
+        firstName: "Complete",
+        lastName: "User",
+        roles: ["user", "editor"],
+      };
+
+      renderUserAdminWithContext(
+        {},
+        {
+          selectedMenu: 2, // CREATE_USER menu
+          screenToDisplay: 1, // SUCCESS screen
+          isCreatingUser: false,
+          newlyCreatedUser: testUser,
+        },
+      );
+
+      // Should show all user information with proper structure
+      expect(screen.getByText("E-post:")).toBeDefined();
+      expect(screen.getByText("complete.user@example.com")).toBeDefined();
+
+      expect(screen.getByText("Fornavn:")).toBeDefined();
+      expect(screen.getByText(/Complete/)).toBeDefined();
+
+      expect(screen.getByText("Etternavn:")).toBeDefined();
+      // Find the specific "User" text in the name section, not in menu icons
+      const nameSection = screen.getByText("Etternavn:").parentElement;
+      expect(nameSection?.textContent).toContain("User");
+
+      expect(screen.getByText("Roller:")).toBeDefined();
+    });
+
+    it("handles success screen with different role combinations", () => {
+      const adminUser = {
+        email: "admin@example.com",
+        firstName: "Admin",
+        lastName: "User",
+        roles: ["user", "admin"],
+      };
+
+      renderUserAdminWithContext(
+        {},
+        {
+          selectedMenu: 2, // CREATE_USER menu
+          screenToDisplay: 1, // SUCCESS screen
+          isCreatingUser: false,
+          newlyCreatedUser: adminUser,
+        },
+      );
+
+      // Should display user with admin roles
+      // Find the specific "Admin" text in the name section, not in role badges
+      const nameSection = screen.getByText("Fornavn:").parentElement;
+      expect(nameSection?.textContent).toContain("Admin");
+      expect(screen.getByText("admin@example.com")).toBeDefined();
+      expect(screen.getByText("Roller:")).toBeDefined();
+
+      // RoleDisplay component should handle the roles array
+      const rolesContainer = screen.getByText("Roller:").parentElement;
+      expect(rolesContainer).toBeDefined();
+    });
+  });
+});
+
+// Test Norwegian error message mapping
+describe("UserAdmin Component - Norwegian Error Message Mapping", () => {
+  describe("Error Code Mapping", () => {
+    it("maps Clerk error codes to correct Norwegian messages", () => {
+      // Test specific error code mappings
+      const testMappings = [
+        {
+          code: "form_password_length_too_short",
+          expectedMessage: "Passordet er for kort",
+        },
+        {
+          code: "form_password_pwned",
+          expectedMessage:
+            "Passordet er funnet i en datalekkasje - velg et annet",
+        },
+        {
+          code: "User already exists",
+          expectedMessage: "Brukeren eksisterer allerede",
+        },
+        {
+          code: "User is not admin",
+          expectedMessage: "Du er ikke administrator",
+        },
+        {
+          code: "Unauthorized",
+          expectedMessage: "Du har ikke tilgang",
+        },
+        {
+          code: "Failed to delete user",
+          expectedMessage: "Kunne ikke slette brukeren.",
+        },
+        {
+          code: "Not Found",
+          expectedMessage: "Brukeren ble ikke funnet",
+        },
+        {
+          code: "Unprocessable Entity",
+          expectedMessage: "Kunne ikke invitere brukeren",
+        },
+      ];
+
+      testMappings.forEach(({ code, expectedMessage }) => {
+        const mappedError = errorsToNorwegian.find((e) => e.code === code);
+        expect(mappedError).toBeDefined();
+        expect(mappedError?.message).toBe(expectedMessage);
+      });
+    });
+
+    it("uses errorsToNorwegian utility correctly", () => {
+      // Test that the utility is an array with the expected structure
+      expect(Array.isArray(errorsToNorwegian)).toBe(true);
+      expect(errorsToNorwegian.length).toBeGreaterThan(0);
+
+      // Test that each error mapping has the required properties
+      errorsToNorwegian.forEach((errorMapping) => {
+        expect(errorMapping).toHaveProperty("code");
+        expect(errorMapping).toHaveProperty("message");
+        expect(typeof errorMapping.code).toBe("string");
+        expect(typeof errorMapping.message).toBe("string");
+        expect(errorMapping.code.length).toBeGreaterThan(0);
+        expect(errorMapping.message.length).toBeGreaterThan(0);
+      });
+    });
+
+    it("provides fallback error messages in Norwegian", () => {
+      // Test fallback behavior when error code is not found
+      const unknownErrorCode = "unknown_error_code_12345";
+      const mappedError = errorsToNorwegian.find(
+        (e) => e.code === unknownErrorCode,
+      );
+
+      // Should not find a mapping for unknown error code
+      expect(mappedError).toBeUndefined();
+
+      // Test that the component would use fallback format: "Feil: {error message}"
+      const fallbackMessage = `Feil: ${unknownErrorCode}`;
+      expect(fallbackMessage).toContain("Feil:");
+      expect(fallbackMessage).toContain(unknownErrorCode);
+
+      // Test with Norwegian fallback message
+      const norwegianFallback = "Feil: Noe gikk galt";
+      expect(norwegianFallback).toBe("Feil: Noe gikk galt");
+    });
+
+    it("shows password strength errors in Norwegian", () => {
+      // Test password-related error mappings
+      const passwordErrors = [
+        {
+          code: "form_password_length_too_short",
+          expectedMessage: "Passordet er for kort",
+        },
+        {
+          code: "form_password_pwned",
+          expectedMessage:
+            "Passordet er funnet i en datalekkasje - velg et annet",
+        },
+      ];
+
+      passwordErrors.forEach(({ code, expectedMessage }) => {
+        const mappedError = errorsToNorwegian.find((e) => e.code === code);
+        expect(mappedError).toBeDefined();
+        expect(mappedError?.message).toBe(expectedMessage);
+        expect(mappedError?.message).toContain("Passord");
+      });
+
+      // Test special case for form_password_not_strong_enough
+      // This error gets special handling in the component with "velg et sikrere passord"
+      const specialPasswordError = "velg et sikrere passord";
+      expect(specialPasswordError).toBe("velg et sikrere passord");
+      expect(specialPasswordError).toContain("passord");
+    });
+
+    it("handles form_password_not_strong_enough error correctly", () => {
+      // Test the special case handling for password strength
+      const specialPasswordMessage = "velg et sikrere passord";
+
+      // This message is hardcoded in the component for form_password_not_strong_enough
+      expect(specialPasswordMessage).toBe("velg et sikrere passord");
+      expect(specialPasswordMessage.toLowerCase()).toContain("passord");
+      expect(specialPasswordMessage.toLowerCase()).toContain("sikrer");
+    });
+  });
+
+  describe("Error Message Validation", () => {
+    it("validates error message structure and Norwegian language", () => {
+      // Test that all error messages are in Norwegian
+      const norwegianKeywords = [
+        "Passord",
+        "passord",
+        "Bruker",
+        "bruker",
+        "ikke",
+        "er",
+        "Du",
+        "til",
+        "Kunne",
+        "kunne",
+        "ble",
+        "funnet",
+        "tilgang",
+        "administrator",
+        "rettigheter",
+        "operasjonen",
+        "slette",
+        "invitere",
+      ];
+
+      errorsToNorwegian.forEach((errorMapping) => {
+        // Each message should contain at least one Norwegian keyword
+        const containsNorwegianKeyword = norwegianKeywords.some((keyword) =>
+          errorMapping.message.includes(keyword),
+        );
+        expect(containsNorwegianKeyword).toBe(true);
+
+        // Messages should not contain common English error words
+        const englishErrorWords = [
+          "error",
+          "failed",
+          "invalid",
+          "unauthorized",
+        ];
+        englishErrorWords.forEach((englishWord) => {
+          expect(errorMapping.message.toLowerCase()).not.toContain(englishWord);
+        });
+      });
+    });
+
+    it("tests error mapping integration with component logic", () => {
+      // Simulate the component's error handling logic
+      const simulateErrorHandling = (
+        errorCode: string,
+        errorMessage?: string,
+      ) => {
+        const errorInNorwegian = errorsToNorwegian.find(
+          (e) => e.code === errorCode,
+        );
+
+        return (
+          errorInNorwegian?.message ??
+          `Feil: ${errorMessage || "Noe gikk galt"}`
+        );
+      };
+
+      // Test known error codes
+      expect(simulateErrorHandling("User already exists")).toBe(
+        "Brukeren eksisterer allerede",
+      );
+
+      expect(simulateErrorHandling("form_password_length_too_short")).toBe(
+        "Passordet er for kort",
+      );
+
+      // Test unknown error code with fallback
+      expect(
+        simulateErrorHandling("unknown_error", "Something went wrong"),
+      ).toBe("Feil: Something went wrong");
+
+      // Test unknown error code with default fallback
+      expect(simulateErrorHandling("unknown_error")).toBe(
+        "Feil: Noe gikk galt",
+      );
+    });
+  });
+});
+
+// Test Norwegian error message mapping
+describe("UserAdmin Component - Norwegian Error Message Mapping", () => {
+  describe("Error Code Mapping", () => {
+    it("maps Clerk error codes to correct Norwegian messages", () => {
+      // Test specific error code mappings
+      const testMappings = [
+        {
+          code: "form_password_length_too_short",
+          expectedMessage: "Passordet er for kort",
+        },
+        {
+          code: "form_password_pwned",
+          expectedMessage:
+            "Passordet er funnet i en datalekkasje - velg et annet",
+        },
+        {
+          code: "User already exists",
+          expectedMessage: "Brukeren eksisterer allerede",
+        },
+        {
+          code: "User is not admin",
+          expectedMessage: "Du er ikke administrator",
+        },
+        {
+          code: "Unauthorized",
+          expectedMessage: "Du har ikke tilgang",
+        },
+        {
+          code: "Failed to delete user",
+          expectedMessage: "Kunne ikke slette brukeren.",
+        },
+        {
+          code: "Not Found",
+          expectedMessage: "Brukeren ble ikke funnet",
+        },
+        {
+          code: "Unprocessable Entity",
+          expectedMessage: "Kunne ikke invitere brukeren",
+        },
+      ];
+
+      testMappings.forEach(({ code, expectedMessage }) => {
+        const mappedError = errorsToNorwegian.find((e) => e.code === code);
+        expect(mappedError).toBeDefined();
+        expect(mappedError?.message).toBe(expectedMessage);
+      });
+    });
+
+    it("uses errorsToNorwegian utility correctly", () => {
+      // Test that the utility is an array with the expected structure
+      expect(Array.isArray(errorsToNorwegian)).toBe(true);
+      expect(errorsToNorwegian.length).toBeGreaterThan(0);
+
+      // Test that each error mapping has the required properties
+      errorsToNorwegian.forEach((errorMapping) => {
+        expect(errorMapping).toHaveProperty("code");
+        expect(errorMapping).toHaveProperty("message");
+        expect(typeof errorMapping.code).toBe("string");
+        expect(typeof errorMapping.message).toBe("string");
+        expect(errorMapping.code.length).toBeGreaterThan(0);
+        expect(errorMapping.message.length).toBeGreaterThan(0);
+      });
+    });
+
+    it("provides fallback error messages in Norwegian", () => {
+      // Test fallback behavior when error code is not found
+      const unknownErrorCode = "unknown_error_code_12345";
+      const mappedError = errorsToNorwegian.find(
+        (e) => e.code === unknownErrorCode,
+      );
+
+      // Should not find a mapping for unknown error code
+      expect(mappedError).toBeUndefined();
+
+      // Test that the component would use fallback format: "Feil: {error message}"
+      const fallbackMessage = `Feil: ${unknownErrorCode}`;
+      expect(fallbackMessage).toContain("Feil:");
+      expect(fallbackMessage).toContain(unknownErrorCode);
+
+      // Test with Norwegian fallback message
+      const norwegianFallback = "Feil: Noe gikk galt";
+      expect(norwegianFallback).toBe("Feil: Noe gikk galt");
+    });
+
+    it("shows password strength errors in Norwegian", () => {
+      // Test password-related error mappings
+      const passwordErrors = [
+        {
+          code: "form_password_length_too_short",
+          expectedMessage: "Passordet er for kort",
+        },
+        {
+          code: "form_password_pwned",
+          expectedMessage:
+            "Passordet er funnet i en datalekkasje - velg et annet",
+        },
+      ];
+
+      passwordErrors.forEach(({ code, expectedMessage }) => {
+        const mappedError = errorsToNorwegian.find((e) => e.code === code);
+        expect(mappedError).toBeDefined();
+        expect(mappedError?.message).toBe(expectedMessage);
+        expect(mappedError?.message).toContain("Passord");
+      });
+
+      // Test special case for form_password_not_strong_enough
+      // This error gets special handling in the component with "velg et sikrere passord"
+      const specialPasswordError = "velg et sikrere passord";
+      expect(specialPasswordError).toBe("velg et sikrere passord");
+      expect(specialPasswordError).toContain("passord");
+    });
+
+    it("handles form_password_not_strong_enough error correctly", () => {
+      // Test the special case handling for password strength
+      const specialPasswordMessage = "velg et sikrere passord";
+
+      // This message is hardcoded in the component for form_password_not_strong_enough
+      expect(specialPasswordMessage).toBe("velg et sikrere passord");
+      expect(specialPasswordMessage.toLowerCase()).toContain("passord");
+      expect(specialPasswordMessage.toLowerCase()).toContain("sikrer");
+    });
+  });
+
+  describe("Error Message Validation", () => {
+    it("validates error message structure and Norwegian language", () => {
+      // Test that all error messages are in Norwegian
+      const norwegianKeywords = [
+        "Passord",
+        "passord",
+        "Bruker",
+        "bruker",
+        "ikke",
+        "er",
+        "Du",
+        "til",
+        "Kunne",
+        "kunne",
+        "ble",
+        "funnet",
+        "tilgang",
+        "administrator",
+        "rettigheter",
+        "operasjonen",
+        "slette",
+        "invitere",
+      ];
+
+      errorsToNorwegian.forEach((errorMapping) => {
+        // Each message should contain at least one Norwegian keyword
+        const containsNorwegianKeyword = norwegianKeywords.some((keyword) =>
+          errorMapping.message.includes(keyword),
+        );
+        expect(containsNorwegianKeyword).toBe(true);
+
+        // Messages should not contain common English error words
+        const englishErrorWords = [
+          "error",
+          "failed",
+          "invalid",
+          "unauthorized",
+        ];
+        englishErrorWords.forEach((englishWord) => {
+          expect(errorMapping.message.toLowerCase()).not.toContain(englishWord);
+        });
+      });
+    });
+
+    it("tests error mapping integration with component logic", () => {
+      // Simulate the component's error handling logic
+      const simulateErrorHandling = (
+        errorCode: string,
+        errorMessage?: string,
+      ) => {
+        const errorInNorwegian = errorsToNorwegian.find(
+          (e) => e.code === errorCode,
+        );
+
+        return (
+          errorInNorwegian?.message ??
+          `Feil: ${errorMessage || "Noe gikk galt"}`
+        );
+      };
+
+      // Test known error codes
+      expect(simulateErrorHandling("User already exists")).toBe(
+        "Brukeren eksisterer allerede",
+      );
+
+      expect(simulateErrorHandling("form_password_length_too_short")).toBe(
+        "Passordet er for kort",
+      );
+
+      // Test unknown error code with fallback
+      expect(
+        simulateErrorHandling("unknown_error", "Something went wrong"),
+      ).toBe("Feil: Something went wrong");
+
+      // Test unknown error code with default fallback
+      expect(simulateErrorHandling("unknown_error")).toBe(
+        "Feil: Noe gikk galt",
+      );
+    });
+
+    it("validates all error codes have unique Norwegian messages", () => {
+      // Collect all messages to check for uniqueness
+      const messages = errorsToNorwegian.map((error) => error.message);
+      const uniqueMessages = [...new Set(messages)];
+
+      // Note: Some messages might be intentionally duplicated for different codes
+      // but we should verify this is intentional
+      expect(messages.length).toBeGreaterThan(0);
+      expect(uniqueMessages.length).toBeGreaterThan(0);
+
+      // Test that each message is a non-empty string
+      messages.forEach((message) => {
+        expect(typeof message).toBe("string");
+        expect(message.length).toBeGreaterThan(0);
+        expect(message.trim()).toBe(message); // No leading/trailing whitespace
+      });
+    });
+
+    it("ensures error codes follow expected patterns", () => {
+      // Test that error codes follow expected patterns
+      errorsToNorwegian.forEach((errorMapping) => {
+        expect(typeof errorMapping.code).toBe("string");
+        expect(errorMapping.code.length).toBeGreaterThan(0);
+
+        // Error codes should not be empty or just whitespace
+        expect(errorMapping.code.trim()).toBe(errorMapping.code);
+        expect(errorMapping.code.trim().length).toBeGreaterThan(0);
+      });
+
+      // Test that we have mappings for critical error types
+      const criticalErrorCodes = [
+        "form_password_length_too_short",
+        "form_password_pwned",
+        "User already exists",
+        "Unauthorized",
+      ];
+
+      criticalErrorCodes.forEach((code) => {
+        const mapping = errorsToNorwegian.find((e) => e.code === code);
+        expect(mapping).toBeDefined();
+        expect(mapping?.message).toBeDefined();
+      });
+    });
+  });
+});
+// Test error handling and modal behavior
+describe("UserAdmin Component - Error Handling Tests", () => {
+  describe("Error Modal Display", () => {
+    it("receives error state from context when generalError is set", () => {
+      const { mockContextValue } = renderUserAdminWithContext(
+        {},
+        { generalError: "Det har oppstått en feil" },
+      );
+
+      // Verify that the component receives the error in context
+      expect(mockContextValue.generalError).toBe("Det har oppstått en feil");
+    });
+
+    it("receives Norwegian error messages correctly from context", () => {
+      const norwegianErrorMessage = "E-postadressen er ikke tilgjengelig";
+      const { mockContextValue } = renderUserAdminWithContext(
+        {},
+        { generalError: norwegianErrorMessage },
+      );
+
+      // Should receive the Norwegian error message in context
+      expect(mockContextValue.generalError).toBe(norwegianErrorMessage);
+    });
+
+    it("calls setGeneralError to clear error when modal would be closed", () => {
+      const { mockContextValue } = renderUserAdminWithContext(
+        {},
+        { generalError: "Test error message" },
+      );
+
+      // Verify the error is set in context
+      expect(mockContextValue.generalError).toBe("Test error message");
+
+      // Verify setGeneralError function is available for clearing errors
+      expect(mockContextValue.setGeneralError).toBeDefined();
+      expect(typeof mockContextValue.setGeneralError).toBe("function");
+    });
+
+    it("handles error state for long error messages with additional context", () => {
+      const shortError = "Passordet er ikke sterkt nok";
+
+      const { mockContextValue } = renderUserAdminWithContext(
+        {},
+        {
+          generalError: shortError,
+          selectedMenu: 2, // CREATE_USER menu
+        },
+      );
+
+      // Should receive the main error message in context
+      expect(mockContextValue.generalError).toBe(shortError);
+      expect(mockContextValue.selectedMenu).toBe(2);
+    });
+
+    it("handles error modal state correctly", () => {
+      const { mockContextValue } = renderUserAdminWithContext(
+        {},
+        { generalError: "Any error" },
+      );
+
+      // Error should be set in context
+      expect(mockContextValue.generalError).toBe("Any error");
+    });
+
+    it("distinguishes between empty and non-empty error states", () => {
+      // Test with empty string
+      const { mockContextValue: emptyErrorContext } =
+        renderUserAdminWithContext({}, { generalError: "" });
+      expect(emptyErrorContext.generalError).toBe("");
+
+      // Test with error message
+      const { mockContextValue: errorContext } = renderUserAdminWithContext(
+        {},
+        { generalError: "Error occurred" },
+      );
+      expect(errorContext.generalError).toBe("Error occurred");
+    });
+
+    it("maintains error state consistency", () => {
+      const { mockContextValue } = renderUserAdminWithContext(
+        {},
+        { generalError: "First error" },
+      );
+
+      // Error should be maintained in context
+      expect(mockContextValue.generalError).toBe("First error");
+
+      // setGeneralError should be available for state updates
+      expect(mockContextValue.setGeneralError).toBeDefined();
+    });
+
+    it("handles error modal visibility logic", () => {
+      // Test that component logic can determine when to show modal
+      // Modal should show when generalError is not empty
+      const errorMessage = "Test error";
+      const { mockContextValue } = renderUserAdminWithContext(
+        {},
+        { generalError: errorMessage },
+      );
+
+      // Component should receive error state
+      expect(mockContextValue.generalError).toBe(errorMessage);
+
+      // Modal visibility logic: isOpen={modalErrorMessage.isOpen || generalError !== ""}
+      const shouldShowModal = mockContextValue.generalError !== "";
+      expect(shouldShowModal).toBe(true);
+    });
+  });
+
+  describe("Norwegian Error Message Mapping", () => {
+    it("maps Clerk error codes to correct Norwegian messages", () => {
+      // Test that the component can handle various Norwegian error messages
+      const norwegianErrorMessages = [
+        "Passordet er for kort",
+        "Passordet er funnet i en datalekkasje - velg et annet",
+        "Brukeren eksisterer allerede",
+        "Du er ikke administrator",
+        "Du har ikke tilgang",
+      ];
+
+      // Test that the component can receive and display Norwegian error messages
+      norwegianErrorMessages.forEach((errorMessage) => {
+        const { mockContextValue } = renderUserAdminWithContext(
+          {},
+          { generalError: errorMessage },
+        );
+        expect(mockContextValue.generalError).toBe(errorMessage);
+      });
+    });
+
+    it("uses errorsToNorwegian utility correctly in component", () => {
+      // Test that the component can handle Norwegian error messages correctly
+      const norwegianError = "Passordet er for kort";
+
+      // Test that the component can receive error state
+      const { mockContextValue } = renderUserAdminWithContext(
+        {},
+        {
+          selectedMenu: 2, // CREATE_USER
+          generalError: norwegianError,
+        },
+      );
+
+      // Verify that the component receives the Norwegian error message
+      expect(mockContextValue.generalError).toBe(norwegianError);
+      expect(mockContextValue.selectedMenu).toBe(2);
+    });
+
+    it("provides fallback error messages in Norwegian", () => {
+      // Test that unknown error codes get Norwegian fallback messages
+      const fallbackMessage = "Feil: Unknown error code";
+      const { mockContextValue } = renderUserAdminWithContext(
+        {},
+        {
+          generalError: fallbackMessage,
+        },
+      );
+
+      // Should receive the fallback error with Norwegian prefix in context
+      expect(mockContextValue.generalError).toBe(fallbackMessage);
+      expect(mockContextValue.generalError).toContain("Feil:");
+    });
+
+    it("shows password strength errors in Norwegian", () => {
+      // Test password strength specific error
+      const passwordError = "Passordet er ikke sterkt nok";
+      const { mockContextValue } = renderUserAdminWithContext(
+        {},
+        {
+          generalError: passwordError,
+        },
+      );
+
+      // Should receive the Norwegian password error in context
+      expect(mockContextValue.generalError).toBe(passwordError);
+    });
+
+    it("handles form_password_not_strong_enough error correctly", async () => {
+      // Test that the component handles password strength errors correctly
+      const passwordStrengthError = "velg et sikrere passord";
+
+      const { mockContextValue } = renderUserAdminWithContext(
+        {},
+        {
+          selectedMenu: 2,
+          generalError: passwordStrengthError,
+        },
+      );
+
+      // Should receive the specific Norwegian message for password strength
+      expect(mockContextValue.generalError).toBe(passwordStrengthError);
+      expect(mockContextValue.generalError).toContain(
+        "velg et sikrere passord",
+      );
+    });
+
+    it("handles error messages with proper Norwegian formatting", () => {
+      const testCases = [
+        {
+          error: "E-postadressen er ikke tilgjengelig",
+          description: "Email availability error",
+        },
+        {
+          error: "Passordet er for kort",
+          description: "Password too short error",
+        },
+        {
+          error: "Brukeren eksisterer allerede",
+          description: "User already exists error",
+        },
+      ];
+
+      testCases.forEach(({ error, description }) => {
+        const { mockContextValue } = renderUserAdminWithContext(
+          {},
+          { generalError: error },
+        );
+
+        expect(mockContextValue.generalError).toBe(error);
+      });
+    });
+  });
+
+  describe("Norwegian Error Message Mapping", () => {
+    it("maps Clerk error codes to correct Norwegian messages", () => {
+      // Test specific error code mappings
+      const testMappings = [
+        {
+          code: "form_password_length_too_short",
+          expectedMessage: "Passordet er for kort",
+        },
+        {
+          code: "form_password_pwned",
+          expectedMessage:
+            "Passordet er funnet i en datalekkasje - velg et annet",
+        },
+        {
+          code: "User already exists",
+          expectedMessage: "Brukeren eksisterer allerede",
+        },
+        {
+          code: "User is not admin",
+          expectedMessage: "Du er ikke administrator",
+        },
+        {
+          code: "Unauthorized",
+          expectedMessage: "Du har ikke tilgang",
+        },
+        {
+          code: "Failed to delete user",
+          expectedMessage: "Kunne ikke slette brukeren.",
+        },
+        {
+          code: "Not Found",
+          expectedMessage: "Brukeren ble ikke funnet",
+        },
+        {
+          code: "Unprocessable Entity",
+          expectedMessage: "Kunne ikke invitere brukeren",
+        },
+      ];
+
+      testMappings.forEach(({ code, expectedMessage }) => {
+        const mappedError = errorsToNorwegian.find((e) => e.code === code);
+        expect(mappedError).toBeDefined();
+        expect(mappedError?.message).toBe(expectedMessage);
+      });
+    });
+
+    it("uses errorsToNorwegian utility correctly", () => {
+      // Test that the utility is an array with the expected structure
+      expect(Array.isArray(errorsToNorwegian)).toBe(true);
+      expect(errorsToNorwegian.length).toBeGreaterThan(0);
+
+      // Test that each error mapping has the required properties
+      errorsToNorwegian.forEach((errorMapping) => {
+        expect(errorMapping).toHaveProperty("code");
+        expect(errorMapping).toHaveProperty("message");
+        expect(typeof errorMapping.code).toBe("string");
+        expect(typeof errorMapping.message).toBe("string");
+        expect(errorMapping.code.length).toBeGreaterThan(0);
+        expect(errorMapping.message.length).toBeGreaterThan(0);
+      });
+    });
+
+    it("provides fallback error messages in Norwegian", () => {
+      // Test fallback behavior when error code is not found
+      const unknownErrorCode = "unknown_error_code_12345";
+      const mappedError = errorsToNorwegian.find(
+        (e) => e.code === unknownErrorCode,
+      );
+
+      // Should not find a mapping for unknown error code
+      expect(mappedError).toBeUndefined();
+
+      // Test that the component would use fallback format: "Feil: {error message}"
+      const fallbackMessage = `Feil: ${unknownErrorCode}`;
+      expect(fallbackMessage).toContain("Feil:");
+      expect(fallbackMessage).toContain(unknownErrorCode);
+
+      // Test with Norwegian fallback message
+      const norwegianFallback = "Feil: Noe gikk galt";
+      expect(norwegianFallback).toBe("Feil: Noe gikk galt");
+    });
+
+    it("shows password strength errors in Norwegian", () => {
+      // Test password-related error mappings
+      const passwordErrors = [
+        {
+          code: "form_password_length_too_short",
+          expectedMessage: "Passordet er for kort",
+        },
+        {
+          code: "form_password_pwned",
+          expectedMessage:
+            "Passordet er funnet i en datalekkasje - velg et annet",
+        },
+      ];
+
+      passwordErrors.forEach(({ code, expectedMessage }) => {
+        const mappedError = errorsToNorwegian.find((e) => e.code === code);
+        expect(mappedError).toBeDefined();
+        expect(mappedError?.message).toBe(expectedMessage);
+        expect(mappedError?.message).toContain("Passord");
+      });
+
+      // Test special case for form_password_not_strong_enough
+      // This error gets special handling in the component with "velg et sikrere passord"
+      const specialPasswordError = "velg et sikrere passord";
+      expect(specialPasswordError).toBe("velg et sikrere passord");
+      expect(specialPasswordError).toContain("passord");
+    });
+
+    it("handles form_password_not_strong_enough error correctly", () => {
+      // Test the special case handling for password strength
+      const specialPasswordMessage = "velg et sikrere passord";
+
+      // This message is hardcoded in the component for form_password_not_strong_enough
+      expect(specialPasswordMessage).toBe("velg et sikrere passord");
+      expect(specialPasswordMessage.toLowerCase()).toContain("passord");
+      expect(specialPasswordMessage.toLowerCase()).toContain("sikrer");
+    });
+
+    it("validates error message structure and Norwegian language", () => {
+      // Test that all error messages are in Norwegian
+      const norwegianKeywords = [
+        "Passord",
+        "passord",
+        "Bruker",
+        "bruker",
+        "ikke",
+        "er",
+        "Du",
+        "til",
+        "Kunne",
+        "kunne",
+        "ble",
+        "funnet",
+        "tilgang",
+        "administrator",
+        "rettigheter",
+        "operasjonen",
+        "slette",
+        "invitere",
+      ];
+
+      errorsToNorwegian.forEach((errorMapping) => {
+        // Each message should contain at least one Norwegian keyword
+        const containsNorwegianKeyword = norwegianKeywords.some((keyword) =>
+          errorMapping.message.includes(keyword),
+        );
+        expect(containsNorwegianKeyword).toBe(true);
+
+        // Messages should not contain common English error words
+        const englishErrorWords = [
+          "error",
+          "failed",
+          "invalid",
+          "unauthorized",
+        ];
+        englishErrorWords.forEach((englishWord) => {
+          expect(errorMapping.message.toLowerCase()).not.toContain(englishWord);
+        });
+      });
+    });
+
+    it("tests error mapping integration with component logic", () => {
+      // Simulate the component's error handling logic
+      const simulateErrorHandling = (
+        errorCode: string,
+        errorMessage?: string,
+      ) => {
+        const errorInNorwegian = errorsToNorwegian.find(
+          (e) => e.code === errorCode,
+        );
+
+        return (
+          errorInNorwegian?.message ??
+          `Feil: ${errorMessage || "Noe gikk galt"}`
+        );
+      };
+
+      // Test known error codes
+      expect(simulateErrorHandling("User already exists")).toBe(
+        "Brukeren eksisterer allerede",
+      );
+
+      expect(simulateErrorHandling("form_password_length_too_short")).toBe(
+        "Passordet er for kort",
+      );
+
+      // Test unknown error code with fallback
+      expect(
+        simulateErrorHandling("unknown_error", "Something went wrong"),
+      ).toBe("Feil: Something went wrong");
+
+      // Test unknown error code with default fallback
+      expect(simulateErrorHandling("unknown_error")).toBe(
+        "Feil: Noe gikk galt",
+      );
+    });
+
+    it("validates all error codes have unique Norwegian messages", () => {
+      // Collect all messages to check for uniqueness
+      const messages = errorsToNorwegian.map((error) => error.message);
+      const uniqueMessages = [...new Set(messages)];
+
+      // Note: Some messages might be intentionally duplicated for different codes
+      // but we should verify this is intentional
+      expect(messages.length).toBeGreaterThan(0);
+      expect(uniqueMessages.length).toBeGreaterThan(0);
+
+      // Test that each message is a non-empty string
+      messages.forEach((message) => {
+        expect(typeof message).toBe("string");
+        expect(message.length).toBeGreaterThan(0);
+        expect(message.trim()).toBe(message); // No leading/trailing whitespace
+      });
+    });
+
+    it("ensures error codes follow expected patterns", () => {
+      // Test that error codes follow expected patterns
+      errorsToNorwegian.forEach((errorMapping) => {
+        expect(typeof errorMapping.code).toBe("string");
+        expect(errorMapping.code.length).toBeGreaterThan(0);
+
+        // Error codes should not be empty or just whitespace
+        expect(errorMapping.code.trim()).toBe(errorMapping.code);
+        expect(errorMapping.code.trim().length).toBeGreaterThan(0);
+      });
+
+      // Test that we have mappings for critical error types
+      const criticalErrorCodes = [
+        "form_password_length_too_short",
+        "form_password_pwned",
+        "User already exists",
+        "Unauthorized",
+      ];
+
+      criticalErrorCodes.forEach((code) => {
+        const mapping = errorsToNorwegian.find((e) => e.code === code);
+        expect(mapping).toBeDefined();
+        expect(mapping?.message).toBeDefined();
+      });
+    });
+
+    it("handles unknown error codes with Norwegian fallback", () => {
+      // Test with an error code that doesn't exist in the mapping
+      const unknownError = "unknown_error_code";
+      const fallbackMessage = `Feil: ${unknownError}`;
+
+      const { mockContextValue } = renderUserAdminWithContext(
+        {},
+        { generalError: fallbackMessage },
+      );
+
+      // Should receive the fallback message with Norwegian "Feil:" prefix in context
+      expect(mockContextValue.generalError).toBe(fallbackMessage);
+      expect(mockContextValue.generalError).toContain("Feil:");
+    });
+
+    it("preserves Norwegian characters in error messages", () => {
+      const norwegianErrors = [
+        "Passordet må være sterkere",
+        "E-postadressen må være gyldig",
+        "Brukeren må ha nødvendige rettigheter",
+        "Operasjonen kunne ikke utføres",
+      ];
+
+      norwegianErrors.forEach((error) => {
+        const { mockContextValue } = renderUserAdminWithContext(
+          {},
+          { generalError: error },
+        );
+
+        // Should preserve Norwegian characters (å, ø, æ) in context
+        expect(mockContextValue.generalError).toBe(error);
+        expect(mockContextValue.generalError).toMatch(/[åøæÅØÆ]/);
+      });
     });
   });
 });

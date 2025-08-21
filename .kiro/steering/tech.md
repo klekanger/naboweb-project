@@ -1,62 +1,56 @@
-# Technology Stack
+---
+inclusion: always
+---
 
-## Framework & Runtime
+# Technology Stack & Development Guidelines
 
-- **Next.js 15.3.1** - React framework with App Router
-- **React 19.1.0** - UI library
-- **TypeScript 5.7.2** - Type safety
-- **Node.js** - Runtime environment
+## Core Stack
 
-## Styling & UI
+- **Next.js 15.3.1** with App Router - Use Server Components by default, Client Components only when needed
+- **React 19.1.0** - Prefer functional components with hooks
+- **TypeScript 5.7.2** - Strict mode enabled, always type function parameters and returns
+- **pnpm** - Package manager (never use npm or yarn)
 
-- **Tailwind CSS 3.4.3** - Utility-first CSS framework
-- **HeroUI (NextUI) 2.6.14** - React component library
-- **Framer Motion** - Animations
-- **next-themes** - Dark/light mode support
+## Styling Standards
 
-## Content Management
+- **Tailwind CSS 3.4.3** - Use utility classes, avoid custom CSS when possible
+- **HeroUI (NextUI) 2.6.14** - Primary component library for UI elements
+- **Responsive design** - Mobile-first approach with `sm:`, `md:`, `lg:` breakpoints
+- **Dark mode** - Support via next-themes, test both light and dark variants
 
-- **Sanity 3.86.1** - Headless CMS
-- **next-sanity** - Next.js integration
-- **@portabletext/react** - Rich text rendering
+## Content & Data
 
-## Authentication & User Management
+- **Sanity CMS** - All content management through Sanity Studio
+- **GROQ queries** - Use typed queries in `src/sanity/lib/queries.ts`
+- **Portable Text** - Rich content rendering with `@portabletext/react`
+- **Image optimization** - Use Sanity CDN with Next.js Image component
 
-- **Clerk** - Authentication provider with Norwegian localization
-- **Role-based access control** - Custom user roles and permissions
+## Authentication & Security
 
-## Database & Storage
+- **Clerk** - Norwegian locale (nb-NO), role-based permissions
+- **Server Actions** - Prefer over API routes for mutations
+- **Middleware** - Route protection in `src/middleware.ts`
+- **Environment variables** - Use `.env.local` for development
 
-- **Sanity** - Content storage
-- **Upstash Redis** - Caching and session management
+## Code Quality
 
-## Email & Notifications
+- **ESLint** - Follow Next.js recommended config
+- **Prettier** - Auto-format on save
+- **TypeScript strict** - No `any` types, proper error handling
+- **Testing** - Vitest for unit tests, React Testing Library for components
 
-- **Nodemailer** - Email sending
-- **Sonner** - Toast notifications
-
-## Development Tools
-
-- **ESLint** - Code linting with Next.js config
-- **Prettier** - Code formatting
-- **pnpm** - Package manager
-
-## Common Commands
+## Development Commands
 
 ```bash
-# Development
-pnpm dev              # Start development server with Turbopack
-pnpm build            # Build for production
-pnpm start            # Start production server
-pnpm lint             # Run ESLint
-
-# Sanity
-pnpm typegen          # Generate Sanity types and move to src/types/
+pnpm dev              # Development with Turbopack
+pnpm build            # Production build
+pnpm lint             # ESLint check
+pnpm typegen          # Generate Sanity types
 ```
 
-## Key Configurations
+## Performance Guidelines
 
-- **Turbopack** enabled for faster development builds
-- **Image optimization** configured for Sanity CDN
-- **Experimental taint** mode enabled
-- **Norwegian locale** (nb-NO) throughout the application
+- Use `loading.tsx` for route-level loading states
+- Implement proper error boundaries with `error.tsx`
+- Optimize images with Next.js Image component
+- Use React.memo() sparingly, only for expensive renders

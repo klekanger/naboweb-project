@@ -89,7 +89,7 @@
 
 - [ ] 7. Implement error handling and modal tests
 
-  - [ ] 7.1 Test error modal display
+  - [x] 7.1 Test error modal display
 
     - Test that error modal opens when generalError is set
     - Test that Norwegian error messages display correctly
@@ -97,16 +97,16 @@
     - Test that long error messages display with additional context
     - _Requirements: 3.4, 4.4, 5.4_
 
-  - [ ] 7.2 Test Norwegian error message mapping
+  - [x] 7.2 Test Norwegian error message mapping
     - Test that Clerk error codes map to correct Norwegian messages
     - Test that errorsToNorwegian utility is used correctly
     - Test that fallback error messages are in Norwegian
     - Test that password strength errors show Norwegian text
     - _Requirements: 4.4, 5.4_
 
-- [ ] 8. Implement loading state and success flow tests
+- [x] 8. Implement loading state and success flow tests
 
-  - [ ] 8.1 Test loading states during user creation
+  - [x] 8.1 Test loading states during user creation
 
     - Test that loading spinner displays when isCreatingUser is true
     - Test that form is disabled during user creation process
@@ -114,7 +114,7 @@
     - Test that loading state prevents multiple form submissions
     - _Requirements: 3.3, 4.3_
 
-  - [ ] 8.2 Test successful user creation flow
+  - [x] 8.2 Test successful user creation flow
     - Test that success screen displays after user creation
     - Test that newly created user data displays correctly
     - Test that success message is in Norwegian

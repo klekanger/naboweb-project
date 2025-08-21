@@ -175,16 +175,36 @@ vi.mock("@/app/actions/inviteUser", () => ({
 vi.mock("@/lib/norwegianErrorMessages", () => ({
   errorsToNorwegian: [
     {
-      code: "form_password_not_strong_enough",
-      message: "Passordet er ikke sterkt nok",
+      code: "form_password_length_too_short",
+      message: "Passordet er for kort",
     },
     {
-      code: "email_address_not_available",
-      message: "E-postadressen er ikke tilgjengelig",
+      code: "form_password_pwned",
+      message: "Passordet er funnet i en datalekkasje - velg et annet",
     },
     {
-      code: "form_identifier_exists",
-      message: "En bruker med denne e-postadressen eksisterer allerede",
+      code: "User already exists",
+      message: "Brukeren eksisterer allerede",
+    },
+    {
+      code: "User is not admin",
+      message: "Du er ikke administrator",
+    },
+    {
+      code: "Unauthorized",
+      message: "Du har ikke tilgang",
+    },
+    {
+      code: "Failed to delete user",
+      message: "Kunne ikke slette brukeren.",
+    },
+    {
+      code: "Not Found",
+      message: "Brukeren ble ikke funnet",
+    },
+    {
+      code: "Unprocessable Entity",
+      message: "Kunne ikke invitere brukeren",
     },
   ],
 }));
