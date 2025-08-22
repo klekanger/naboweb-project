@@ -1,6 +1,7 @@
 import { vi, beforeEach, afterEach } from "vitest";
 import { createElement } from "react";
 import { cleanup } from "@testing-library/react";
+import "@testing-library/jest-dom/vitest";
 
 // Setup and cleanup for each test
 beforeEach(() => {
