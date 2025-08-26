@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { render, cleanup } from "@testing-library/react";
-import React from "react";
 import type { UserAdminProps } from "@/types/types";
 
 // Mock dependencies

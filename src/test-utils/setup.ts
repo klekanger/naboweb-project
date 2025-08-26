@@ -14,10 +14,26 @@ afterEach(() => {
   cleanup();
 });
 
+// Mock Sanity's image URL builder
+vi.mock("@/sanity/lib/utils", () => ({
+  urlForImage: () => ({
+    width: () => ({
+      height: () => ({
+        fit: () => ({
+          url: () => "test-image-url",
+        }),
+      }),
+    }),
+  }),
+}));
+
 // Mock HeroUI components
 vi.mock("@heroui/react", () => ({
-  Button: ({ children, onPress, ...props }: any) =>
-    createElement("button", { onClick: onPress, ...props }, children),
+  Button: ({ children, onPress, startContent, ...props }: any) =>
+    createElement("button", { onClick: onPress, ...props }, [
+      startContent,
+      children,
+    ]),
   Input: ({ label, onChange, value, ...props }: any) =>
     createElement("div", {}, [
       createElement("label", { key: "label" }, label),
@@ -28,16 +44,46 @@ vi.mock("@heroui/react", () => ({
         ...props,
       }),
     ]),
-  Checkbox: ({ children, value, ...props }: any) =>
-    createElement("label", {}, [
-      createElement("input", {
-        key: "checkbox",
-        type: "checkbox",
-        value: value,
-        ...props,
-      }),
+  Card: ({ children, className, ...props }: any) =>
+    createElement(
+      "div",
+      { "data-testid": "mock-card", className, ...props },
       children,
-    ]),
+    ),
+  CardHeader: ({ children, className, ...props }: any) =>
+    createElement(
+      "div",
+      { "data-testid": "mock-card-header", className, ...props },
+      children,
+    ),
+  CardBody: ({ children, className, ...props }: any) =>
+    createElement(
+      "div",
+      { "data-testid": "mock-card-body", className, ...props },
+      children,
+    ),
+  CardFooter: ({ children, className, ...props }: any) =>
+    createElement(
+      "div",
+      { "data-testid": "mock-card-footer", className, ...props },
+      children,
+    ),
+
+  Checkbox: ({ children, isSelected, onValueChange, ...props }: any) =>
+    createElement(
+      "label",
+      { onClick: () => onValueChange?.(!isSelected), ...props },
+      [
+        createElement("input", {
+          key: "checkbox",
+          type: "checkbox",
+          checked: isSelected,
+          onChange: () => {},
+          style: { display: "none" },
+        }),
+        children,
+      ],
+    ),
   CheckboxGroup: ({ children, label, onValueChange }: any) =>
     createElement("div", {}, [
       createElement("span", { key: "label" }, label),
@@ -67,6 +113,8 @@ vi.mock("@heroui/react", () => ({
   // Table components
   Table: ({ children, ...props }: any) =>
     createElement("table", props, children),
+  Tooltip: ({ children, ...props }: any) =>
+    createElement("div", props, children),
   TableHeader: ({ children, ...props }: any) =>
     createElement("thead", props, children),
   TableBody: ({ children, ...props }: any) =>
@@ -119,6 +167,10 @@ vi.mock("lucide-react", () => ({
   Trash2: () => createElement("span", {}, "Trash2 Icon"),
   Eye: () => createElement("span", {}, "Eye Icon"),
   EyeOff: () => createElement("span", {}, "EyeOff Icon"),
+  MessagesSquare: () => createElement("span", {}, "MessagesSquare icon"),
+  CirclePlus: () => createElement("span", {}, "CirclePlus icon"),
+  CircleUser: () => createElement("span", {}, "CircleUser icon"),
+  Shield: () => createElement("span", {}, "Shield Icon"),
 }));
 
 // Mock Next.js Link
