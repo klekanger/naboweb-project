@@ -13,8 +13,10 @@ import MessageCard from "./MessageCard";
 
 export default function MessageBoard({
   messages,
+  messageCount,
 }: {
   messages: MessageboardQueryResult;
+  messageCount: number;
 }) {
   if (!messages) return null;
 
@@ -68,6 +70,7 @@ export default function MessageBoard({
           Kun innlegg fra styret
         </Checkbox>
       </div>
+      <div className="text-sm text-brand-black/60 pb-4">{`Totalt ${messageCount} innlegg`}</div>
       <section className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {messages.length > 0 ? (
           messages

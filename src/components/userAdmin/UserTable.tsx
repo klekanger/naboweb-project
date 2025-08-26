@@ -27,9 +27,8 @@ import {
   useDisclosure,
 } from "@heroui/react";
 import { MoreVertical, SearchIcon } from "lucide-react";
-import { useCallback, useContext, useMemo, useState } from "react";
-
-const ROWS_PER_PAGE = 20;
+import { useRouter } from "next/navigation";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 
 const CircleAdmin = () => (
   <Tooltip content="Administrator">
@@ -47,7 +46,13 @@ const CircleEditor = () => (
   </Tooltip>
 );
 
-export default function UserTable({ users, ...rest }: UserTableProps) {
+export default function UserTable({
+  users,
+  pagination,
+  isSearchResult = false,
+  ...rest
+}: UserTableProps & { isSearchResult?: boolean }) {
+  const router = useRouter();
   const {
     generalError,
     setGeneralError,
@@ -63,7 +68,6 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
   const modalDeleteUser = useDisclosure();
   const modalErrorMessage = useDisclosure();
 
-  const [page, setPage] = useState(1);
   const [userDataToShowOrDelete, setUserDataToShowOrDelete] =
     useState<ShowUserProps>({
       firstName: "",
@@ -74,8 +78,7 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
       lastSignInAt: null,
       roles: [],
     });
-  const [filterValue, setFilterValue] = useState("");
-  const hasSearchFilter = Boolean(filterValue);
+  const [globalSearchValue, setGlobalSearchValue] = useState("");
 
   const showUserWithIdModal = async (id: string) => {
     const userDataFromId = await getUser(id);
@@ -98,13 +101,11 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
     return null;
   }
 
-  const pages = Math.ceil(users.length / ROWS_PER_PAGE);
-
-  const filteredUsers = useMemo(() => {
-    let filteredUsers = [...users];
+  const sortedUsers = useMemo(() => {
+    let sortedUsers = [...users];
 
     // Sort users by last name, then first name
-    filteredUsers.sort((a, b) => {
+    sortedUsers.sort((a, b) => {
       const nameA = `${a.lastName} ${a.firstName}`.toLowerCase();
       const nameB = `${b.lastName} ${b.firstName}`.toLowerCase();
 
@@ -117,58 +118,99 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
       return 0;
     });
 
-    // Search for users if search field is not empty
-    if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter(
-        (user) =>
-          user.email?.toLowerCase().includes(filterValue.toLowerCase()) ||
-          user.firstName?.toLowerCase().includes(filterValue.toLowerCase()) ||
-          user.lastName?.toLowerCase().includes(filterValue.toLowerCase()),
-      );
-    }
-    return filteredUsers;
-  }, [users, filterValue, hasSearchFilter]);
+    return sortedUsers;
+  }, [users]);
 
-  const usersToRender = useMemo(() => {
-    const start = (page - 1) * ROWS_PER_PAGE;
-    const end = start + ROWS_PER_PAGE;
-
-    return filteredUsers.slice(start, end);
-  }, [page, filteredUsers]);
-
-  const onSearchChange = useCallback((value?: string) => {
+  const onGlobalSearchChange = useCallback((value?: string) => {
     if (value) {
-      setFilterValue(value);
-      setPage(1);
+      setGlobalSearchValue(value);
     } else {
-      setFilterValue("");
+      setGlobalSearchValue("");
     }
   }, []);
+
+  const onGlobalSearchClear = useCallback(() => {
+    setGlobalSearchValue("");
+    // Navigate back to the main page without search
+    const url = new URL(window.location.href);
+    url.searchParams.delete("search");
+    url.searchParams.set("page", "1");
+    router.push(url.toString());
+  }, [router]);
+
+  const handleGlobalSearch = useCallback(() => {
+    if (globalSearchValue.trim()) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("search", globalSearchValue.trim());
+      url.searchParams.delete("page");
+      router.push(url.toString());
+    }
+  }, [globalSearchValue, router]);
+
+  const handleGlobalSearchKeyPress = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter") {
+        handleGlobalSearch();
+      }
+    },
+    [handleGlobalSearch],
+  );
 
   const handleEditUser = (user: UserWithEmails) => () => {
     setSelectedUser(user);
     setSelectedMenu(SidebarMenu.EDIT_USER);
   };
 
+  const handlePageChange = (newPage: number) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("page", newPage.toString());
+    router.push(url.toString());
+  };
+
   const topContent = useMemo(() => {
     return (
-      <div>
-        <Input
-          placeholder="Søk etter bruker..."
-          type="search"
-          startContent={<SearchIcon />}
-          value={filterValue}
-          onClear={() => setFilterValue("")}
-          onValueChange={onSearchChange}
-          className="w-full sm:max-w-[44%]"
-        />
-        <div className="pl-2 pt-4 text-left">
-          <span className="font-semibold">Antall brukere:</span>{" "}
-          {filteredUsers.length.toString()}
+      <div className="space-y-4">
+        {/* Global Search */}
+        <div className="flex gap-2 max-w-md">
+          <Input
+            placeholder="Søk etter bruker"
+            type="search"
+            startContent={<SearchIcon />}
+            value={globalSearchValue}
+            onClear={onGlobalSearchClear}
+            onValueChange={onGlobalSearchChange}
+            onKeyDown={handleGlobalSearchKeyPress}
+            className="flex-1"
+          />
+          <Button
+            color="primary"
+            onPress={handleGlobalSearch}
+            isDisabled={!globalSearchValue.trim()}
+          >
+            Søk
+          </Button>
+        </div>
+
+        <div className="pl-2 text-left">
+          {isSearchResult && (
+            <span>
+              <span className="font-semibold">Søkeresultater:</span>{" "}
+              {sortedUsers.length} brukere funnet
+            </span>
+          )}
         </div>
       </div>
     );
-  }, [filterValue, onSearchChange, filteredUsers.length]);
+  }, [
+    globalSearchValue,
+    onGlobalSearchChange,
+    handleGlobalSearch,
+    handleGlobalSearchKeyPress,
+    onGlobalSearchClear,
+    sortedUsers.length,
+    isSearchResult,
+    pagination,
+  ]);
 
   return (
     <div className={rest?.className ?? ""}>
@@ -176,20 +218,31 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
         className="mb-16"
         shadow="none"
         isCompact
-        aria-label="Tabell med oversikt over brukere"
+        aria-label={
+          isSearchResult
+            ? `Tabell med globale søkeresultater`
+            : "Tabell med oversikt over brukere"
+        }
         topContent={topContent}
         bottomContent={
-          pages > 1 && (
-            <div className="flex w-full justify-center">
+          !isSearchResult &&
+          pagination &&
+          pagination.totalPages > 1 && (
+            <div className="flex justify-center my-8">
               <Pagination
-                isCompact
-                isDisabled={hasSearchFilter}
+                total={pagination.totalPages}
+                page={pagination.currentPage}
+                onChange={handlePageChange}
                 showControls
-                showShadow
-                color="secondary"
-                page={page}
-                total={pages}
-                onChange={(page) => setPage(page)}
+                color="primary"
+                size="lg"
+                radius="md"
+                isDisabled={false}
+                classNames={{
+                  base: "gap-2",
+                  item: "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50",
+                  cursor: "bg-blue-600 text-white border-blue-600",
+                }}
               />
             </div>
           )
@@ -212,8 +265,14 @@ export default function UserTable({ users, ...rest }: UserTableProps) {
             Oppgaver
           </TableColumn>
         </TableHeader>
-        <TableBody emptyContent={"Ingen brukere"}>
-          {usersToRender.map((user) => {
+        <TableBody
+          emptyContent={
+            isSearchResult
+              ? "Ingen brukere funnet i søket. Prøv andre søkeord."
+              : "Ingen brukere"
+          }
+        >
+          {sortedUsers.map((user) => {
             let roles;
             if (Array.isArray(user.roles)) {
               roles = user.roles

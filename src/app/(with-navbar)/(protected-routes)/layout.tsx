@@ -1,5 +1,6 @@
 import NotLoggedIn from "@/components/NotLoggedIn";
 import { validRoles, validateUserRoles } from "@/lib/validateUserRoles";
+import UserAdminProvider from "@/context/userAdminContext";
 
 export default async function ProtectedRouteLayout({
   children,
@@ -14,5 +15,9 @@ export default async function ProtectedRouteLayout({
 
   if (!hasAccess) return <NotLoggedIn />;
 
-  return <>{children}</>;
+  return (
+    <>
+      <UserAdminProvider>{children}</UserAdminProvider>
+    </>
+  );
 }

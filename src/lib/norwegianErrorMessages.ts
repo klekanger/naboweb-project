@@ -20,15 +20,6 @@ export const errorsToNorwegian = [
     message: "Du har ikke tilgang",
   },
   {
-    code: "Unauthorized",
-    message:
-      "Du har ikke de nødvendige rettigheter til å utføre denne operasjonen",
-  },
-  {
-    code: "User is not admin",
-    message: "Du må være administrator for å gjøre dette",
-  },
-  {
     code: "Failed to delete user",
     message: "Kunne ikke slette brukeren.",
   },

@@ -2,17 +2,11 @@
 
 import { formatDate } from "@/lib/format-date";
 import { MessageCardProps } from "@/types/types";
-import {
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Image,
-  Tooltip,
-} from "@heroui/react";
+import { Card, CardBody, CardFooter, CardHeader, Tooltip } from "@heroui/react";
 import { toPlainText } from "@portabletext/react";
 import { CircleUser, MessagesSquare, Shield } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function MessageCard({
   title,

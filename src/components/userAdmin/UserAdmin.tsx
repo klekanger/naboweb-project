@@ -7,7 +7,7 @@ import {
   UserAdminContext,
 } from "@/context/userAdminContext";
 import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
-import type { UserWithEmails, NewUser } from "@/types/types";
+import type { UserAdminProps } from "@/types/types";
 import {
   Button,
   Checkbox,
@@ -18,55 +18,22 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Spinner,
   useDisclosure,
 } from "@heroui/react";
-import { Crown, UserCheck, UserCog, UserPlus2, Users } from "lucide-react";
-import { useCallback, useContext, useEffect, useMemo } from "react";
-import { Spinner } from "@heroui/react";
+import { useContext, useState } from "react";
 import EditUser from "./EditUser";
 import InviteUser from "./InviteUser";
 import RoleDisplay from "./RoleDisplay";
 import AssignRolesTable from "./ShowRolesTable";
+import { isEmailInvalid, menuElements, validateForm } from "./UserAdmin.logic";
 import UserTable from "./UserTable";
 
-const menuElements = [
-  {
-    id: 0, // Which SidebarMenu.ITEM to display. 0 is the first item in the enum.
-    name: "Vis brukere",
-    description:
-      "Viser alle brukere som er registrert, sortert etter etternavn og deretter fornavn.<br />Du kan bruke søkefeltet for å finne en bestemt bruker (søker i både e-post og navn).",
-    menuIcon: Users,
-  },
-  {
-    id: 1,
-    name: "Inviter bruker",
-    description:
-      "Inviter en bruker til å opprette en konto. Brukeren vil motta en lenke på e-post for å opprette kontoen sin.",
-    menuIcon: UserCheck,
-  },
-  {
-    id: 2,
-    name: "Ny bruker",
-    description:
-      "Opprett en ny bruker. Du må selv informere brukeren om at kontoen er opprettet og be vedkommende om å logge inn.",
-    menuIcon: UserPlus2,
-  },
-  {
-    id: 3,
-    name: "Endre bruker",
-    description: "Endre en allerede eksisterende bruker (navn eller roller).",
-    menuIcon: UserCog,
-  },
-  {
-    id: 4,
-    name: "Superbrukere",
-    description:
-      "Oversikt over brukere med utvidede rettigheter. <em>Administratorer</em> har tilgang til alle funksjoner og kan opprette brukere og endre roller. <em>Redaktører</em> kan legge til nytt innhold på sidene.",
-    menuIcon: Crown,
-  },
-];
-
-export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
+export default function UserAdmin({
+  users,
+  pagination,
+  isSearchResult = false,
+}: UserAdminProps & { isSearchResult?: boolean }) {
   const {
     generalError,
     setGeneralError,
@@ -82,36 +49,14 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
     setNewlyCreatedUser,
     screenToDisplay,
     setScreenToDisplay,
-    selectedUser,
     setSelectedUser,
-    resetUserAdminContext,
   } = useContext(UserAdminContext);
 
   const modalCreateUser = useDisclosure();
   const modalErrorMessage = useDisclosure();
+  const [longMessage, setLongMessage] = useState("");
 
-  useEffect(() => {
-    resetUserAdminContext();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const validateEmail = useCallback(
-    (value: string) => value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i),
-    [],
-  );
-
-  const isInvalidEmail = useMemo(() => {
-    if (emailValue === "") return false;
-    return validateEmail(emailValue) ? false : true;
-  }, [emailValue, validateEmail]);
-
-  const validateForm = (user: NewUser) => {
-    return (
-      validateEmail(user?.email) &&
-      user?.firstName !== "" &&
-      user?.lastName !== ""
-    );
-  };
+  const isInvalidEmail = isEmailInvalid(emailValue);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,10 +67,10 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
     }
   };
 
-  // Call the createNewUser server action
   const handleCreateNewUser = async () => {
     setIsCreatingUser(true);
     const response = await createNewUser(newUser);
+
     setIsCreatingUser(false);
 
     if ("error" in response) {
@@ -133,6 +78,13 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
         (e) => e.code === response.error.message,
       );
       console.error("error ", response.error);
+
+      if (response.error.code === "form_password_not_strong_enough") {
+        setLongMessage("velg et sikrere passord");
+      } else {
+        setLongMessage(response.error?.longMessage || "");
+      }
+
       setGeneralError(
         errorInNorwegian?.message ??
           `Feil: ${response.error?.message || "Noe gikk galt"}`,
@@ -186,9 +138,15 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
               __html: menuElements[selectedMenu].description,
             }}
           />
+
           {/* SHOW USERS SCREEN */}
           {selectedMenu === SidebarMenu.USERS && (
-            <UserTable users={users} className="lg:px-2" />
+            <UserTable
+              users={users}
+              pagination={pagination}
+              isSearchResult={isSearchResult}
+              className="lg:px-2"
+            />
           )}
 
           {/* CREATE NEW USER SCREEN - SHOW FORM */}
@@ -200,6 +158,28 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
                 onSubmit={handleSubmit}
               >
                 <div className="mb-5 flex flex-col gap-5 lg:flex-row">
+                  <Input
+                    type="text"
+                    name="firstName"
+                    label="Fornavn"
+                    isRequired
+                    value={newUser.firstName}
+                    onChange={(e) => {
+                      setNewUser({ ...newUser, firstName: e.target.value });
+                    }}
+                  />
+                  <Input
+                    type="text"
+                    name="lastName"
+                    label="Etternavn"
+                    isRequired
+                    value={newUser.lastName}
+                    onChange={(e) => {
+                      setNewUser({ ...newUser, lastName: e.target.value });
+                    }}
+                  />
+                </div>
+                <div className="mb-5 flex flex-col gap-5  lg:flex-row">
                   <Input
                     type="email"
                     name="email"
@@ -216,30 +196,6 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
                       setNewUser({ ...newUser, email: e.target.value });
                     }}
                     onValueChange={setEmailValue} // Only for visual validation feedback in the input field
-                  />
-
-                  <Input
-                    type="text"
-                    name="firstName"
-                    label="Fornavn"
-                    isRequired
-                    value={newUser.firstName}
-                    onChange={(e) => {
-                      setNewUser({ ...newUser, firstName: e.target.value });
-                    }}
-                  />
-                </div>
-
-                <div className="mb-5 flex flex-col gap-5  lg:flex-row">
-                  <Input
-                    type="text"
-                    name="lastName"
-                    label="Etternavn"
-                    isRequired
-                    value={newUser.lastName}
-                    onChange={(e) => {
-                      setNewUser({ ...newUser, lastName: e.target.value });
-                    }}
                   />
 
                   <Input
@@ -365,14 +321,18 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
             )}
 
           {/* INVITE USER TO CREATE ACCOUNT */}
-          {selectedMenu === SidebarMenu.INVITE_USER && <InviteUser />}
+          {selectedMenu === 1 && <InviteUser />}
 
           {/* EDIT EXISTING USER */}
-          {selectedMenu === SidebarMenu.EDIT_USER && <EditUser />}
+          {selectedMenu === 3 && <EditUser />}
 
           {/* SHOW USERS WITH ADMIN OR OTHER SUPER USER ROLES */}
-          {selectedMenu === SidebarMenu.SHOW_SUPER_USERS && (
-            <AssignRolesTable users={users} className="lg:px-2" />
+          {selectedMenu === 4 && (
+            <AssignRolesTable
+              users={users}
+              pagination={pagination}
+              className="lg:px-2"
+            />
           )}
         </section>
       </div>
@@ -420,7 +380,9 @@ export default function UserAdmin({ users }: { users: UserWithEmails[] }) {
                 Det har oppstått en feil
               </ModalHeader>
               <ModalBody>
-                <p>{generalError}</p>
+                <p>
+                  {generalError} {`${longMessage ? `(${longMessage})` : ""}`}
+                </p>
                 <p>
                   Hvis du mener noe er galt, ta kontakt med styret eller
                   web-administrator.

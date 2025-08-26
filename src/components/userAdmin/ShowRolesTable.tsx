@@ -15,16 +15,7 @@ import { Crown, Edit } from "lucide-react";
 import { useContext } from "react";
 
 export default function ShowRolesTable({ users, ...rest }: UserTableProps) {
-  const {
-    selectedUser,
-    setSelectedMenu,
-    setSelectedUser,
-    emailValue,
-    setEmailValue,
-    isCreatingUser,
-    setIsCreatingUser,
-    setGeneralError,
-  } = useContext(UserAdminContext);
+  const { setSelectedMenu, setSelectedUser } = useContext(UserAdminContext);
 
   if (!users) {
     return null;
@@ -66,7 +57,10 @@ export default function ShowRolesTable({ users, ...rest }: UserTableProps) {
         }}
       >
         <TableHeader>
-          <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
+          <TableColumn
+            className="bg-brand-primary/20 text-sm font-bold md:text-base"
+            width="50%"
+          >
             Navn
           </TableColumn>
           <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
@@ -112,7 +106,10 @@ export default function ShowRolesTable({ users, ...rest }: UserTableProps) {
         aria-label="Tabell med oversikt over redaktører"
       >
         <TableHeader>
-          <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
+          <TableColumn
+            className="bg-brand-primary/20 text-sm font-bold md:text-base"
+            width="50%"
+          >
             Navn
           </TableColumn>
           <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">

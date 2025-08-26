@@ -15,6 +15,7 @@ export default async function MessageBoardRoute({
 }) {
   const { page = "0" } = await searchParams;
   const messagesPerPage = 10;
+  const messageCount = await countMessages();
 
   const [{ data: messages }, { data: totalMessages }] = await Promise.all([
     sanityFetch({
@@ -41,7 +42,7 @@ export default async function MessageBoardRoute({
 
   return (
     <div>
-      <MessageBoard messages={messages} />
+      <MessageBoard messages={messages} messageCount={messageCount} />
       <PaginationControls
         totalPages={totalPages}
         currentPage={Number(page)}

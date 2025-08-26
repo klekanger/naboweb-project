@@ -149,7 +149,7 @@ export default function EditUser() {
               </h2>
               <div className="text-xs">
                 Bruker opprettet:{" "}
-                {formatDate(selectedUser?.createdAt?.toString() ?? null)}
+                {selectedUser?.createdAt && formatDate(selectedUser.createdAt)}
               </div>
             </div>
           </div>
