@@ -33,3 +33,4 @@
 - No single reference fields in Sanity (always arrays)
 - Use SCREAMING_SNAKE_CASE for GROQ query variables
 - Norwegian UI text where applicable
+- ALWAYS use context7 mcp where applicable

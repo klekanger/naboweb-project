@@ -24,9 +24,11 @@ import { visionTool } from "@sanity/vision";
 import { defineConfig } from "sanity";
 import { presentationTool } from "sanity/presentation";
 import { structureTool } from "sanity/structure";
+import newUserIntro from "@/sanity/schemas/singletons/newUserIntro";
 
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
 import { apiVersion, dataset, projectId } from "./src/sanity/lib/api";
+import { bodyText } from "@/sanity/schemas/objects/bodyText";
 
 // URL for preview functionality, defaults to localhost:3000 if not set
 const SANITY_STUDIO_PREVIEW_URL =
@@ -49,6 +51,7 @@ export default defineConfig({
       // Singletons
       frontpageHero,
       frontpageShowcase,
+      newUserIntro,
       services,
       fileMeetingMinutes,
       fileOtherDocuments,
@@ -59,6 +62,7 @@ export default defineConfig({
       youtube,
       twitter,
       iconType,
+      bodyText,
     ],
   },
   plugins: [
@@ -68,6 +72,7 @@ export default defineConfig({
         settings,
         frontpageHero,
         frontpageShowcase,
+        newUserIntro,
         services,
         documentMenu,
       ]),
@@ -77,6 +82,7 @@ export default defineConfig({
       services.name,
       frontpageHero.name,
       frontpageShowcase.name,
+      newUserIntro.name,
       documentMenu.name,
     ]),
 
