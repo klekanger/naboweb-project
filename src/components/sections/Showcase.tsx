@@ -18,7 +18,7 @@ export default function Showcase({
     return null;
   }
 
-  const { showcaseBlogposts, showcaseTitle = "nyheter", _id } = content ?? {};
+  const { showcaseBlogposts, showcaseTitle = "nyheter" } = content ?? {};
 
   if (!showcaseBlogposts) {
     console.error("No articles is passed to Showcase component");
@@ -86,7 +86,7 @@ export default function Showcase({
       <Spacer />
       <div className="prose mt-8">
         <Link
-          href="http://localhost:3000/blog-collection"
+          href="/blog-collection"
           className="text-brand-secondary dark:text-brand-dark-secondary"
         >
           <em>Gå til nyhetsarkivet »</em>
