@@ -1,14 +1,14 @@
+import NewUserIntro from "@/components/NewUserIntro";
 import Hero from "@/components/sections/Hero";
 import Services from "@/components/sections/Services";
 import Showcase from "@/components/sections/Showcase";
-import NewUserIntro from "@/components/NewUserIntro";
 import { sanityFetch } from "@/sanity/lib/live";
 
 import {
   frontpageHeroQuery,
   frontpageServicesQuery,
-  showcaseQuery,
   newUserIntroQuery,
+  showcaseQuery,
 } from "@/sanity/lib/queries";
 
 export default async function Home() {
