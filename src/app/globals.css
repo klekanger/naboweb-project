@@ -32,7 +32,7 @@ body {
 
 
 .footer {
-  @apply mt-16 flex w-full flex-col flex-wrap items-center justify-between break-words bg-brand-black px-10 py-16 text-center text-xs font-extralight text-slate-300 opacity-90 md:flex-row md:items-start lg:text-sm;
+  @apply mt-16 flex w-full flex-col flex-wrap items-center justify-between break-words bg-[#012d00] px-10 py-16 text-center text-xs font-extralight text-slate-300 md:flex-row md:items-start lg:text-sm;
 }
 
 .footer p {
