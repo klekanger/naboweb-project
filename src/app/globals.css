@@ -25,14 +25,14 @@ body {
 }
 
 .rich-image-caption {
-  @apply rounded-b-large bg-slate-200 mx-4 px-4 py-2 text-left text-sm text-brand-black dark:bg-slate-700 dark:text-brand-white md:mb-4 !mt-0;
+  @apply rounded-b-large bg-slate-200 mx-4 px-4 py-2 text-left text-sm text-brand-black md:mb-4 !mt-0;
 }
 
 
 
 
 .footer {
-  @apply mt-16 flex w-full flex-col flex-wrap items-center justify-between break-words bg-brand-black px-10 py-16 text-center text-xs font-extralight text-slate-300 opacity-90 dark:bg-brand-black md:flex-row md:items-start lg:text-sm;
+  @apply mt-16 flex w-full flex-col flex-wrap items-center justify-between break-words bg-brand-black px-10 py-16 text-center text-xs font-extralight text-slate-300 opacity-90 md:flex-row md:items-start lg:text-sm;
 }
 
 .footer p {
@@ -114,7 +114,8 @@ body {
 }
 
 
-.tiptap ul, .tiptap ol {
+.tiptap ul,
+.tiptap ol {
   @apply list-outside pl-6;
 }
 
@@ -133,4 +134,3 @@ body {
 .tiptap li p {
   @apply pb-0 mb-0 leading-normal;
 }
-
