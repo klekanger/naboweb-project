@@ -8,6 +8,11 @@ export default defineType({
   icon: CubeIcon,
   fields: [
     defineField({
+      name: "enableShowcase",
+      type: "boolean",
+      title: "Vis utvalgte blogginnlegg på forsiden",
+    }),
+    defineField({
       name: "showcaseTitle",
       type: "string",
       title: "Overskrift",

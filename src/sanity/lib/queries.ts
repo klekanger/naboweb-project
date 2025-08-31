@@ -176,6 +176,7 @@ export const privateBlogBySlugQuery = defineQuery(`
 
 export const showcaseQuery = defineQuery(`
   *[_type=="frontpage-showcase"][0]{
+    "enableShowcase": coalesce(enableShowcase, true),
     _id,
     _createdAt,
     _updatedAt,
@@ -187,6 +188,14 @@ export const showcaseQuery = defineQuery(`
       featuredImage{..., "lqip": asset->metadata.lqip}, 
       slug
     },
+  }
+`);
+
+export const newUserIntroQuery = defineQuery(`
+*[_type=="frontpage-new-user-intro"][0]{
+    "enableNewUserIntro": coalesce(enableNewUserIntro, true),
+    title,
+    introText
   }
 `);
 

@@ -233,12 +233,69 @@ export type FrontpageServices = {
   url3?: string;
 };
 
+export type FrontpageNewUserIntro = {
+  _id: string;
+  _type: "frontpage-new-user-intro";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  enableNewUserIntro?: boolean;
+  title?: string;
+  introText?: Bodytext;
+};
+
+export type Bodytext = {
+  _type: "bodytext";
+  body?: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: "span";
+          _key: string;
+        }>;
+        style?: "normal" | "h2" | "h3" | "h4" | "blockquote";
+        listItem?: "bullet" | "number";
+        markDefs?: Array<{
+          href?: string;
+          _type: "link";
+          _key: string;
+        }>;
+        level?: number;
+        _type: "block";
+        _key: string;
+      }
+    | {
+        asset?: {
+          _ref: string;
+          _type: "reference";
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+        };
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        caption?: string;
+        alt?: string;
+        _type: "image";
+        _key: string;
+      }
+    | ({
+        _key: string;
+      } & Youtube)
+    | ({
+        _key: string;
+      } & Twitter)
+  >;
+};
+
 export type FrontpageShowcase = {
   _id: string;
   _type: "frontpage-showcase";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
+  enableShowcase?: boolean;
   showcaseTitle?: string;
   showcaseBlogposts?: Array<{
     _ref: string;
@@ -635,6 +692,8 @@ export type AllSanitySchemaTypes =
   | FileMeetingMinutes
   | SanityFileAsset
   | FrontpageServices
+  | FrontpageNewUserIntro
+  | Bodytext
   | FrontpageShowcase
   | FrontpageHero
   | Message
@@ -1264,8 +1323,9 @@ export type PrivateBlogBySlugQueryResult = {
   }> | null;
 } | null;
 // Variable: showcaseQuery
-// Query: *[_type=="frontpage-showcase"][0]{    _id,    _createdAt,    _updatedAt,    showcaseTitle,    showcaseBlogposts[]->{      _id,       title,       excerpt,       featuredImage{..., "lqip": asset->metadata.lqip},       slug    },  }
+// Query: *[_type=="frontpage-showcase"][0]{    "enableShowcase": coalesce(enableShowcase, true),    _id,    _createdAt,    _updatedAt,    showcaseTitle,    showcaseBlogposts[]->{      _id,       title,       excerpt,       featuredImage{..., "lqip": asset->metadata.lqip},       slug    },  }
 export type ShowcaseQueryResult = {
+  enableShowcase: boolean | true;
   _id: string;
   _createdAt: string;
   _updatedAt: string;
@@ -1331,6 +1391,13 @@ export type ShowcaseQueryResult = {
     } | null;
     slug: Slug | null;
   }> | null;
+} | null;
+// Variable: newUserIntroQuery
+// Query: *[_type=="frontpage-new-user-intro"][0]{    "enableNewUserIntro": coalesce(enableNewUserIntro, true),    title,    introText  }
+export type NewUserIntroQueryResult = {
+  enableNewUserIntro: boolean | true;
+  title: string | null;
+  introText: Bodytext | null;
 } | null;
 // Variable: countPublicBlogPostsQuery
 // Query: count(*[_type=="blogPost" && privatePost==false])
@@ -1564,7 +1631,8 @@ declare module "@sanity/client" {
     '\n  *[_type=="blogPost" && slug.current == $slug && privatePost != true][0]{\n    _id,\n    _createdAt,\n    _updatedAt,\n    privatePost,\n    title,\n    excerpt,\n    featuredImage{..., "lqip": asset->metadata.lqip},\n    bodyText[]{\n      ...,\n      _type == "image" => {\n        ...,\n        "lqip": asset->metadata.lqip\n      }\n    },\n    "slug": slug.current,\n    author[]->{...},\n  }\n': BlogBySlugQueryResult;
     '\n  *[_type=="blogPost" && slug.current == $slug][0]{\n    _id,\n    _createdAt,\n    _updatedAt,\n    privatePost,\n    title,\n    excerpt,\n    featuredImage{..., "lqip": asset->metadata.lqip},\n    bodyText[]{\n      ...,\n      _type == "image" => {\n        ...,\n        "lqip": asset->metadata.lqip\n      }\n    },\n    "slug": slug.current,\n    author[]->{...},\n  }\n': AllBlogBySlugQueryResult;
     '\n  *[_type=="blogPost" && slug.current == $slug && privatePost == true][0]{\n    _id,\n    _createdAt,\n    _updatedAt,\n    privatePost,\n    title,\n    excerpt,\n    featuredImage{..., "lqip": asset->metadata.lqip},\n    bodyText[]{\n      ...,\n      _type == "image" => {\n        ...,\n        "lqip": asset->metadata.lqip\n      }\n    },\n    "slug": slug.current,\n    author[]->{...},\n  }\n': PrivateBlogBySlugQueryResult;
-    '\n  *[_type=="frontpage-showcase"][0]{\n    _id,\n    _createdAt,\n    _updatedAt,\n    showcaseTitle,\n    showcaseBlogposts[]->{\n      _id, \n      title, \n      excerpt, \n      featuredImage{..., "lqip": asset->metadata.lqip}, \n      slug\n    },\n  }\n': ShowcaseQueryResult;
+    '\n  *[_type=="frontpage-showcase"][0]{\n    "enableShowcase": coalesce(enableShowcase, true),\n    _id,\n    _createdAt,\n    _updatedAt,\n    showcaseTitle,\n    showcaseBlogposts[]->{\n      _id, \n      title, \n      excerpt, \n      featuredImage{..., "lqip": asset->metadata.lqip}, \n      slug\n    },\n  }\n': ShowcaseQueryResult;
+    '\n*[_type=="frontpage-new-user-intro"][0]{\n    "enableNewUserIntro": coalesce(enableNewUserIntro, true),\n    title,\n    introText\n  }\n': NewUserIntroQueryResult;
     '\n  count(*[_type=="blogPost" && privatePost==false])\n': CountPublicBlogPostsQueryResult;
     '\n  count(*[_type=="blogPost" && privatePost==true])\n': CountPrivateBlogPostsQueryResult;
     '\n  *[_type == "message"] | order(_createdAt desc) [$start...$end] {\n    _id,\n    _updatedAt,\n    _createdAt,\n    title,\n    messageImage,\n    bodyText,\n    tags,\n    comments[]{\n      _key,\n      commentText,\n      commentTitle,\n      commentAuthor->{_id, firstName, lastName}\n    },\n    fromAdmin,\n    author->{_id, firstName, lastName}\n  }\n': MessageboardQueryResult;
