@@ -46,7 +46,12 @@ export default function BlogPostItem({ post }: BlogPostItemProps) {
 
         <div className="md:col-span-7 md:pr-8 lg:col-span-6 prose lg:prose-xl">
           <Link href={urlToPost} passHref className="no-underline">
-            <h2 className="text-2xl mt-0 lg:mt-0 ">{title}</h2>
+            <h2 className="text-2xl mt-0 lg:mt-0 ">
+              {title}&nbsp;
+              <span className="text-[1.2rem] align-super">
+                {privatePost && "🔓"}
+              </span>
+            </h2>
           </Link>
           <p>
             {excerpt && `${toPlainText(excerpt).slice(0, 500)}`}

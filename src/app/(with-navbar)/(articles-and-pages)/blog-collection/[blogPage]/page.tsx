@@ -2,8 +2,12 @@ import BlogPostList from "@/components/BlogPostList";
 import Pagination from "@/components/Pagination";
 import { countBlogPosts } from "@/sanity/lib/queries";
 import { sanityFetch } from "@/sanity/lib/live";
-import { blogCollectionQuery } from "@/sanity/lib/queries";
+import {
+  blogCollectionQuery,
+  allBlogCollectionQuery,
+} from "@/sanity/lib/queries";
 import { redirect } from "next/navigation";
+import { currentUser } from "@clerk/nextjs/server";
 
 const POSTS_PER_PAGE = 5;
 
@@ -42,6 +46,13 @@ export default async function BlogCollectionRoute(props: BlogCollectionParams) {
   const params = await props.params;
   const pageNumber = Number(params.blogPage);
 
+  const user = await currentUser();
+  const { firstName, lastName } = user ?? {};
+  const roles = (user?.publicMetadata?.roles as string[]) || [];
+  let isLoggedIn = false;
+
+  if (roles.includes("user")) isLoggedIn = true;
+
   if (Number.isNaN(pageNumber)) {
     return (
       <>
@@ -50,16 +61,24 @@ export default async function BlogCollectionRoute(props: BlogCollectionParams) {
     );
   }
 
+  // Use different query based on user authentication status
   const { data } = await sanityFetch({
-    query: blogCollectionQuery,
-    params: {
-      start: (pageNumber - 1) * POSTS_PER_PAGE,
-      end: pageNumber * POSTS_PER_PAGE,
-      isPrivate: false,
-    },
+    query: isLoggedIn ? allBlogCollectionQuery : blogCollectionQuery,
+    params: isLoggedIn
+      ? {
+          start: (pageNumber - 1) * POSTS_PER_PAGE,
+          end: pageNumber * POSTS_PER_PAGE,
+        }
+      : {
+          start: (pageNumber - 1) * POSTS_PER_PAGE,
+          end: pageNumber * POSTS_PER_PAGE,
+          isPrivate: false,
+        },
   });
 
-  const total = await countBlogPosts({ privatePosts: false });
+  const total = await countBlogPosts(
+    isLoggedIn ? { allPosts: true } : { privatePosts: false },
+  );
   const totalPages = Math.ceil(total / POSTS_PER_PAGE);
   const numberOfBlogPosts = data?.length ?? 0;
 

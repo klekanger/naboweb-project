@@ -207,6 +207,10 @@ export const countPrivateBlogPostsQuery = defineQuery(`
   count(*[_type=="blogPost" && privatePost==true])
 `);
 
+export const countAllBlogPostsQuery = defineQuery(`
+  count(*[_type=="blogPost"])
+`);
+
 export const messageboardQuery = defineQuery(`
   *[_type == "message"] | order(_createdAt desc) [$start...$end] {
     _id,
@@ -259,10 +263,14 @@ export const countMessagesQuery = defineQuery(`
 // Helper functions that use the defined queries
 export async function countBlogPosts({
   privatePosts,
+  allPosts,
 }: {
-  privatePosts: boolean;
+  privatePosts?: boolean;
+  allPosts?: boolean;
 }) {
-  if (privatePosts) {
+  if (allPosts) {
+    return client.fetch(countAllBlogPostsQuery);
+  } else if (privatePosts) {
     return client.fetch(countPrivateBlogPostsQuery);
   } else {
     return client.fetch(countPublicBlogPostsQuery);
@@ -276,6 +284,20 @@ export async function countMessages() {
 export const blogCollectionQuery = groq`
   *[_type=="blogPost" && 
   privatePost==$isPrivate] | order(_createdAt asc) [$start...$end]
+  {
+    _id,
+    _createdAt,
+    _updatedAt,
+    featuredImage{..., "lqip": asset->metadata.lqip},
+    excerpt,
+    privatePost,
+    title,
+    "slug": slug.current
+  }      
+`;
+
+export const allBlogCollectionQuery = groq`
+  *[_type=="blogPost"] | order(_createdAt asc) [$start...$end]
   {
     _id,
     _createdAt,
