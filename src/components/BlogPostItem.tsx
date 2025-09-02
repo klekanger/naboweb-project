@@ -48,9 +48,19 @@ export default function BlogPostItem({ post }: BlogPostItemProps) {
           <Link href={urlToPost} passHref className="no-underline">
             <h2 className="text-2xl mt-0 lg:mt-0 ">
               {title}&nbsp;
-              <span className="text-[1.2rem] align-super">
-                {privatePost && "🔓"}
-              </span>
+              {privatePost && (
+                <span className="relative inline-block group">
+                  <span
+                    className="text-[1.2rem] align-super cursor-help"
+                    aria-label="Artikkelen er kun for innloggede brukere"
+                  >
+                    🔓
+                  </span>
+                  <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-brand-secondary text-white text-sm rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10 font-normal">
+                    Artikkelen er kun for innloggede brukere
+                  </span>
+                </span>
+              )}
             </h2>
           </Link>
           <p>
