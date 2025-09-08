@@ -28,9 +28,8 @@ export default function BlogPostItem({ post }: BlogPostItemProps) {
               className="aspect-[16/10] rounded-xl object-cover"
               src={
                 urlForImage(featuredImage as SanityImage)
-                  ?.height(1600)
-                  .width(1000)
-                  .fit("max")
+                  ?.width(1600)
+                  .height(900)
                   .dpr(2)
                   .url() ?? ""
               }

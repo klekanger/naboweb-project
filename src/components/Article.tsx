@@ -32,14 +32,7 @@ export default function Article({
       {mainImage && (
         <div className="relative mb-16 md:max-w-4xl">
           <Image
-            src={
-              urlForImage(mainImage)
-                ?.width(1600)
-                .height(1000)
-                .fit("max")
-                .dpr(2)
-                .url() ?? ""
-            }
+            src={urlForImage(mainImage)?.dpr(2).url() ?? ""}
             alt={(mainImage?.alt as string) ?? ""}
             sizes="100vw"
             width={1600}

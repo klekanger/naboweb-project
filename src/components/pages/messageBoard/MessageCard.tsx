@@ -13,7 +13,6 @@ export default function MessageCard({
   id,
   description,
   commentCount,
-  url,
   imageUrl,
   author,
   fromAdmin,
@@ -60,10 +59,11 @@ export default function MessageCard({
         {imageUrl && (
           <Image
             alt={title}
-            className="object-cover rounded-xl max-h-[200px]"
+            className="object-cover rounded-xl w-full"
             src={imageUrl}
             width={800}
             height={600}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         )}
       </CardHeader>
