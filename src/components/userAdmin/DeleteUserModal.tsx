@@ -1,7 +1,6 @@
 "use client";
 
 import { deleteUser } from "@/app/actions/deleteUser";
-import { UserAdminContext } from "@/context/userAdminContext";
 import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 import { ShowUserProps } from "@/types/types";
 import {
