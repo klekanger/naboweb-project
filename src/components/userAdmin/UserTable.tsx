@@ -3,6 +3,7 @@
 import { getUser } from "@/app/actions/getUser";
 import DeleteUserModal from "@/components/userAdmin/DeleteUserModal";
 import ShowUserModal from "@/components/userAdmin/ShowUserModal";
+import { useUser } from "@clerk/nextjs";
 import { SidebarMenu, UserAdminContext } from "@/context/userAdminContext";
 import {
   UserWithEmails,
@@ -67,6 +68,7 @@ export default function UserTable({
   const modalViewUser = useDisclosure();
   const modalDeleteUser = useDisclosure();
   const modalErrorMessage = useDisclosure();
+  const { user: myUser } = useUser();
 
   const [userDataToShowOrDelete, setUserDataToShowOrDelete] =
     useState<ShowUserProps>({
@@ -286,9 +288,16 @@ export default function UserTable({
                 .sort();
             }
 
+            const isCurrentUser = myUser?.id === user.id;
+
             return (
               <TableRow key={user.id} className="text-left">
-                <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
+                <TableCell>
+                  {`${user.firstName} ${user.lastName}`}
+                  {isCurrentUser && (
+                    <span className="text-brand-dark-danger"> (Deg)</span>
+                  )}
+                </TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell className="hidden sm:table-cell">
                   {user.createdAt
@@ -310,6 +319,7 @@ export default function UserTable({
                     <DropdownMenu
                       closeOnSelect={true}
                       aria-label="Meny for brukeroperasjoner"
+                      disabledKeys={isCurrentUser ? ["delete_user"] : []}
                     >
                       <DropdownItem
                         key="show_user"
