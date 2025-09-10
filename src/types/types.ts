@@ -17,7 +17,7 @@ export type UserRoles = "admin" | "editor" | "user";
 export type DeleteUserSuccessType = {
   success: {
     message: string;
-    clerkUserId: string;
+    deletedClerkUserId: string;
     sanityUserHasBeenDeleted: boolean;
     deletedSanityUserId: string;
   };
