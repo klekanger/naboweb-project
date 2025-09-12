@@ -41,7 +41,7 @@ export default function MessageCard({
     <Card
       isPressable
       onPress={() => router.push(`/messageboard/${id}`)}
-      className={`p-2 ${imageUrl ? "row-span-2" : "row-span-1"} `}
+      className={`p-2 ${imageUrl ? "row-span-2" : "row-span-1"} hover:scale-[102%]`}
     >
       <CardHeader className="flex-col !items-start hover:">
         <div className="font-thin text-sm pb-2 flex text-brand-black/60">
