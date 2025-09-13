@@ -3,10 +3,7 @@ import UserAdmin from "@/components/userAdmin/UserAdmin";
 import { validRoles, validateUserRoles } from "@/lib/validateUserRoles";
 import type { PaginationData, UserWithEmails } from "@/types/types";
 import { clerkClient } from "@clerk/nextjs/server";
-import type { UserData, UserResource } from "@clerk/types";
-import { Button } from "@heroui/button";
-import { ArrowBigLeft } from "lucide-react";
-import Link from "next/link";
+import type { UserResource } from "@clerk/types";
 import { redirect } from "next/navigation";
 
 const MAX_USERS_PER_PAGE = 30;
@@ -151,11 +148,12 @@ export default async function Page({
   try {
     const data = await fetchUsers(page, searchQuery);
     if (!data.userData.hasAccess) {
-      throw new Error("Error fetching user data");
+      throw new Error("Error fetching users");
     }
     userData = data.userData;
+    // oxlint-disable-next-line no-useless-catch
   } catch (error) {
-    throw error;
+    throw error; // Let the nearest error boundary handle it (error.tsx)
   }
 
   // Validate page number against total pages and redirect if invalid
