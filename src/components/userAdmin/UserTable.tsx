@@ -54,16 +54,7 @@ export default function UserTable({
   ...rest
 }: UserTableProps & { isSearchResult?: boolean }) {
   const router = useRouter();
-  const {
-    generalError,
-    setGeneralError,
-    selectedMenu,
-    setSelectedMenu,
-    screenToDisplay,
-    setScreenToDisplay,
-    selectedUser,
-    setSelectedUser,
-  } = useContext(UserAdminContext);
+  const { setSelectedMenu, setSelectedUser } = useContext(UserAdminContext);
 
   const modalViewUser = useDisclosure();
   const modalDeleteUser = useDisclosure();
