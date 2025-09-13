@@ -34,7 +34,7 @@ export const otherDocumentsQuery = defineQuery(`
 `);
 
 export const meetingMinutesQuery = defineQuery(`
-  *[_type=="fileMeetingMinutes"] | order(meetingDate desc) | order(_createdAt desc) {
+  *[_type=="fileMeetingMinutes"] | order(_createdAt desc) | order(meetingDate desc) {
     _id,
     title,
     description,
@@ -48,7 +48,7 @@ export const meetingMinutesQuery = defineQuery(`
 `);
 
 export const meetingMinutesByIdQuery = defineQuery(`
-  *[_type=="fileMeetingMinutes" && _id == $meeting] | order(_createdAt asc)[0] {
+  *[_type=="fileMeetingMinutes" && _id == $meeting][0] {
     _id,
     title,
     description,
