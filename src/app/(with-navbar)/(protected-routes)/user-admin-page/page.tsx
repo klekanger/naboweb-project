@@ -3,13 +3,14 @@ import UserAdmin from "@/components/userAdmin/UserAdmin";
 import { validRoles, validateUserRoles } from "@/lib/validateUserRoles";
 import type { PaginationData, UserWithEmails } from "@/types/types";
 import { clerkClient } from "@clerk/nextjs/server";
-import type { UserResource } from "@clerk/types";
+import type { UserData, UserResource } from "@clerk/types";
 import { Button } from "@heroui/button";
 import { ArrowBigLeft } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 const MAX_USERS_PER_PAGE = 30;
+const MAX_USERS_FOR_SEARCH = 50;
 
 function calculatePaginationData(
   currentPage: number,
@@ -37,7 +38,7 @@ async function fetchUsers(page: number = 1, searchQuery?: string) {
       // Use global search when search query is provided
       const { data: users, totalCount } = await client.users.getUserList({
         query: searchQuery,
-        limit: 50, // Show more results for search
+        limit: MAX_USERS_FOR_SEARCH,
       });
 
       // For search results, we don't use pagination
@@ -146,17 +147,15 @@ export default async function Page({
     page = 1;
   }
 
-  const { userData } = await fetchUsers(page, searchQuery);
-
-  if (!userData.hasAccess) {
-    return (
-      <div className="mt-32 text-center">
-        <p>Noe gikk galt</p>
-        <Button as={Link} href="/min-side/" startContent={<ArrowBigLeft />}>
-          Gå tilbake
-        </Button>
-      </div>
-    );
+  let userData;
+  try {
+    const data = await fetchUsers(page, searchQuery);
+    if (!data.userData.hasAccess) {
+      throw new Error("Error fetching user data");
+    }
+    userData = data.userData;
+  } catch (error) {
+    throw error;
   }
 
   // Validate page number against total pages and redirect if invalid
