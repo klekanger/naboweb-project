@@ -38,6 +38,8 @@ export default function NewUserIntro({
           removeWrapper
           className="z-0 w-full object-cover h-96 md:h-full"
           src="blob.svg"
+          alt=""
+          role="presentation"
         />
       </Card>
     </motion.section>
