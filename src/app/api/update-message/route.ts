@@ -78,7 +78,9 @@ export async function POST(request: NextRequest) {
       },
     };
 
+    // Handle image - either new image or preserve existing
     if (image) {
+      // New image uploaded
       updateDoc.messageImage = {
         _type: "image",
         asset: {
@@ -86,20 +88,22 @@ export async function POST(request: NextRequest) {
           _ref: image,
         },
       };
+    } else if (existingMessage.messageImage) {
+      // No new image, preserve existing image
+      updateDoc.messageImage = existingMessage.messageImage;
     }
 
     // Update using transaction
     const transaction = clientWithWriteAccess.transaction();
     transaction.createOrReplace(updateDoc);
 
-    const result = await transaction.commit().then((result) => {
-      console.log("Result: ", result);
-    });
+    const result = await transaction.commit();
 
     return NextResponse.json({
       success: {
         message: "Message updated",
         id: _id,
+        transactionId: result?.transactionId ?? "-",
         title: title,
       },
       status: 200,

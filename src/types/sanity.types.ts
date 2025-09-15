@@ -13,39 +13,6 @@
  */
 
 // Source: schema.json
-export type SanityImagePaletteSwatch = {
-  _type: "sanity.imagePaletteSwatch";
-  background?: string;
-  foreground?: string;
-  population?: number;
-  title?: string;
-};
-
-export type SanityImagePalette = {
-  _type: "sanity.imagePalette";
-  darkMuted?: SanityImagePaletteSwatch;
-  lightVibrant?: SanityImagePaletteSwatch;
-  darkVibrant?: SanityImagePaletteSwatch;
-  vibrant?: SanityImagePaletteSwatch;
-  dominant?: SanityImagePaletteSwatch;
-  lightMuted?: SanityImagePaletteSwatch;
-  muted?: SanityImagePaletteSwatch;
-};
-
-export type SanityImageDimensions = {
-  _type: "sanity.imageDimensions";
-  height?: number;
-  width?: number;
-  aspectRatio?: number;
-};
-
-export type Geopoint = {
-  _type: "geopoint";
-  lat?: number;
-  lng?: number;
-  alt?: number;
-};
-
 export type MyIcon = "BookIcon" | "HouseIcon" | "NewsIcon" | "PencilIcon";
 
 export type Twitter = {
@@ -186,28 +153,6 @@ export type FileMeetingMinutes = {
   meetingDate?: string;
   meetingPlace?: string;
   tags?: Array<string>;
-};
-
-export type SanityFileAsset = {
-  _id: string;
-  _type: "sanity.fileAsset";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  originalFilename?: string;
-  label?: string;
-  title?: string;
-  description?: string;
-  altText?: string;
-  sha1hash?: string;
-  extension?: string;
-  mimeType?: string;
-  size?: number;
-  assetId?: string;
-  uploadId?: string;
-  path?: string;
-  url?: string;
-  source?: SanityAssetSourceData;
 };
 
 export type FrontpageServices = {
@@ -615,12 +560,30 @@ export type Page = {
   >;
 };
 
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
+export type SanityImagePaletteSwatch = {
+  _type: "sanity.imagePaletteSwatch";
+  background?: string;
+  foreground?: string;
+  population?: number;
+  title?: string;
+};
+
+export type SanityImagePalette = {
+  _type: "sanity.imagePalette";
+  darkMuted?: SanityImagePaletteSwatch;
+  lightVibrant?: SanityImagePaletteSwatch;
+  darkVibrant?: SanityImagePaletteSwatch;
+  vibrant?: SanityImagePaletteSwatch;
+  dominant?: SanityImagePaletteSwatch;
+  lightMuted?: SanityImagePaletteSwatch;
+  muted?: SanityImagePaletteSwatch;
+};
+
+export type SanityImageDimensions = {
+  _type: "sanity.imageDimensions";
+  height?: number;
+  width?: number;
+  aspectRatio?: number;
 };
 
 export type SanityImageHotspot = {
@@ -629,6 +592,36 @@ export type SanityImageHotspot = {
   y?: number;
   height?: number;
   width?: number;
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+};
+
+export type SanityFileAsset = {
+  _id: string;
+  _type: "sanity.fileAsset";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  originalFilename?: string;
+  label?: string;
+  title?: string;
+  description?: string;
+  altText?: string;
+  sha1hash?: string;
+  extension?: string;
+  mimeType?: string;
+  size?: number;
+  assetId?: string;
+  uploadId?: string;
+  path?: string;
+  url?: string;
+  source?: SanityAssetSourceData;
 };
 
 export type SanityImageAsset = {
@@ -654,13 +647,6 @@ export type SanityImageAsset = {
   source?: SanityAssetSourceData;
 };
 
-export type SanityAssetSourceData = {
-  _type: "sanity.assetSourceData";
-  name?: string;
-  id?: string;
-  url?: string;
-};
-
 export type SanityImageMetadata = {
   _type: "sanity.imageMetadata";
   location?: Geopoint;
@@ -672,17 +658,27 @@ export type SanityImageMetadata = {
   isOpaque?: boolean;
 };
 
+export type Geopoint = {
+  _type: "geopoint";
+  lat?: number;
+  lng?: number;
+  alt?: number;
+};
+
 export type Slug = {
   _type: "slug";
   current?: string;
   source?: string;
 };
 
+export type SanityAssetSourceData = {
+  _type: "sanity.assetSourceData";
+  name?: string;
+  id?: string;
+  url?: string;
+};
+
 export type AllSanitySchemaTypes =
-  | SanityImagePaletteSwatch
-  | SanityImagePalette
-  | SanityImageDimensions
-  | Geopoint
   | MyIcon
   | Twitter
   | Youtube
@@ -690,7 +686,6 @@ export type AllSanitySchemaTypes =
   | DocumentMenu
   | FileOtherDocuments
   | FileMeetingMinutes
-  | SanityFileAsset
   | FrontpageServices
   | FrontpageNewUserIntro
   | Bodytext
@@ -700,12 +695,17 @@ export type AllSanitySchemaTypes =
   | Authors
   | BlogPost
   | Page
-  | SanityImageCrop
+  | SanityImagePaletteSwatch
+  | SanityImagePalette
+  | SanityImageDimensions
   | SanityImageHotspot
+  | SanityImageCrop
+  | SanityFileAsset
   | SanityImageAsset
-  | SanityAssetSourceData
   | SanityImageMetadata
-  | Slug;
+  | Geopoint
+  | Slug
+  | SanityAssetSourceData;
 export declare const internalGroqTypeReferenceTo: unique symbol;
 // Source: ./src/sanity/lib/queries.ts
 // Variable: userSubscriptionStatusQuery
@@ -1405,6 +1405,9 @@ export type CountPublicBlogPostsQueryResult = number;
 // Variable: countPrivateBlogPostsQuery
 // Query: count(*[_type=="blogPost" && privatePost==true])
 export type CountPrivateBlogPostsQueryResult = number;
+// Variable: countAllBlogPostsQuery
+// Query: count(*[_type=="blogPost"])
+export type CountAllBlogPostsQueryResult = number;
 // Variable: messageboardQuery
 // Query: *[_type == "message"] | order(_createdAt desc) [$start...$end] {    _id,    _updatedAt,    _createdAt,    title,    messageImage,    bodyText,    tags,    comments[]{      _key,      commentText,      commentTitle,      commentAuthor->{_id, firstName, lastName}    },    fromAdmin,    author->{_id, firstName, lastName}  }
 export type MessageboardQueryResult = Array<{
@@ -1592,6 +1595,72 @@ export type BlogCollectionQueryResult = Array<{
   title: string | null;
   slug: string | null;
 }>;
+// Variable: allBlogCollectionQuery
+// Query: *[_type=="blogPost"] | order(_createdAt asc) [$start...$end]  {    _id,    _createdAt,    _updatedAt,    featuredImage{..., "lqip": asset->metadata.lqip},    excerpt,    privatePost,    title,    "slug": slug.current  }
+export type AllBlogCollectionQueryResult = Array<{
+  _id: string;
+  _createdAt: string;
+  _updatedAt: string;
+  featuredImage: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    caption?: string;
+    alt?: string;
+    _type: "image";
+    lqip: string | null;
+  } | null;
+  excerpt: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: "span";
+          _key: string;
+        }>;
+        style?:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
+        listItem?: "bullet" | "number";
+        markDefs?: Array<{
+          href?: string;
+          _type: "link";
+          _key: string;
+        }>;
+        level?: number;
+        _type: "block";
+        _key: string;
+      }
+    | {
+        asset?: {
+          _ref: string;
+          _type: "reference";
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+        };
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        _type: "image";
+        _key: string;
+      }
+  > | null;
+  privatePost: boolean | null;
+  title: string | null;
+  slug: string | null;
+}>;
 // Variable: pageSlugs
 // Query: *[_type == "page" && defined(slug.current)]  {"slug": slug.current}
 export type PageSlugsResult = Array<{
@@ -1635,11 +1704,13 @@ declare module "@sanity/client" {
     '\n*[_type=="frontpage-new-user-intro"][0]{\n    "enableNewUserIntro": coalesce(enableNewUserIntro, true),\n    title,\n    introText\n  }\n': NewUserIntroQueryResult;
     '\n  count(*[_type=="blogPost" && privatePost==false])\n': CountPublicBlogPostsQueryResult;
     '\n  count(*[_type=="blogPost" && privatePost==true])\n': CountPrivateBlogPostsQueryResult;
+    '\n  count(*[_type=="blogPost"])\n': CountAllBlogPostsQueryResult;
     '\n  *[_type == "message"] | order(_createdAt desc) [$start...$end] {\n    _id,\n    _updatedAt,\n    _createdAt,\n    title,\n    messageImage,\n    bodyText,\n    tags,\n    comments[]{\n      _key,\n      commentText,\n      commentTitle,\n      commentAuthor->{_id, firstName, lastName}\n    },\n    fromAdmin,\n    author->{_id, firstName, lastName}\n  }\n': MessageboardQueryResult;
     '\n  *[_type == "message" && _id == $id][0] {\n    _id,\n    _updatedAt,\n    _createdAt,\n    title,\n    messageImage,\n    bodyText,\n    tags,\n    comments[]{\n      _key,\n      commentText,\n      commentTitle,\n      commentAuthor->{_id, firstName, lastName},\n      published,\n    },\n    fromAdmin,\n    author->{_id, firstName, lastName},\n  }\n': MessageByIdQueryResult;
     '\n  *[_type == "message"]{_id}\n': AllMessageIdsQueryResult;
     '\n  count(*[_type=="message"])\n': CountMessagesQueryResult;
     '\n  *[_type=="blogPost" && \n  privatePost==$isPrivate] | order(_createdAt asc) [$start...$end]\n  {\n    _id,\n    _createdAt,\n    _updatedAt,\n    featuredImage{..., "lqip": asset->metadata.lqip},\n    excerpt,\n    privatePost,\n    title,\n    "slug": slug.current\n  }      \n': BlogCollectionQueryResult;
+    '\n  *[_type=="blogPost"] | order(_createdAt asc) [$start...$end]\n  {\n    _id,\n    _createdAt,\n    _updatedAt,\n    featuredImage{..., "lqip": asset->metadata.lqip},\n    excerpt,\n    privatePost,\n    title,\n    "slug": slug.current\n  }      \n': AllBlogCollectionQueryResult;
     '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PageSlugsResult;
     '\n  *[_type == "blogPost" && defined(slug.current)]\n  {"slug": slug.current}\n': BlogSlugsResult;
     '\n  *[_type == "blogPost" && defined(slug.current) && privatePost == true]\n  {"slug": slug.current}\n': PrivateBlogSlugsResult;

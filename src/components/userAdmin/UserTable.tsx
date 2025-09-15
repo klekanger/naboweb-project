@@ -3,6 +3,7 @@
 import { getUser } from "@/app/actions/getUser";
 import DeleteUserModal from "@/components/userAdmin/DeleteUserModal";
 import ShowUserModal from "@/components/userAdmin/ShowUserModal";
+import { useUser } from "@clerk/nextjs";
 import { SidebarMenu, UserAdminContext } from "@/context/userAdminContext";
 import {
   UserWithEmails,
@@ -17,6 +18,7 @@ import {
   DropdownMenu,
   DropdownTrigger,
   Pagination,
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -28,7 +30,13 @@ import {
 } from "@heroui/react";
 import { MoreVertical, SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 const CircleAdmin = () => (
   <Tooltip content="Administrator">
@@ -53,20 +61,12 @@ export default function UserTable({
   ...rest
 }: UserTableProps & { isSearchResult?: boolean }) {
   const router = useRouter();
-  const {
-    generalError,
-    setGeneralError,
-    selectedMenu,
-    setSelectedMenu,
-    screenToDisplay,
-    setScreenToDisplay,
-    selectedUser,
-    setSelectedUser,
-  } = useContext(UserAdminContext);
+  const { setSelectedMenu, setSelectedUser } = useContext(UserAdminContext);
 
   const modalViewUser = useDisclosure();
   const modalDeleteUser = useDisclosure();
   const modalErrorMessage = useDisclosure();
+  const { user: myUser } = useUser();
 
   const [userDataToShowOrDelete, setUserDataToShowOrDelete] =
     useState<ShowUserProps>({
@@ -79,6 +79,11 @@ export default function UserTable({
       roles: [],
     });
   const [globalSearchValue, setGlobalSearchValue] = useState("");
+  const [isPaginating, setIsPaginating] = useState(false);
+
+  useEffect(() => {
+    setIsPaginating(false);
+  }, [pagination?.currentPage, users]);
 
   const showUserWithIdModal = async (id: string) => {
     const userDataFromId = await getUser(id);
@@ -162,6 +167,7 @@ export default function UserTable({
   };
 
   const handlePageChange = (newPage: number) => {
+    setIsPaginating(true);
     const url = new URL(window.location.href);
     url.searchParams.set("page", newPage.toString());
     router.push(url.toString());
@@ -209,7 +215,6 @@ export default function UserTable({
     onGlobalSearchClear,
     sortedUsers.length,
     isSearchResult,
-    pagination,
   ]);
 
   return (
@@ -237,7 +242,7 @@ export default function UserTable({
                 color="primary"
                 size="lg"
                 radius="md"
-                isDisabled={false}
+                isDisabled={isPaginating}
                 classNames={{
                   base: "gap-2",
                   item: "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50",
@@ -271,6 +276,8 @@ export default function UserTable({
               ? "Ingen brukere funnet i søket. Prøv andre søkeord."
               : "Ingen brukere"
           }
+          isLoading={isPaginating}
+          loadingContent={<Spinner />}
         >
           {sortedUsers.map((user) => {
             let roles;
@@ -286,9 +293,16 @@ export default function UserTable({
                 .sort();
             }
 
+            const isCurrentUser = myUser?.id === user.id;
+
             return (
               <TableRow key={user.id} className="text-left">
-                <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
+                <TableCell>
+                  {`${user.firstName} ${user.lastName}`}
+                  {isCurrentUser && (
+                    <span className="text-brand-dark-danger"> (Deg)</span>
+                  )}
+                </TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell className="hidden sm:table-cell">
                   {user.createdAt
@@ -310,6 +324,7 @@ export default function UserTable({
                     <DropdownMenu
                       closeOnSelect={true}
                       aria-label="Meny for brukeroperasjoner"
+                      disabledKeys={isCurrentUser ? ["delete_user"] : []}
                     >
                       <DropdownItem
                         key="show_user"

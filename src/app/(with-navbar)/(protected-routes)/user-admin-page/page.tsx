@@ -4,12 +4,12 @@ import { validRoles, validateUserRoles } from "@/lib/validateUserRoles";
 import type { PaginationData, UserWithEmails } from "@/types/types";
 import { clerkClient } from "@clerk/nextjs/server";
 import type { UserResource } from "@clerk/types";
-import { Button } from "@heroui/button";
-import { ArrowBigLeft } from "lucide-react";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 const MAX_USERS_PER_PAGE = 30;
+const MAX_USERS_FOR_SEARCH = 50;
+
+const client = await clerkClient();
 
 function calculatePaginationData(
   currentPage: number,
@@ -30,14 +30,12 @@ function calculatePaginationData(
 }
 
 async function fetchUsers(page: number = 1, searchQuery?: string) {
-  const client = await clerkClient();
-
   try {
     if (searchQuery) {
       // Use global search when search query is provided
       const { data: users, totalCount } = await client.users.getUserList({
         query: searchQuery,
-        limit: 50, // Show more results for search
+        limit: MAX_USERS_FOR_SEARCH,
       });
 
       // For search results, we don't use pagination
@@ -146,17 +144,16 @@ export default async function Page({
     page = 1;
   }
 
-  const { userData } = await fetchUsers(page, searchQuery);
-
-  if (!userData.hasAccess) {
-    return (
-      <div className="mt-32 text-center">
-        <p>Noe gikk galt</p>
-        <Button as={Link} href="/min-side/" startContent={<ArrowBigLeft />}>
-          Gå tilbake
-        </Button>
-      </div>
-    );
+  let userData;
+  try {
+    const data = await fetchUsers(page, searchQuery);
+    if (!data.userData.hasAccess) {
+      throw new Error("Error fetching users");
+    }
+    userData = data.userData;
+    // oxlint-disable-next-line no-useless-catch
+  } catch (error) {
+    throw error; // Let the nearest error boundary handle it (error.tsx)
   }
 
   // Validate page number against total pages and redirect if invalid

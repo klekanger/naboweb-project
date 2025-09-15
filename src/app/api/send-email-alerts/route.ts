@@ -42,6 +42,16 @@ export async function POST() {
     return new Response("Unauthorized", { status: 401 });
   }
   const overrideDate = headersList.get("overrideDate"); // We can override the last run date to send emails
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
+  if (!baseUrl) {
+    return NextResponse.json({
+      error: {
+        message: "Failed to send email updates. Missing base URL.",
+      },
+      status: 500,
+    });
+  }
 
   try {
     // Get the last run timestamp, default to 24 hours ago if not found
@@ -170,7 +180,7 @@ export async function POST() {
         fileOtherDocuments,
         messagesWithNewComments,
       },
-      baseUrl: process.env.NEXT_PUBLIC_BASE_URL || "",
+      baseUrl,
     });
 
     // Filter out subscribers without email addresses

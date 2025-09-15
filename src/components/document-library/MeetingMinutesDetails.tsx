@@ -13,6 +13,7 @@ import {
 } from "@heroui/react";
 import { ArrowBigLeft } from "lucide-react";
 import Link from "next/link";
+import { useMemo } from "react";
 import BackButton from "../BackButton";
 import { type MeetingMinutesByIdQueryResult } from "@/types/sanity.types";
 
@@ -49,6 +50,18 @@ export default function MeetingMinutesDetails({ data }: Props) {
     tags,
     title,
   } = data ?? {};
+
+  // Sort documents by filename using Norwegian locale
+  const sortedDocuments = useMemo(() => {
+    if (!meetingDocuments) return [];
+
+    return [...meetingDocuments].sort((a, b) => {
+      const collator = new Intl.Collator("nb-NO");
+      const filenameA = a.asset?.originalFilename ?? "";
+      const filenameB = b.asset?.originalFilename ?? "";
+      return collator.compare(filenameA, filenameB);
+    });
+  }, [meetingDocuments]);
 
   if (!data) {
     return (
@@ -110,8 +123,8 @@ export default function MeetingMinutesDetails({ data }: Props) {
           </TableColumn>
         </TableHeader>
         <TableBody>
-          {(meetingDocuments
-            ? meetingDocuments.map((item) => {
+          {(sortedDocuments
+            ? sortedDocuments.map((item) => {
                 return (
                   <TableRow key={item.asset?._id}>
                     <TableCell>

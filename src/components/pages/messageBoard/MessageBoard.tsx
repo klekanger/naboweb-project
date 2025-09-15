@@ -83,7 +83,6 @@ export default function MessageBoard({
               const imageUrl = urlForImage(message?.messageImage as SanityImage)
                 ?.width(800)
                 .height(600)
-                .fit("crop")
                 .url();
 
               const author = message.fromAdmin
@@ -97,7 +96,6 @@ export default function MessageBoard({
                   title={message.title ?? ""}
                   description={message?.bodyText as any}
                   commentCount={message?.comments?.length ?? 0}
-                  url="/"
                   imageUrl={imageUrl ?? null}
                   author={author as any}
                   fromAdmin={message?.fromAdmin ?? false}
