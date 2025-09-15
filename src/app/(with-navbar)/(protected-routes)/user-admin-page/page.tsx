@@ -9,6 +9,8 @@ import { redirect } from "next/navigation";
 const MAX_USERS_PER_PAGE = 30;
 const MAX_USERS_FOR_SEARCH = 50;
 
+const client = await clerkClient();
+
 function calculatePaginationData(
   currentPage: number,
   totalCount: number,
@@ -28,8 +30,6 @@ function calculatePaginationData(
 }
 
 async function fetchUsers(page: number = 1, searchQuery?: string) {
-  const client = await clerkClient();
-
   try {
     if (searchQuery) {
       // Use global search when search query is provided
