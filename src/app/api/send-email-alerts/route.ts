@@ -25,42 +25,61 @@ const client = createClient({
 
 const redis = Redis.fromEnv();
 
-const transporter = nodemailer.createTransport({
-  host: process.env.AWS_SMTP_HOST,
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.AWS_SMTP_USER,
-    pass: process.env.AWS_SMTP_PASSWORD,
-  },
-});
+function validateEnvironmentVariables() {
+  const requiredEnvVars = {
+    EMAIL_SECRET_TOKEN: process.env.EMAIL_SECRET_TOKEN,
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+    AWS_SMTP_HOST: process.env.AWS_SMTP_HOST,
+    AWS_SMTP_USER: process.env.AWS_SMTP_USER,
+    AWS_SMTP_PASSWORD: process.env.AWS_SMTP_PASSWORD,
+    AWS_SMTP_FROM_EMAIL: process.env.AWS_SMTP_FROM_EMAIL,
+    SANITY_API_READ_TOKEN: process.env.SANITY_API_READ_TOKEN,
+  };
+
+  const missingVars = Object.entries(requiredEnvVars)
+    .filter(([_, value]) => !value)
+    .map(([key]) => key);
+
+  if (missingVars.length > 0) {
+    throw new Error(
+      `Missing required environment variables: ${missingVars.join(", ")}`,
+    );
+  }
+
+  return requiredEnvVars as Record<keyof typeof requiredEnvVars, string>;
+}
+
+function createEmailTransporter(
+  envVars: ReturnType<typeof validateEnvironmentVariables>,
+) {
+  return nodemailer.createTransport({
+    host: envVars.AWS_SMTP_HOST,
+    port: 465,
+    secure: true,
+    auth: {
+      user: envVars.AWS_SMTP_USER,
+      pass: envVars.AWS_SMTP_PASSWORD,
+    },
+  });
+}
 
 export async function POST() {
-  const headersList = await headers();
-  const authHeader = headersList.get("authorization");
-  if (authHeader !== `Bearer ${process.env.EMAIL_SECRET_TOKEN}`) {
-    return new Response("Unauthorized", { status: 401 });
-  }
-  const overrideDate = headersList.get("overrideDate"); // We can override the last run date to send emails
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-
-  if (!baseUrl) {
-    return NextResponse.json({
-      error: {
-        message: "Failed to send email updates. Missing base URL.",
-      },
-      status: 500,
-    });
-  }
-
   try {
+    // Validate environment variables first
+    const envVars = validateEnvironmentVariables();
+
+    const headersList = await headers();
+    const authHeader = headersList.get("authorization");
+    if (authHeader !== `Bearer ${envVars.EMAIL_SECRET_TOKEN}`) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const overrideDate = headersList.get("overrideDate"); // We can override the last run date to send emails
+    const baseUrl = envVars.NEXT_PUBLIC_BASE_URL;
+
     // Get the last run timestamp, default to 24 hours ago if not found
     const lastRunTime =
       (await redis.get("lastEmailAlertRun")) ||
       new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-
-    // Update the last run time immediately
-    await redis.set("lastEmailAlertRun", new Date().toISOString());
 
     // Query for subscribed authors
     const subscribers = await client.fetch(`
@@ -197,14 +216,20 @@ export async function POST() {
       });
     }
 
+    const transporter = createEmailTransporter(envVars);
+
     // Send one email to all subscribers using BCC
     await sendEmail({
+      transporter,
       bcc: validSubscribers.map(
         (subscriber: { email: string }) => subscriber.email,
       ),
       subject: `Nytt innhold på nettsidene til ${SITE_NAME}`,
       body: emailContent,
+      fromEmail: envVars.AWS_SMTP_FROM_EMAIL,
     });
+
+    await redis.set("lastEmailAlertRun", new Date().toISOString());
 
     return NextResponse.json({
       success: {
@@ -214,11 +239,20 @@ export async function POST() {
     });
   } catch (error) {
     console.error("Failed to send email updates:", error);
+
+    // Handle environment validation errors specifically
+    if (
+      error instanceof Error &&
+      error.message.includes("Missing required environment variables")
+    ) {
+      return NextResponse.json({
+        error: "Server configuration error",
+        status: 500,
+      });
+    }
+
     return NextResponse.json({
-      error: {
-        message: "Failed to send email updates",
-        longMessage: error,
-      },
+      error: "Failed to send email updates",
       status: 500,
     });
   }
@@ -226,18 +260,22 @@ export async function POST() {
 
 // Send email using nodemailer
 async function sendEmail({
+  transporter,
   bcc,
   subject,
   body,
+  fromEmail,
 }: {
+  transporter: ReturnType<typeof createEmailTransporter>;
   bcc: string[];
   subject: string;
   body: string;
+  fromEmail: string;
 }) {
   try {
     const info = await transporter.sendMail({
-      from: process.env.AWS_SMTP_FROM_EMAIL,
-      to: process.env.AWS_SMTP_FROM_EMAIL, // Send to self
+      from: fromEmail,
+      to: fromEmail, // Send to self
       bcc, // BCC all subscribers
       subject,
       html: body,
