@@ -21,10 +21,13 @@ export async function POST(req: NextRequest) {
     // Revalidate the path
     revalidatePath(path);
 
-    return Response.json({
-      revalidated: true,
-      now: Date.now(),
-    });
+    return Response.json(
+      {
+        revalidated: true,
+        now: Date.now(),
+      },
+      { status: 200 },
+    );
   } catch (error) {
     console.error("Revalidation error:", error);
     return Response.json(

@@ -16,26 +16,34 @@ export async function POST(request: NextRequest) {
   const res = await request.json();
 
   if (!res) {
-    return NextResponse.json({
-      error: { message: "Missing data" },
-      status: 400,
-    });
+    return NextResponse.json(
+      {
+        error: { message: "Missing data" },
+      },
+      { status: 400 },
+    );
   }
 
   const { title, bodyText, userId, _id } = res;
 
   if (user.id !== userId) {
-    return NextResponse.json({
-      error: { message: "Unauthorized (user can only edit their own posts)" },
-      status: 401,
-    });
+    return NextResponse.json(
+      {
+        error: { message: "Unauthorized (user can only edit their own posts)" },
+      },
+      { status: 401 },
+    );
   }
 
   if (!_id || _id === "") {
-    return NextResponse.json({
-      error: { message: "Missing _id. Required for updating post in Sanity." },
-      status: 401,
-    });
+    return NextResponse.json(
+      {
+        error: {
+          message: "Missing _id. Required for updating post in Sanity.",
+        },
+      },
+      { status: 401 },
+    );
   }
 
   try {
@@ -60,23 +68,27 @@ export async function POST(request: NextRequest) {
         autoGenerateArrayKeys: true,
       });
 
-    return NextResponse.json({
-      success: {
-        message: "Message updated with a new comment",
-        id: result._id,
-        title: result.title,
-        createdAt: result._createdAt,
+    return NextResponse.json(
+      {
+        success: {
+          message: "Message updated with a new comment",
+          id: result._id,
+          title: result.title,
+          createdAt: result._createdAt,
+        },
       },
-      status: 200,
-    });
+      { status: 200 },
+    );
   } catch (error) {
     console.error("Error: ", error);
-    return NextResponse.json({
-      error: {
-        message: "Error: Message could not be created",
-        longMessage: error,
+    return NextResponse.json(
+      {
+        error: {
+          message: "Error: Message could not be created",
+          longMessage: error,
+        },
       },
-      status: 500,
-    });
+      { status: 500 },
+    );
   }
 }
