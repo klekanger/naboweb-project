@@ -222,16 +222,16 @@ export async function POST() {
       error instanceof Error &&
       error.message.includes("Missing required environment variables")
     ) {
-      return NextResponse.json({
-        error: "Server configuration error",
-        status: 500,
-      });
+      return NextResponse.json(
+        { error: "Server configuration error" },
+        { status: 500 },
+      );
     }
 
-    return NextResponse.json({
-      error: "Failed to send email updates",
-      status: 500,
-    });
+    return NextResponse.json(
+      { error: "Failed to send email updates" },
+      { status: 500 },
+    );
   }
 }
 
