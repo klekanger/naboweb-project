@@ -1,0 +1,1 @@
+- Use consistent API responses everywhere ( `NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })` )
