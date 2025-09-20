@@ -199,14 +199,6 @@ export default function NewMessage() {
         setModalOkUrl(`/messageboard`);
         setModalCancelDisabled(true);
 
-        try {
-          await fetch("/api/revalidate-messageboard", {
-            method: "POST",
-          });
-        } catch (error: any) {
-          throw new Error(`Revalidation failed. Server response: ${error}`);
-        }
-
         modalForMessages.onOpen();
       }
 

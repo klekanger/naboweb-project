@@ -15,10 +15,12 @@ export async function POST(request: NextRequest) {
 
   const res = await request.json();
   if (!res) {
-    return NextResponse.json({
-      error: { message: "Missing data" },
-      status: 400,
-    });
+    return NextResponse.json(
+      {
+        error: { message: "Missing data" },
+      },
+      { status: 400 },
+    );
   }
 
   const { title, bodyText, userId, image, fromAdmin } = res;
@@ -49,23 +51,29 @@ export async function POST(request: NextRequest) {
   try {
     const result = await clientWithWriteAccess.create(messageData);
 
-    return NextResponse.json({
-      success: {
-        message: "Message created",
-        id: result?._id,
-        title: result?.title,
-        createdAt: result?._createdAt,
+    return NextResponse.json(
+      {
+        success: {
+          message: "Message created",
+          id: result?._id,
+          title: result?.title,
+          createdAt: result?._createdAt,
+        },
       },
-      status: 200,
-    });
+      {
+        status: 200,
+      },
+    );
   } catch (error) {
     console.error("Error: ", error);
-    return NextResponse.json({
-      error: {
-        message: "Error: Message could not be created",
-        longMessage: error,
+    return NextResponse.json(
+      {
+        error: {
+          message: "Error: Message could not be created",
+          longMessage: error,
+        },
       },
-      status: 500,
-    });
+      { status: 500 },
+    );
   }
 }

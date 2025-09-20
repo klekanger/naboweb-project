@@ -46,13 +46,20 @@ export default async function UserOveview({
           <RoleDisplay roles={roles} />
         </div>
 
-        <div className="my-8 grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-fit not-prose justify-left">
+        <div className="my-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 max-w-fit not-prose justify-left">
           {isAdmin && (
-            <CustomButton
-              href="/user-admin-page"
-              buttonText="Brukeradmin"
-              className="w-40"
-            />
+            <>
+              <CustomButton
+                href="/user-admin-page"
+                buttonText="Brukeradmin"
+                className="w-40"
+              />
+              <CustomButton
+                href="/email-admin"
+                buttonText="E-post-admin"
+                className="w-40"
+              />
+            </>
           )}
           {isEditor && (
             <>
