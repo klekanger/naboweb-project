@@ -49,7 +49,6 @@ export default defineType({
       fieldset: "button1",
       validation: (rule) => rule.required(),
     }),
-
     defineField({
       name: "button2Text",
       type: "string",
@@ -108,7 +107,7 @@ export default defineType({
   preview: {
     prepare() {
       return {
-        title: "Konfigurer snarveiknapper (knapp 1-4) for dokumentmenyen",
+        title: "Snarveiknapper (knapp 1-4) under 'Informasjon fra styret'",
       };
     },
   },
