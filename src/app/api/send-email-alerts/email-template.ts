@@ -329,7 +329,7 @@ export const emailTemplate = ({
             fileMeetingMinutes.length > 0
               ? `
           <div class="section">
-            <h2 class="section-title">📂 Nye møtereferater</h2>
+            <h2 class="section-title">📄 Nye møtereferater</h2>
             ${fileMeetingMinutes
               .map(
                 (meeting) => `
@@ -354,7 +354,7 @@ export const emailTemplate = ({
             fileOtherDocuments.length > 0
               ? `
           <div class="section">
-            <h2 class="section-title">📄 Nye dokumenter</h2>
+            <h2 class="section-title">📂 Nye dokumenter</h2>
             ${fileOtherDocuments
               .map(
                 (file) => `
