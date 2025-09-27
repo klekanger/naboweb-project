@@ -1,4 +1,5 @@
 import { defineType } from "sanity";
+import IconRadioInput from "./IconRadioInput";
 
 export const ICONS = [
   { title: "Bok", value: "BookIcon" },
@@ -14,5 +15,8 @@ export const iconType = defineType({
   options: {
     list: ICONS.map(({ title, value }) => ({ title, value })),
     layout: "radio",
+  },
+  components: {
+    input: IconRadioInput,
   },
 });
