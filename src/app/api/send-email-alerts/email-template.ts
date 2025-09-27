@@ -156,13 +156,15 @@ export const emailTemplate = ({
           margin-bottom: 0;
         }
         .section-title {
-          font-size: clamp(20px, 6vw, 28px);
-          font-weight: bold;
-          color: #2d3748;
-          margin-bottom: 15px;
+          font-size: clamp(22px, 7vw, 30px);
+          font-weight: 900;
+          color: #005600;
+          margin-bottom: 18px;
           padding-bottom: 10px;
           border-bottom: 2px solid #e9ecef;
           word-wrap: break-word;
+          letter-spacing: -0.5px;
+          text-shadow: 0 2px 8px #e3e6f3;
         }
         .item {
           margin-bottom: 15px;
@@ -205,7 +207,7 @@ export const emailTemplate = ({
           color: #718096;
           margin-top: 5px;
         }
-           .item-byline {
+        .item-byline {
         font-size: clamp(13px, 3.5vw, 14px);
         color: #718096;
         margin-top: 1.5rem;
@@ -250,7 +252,7 @@ export const emailTemplate = ({
             messages.length > 0
               ? `
           <div class="section">
-            <h2 class="section-title">Nye innlegg på oppslagstavlen</h2>
+            <h2 class="section-title">📝 Nye innlegg på oppslagstavlen</h2>
             ${messages
               .map(
                 (message) => `
@@ -275,7 +277,7 @@ export const emailTemplate = ({
             commentsWithParentId.length > 0
               ? `
           <div class="section">
-            <h2 class="section-title">Nye kommentarer</h2>
+            <h2 class="section-title">💬 Nye kommentarer</h2>
             ${commentsWithParentId
               .map(
                 (comment) => `
@@ -302,7 +304,7 @@ export const emailTemplate = ({
             posts.length > 0
               ? `
           <div class="section">
-            <h2 class="section-title">Nye blogginnlegg</h2>
+            <h2 class="section-title">👩‍💻 Nye blogginnlegg</h2>
             ${posts
               .map(
                 (post) => `
@@ -327,7 +329,7 @@ export const emailTemplate = ({
             fileMeetingMinutes.length > 0
               ? `
           <div class="section">
-            <h2 class="section-title">Nye møtereferater</h2>
+            <h2 class="section-title">📂 Nye møtereferater</h2>
             ${fileMeetingMinutes
               .map(
                 (meeting) => `
@@ -352,7 +354,7 @@ export const emailTemplate = ({
             fileOtherDocuments.length > 0
               ? `
           <div class="section">
-            <h2 class="section-title">Nye dokumenter</h2>
+            <h2 class="section-title">📄 Nye dokumenter</h2>
             ${fileOtherDocuments
               .map(
                 (file) => `
