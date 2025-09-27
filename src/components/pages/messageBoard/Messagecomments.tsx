@@ -356,7 +356,10 @@ export default function MessageComments({
           {isClient && (
             <>
               {!isCreatingComment && (
-                <Button onPress={() => setIsCreatingComment(true)}>
+                <Button
+                  onPress={() => setIsCreatingComment(true)}
+                  isDisabled={editingCommentKey !== ""}
+                >
                   Ny kommentar
                 </Button>
               )}
