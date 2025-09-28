@@ -13,6 +13,7 @@ import {
 import { Input } from "@heroui/input";
 import {
   Button,
+  Checkbox,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -37,6 +38,8 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import { getAuthorsByIds } from "@/sanity/lib/getAuthorsByIds";
+import type { Authors } from "@/types/sanity.types";
 
 const CircleAdmin = () => (
   <Tooltip content="Administrator">
@@ -101,6 +104,24 @@ export default function UserTable({
 
     modalErrorMessage.onOpen();
   };
+
+  const [usersInClerkAndSanity, setUsersInClerkAndSanity] = useState<Authors[]>(
+    [],
+  );
+  useEffect(() => {
+    async function fetchClerkUsersInSanity() {
+      if (!users || users.length === 0) return;
+      const ids = users.map((u) => u.id);
+      try {
+        const authors: Authors[] = await getAuthorsByIds(ids);
+        setUsersInClerkAndSanity(authors);
+      } catch (error) {
+        console.error("Error fetching authors from Sanity:", error);
+      }
+    }
+    fetchClerkUsersInSanity();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!users) {
     return null;
@@ -172,6 +193,52 @@ export default function UserTable({
     url.searchParams.set("page", newPage.toString());
     router.push(url.toString());
   };
+
+  //
+  // Update email subscription in Sanity
+  //
+  function handleUpdateEmailSubscription(
+    user: UserWithEmails,
+    isSubscribed: boolean,
+  ): React.ChangeEventHandler<HTMLInputElement> | undefined {
+    return async () => {
+      // Optimistically update UI
+      setUsersInClerkAndSanity((prev) =>
+        prev.map((a) =>
+          a._id === user.id ? { ...a, emailSubscription: !isSubscribed } : a,
+        ),
+      );
+
+      try {
+        const result = await fetch("/api/user/email-subscription", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user.id,
+            subscribe: !isSubscribed,
+          }),
+        });
+        const data = await result.json();
+        if (!result.ok) {
+          // Rollback if error
+          setUsersInClerkAndSanity((prev) =>
+            prev.map((a) =>
+              a._id === user.id ? { ...a, emailSubscription: isSubscribed } : a,
+            ),
+          );
+          console.error("Kunne ikke oppdatere e-post-abonnement", data);
+        }
+      } catch (error) {
+        // Rollback UI if error
+        setUsersInClerkAndSanity((prev) =>
+          prev.map((a) =>
+            a._id === user.id ? { ...a, emailSubscription: isSubscribed } : a,
+          ),
+        );
+        console.error("Kunne ikke oppdatere e-post-abonnement", error);
+      }
+    };
+  }
 
   const topContent = useMemo(() => {
     return (
@@ -266,6 +333,11 @@ export default function UserTable({
           <TableColumn className="hidden bg-brand-primary/20 text-sm font-bold sm:table-cell md:text-base">
             Roller
           </TableColumn>
+
+          <TableColumn className="hidden bg-brand-primary/20 text-sm font-bold sm:table-cell md:text-base">
+            Varsling
+          </TableColumn>
+
           <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
             Oppgaver
           </TableColumn>
@@ -295,6 +367,10 @@ export default function UserTable({
 
             const isCurrentUser = myUser?.id === user.id;
 
+            // Find the author object in Sanity for this user
+            const author = usersInClerkAndSanity.find((a) => a._id === user.id);
+            const isSubscribed = author?.emailSubscription === true;
+
             return (
               <TableRow key={user.id} className="text-left">
                 <TableCell>
@@ -314,6 +390,17 @@ export default function UserTable({
                     : "-"}
                 </TableCell>
                 <TableCell className="hidden sm:table-cell">{roles}</TableCell>
+                <TableCell className="hidden sm:table-cell">
+                  <Checkbox
+                    isSelected={isSubscribed}
+                    onChange={handleUpdateEmailSubscription(user, isSubscribed)}
+                    aria-label={
+                      isSubscribed
+                        ? "Avslutt e-postvarsling"
+                        : "Abonner på e-postvarsling"
+                    }
+                  />
+                </TableCell>
                 <TableCell>
                   <Dropdown>
                     <DropdownTrigger>
