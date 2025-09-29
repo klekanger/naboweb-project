@@ -32,7 +32,11 @@ export default defineType({
       name: "emailSubscription",
       type: "boolean",
       title: "Får oppdateringer på e-post",
-      hidden: false,
+      hidden: true,
+      deprecated: {
+        reason: "Dette lagres nå i Clerk i stedet for i Sanity",
+      },
+
       description:
         "Om personen vil ha oppdatering på e-post når det har kommet nytt innhold eller nye meldinger.",
       initialValue: true,

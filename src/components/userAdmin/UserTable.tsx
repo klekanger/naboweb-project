@@ -38,8 +38,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { getAuthorsByIds } from "@/sanity/lib/getAuthorsByIds";
-import type { Authors } from "@/types/sanity.types";
+import { updateSubscriptionStatus } from "@/app/actions/updateSubscriptionStatus";
 
 const CircleAdmin = () => (
   <Tooltip content="Administrator">
@@ -63,6 +62,12 @@ export default function UserTable({
   isSearchResult = false,
   ...rest
 }: UserTableProps & { isSearchResult?: boolean }) {
+  // Local state for users to allow optimistic UI updates
+  const [localUsers, setLocalUsers] = useState(users);
+  // Keep localUsers in sync with users prop
+  useEffect(() => {
+    setLocalUsers(users);
+  }, [users]);
   const router = useRouter();
   const { setSelectedMenu, setSelectedUser } = useContext(UserAdminContext);
 
@@ -105,47 +110,22 @@ export default function UserTable({
     modalErrorMessage.onOpen();
   };
 
-  const [usersInClerkAndSanity, setUsersInClerkAndSanity] = useState<Authors[]>(
-    [],
-  );
-  useEffect(() => {
-    async function fetchClerkUsersInSanity() {
-      if (!users || users.length === 0) return;
-      const ids = users.map((u) => u.id);
-      try {
-        const authors: Authors[] = await getAuthorsByIds(ids);
-        setUsersInClerkAndSanity(authors);
-      } catch (error) {
-        console.error("Error fetching authors from Sanity:", error);
-      }
-    }
-    fetchClerkUsersInSanity();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  if (!users) {
+  if (!localUsers) {
     return null;
   }
 
   const sortedUsers = useMemo(() => {
-    let sortedUsers = [...users];
-
+    let sortedUsers = [...localUsers];
     // Sort users by last name, then first name
     sortedUsers.sort((a, b) => {
       const nameA = `${a.lastName} ${a.firstName}`.toLowerCase();
       const nameB = `${b.lastName} ${b.firstName}`.toLowerCase();
-
-      if (nameA < nameB) {
-        return -1;
-      }
-      if (nameA > nameB) {
-        return 1;
-      }
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
       return 0;
     });
-
     return sortedUsers;
-  }, [users]);
+  }, [localUsers]);
 
   const onGlobalSearchChange = useCallback((value?: string) => {
     if (value) {
@@ -194,51 +174,46 @@ export default function UserTable({
     router.push(url.toString());
   };
 
-  //
-  // Update email subscription in Sanity
-  //
-  function handleUpdateEmailSubscription(
-    user: UserWithEmails,
+  const handleUpdateEmailSubscription = async (
+    userId: string,
     isSubscribed: boolean,
-  ): React.ChangeEventHandler<HTMLInputElement> | undefined {
-    return async () => {
-      // Optimistically update UI
-      setUsersInClerkAndSanity((prev) =>
-        prev.map((a) =>
-          a._id === user.id ? { ...a, emailSubscription: !isSubscribed } : a,
-        ),
-      );
-
-      try {
-        const result = await fetch("/api/user/email-subscription", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: user.id,
-            subscribe: !isSubscribed,
-          }),
-        });
-        const data = await result.json();
-        if (!result.ok) {
-          // Rollback if error
-          setUsersInClerkAndSanity((prev) =>
-            prev.map((a) =>
-              a._id === user.id ? { ...a, emailSubscription: isSubscribed } : a,
-            ),
-          );
-          console.error("Kunne ikke oppdatere e-post-abonnement", data);
-        }
-      } catch (error) {
-        // Rollback UI if error
-        setUsersInClerkAndSanity((prev) =>
-          prev.map((a) =>
-            a._id === user.id ? { ...a, emailSubscription: isSubscribed } : a,
+  ) => {
+    // Optimistically update local state
+    setLocalUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.id === userId
+          ? { ...user, emailSubscription: isSubscribed }
+          : user,
+      ),
+    );
+    try {
+      const response = await updateSubscriptionStatus({
+        userId,
+        isSubscribed,
+      });
+      if (response.error) {
+        // Rollback on error
+        setLocalUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === userId
+              ? { ...user, emailSubscription: !isSubscribed }
+              : user,
           ),
         );
-        console.error("Kunne ikke oppdatere e-post-abonnement", error);
+        console.error("Failed to update subscription:", response.error);
       }
-    };
-  }
+    } catch (error) {
+      // Rollback on error
+      setLocalUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === userId
+            ? { ...user, emailSubscription: !isSubscribed }
+            : user,
+        ),
+      );
+      console.error("An unexpected error occurred:", error);
+    }
+  };
 
   const topContent = useMemo(() => {
     return (
@@ -353,6 +328,7 @@ export default function UserTable({
         >
           {sortedUsers.map((user) => {
             let roles;
+
             if (Array.isArray(user.roles)) {
               roles = user.roles
                 .map((role) =>
@@ -366,10 +342,6 @@ export default function UserTable({
             }
 
             const isCurrentUser = myUser?.id === user.id;
-
-            // Find the author object in Sanity for this user
-            const author = usersInClerkAndSanity.find((a) => a._id === user.id);
-            const isSubscribed = author?.emailSubscription === true;
 
             return (
               <TableRow key={user.id} className="text-left">
@@ -392,12 +364,9 @@ export default function UserTable({
                 <TableCell className="hidden sm:table-cell">{roles}</TableCell>
                 <TableCell className="hidden sm:table-cell">
                   <Checkbox
-                    isSelected={isSubscribed}
-                    onChange={handleUpdateEmailSubscription(user, isSubscribed)}
-                    aria-label={
-                      isSubscribed
-                        ? "Avslutt e-postvarsling"
-                        : "Abonner på e-postvarsling"
+                    isSelected={user?.emailSubscription ?? false}
+                    onValueChange={(isSelected) =>
+                      handleUpdateEmailSubscription(user.id, isSelected)
                     }
                   />
                 </TableCell>

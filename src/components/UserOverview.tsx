@@ -1,6 +1,6 @@
 import CustomButton from "@/components/CustomButton";
 import RoleDisplay from "@/components/userAdmin/RoleDisplay";
-import { getUserSubscriptionStatus } from "@/app/actions/getUserSubscriptionStatus";
+// import { getUserSubscriptionStatus } from "@/app/actions/getUserSubscriptionStatus";
 import { currentUserRoles } from "@/lib/currentUserRoles";
 import type { UserOverviewProps } from "@/types/types";
 import SubscriptionStatus from "./SubscriptionStatus";
@@ -14,9 +14,8 @@ export default async function UserOveview({
     return null;
   }
 
-  const subscriptionResult = await getUserSubscriptionStatus(user.id);
   const initialSubscriptionStatus =
-    subscriptionResult.success?.emailSubscription ?? false;
+    user?.publicMetadata?.emailSubscription ?? false;
 
   const { firstName, lastName } = user;
   const { isAdmin, isEditor } = currentUserRoles(user);
@@ -48,18 +47,11 @@ export default async function UserOveview({
 
         <div className="my-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 max-w-fit not-prose justify-left">
           {isAdmin && (
-            <>
-              <CustomButton
-                href="/user-admin-page"
-                buttonText="Brukeradmin"
-                className="w-40"
-              />
-              <CustomButton
-                href="/email-admin"
-                buttonText="E-post-admin"
-                className="w-40"
-              />
-            </>
+            <CustomButton
+              href="/user-admin-page"
+              buttonText="Brukeradmin"
+              className="w-40"
+            />
           )}
           {isEditor && (
             <>

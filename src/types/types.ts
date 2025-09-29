@@ -92,6 +92,7 @@ export type GetUserSuccessType = {
       createdAt: number | null;
       lastSignInAt: number | null;
       roles: string[];
+      emailSubscription?: boolean | undefined;
       imageUrl: string;
       hasImage: boolean;
     };
@@ -177,6 +178,7 @@ export type UserWithRoles = UserResource & {
   email?: string;
   publicMetadata?: {
     roles?: UserRoles[];
+    emailSubscription?: boolean;
   };
 };
 
@@ -199,6 +201,7 @@ export type ShowUserProps = {
   imageUrl?: string;
   lastSignInAt: number | null;
   roles?: string[];
+  emailSubscription?: boolean | undefined;
 };
 
 export type ReturnTypeForUserSuccess = {
@@ -264,6 +267,7 @@ export type UserWithEmails = Pick<
 > & {
   roles: string[] | undefined;
   imageUrl?: string;
+  emailSubscription?: boolean;
 };
 
 // ************
