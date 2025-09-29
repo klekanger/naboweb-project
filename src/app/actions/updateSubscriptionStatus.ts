@@ -2,7 +2,7 @@
 
 import { clientWithWriteAccess } from "@/sanity/lib/client";
 import { userSubscriptionStatusQuery } from "@/sanity/lib/queries";
-import { currentUser } from "@clerk/nextjs/server";
+import { clerkClient, currentUser } from "@clerk/nextjs/server";
 
 type UpdateSubscriptionParams = {
   userId: string;
@@ -21,18 +21,12 @@ type UpdateSubscriptionResponse = {
   status: number;
 };
 
+const client = await clerkClient();
+
 export async function updateSubscriptionStatus({
   userId,
   isSubscribed,
 }: UpdateSubscriptionParams): Promise<UpdateSubscriptionResponse> {
-  if (!process.env.SANITY_API_WRITE_TOKEN) {
-    console.error("Missing SANITY_API_WRITE_TOKEN");
-    return {
-      error: { message: "Server configuration error" },
-      status: 500,
-    };
-  }
-
   const user = await currentUser();
   const userRoles = (user?.publicMetadata as { roles: string[] }) ?? [];
 
@@ -44,90 +38,40 @@ export async function updateSubscriptionStatus({
     };
   }
 
+  if (!userId) {
+    return {
+      error: {
+        message: "UserId missing",
+      },
+      status: 400,
+    };
+  }
+
   try {
-    // Get current subscription status directly from Sanity
-    const currentData = await clientWithWriteAccess.fetch<{
-      emailSubscription: boolean | null;
-    }>(userSubscriptionStatusQuery, { id: userId }, { useCdn: false });
+    const userWhoWasUpdated = await client.users.updateUserMetadata(userId, {
+      publicMetadata: {
+        emailSubscription: isSubscribed,
+      },
+    });
 
-    const currentSubscriptionStatus = currentData?.emailSubscription ?? false;
-    const newSubscriptionStatus = !currentSubscriptionStatus;
+    const newSubscriptionStatus =
+      userWhoWasUpdated?.publicMetadata?.emailSubscription;
 
-    try {
-      // Create a transaction
-      const transaction = clientWithWriteAccess.transaction();
-
-      // Add createIfNotExists to handle new users and patch for existing ones
-      // Should not be necessary as NEXT_PUBLIC_CLERK_SIGN_IN_FORCE_REDIRECT_URL is set in clerk redirecting to api/create-sanity-user
-      transaction.createIfNotExists({
-        _id: userId,
-        _type: "authors",
-        emailSubscription: newSubscriptionStatus,
-      });
-
-      transaction.patch(userId, {
-        set: {
-          emailSubscription: newSubscriptionStatus,
-        },
-      });
-
-      // Commit the transaction with a tag for tracking
-      await transaction.commit({
-        tag: "subscription-update",
-      });
-
-      // Verify the update by fetching directly from Sanity with cache disabled
-      const updatedData = await clientWithWriteAccess.fetch<{
-        emailSubscription: boolean | null;
-      }>(userSubscriptionStatusQuery, { id: userId }, { useCdn: false });
-
-      // Double-check if the value was actually updated
-      if (
-        !updatedData ||
-        typeof updatedData.emailSubscription !== "boolean" ||
-        updatedData.emailSubscription !== newSubscriptionStatus
-      ) {
-        console.error("Subscription status not updated correctly:", {
-          expected: newSubscriptionStatus,
-          actual: updatedData?.emailSubscription,
-        });
-        return {
-          error: {
-            message: "Failed to update subscription status - value mismatch",
-          },
-          status: 500,
-        };
-      }
-
+    if (newSubscriptionStatus !== isSubscribed) {
       return {
-        success: {
-          emailSubscription: newSubscriptionStatus,
-          message: `Successfully ${newSubscriptionStatus ? "enabled" : "disabled"} email subscription`,
-        },
-        status: 200,
-      };
-    } catch (writeError) {
-      console.error("Error writing to Sanity:", {
-        error: writeError,
-        errorMessage:
-          writeError instanceof Error ? writeError.message : "Unknown error",
-        userId,
-      });
-      return {
-        error: {
-          message: "Failed to update subscription status in database",
-          details:
-            writeError instanceof Error ? writeError.message : "Unknown error",
-        },
+        error: { message: "Could not update subscription state" },
         status: 500,
       };
     }
+
+    return {
+      success: {
+        emailSubscription: newSubscriptionStatus,
+        message: `Successfully ${newSubscriptionStatus ? "enabled" : "disabled"} email subscription`,
+      },
+      status: 200,
+    };
   } catch (error) {
-    console.error("Error updating subscription status:", {
-      error,
-      errorMessage: error instanceof Error ? error.message : "Unknown error",
-      userId,
-    });
     return {
       error: {
         message: "Failed to update subscription status",

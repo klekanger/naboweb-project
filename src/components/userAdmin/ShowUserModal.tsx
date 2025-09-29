@@ -65,6 +65,13 @@ export default function ShowUserModal({
                   </div>
                   <div>{formatDate(userDataToShow?.lastSignInAt) || ""}</div>
                 </div>
+                <div className="flex flex-row gap-4">
+                  <div className="w-1/3">
+                    <strong>E-post-varsling: </strong>
+                  </div>
+                  <div>{userDataToShow?.emailSubscription ? "Ja" : "Nei"}</div>
+                </div>
+
                 <div className="flex flex-row gap-4 mt-8">
                   <div className="w-1/3">
                     <strong>Roller:</strong>

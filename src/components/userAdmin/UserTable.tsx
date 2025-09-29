@@ -13,6 +13,7 @@ import {
 import { Input } from "@heroui/input";
 import {
   Button,
+  Checkbox,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -37,6 +38,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import { updateSubscriptionStatus } from "@/app/actions/updateSubscriptionStatus";
 
 const CircleAdmin = () => (
   <Tooltip content="Administrator">
@@ -60,6 +62,12 @@ export default function UserTable({
   isSearchResult = false,
   ...rest
 }: UserTableProps & { isSearchResult?: boolean }) {
+  // Local state for users to allow optimistic UI updates
+  const [localUsers, setLocalUsers] = useState(users);
+  // Keep localUsers in sync with users prop
+  useEffect(() => {
+    setLocalUsers(users);
+  }, [users]);
   const router = useRouter();
   const { setSelectedMenu, setSelectedUser } = useContext(UserAdminContext);
 
@@ -102,29 +110,22 @@ export default function UserTable({
     modalErrorMessage.onOpen();
   };
 
-  if (!users) {
+  if (!localUsers) {
     return null;
   }
 
   const sortedUsers = useMemo(() => {
-    let sortedUsers = [...users];
-
+    let sortedUsers = [...localUsers];
     // Sort users by last name, then first name
     sortedUsers.sort((a, b) => {
       const nameA = `${a.lastName} ${a.firstName}`.toLowerCase();
       const nameB = `${b.lastName} ${b.firstName}`.toLowerCase();
-
-      if (nameA < nameB) {
-        return -1;
-      }
-      if (nameA > nameB) {
-        return 1;
-      }
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
       return 0;
     });
-
     return sortedUsers;
-  }, [users]);
+  }, [localUsers]);
 
   const onGlobalSearchChange = useCallback((value?: string) => {
     if (value) {
@@ -171,6 +172,47 @@ export default function UserTable({
     const url = new URL(window.location.href);
     url.searchParams.set("page", newPage.toString());
     router.push(url.toString());
+  };
+
+  const handleUpdateEmailSubscription = async (
+    userId: string,
+    isSubscribed: boolean,
+  ) => {
+    // Optimistically update local state
+    setLocalUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.id === userId
+          ? { ...user, emailSubscription: isSubscribed }
+          : user,
+      ),
+    );
+    try {
+      const response = await updateSubscriptionStatus({
+        userId,
+        isSubscribed,
+      });
+      if (response.error) {
+        // Rollback on error
+        setLocalUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === userId
+              ? { ...user, emailSubscription: !isSubscribed }
+              : user,
+          ),
+        );
+        console.error("Failed to update subscription:", response.error);
+      }
+    } catch (error) {
+      // Rollback on error
+      setLocalUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === userId
+            ? { ...user, emailSubscription: !isSubscribed }
+            : user,
+        ),
+      );
+      console.error("An unexpected error occurred:", error);
+    }
   };
 
   const topContent = useMemo(() => {
@@ -266,6 +308,11 @@ export default function UserTable({
           <TableColumn className="hidden bg-brand-primary/20 text-sm font-bold sm:table-cell md:text-base">
             Roller
           </TableColumn>
+
+          <TableColumn className="hidden bg-brand-primary/20 text-sm font-bold sm:table-cell md:text-base">
+            Varsling
+          </TableColumn>
+
           <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
             Oppgaver
           </TableColumn>
@@ -281,6 +328,7 @@ export default function UserTable({
         >
           {sortedUsers.map((user) => {
             let roles;
+
             if (Array.isArray(user.roles)) {
               roles = user.roles
                 .map((role) =>
@@ -314,6 +362,14 @@ export default function UserTable({
                     : "-"}
                 </TableCell>
                 <TableCell className="hidden sm:table-cell">{roles}</TableCell>
+                <TableCell className="hidden sm:table-cell">
+                  <Checkbox
+                    isSelected={user?.emailSubscription ?? false}
+                    onValueChange={(isSelected) =>
+                      handleUpdateEmailSubscription(user.id, isSelected)
+                    }
+                  />
+                </TableCell>
                 <TableCell>
                   <Dropdown>
                     <DropdownTrigger>

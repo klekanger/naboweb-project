@@ -99,6 +99,10 @@ function mapUsersWithEmails(user: UserResource) {
     firstName: user.firstName,
     lastName: user.lastName,
     roles: (user.publicMetadata?.roles as string[]) ?? [],
+    emailSubscription:
+      typeof user.publicMetadata?.emailSubscription === "boolean"
+        ? user.publicMetadata.emailSubscription
+        : undefined,
     email: user.emailAddresses[0]?.emailAddress ?? "",
     imageUrl: user.imageUrl ?? "",
   };

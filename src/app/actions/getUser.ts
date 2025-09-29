@@ -37,6 +37,9 @@ export async function getUser(userToFetch: string): Promise<GetUserReturnType> {
           createdAt: userWithId?.createdAt,
           lastSignInAt: userWithId?.lastSignInAt,
           roles: userWithId?.publicMetadata.roles as string[],
+          emailSubscription: Boolean(
+            userWithId?.publicMetadata?.emailSubscription,
+          ),
           imageUrl: userWithId?.imageUrl ?? "",
           hasImage: userWithId?.hasImage ?? false,
         },
