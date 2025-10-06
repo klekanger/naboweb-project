@@ -1,0 +1,5 @@
+{
+  "schedule": "0 6 * * *",
+  "url": "https://naboweb.vercel.app/api/send-email-alerts",
+  "method": "GET"
+}
