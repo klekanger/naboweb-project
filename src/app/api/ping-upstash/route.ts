@@ -6,7 +6,8 @@ const redis = Redis.fromEnv();
 // GET: Ping Upstash Redis to keep it alive and avoid deletion on free plan
 export async function GET() {
   try {
-    await redis.ping();
+    await redis.set("lastPinged", new Date().toISOString());
+    // await redis.ping();
     return NextResponse.json({
       success: true,
       message: "Redis ping successful",
