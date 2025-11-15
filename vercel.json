@@ -1,12 +1,10 @@
-[
-  {
+{
+  "crons": [{
     "schedule": "0 6 * * *",
-    "url": "https://naboweb.vercel.app/api/send-email-alerts",
-    "method": "GET"
+    "url": "https://naboweb.vercel.app/api/send-email-alerts"
   },
   {
     "schedule": "0 12 * * *",
-    "url": "https://naboweb.vercel.app/api/ping-upstash",
-    "method": "GET"
-  }
-]
+    "url": "https://naboweb.vercel.app/api/ping-upstash"
+  }]
+}
