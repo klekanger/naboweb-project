@@ -9,7 +9,6 @@
 import { apiVersion, dataset, projectId } from "@/sanity/lib/api";
 import { createClient } from "@sanity/client";
 import { Redis } from "@upstash/redis";
-import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { emailTemplate } from "./email-template";
 import nodemailer from "nodemailer";
@@ -40,16 +39,24 @@ function createEmailTransporter(
   });
 }
 
-export async function POST() {
+async function processEmailAlerts(request: Request) {
   try {
-    // Validate environment variables first
     const envVars = validateEnvironmentVariables();
+    const headersList = request.headers;
 
-    const headersList = await headers();
-    const authHeader = headersList.get("authorization");
-    if (authHeader !== `Bearer ${envVars.EMAIL_SECRET_TOKEN}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // For Vercel cron jobs, check if this is a cron request (which doesn't need auth)
+    const isVercelCron =
+      headersList.get("user-agent")?.includes("vercel-cron") ||
+      headersList.get("vercel-cron") === "1";
+
+    // If not a Vercel cron job, check authorization
+    if (!isVercelCron) {
+      const authHeader = headersList.get("authorization");
+      if (authHeader !== `Bearer ${envVars.EMAIL_SECRET_TOKEN}`) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
     }
+
     const overrideDate = headersList.get("overrideDate"); // We can override the last run date to send emails
     const baseUrl = envVars.NEXT_PUBLIC_BASE_URL;
 
@@ -235,6 +242,14 @@ export async function POST() {
   }
 }
 
+export async function GET(request: Request) {
+  return processEmailAlerts(request);
+}
+
+export async function POST(request: Request) {
+  return processEmailAlerts(request);
+}
+
 // Send email using nodemailer
 async function sendEmail({
   transporter,
@@ -265,5 +280,3 @@ async function sendEmail({
     throw error;
   }
 }
-
-// TODO add cron job to trigger this route
