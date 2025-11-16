@@ -19,7 +19,7 @@ type Props = {
   params: Promise<{ page: number | undefined }>;
 };
 
-const POSTS_PER_PAGE = 5;
+const POSTS_PER_PAGE = 20;
 
 //
 // Generate all possible routes
