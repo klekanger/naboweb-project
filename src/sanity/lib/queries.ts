@@ -283,7 +283,7 @@ export async function countMessages() {
 
 export const blogCollectionQuery = groq`
   *[_type=="blogPost" && 
-  privatePost==$isPrivate] | order(_createdAt asc) [$start...$end]
+  privatePost==$isPrivate] | order(_createdAt desc) [$start...$end]
   {
     _id,
     _createdAt,
@@ -297,7 +297,7 @@ export const blogCollectionQuery = groq`
 `;
 
 export const allBlogCollectionQuery = groq`
-  *[_type=="blogPost"] | order(_createdAt asc) [$start...$end]
+  *[_type=="blogPost"] | order(_createdAt desc) [$start...$end]
   {
     _id,
     _createdAt,
