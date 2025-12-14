@@ -43,11 +43,11 @@ export async function POST(req: NextRequest) {
       return Response.json({ message: "Bad Request" }, { status: 400 });
     }
 
-    revalidateTag(body._type);
+    revalidateTag(body._type, "max");
     revalidatePath("/");
 
     if (body.slug) {
-      revalidateTag(`${body._type}:${body.slug}`);
+      revalidateTag(`${body._type}:${body.slug}`, "max");
     }
     return NextResponse.json({
       status: 200,
