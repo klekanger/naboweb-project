@@ -14,7 +14,7 @@
   "dependencies": {
     "@clerk/localizations": "^3.9.12",
     "@clerk/nextjs": "^6.36.5",
-    "@heroui/react": "2.6.14",
+    "@heroui/react": "2.8.7",
     "@portabletext/react": "^3.2.0",
     "@portabletext/to-html": "^2.0.13",
     "@sanity/asset-utils": "^2.2.1",
@@ -25,6 +25,7 @@
     "@sanity/react-loader": "^1.11.18",
     "@sanity/schema": "^3.68.3",
     "@sanity/types": "^3.68.3",
+    "@tailwindcss/postcss": "^4.1.18",
     "framer-motion": "^12.23.26",
     "next": "16.0.10",
     "next-sanity": "^9.12.3",
@@ -64,7 +65,7 @@
     "motion": "^11.18.1",
     "postcss": "8.5.3",
     "prettier": "3.3.1",
-    "tailwindcss": "3.4.3",
+    "tailwindcss": "4.1.18",
     "typescript": "^5.7.2",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
