@@ -83,16 +83,24 @@ export default function Services({
       <Card
         isPressable
         onPress={() => handlePress(url)}
-        className="col-span-12 lg:col-span-4 p-4 hover:-translate-y-2 h-full"
+        className="w-full p-4 hover:-translate-y-2 h-full"
       >
-        <CardHeader className="flex-col !items-start hover:">
-          <div className=" flex items-center justify-center">
+        <CardHeader className="flex-row items-center gap-3 md:flex-col md:!items-start">
+          <div className="flex items-center justify-center shrink-0">
             {RenderedIcon && <RenderedIcon width={3} height={3} />}
           </div>
+          <h2 className="text-xl font-semibold md:hidden">
+            {title.toUpperCase()}{" "}
+            {locked && (
+              <Tooltip content="Krever innlogging">
+                <span className="pl-[0.5em]">🔐</span>
+              </Tooltip>
+            )}
+          </h2>
         </CardHeader>
 
         <CardBody className="pt-0 prose">
-          <h2 className="mt-4 text-xl font-semibold">
+          <h2 className="hidden md:block mt-4 text-xl font-semibold">
             {title.toUpperCase()}{" "}
             {locked && (
               <Tooltip content="Krever innlogging">
@@ -110,7 +118,7 @@ export default function Services({
     <>
       <section className="py-8 sm:py-16 max-w-7xl m-auto gap-8 grid grid-cols-12 grid-rows-1">
         <motion.div
-          className="col-span-12 lg:col-span-4"
+          className="col-span-12 md:col-span-4 h-full"
           initial={{ opacity: 0, y: 75 }}
           transition={{ duration: 1, ease: "easeOut" }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -125,7 +133,7 @@ export default function Services({
           />
         </motion.div>
         <motion.div
-          className="col-span-12 lg:col-span-4"
+          className="col-span-12 md:col-span-4 h-full"
           initial={{ opacity: 0, y: 75 }}
           transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -140,7 +148,7 @@ export default function Services({
           />
         </motion.div>
         <motion.div
-          className="col-span-12 lg:col-span-4"
+          className="col-span-12 md:col-span-4 h-full"
           initial={{ opacity: 0, y: 75 }}
           transition={{ duration: 1, ease: "easeOut", delay: 0.4 }}
           whileInView={{ opacity: 1, y: 0 }}
