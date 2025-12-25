@@ -1,0 +1,32 @@
+{
+  "name": "@naboweb/studio",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 3333",
+    "build": "vite build",
+    "preview": "vite preview --port 3333",
+    "deploy": "sanity deploy",
+    "typegen": "sanity schema extract && sanity typegen generate"
+  },
+  "dependencies": {
+    "@sanity/icons": "^3.5.6",
+    "@sanity/locale-nb-no": "^1.1.19",
+    "@sanity/ui": "^2.16.13",
+    "@sanity/vision": "^3.99.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-player": "^2.16.1",
+    "react-twitter-embed": "^4.0.4",
+    "sanity": "^3.99.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.11.0",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.7.2",
+    "vite": "^5.1.0"
+  }
+}
