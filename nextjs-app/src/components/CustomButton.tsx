@@ -30,29 +30,35 @@ export default function CustomButton({
     return null;
   }
 
+  // Wrap in span with suppressHydrationWarning to prevent React Aria ID mismatch
+  // Using inline-block to avoid layout issues
   if (asLink) {
     return (
-      <Button
-        color="primary"
-        size="lg"
-        className={`btn-link ${className}`}
-        onPress={() => router.push(href)}
-        role="link"
-      >
-        {buttonText}
-      </Button>
+      <span suppressHydrationWarning style={{ display: "inline-block" }}>
+        <Button
+          color="primary"
+          size="lg"
+          className={`btn-link ${className}`}
+          onPress={() => router.push(href)}
+          role="link"
+        >
+          {buttonText}
+        </Button>
+      </span>
     );
   }
 
   return (
-    <Button
-      as="a"
-      href={href}
-      color="primary"
-      size="lg"
-      className={`btn-link ${className}`}
-    >
-      {buttonText}
-    </Button>
+    <span suppressHydrationWarning style={{ display: "inline-block" }}>
+      <Button
+        as="a"
+        href={href}
+        color="primary"
+        size="lg"
+        className={`btn-link ${className}`}
+      >
+        {buttonText}
+      </Button>
+    </span>
   );
 }
