@@ -36,7 +36,7 @@ export default function CustomButton({
         color="primary"
         size="lg"
         className={`btn-link ${className}`}
-        onClick={() => router.push(href)}
+        onPress={() => router.push(href)}
         role="link"
       >
         {buttonText}
