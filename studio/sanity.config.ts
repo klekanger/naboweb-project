@@ -28,7 +28,6 @@ import {structureTool} from 'sanity/structure'
 import {apiVersion, dataset, projectId} from './lib/api'
 import {bodyText} from './schemaTypes/objects/bodyText'
 
-// URL for preview functionality, defaults to localhost:3000 if not set
 const SANITY_STUDIO_PREVIEW_URL = process.env.SANITY_STUDIO_PREVIEW_URL || 'http://localhost:3000'
 
 export default defineConfig({

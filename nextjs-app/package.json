@@ -8,7 +8,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "echo 'Linting temporarily disabled - Next.js 16 ESLint migration needed'",
-    "typegen": "sanity schema extract && sanity typegen generate && mv -f ./sanity.types.ts ./src/types/",
     "test": "vitest",
     "coverage": "vitest run --coverage"
   },
@@ -20,7 +19,6 @@
     "@portabletext/to-html": "^2.0.13",
     "@sanity/asset-utils": "^2.2.1",
     "@sanity/block-tools": "^3.68.3",
-    "@sanity/client": "^7.10.0",
     "@sanity/image-url": "^1.1.0",
     "@sanity/preview-url-secret": "^2.1.14",
     "@sanity/react-loader": "^1.11.18",
@@ -39,11 +37,13 @@
     "react-twitter-embed": "^4.0.4",
     "server-only": "^0.0.1",
     "sonner": "^2.0.3",
-    "styled-components": "^6.1.19"
+    "styled-components": "^6.1.19",
+    "@sanity/client": "^7.13.2"
   },
   "devDependencies": {
     "@clerk/types": "^4.41.2",
     "@portabletext/types": "^2.0.13",
+    
     "@tailwindcss/typography": "^0.5.15",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.8.0",
