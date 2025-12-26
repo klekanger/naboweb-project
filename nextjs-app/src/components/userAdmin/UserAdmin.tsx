@@ -14,14 +14,10 @@ import {
   CheckboxGroup,
   Input,
   Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
   Spinner,
-  useDisclosure,
 } from "@heroui/react";
 import { useContext, useState } from "react";
+import { useDisclosure } from "@/hooks/useDisclosure";
 import EditUser from "./EditUser";
 import InviteUser from "./InviteUser";
 import RoleDisplay from "./RoleDisplay";
@@ -105,14 +101,14 @@ export default function UserAdmin({
 
   return (
     <>
-      <div className="grid w-full grid-rows-[auto_1fr] rounded-large bg-content1 shadow-small lg:grid-cols-[280px_1fr] lg:grid-rows-none">
-        <div className="bg-default-100 dark:bg-zinc-800/40 lg:border-r rounded-l-large">
+      <div className="grid w-full grid-rows-[auto_1fr] rounded-xl bg-content1 shadow-small lg:grid-cols-[280px_1fr] lg:grid-rows-none">
+        <div className="bg-default-100 dark:bg-zinc-800/40 lg:border-r rounded-l-xl">
           <nav className="grid grid-cols-2 lg:grid-cols-1 lg:px-4 lg:gap-4 lg:py-8">
             {menuElements.map((element) => (
               <Button
                 key={`menu-${element.id}`}
                 variant="light"
-                onPress={(e) => {
+                onPress={() => {
                   setSelectedUser(null);
                   setSelectedMenu(element.id);
                 }}
@@ -133,7 +129,7 @@ export default function UserAdmin({
         </div>
         <section className="flex flex-col overflow-auto">
           <header
-            className="w-full border-b bg-brand-white rounded-tr-large px-6 py-8 text-left text-base dark:bg-brand-black"
+            className="w-full border-b bg-brand-white rounded-tr-xl px-6 py-8 text-left text-base dark:bg-brand-black"
             dangerouslySetInnerHTML={{
               __html: menuElements[selectedMenu].description,
             }}
@@ -162,7 +158,7 @@ export default function UserAdmin({
                     type="text"
                     name="firstName"
                     label="Fornavn"
-                    isRequired
+                    required
                     value={newUser.firstName}
                     onChange={(e) => {
                       setNewUser({ ...newUser, firstName: e.target.value });
@@ -172,7 +168,7 @@ export default function UserAdmin({
                     type="text"
                     name="lastName"
                     label="Etternavn"
-                    isRequired
+                    required
                     value={newUser.lastName}
                     onChange={(e) => {
                       setNewUser({ ...newUser, lastName: e.target.value });
@@ -180,30 +176,33 @@ export default function UserAdmin({
                   />
                 </div>
                 <div className="mb-5 flex flex-col gap-5  lg:flex-row">
-                  <Input
-                    type="email"
-                    name="email"
-                    label="E-post"
-                    description="E-posten som vil bli brukt til innlogging"
-                    isRequired
-                    value={newUser.email}
-                    isInvalid={isInvalidEmail}
-                    color={isInvalidEmail ? "danger" : "default"}
-                    errorMessage={
-                      isInvalidEmail && "Tast inn en gyldig e-postadresse"
-                    }
-                    onChange={(e) => {
-                      setNewUser({ ...newUser, email: e.target.value });
-                    }}
-                    onValueChange={setEmailValue} // Only for visual validation feedback in the input field
-                  />
+                  <div>
+                    <Input
+                      type="email"
+                      name="email"
+                      label="E-post"
+                      description="E-posten som vil bli brukt til innlogging"
+                      required
+                      value={newUser.email}
+                      onChange={(e) => {
+                        setNewUser({ ...newUser, email: e.target.value });
+                        setEmailValue(e.target.value); // Only for visual validation feedback in the input field
+                      }}
+                      className={isInvalidEmail ? "border-danger" : ""}
+                    />
+                    {isInvalidEmail && (
+                      <div className="text-danger text-sm mt-1">
+                        Tast inn en gyldig e-postadresse
+                      </div>
+                    )}
+                  </div>
 
                   <Input
                     type="password"
                     name="password"
                     label="Passord"
                     description="Midlertidig passord som kan endres av brukeren senere. Brukeren kan også velge å logge inn med e-post-lenke uten passord."
-                    isRequired
+                    required
                     value={newUser.password}
                     onChange={(e) => {
                       setNewUser({ ...newUser, password: e.target.value });
@@ -342,17 +341,17 @@ export default function UserAdmin({
         isOpen={modalCreateUser.isOpen}
         onOpenChange={modalCreateUser.onOpenChange}
       >
-        <ModalContent>
-          <ModalHeader className="flex flex-col gap-1">
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
+          <div className="flex flex-col gap-1 mb-4 font-semibold text-lg">
             Er du sikker?
-          </ModalHeader>
-          <ModalBody>
+          </div>
+          <div className="mb-4">
             <p>
               Du er i ferd med å opprette en ny bruker. Bekreft at du ønsker å
               gjøre dette.
             </p>
-          </ModalBody>
-          <ModalFooter>
+          </div>
+          <div className="flex justify-end gap-2">
             <Button color="danger" onPress={modalCreateUser.onClose}>
               Avbryt
             </Button>
@@ -364,8 +363,8 @@ export default function UserAdmin({
             >
               Opprett
             </Button>
-          </ModalFooter>
-        </ModalContent>
+          </div>
+        </div>
       </Modal>
 
       {/* MODAL FOR DISPLAYING ERRORS */}
@@ -373,35 +372,31 @@ export default function UserAdmin({
         isOpen={modalErrorMessage.isOpen || generalError !== ""}
         onOpenChange={modalErrorMessage.onOpenChange}
       >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                Det har oppstått en feil
-              </ModalHeader>
-              <ModalBody>
-                <p>
-                  {generalError} {`${longMessage ? `(${longMessage})` : ""}`}
-                </p>
-                <p>
-                  Hvis du mener noe er galt, ta kontakt med styret eller
-                  web-administrator.
-                </p>
-              </ModalBody>
-              <ModalFooter>
-                <Button
-                  color="primary"
-                  onPress={() => {
-                    setGeneralError("");
-                    modalErrorMessage.onClose();
-                  }}
-                >
-                  Ok
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
+          <div className="flex flex-col gap-1 mb-4 font-semibold text-lg">
+            Det har oppstått en feil
+          </div>
+          <div className="mb-4">
+            <p>
+              {generalError} {`${longMessage ? `(${longMessage})` : ""}`}
+            </p>
+            <p>
+              Hvis du mener noe er galt, ta kontakt med styret eller
+              web-administrator.
+            </p>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button
+              color="primary"
+              onPress={() => {
+                setGeneralError("");
+                modalErrorMessage.onClose();
+              }}
+            >
+              Ok
+            </Button>
+          </div>
+        </div>
       </Modal>
     </>
   );

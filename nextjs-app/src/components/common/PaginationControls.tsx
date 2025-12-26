@@ -1,7 +1,7 @@
 "use client";
 
-import { Pagination } from "@heroui/react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Pagination from "./Pagination";
 
 interface PaginationControlsProps {
   totalPages: number;
@@ -24,11 +24,11 @@ export default function PaginationControls({
   };
 
   return (
-    <div className="flex justify-center my-8">
+    <div className="my-8">
       <Pagination
         total={totalPages}
-        page={currentPage + 1} // NextUI uses 1-based indexing
-        onChange={(page) => handlePageChange(page - 1)} // Convert back to 0-based indexing
+        page={currentPage + 1} // Convert to 1-based for display
+        onChange={(page) => handlePageChange(page - 1)} // Convert back to 0-based
         showControls
         color="primary"
         size="lg"

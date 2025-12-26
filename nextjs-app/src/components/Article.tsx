@@ -40,11 +40,11 @@ export default function Article({
             blurDataURL={mainImage.lqip ?? undefined}
             placeholder="blur"
             priority
-            className="rounded-large w-full h-full mb-0 pb-0"
+            className="rounded-xl w-full h-full mb-0 pb-0"
           />
 
           {(mainImage?.caption as string) && (
-            <div className="absolute bottom-0 left-0 right-0 rounded-b-large text-sm py-4 !pl-4 pr-16 bg-slate-200/70">
+            <div className="absolute bottom-0 left-0 right-0 rounded-b-xl text-sm py-4 !pl-4 pr-16 bg-slate-200/70">
               <em>{mainImage?.caption as string}</em>
             </div>
           )}

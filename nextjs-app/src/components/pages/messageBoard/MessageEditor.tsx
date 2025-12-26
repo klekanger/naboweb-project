@@ -1,6 +1,6 @@
 import ImageUploader from "@/components/shared/ImageUploader";
 import { MessageEditorContext } from "@/context/messageEditorContext";
-import { Button, Input, Spacer } from "@heroui/react";
+import { Button, Input } from "@heroui/react";
 import { toHTML } from "@portabletext/to-html";
 import { Editor, EditorContent } from "@tiptap/react";
 import { Bold, Italic, UnderlineIcon } from "lucide-react";
@@ -53,11 +53,11 @@ export default function MessageEditor({
           type="text"
           label="Tittel"
           size="lg"
-          isRequired
+          required
           value={message.title}
-          onValueChange={(e) => setMessage({ ...message, title: e })}
+          onChange={(e) => setMessage({ ...message, title: e.target.value })}
         />
-        <Spacer y={4} />
+        <div className="h-4" />
 
         <MenuBar
           editor={editor}

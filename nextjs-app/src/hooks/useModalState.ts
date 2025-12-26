@@ -1,5 +1,5 @@
-import { useDisclosure } from "@heroui/react";
 import { useState } from "react";
+import { useDisclosure } from "./useDisclosure";
 
 interface UseModalStateProps {
   initialTitle?: string;

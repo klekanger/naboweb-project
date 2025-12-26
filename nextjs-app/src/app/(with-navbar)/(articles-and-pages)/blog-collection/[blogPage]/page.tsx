@@ -9,7 +9,7 @@ import {
 import { redirect } from "next/navigation";
 import { currentUser } from "@clerk/nextjs/server";
 
-const POSTS_PER_PAGE = 20;
+const POSTS_PER_PAGE = 5;
 
 type BlogCollectionParams = {
   params: Promise<{ blogPage: number | undefined }>;

@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@heroui/button";
-import Link from "next/link";
+import { Button } from "@heroui/react";
+import { useRouter } from "next/navigation";
 
 /**
  * Renders a custom button component.
@@ -24,17 +24,33 @@ export default function CustomButton({
   className?: string;
   asLink?: boolean;
 }) {
+  const router = useRouter();
+
   if (!href || !buttonText) {
     return null;
   }
 
+  if (asLink) {
+    return (
+      <Button
+        color="primary"
+        size="lg"
+        className={`btn-link ${className}`}
+        onClick={() => router.push(href)}
+        role="link"
+      >
+        {buttonText}
+      </Button>
+    );
+  }
+
   return (
     <Button
-      as={asLink ? Link : "a"}
+      as="a"
       href={href}
       color="primary"
-      className={`btn-link ${className}`}
       size="lg"
+      className={`btn-link ${className}`}
     >
       {buttonText}
     </Button>

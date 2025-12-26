@@ -115,9 +115,9 @@ export default function ContentEditor({
         type="text"
         label="Tittel"
         size="lg"
-        isRequired
+        required
         value={message.title}
-        onValueChange={(e) => setMessage({ ...message, title: e })}
+        onChange={(e) => setMessage({ ...message, title: e.target.value })}
       />
 
       <div className="w-full mt-4">

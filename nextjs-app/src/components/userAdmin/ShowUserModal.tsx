@@ -7,10 +7,6 @@ import {
   Avatar,
   Button,
   Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
   Spinner,
 } from "@heroui/react";
 
@@ -23,7 +19,7 @@ export default function ShowUserModal({
   userDataToShow: ShowUserProps | undefined;
   onClose: () => void;
   isOpen: boolean;
-  onOpenChange: () => void;
+  onOpenChange: (isOpen: boolean) => void;
 }) {
   if (!userDataToShow) {
     onClose();
@@ -32,69 +28,65 @@ export default function ShowUserModal({
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} backdrop="blur">
-      <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader className="flex flex-row gap-4">
-              <Avatar src={userDataToShow?.imageUrl} />
-              <div className="text-xl self-center">{`${userDataToShow?.firstName} ${userDataToShow?.lastName}`}</div>
-            </ModalHeader>
-            <ModalBody>
-              <section>
-                <div className="flex flex-col gap-4">
-                  <div>
-                    <strong>E-post:</strong>
-                    {` ${userDataToShow?.email}`}
-                  </div>
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
+        <div className="flex flex-row gap-4 mb-4">
+          <Avatar src={userDataToShow?.imageUrl || undefined} />
+          <div className="text-xl self-center">{`${userDataToShow?.firstName} ${userDataToShow?.lastName}`}</div>
+        </div>
+        <div className="mb-4">
+          <section>
+            <div className="flex flex-col gap-4">
+              <div>
+                <strong>E-post:</strong>
+                {` ${userDataToShow?.email}`}
+              </div>
 
-                  <div className="flex flex-row gap-4">
-                    <div className="w-1/3">
-                      <strong>Opprettet:</strong>
-                    </div>
-                    <div>
-                      {formatDate(userDataToShow?.createdAt)}
-                      {userDataToShow?.email === "" ? (
-                        <Spinner className="absolute ml-8" size="lg" />
-                      ) : null}
-                    </div>
-                  </div>
+              <div className="flex flex-row gap-4">
+                <div className="w-1/3">
+                  <strong>Opprettet:</strong>
                 </div>
-                <div className="flex flex-row gap-4">
-                  <div className="w-1/3">
-                    <strong>Sist innlogget:</strong>
-                  </div>
-                  <div>{formatDate(userDataToShow?.lastSignInAt) || ""}</div>
+                <div>
+                  {formatDate(userDataToShow?.createdAt)}
+                  {userDataToShow?.email === "" ? (
+                    <Spinner className="absolute ml-8" size="lg" />
+                  ) : null}
                 </div>
-                <div className="flex flex-row gap-4">
-                  <div className="w-1/3">
-                    <strong>E-post-varsling: </strong>
-                  </div>
-                  <div>{userDataToShow?.emailSubscription ? "Ja" : "Nei"}</div>
-                </div>
+              </div>
+            </div>
+            <div className="flex flex-row gap-4">
+              <div className="w-1/3">
+                <strong>Sist innlogget:</strong>
+              </div>
+              <div>{formatDate(userDataToShow?.lastSignInAt) || ""}</div>
+            </div>
+            <div className="flex flex-row gap-4">
+              <div className="w-1/3">
+                <strong>E-post-varsling: </strong>
+              </div>
+              <div>{userDataToShow?.emailSubscription ? "Ja" : "Nei"}</div>
+            </div>
 
-                <div className="flex flex-row gap-4 mt-8">
-                  <div className="w-1/3">
-                    <strong>Roller:</strong>
-                  </div>
-                  <div>
-                    <RoleDisplay roles={userDataToShow?.roles} />
-                  </div>
-                </div>
-              </section>
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                color="primary"
-                onPress={() => {
-                  onClose();
-                }}
-              >
-                Tilbake
-              </Button>
-            </ModalFooter>
-          </>
-        )}
-      </ModalContent>
+            <div className="flex flex-row gap-4 mt-8">
+              <div className="w-1/3">
+                <strong>Roller:</strong>
+              </div>
+              <div>
+                <RoleDisplay roles={userDataToShow?.roles} />
+              </div>
+            </div>
+          </section>
+        </div>
+        <div className="flex justify-end gap-2">
+          <Button
+            color="primary"
+            onPress={() => {
+              onClose();
+            }}
+          >
+            Tilbake
+          </Button>
+        </div>
+      </div>
     </Modal>
   );
 }

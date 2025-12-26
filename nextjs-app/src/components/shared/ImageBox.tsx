@@ -26,11 +26,11 @@ export default function ImageBox({
     image && urlForImage(image)?.height(height).width(width).fit("crop").url();
 
   return (
-    <div className="w-full rounded-large md:pt-8 flex flex-col">
+    <div className="w-full rounded-xl md:pt-8 flex flex-col">
       {imageUrl && (
         <>
           <Image
-            className="rounded-large w-full h-full mb-0 pb-0"
+            className="rounded-xl w-full h-full mb-0 pb-0"
             alt={alt}
             width={width}
             height={height}

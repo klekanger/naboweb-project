@@ -2,21 +2,7 @@ import { compareClerkAndSanityUser } from "@/lib/compareClerkAndSanityUser";
 import { formatDate } from "@/lib/format-date";
 import { MessageByIdQueryResult } from "@/types/sanity.types";
 import { useUser } from "@clerk/nextjs";
-import {
-  Button,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Form,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Textarea,
-} from "@heroui/react";
+import { Button, Card, Form, Input, Modal, Textarea } from "@heroui/react";
 import { MessageSquare, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -240,14 +226,14 @@ export default function MessageComments({
   return (
     <>
       <Card className="lg:p-4">
-        <CardHeader className="flex-col !items-start ">
+        <div className="flex-col !items-start p-4">
           <h2 className="text-lg font-semibold flex">
             <MessageSquare className="h-auto mr-2" />
             Kommentarer ({commentCount})
           </h2>
-        </CardHeader>
+        </div>
 
-        <CardBody>
+        <div className="p-4">
           <div className="prose lg:prose-xl pb-8">
             {comments?.map((comment) => {
               const userIsMessageAuthor = compareClerkAndSanityUser({
@@ -292,8 +278,7 @@ export default function MessageComments({
                         label="Tittel"
                         name="title"
                         defaultValue={comment.commentTitle ?? ""}
-                        isRequired
-                        errorMessage="Du må skrive inn en tittel"
+                        required
                       />
                       <Textarea
                         className="w-full"
@@ -301,8 +286,7 @@ export default function MessageComments({
                         label="Skriv kommentaren din her"
                         defaultValue={comment.commentText ?? ""}
                         variant="faded"
-                        isRequired
-                        errorMessage="Du må skrive inn en kommentar"
+                        required
                       />
                       <div className="flex gap-2">
                         <Button type="submit" isLoading={isSubmitting}>
@@ -351,8 +335,8 @@ export default function MessageComments({
               );
             })}
           </div>
-        </CardBody>
-        <CardFooter className="flex flex-col items-start gap-4">
+        </div>
+        <div className="flex flex-col items-start gap-4 p-4">
           {isClient && (
             <>
               {!isCreatingComment && (
@@ -373,19 +357,13 @@ export default function MessageComments({
                   <h3 className="text-lg font-semibold">
                     Opprett ny kommentar
                   </h3>
-                  <Input
-                    label="Tittel"
-                    name="title"
-                    isRequired
-                    errorMessage="Du må skrive inn en tittel"
-                  />
+                  <Input label="Tittel" name="title" required />
                   <Textarea
                     className="w-full"
                     name="bodyText"
                     label="Skriv kommentaren din her"
                     variant="faded"
-                    isRequired
-                    errorMessage="Du må skrive inn en kommentar"
+                    required
                   />
                   <div className="flex gap-2">
                     <Button type="submit" isLoading={isSubmitting}>
@@ -402,7 +380,7 @@ export default function MessageComments({
               )}
             </>
           )}
-        </CardFooter>
+        </div>
       </Card>
 
       {isClient && (
@@ -410,44 +388,40 @@ export default function MessageComments({
           isOpen={modalForComments.isOpen}
           onOpenChange={modalForComments.onOpenChange}
         >
-          <ModalContent>
-            {(onClose) => (
-              <>
-                <ModalHeader className="flex flex-col gap-1">
-                  {modalTitle}
-                </ModalHeader>
-                <ModalBody>{modalBody}</ModalBody>
-                <ModalFooter>
-                  <Button
-                    color="danger"
-                    variant="light"
-                    className={`${modalCancelDisabled ? "hidden" : ""}`}
-                    isDisabled={modalCancelDisabled}
-                    onPress={() => {
-                      resetModal();
-                      modalForComments.onClose();
-                    }}
-                  >
-                    {modalCancelText}
-                  </Button>
-                  <Button
-                    color={isConfirmDelete ? "danger" : "primary"}
-                    onPress={() => {
-                      if (isConfirmDelete) {
-                        handleConfirmDelete();
-                      } else {
-                        resetModal();
-                        modalForComments.onClose();
-                      }
-                    }}
-                    isLoading={isDeletingComment}
-                  >
-                    {modalOkText}
-                  </Button>
-                </ModalFooter>
-              </>
-            )}
-          </ModalContent>
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
+            <div className="flex flex-col gap-1 mb-4 font-semibold text-lg">
+              {modalTitle}
+            </div>
+            <div className="mb-4">{modalBody}</div>
+            <div className="flex justify-end gap-2">
+              <Button
+                color="danger"
+                variant="light"
+                className={`${modalCancelDisabled ? "hidden" : ""}`}
+                isDisabled={modalCancelDisabled}
+                onPress={() => {
+                  resetModal();
+                  modalForComments.onClose();
+                }}
+              >
+                {modalCancelText}
+              </Button>
+              <Button
+                color={isConfirmDelete ? "danger" : "primary"}
+                onPress={() => {
+                  if (isConfirmDelete) {
+                    handleConfirmDelete();
+                  } else {
+                    resetModal();
+                    modalForComments.onClose();
+                  }
+                }}
+                isLoading={isDeletingComment}
+              >
+                {modalOkText}
+              </Button>
+            </div>
+          </div>
         </Modal>
       )}
     </>

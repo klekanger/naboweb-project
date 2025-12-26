@@ -10,18 +10,7 @@ import { formatDate } from "@/lib/format-date";
 import { urlForImage } from "@/sanity/lib/utils";
 import { MessagePageProps } from "@/types/types";
 import { useUser } from "@clerk/nextjs";
-import {
-  Button,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-} from "@heroui/react";
+import { Button, Card, Modal } from "@heroui/react";
 import { htmlToBlocks } from "@portabletext/block-tools";
 import { Schema } from "@sanity/schema";
 import {
@@ -315,10 +304,10 @@ export default function MessagePage(props: MessagePageProps) {
   return (
     <>
       <Card className="p-2 py-8 mb-16">
-        <CardHeader className="flex flex-col items-start">
+        <div className="flex flex-col items-start p-4">
           {isEditingMessage ? (
             <div className="pb-4 pr-4 md:pb-8 flex gap-3 w-full">
-              <div className="border-r-1 border-black/20 pr-4">
+              <div className="border-r border-black/20 pr-4">
                 <MessagesSquare className="h-full" />
               </div>
               <h1 className="text-xl lg:text-3xl prose lg:prose-lg">
@@ -341,9 +330,9 @@ export default function MessagePage(props: MessagePageProps) {
                   }`}
             </div>
           )}
-        </CardHeader>
+        </div>
 
-        <CardBody className="pt-0 grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="pt-0 grid grid-cols-1 lg:grid-cols-2 gap-4 p-4">
           {!isEditingMessage ? (
             <>
               <div className="prose lg:prose-xl pb-8">
@@ -373,7 +362,7 @@ export default function MessagePage(props: MessagePageProps) {
                     objectFit: "cover",
                   }}
                   priority
-                  className="rounded-large mb-0 pb-0"
+                  className="rounded-xl mb-0 pb-0"
                 />
               )}
             </>
@@ -385,8 +374,8 @@ export default function MessagePage(props: MessagePageProps) {
               maxCharacters={1000}
             />
           )}
-        </CardBody>
-        <CardFooter>
+        </div>
+        <div className="p-4">
           <div className="flex gap-4 flex-col md:flex-row w-full">
             {isEditingMessage ? (
               <div className="flex flex-col gap-4">
@@ -407,7 +396,6 @@ export default function MessagePage(props: MessagePageProps) {
                     color="primary"
                     onPress={handleSubmit}
                     isLoading={isSubmittingMessage}
-                    startContent={!isSubmittingMessage && <UploadIcon />}
                     className="w-32"
                   >
                     Send inn
@@ -442,7 +430,7 @@ export default function MessagePage(props: MessagePageProps) {
               </>
             )}
           </div>
-        </CardFooter>
+        </div>
       </Card>
 
       <MessageComments
@@ -458,44 +446,40 @@ export default function MessagePage(props: MessagePageProps) {
         isOpen={modalForMessages.isOpen}
         onOpenChange={modalForMessages.onOpenChange}
       >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                {modalTitle}
-              </ModalHeader>
-              <ModalBody>{modalBody}</ModalBody>
-              <ModalFooter>
-                <Button
-                  color="danger"
-                  variant="light"
-                  className={`${modalCancelDisabled ? "hidden" : ""}`}
-                  isDisabled={modalCancelDisabled}
-                  onPress={() => {
-                    resetModal();
-                    modalForMessages.onClose();
-                  }}
-                >
-                  {modalCancelText}
-                </Button>
-                <Button
-                  color="primary"
-                  onPress={() => {
-                    if (modalTitle === "Bekreft sletting") {
-                      deleteMessageAfterConfirmation();
-                    } else {
-                      resetModal();
-                      modalForMessages.onClose();
-                      router.push(modalOkUrl);
-                    }
-                  }}
-                >
-                  {modalOkText}
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
+          <div className="flex flex-col gap-1 mb-4 font-semibold text-lg">
+            {modalTitle}
+          </div>
+          <div className="mb-4">{modalBody}</div>
+          <div className="flex justify-end gap-2">
+            <Button
+              color="danger"
+              variant="light"
+              className={`${modalCancelDisabled ? "hidden" : ""}`}
+              isDisabled={modalCancelDisabled}
+              onPress={() => {
+                resetModal();
+                modalForMessages.onClose();
+              }}
+            >
+              {modalCancelText}
+            </Button>
+            <Button
+              color="primary"
+              onPress={() => {
+                if (modalTitle === "Bekreft sletting") {
+                  deleteMessageAfterConfirmation();
+                } else {
+                  resetModal();
+                  modalForMessages.onClose();
+                  router.push(modalOkUrl);
+                }
+              }}
+            >
+              {modalOkText}
+            </Button>
+          </div>
+        </div>
       </Modal>
     </>
   );

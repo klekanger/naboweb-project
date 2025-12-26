@@ -15,26 +15,14 @@ import {
   Button,
   Checkbox,
   CheckboxGroup,
-  Divider,
   Input,
   Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Spacer,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
   Tooltip,
-  useDisclosure,
 } from "@heroui/react";
 import { SearchIcon } from "lucide-react";
 import { useContext, useState } from "react";
 import { useModalState } from "@/hooks/useModalState";
+import { useDisclosure } from "@/hooks/useDisclosure";
 
 const MAX_RESULTS = 10;
 
@@ -71,7 +59,6 @@ export default function EditUser() {
   const {
     modal: modalUserUpdated,
     title: modalTitle,
-    setTitle: setModalTitle,
     body: modalBody,
     setBody: setModalBody,
   } = useModalState({
@@ -142,7 +129,7 @@ export default function EditUser() {
       {selectedUser && (
         <div className="px-4 lg:px-6 py-4 text-left">
           <div className="flex flex-row items-center gap-4 pb-8">
-            <Avatar size="lg" src={selectedUser?.imageUrl} />
+            <Avatar size="lg" src={selectedUser?.imageUrl || undefined} />
             <div>
               <h2 className="m-0 p-0 text-xl">
                 {selectedUser?.firstName} {selectedUser?.lastName}
@@ -153,19 +140,16 @@ export default function EditUser() {
               </div>
             </div>
           </div>
-          <Divider />
-          <Spacer y={8} />
+          <hr className="border-t border-divider" />
+          <div className="h-8" />
           <form onSubmit={handleUpdateUser}>
             <div className="mb-5 flex flex-col gap-5 lg:flex-row">
               <Input
                 type="email"
                 name="email"
-                isDisabled
+                disabled
                 label="E-post"
                 defaultValue={selectedUser.email ?? ""}
-                classNames={{
-                  description: "text-black",
-                }}
                 description="E-postadressen kan ikke endres. Hvis du vil endre e-postadressen, må du slette brukeren og opprette en ny."
               />
 
@@ -173,7 +157,7 @@ export default function EditUser() {
                 type="text"
                 name="firstName"
                 label="Fornavn"
-                isRequired
+                required
                 value={selectedUser.firstName ?? ""}
                 onChange={(e) => {
                   setSelectedUser({
@@ -189,7 +173,7 @@ export default function EditUser() {
                 type="text"
                 name="lastName"
                 label="Etternavn"
-                isRequired
+                required
                 value={selectedUser.lastName ?? ""}
                 onChange={(e) => {
                   setSelectedUser({
@@ -270,13 +254,17 @@ export default function EditUser() {
               }}
               className="flex flex-row gap-4 pb-8"
             >
-              <Input
-                placeholder="Søk etter bruker..."
-                startContent={<SearchIcon />}
-                onValueChange={setSearchTerm}
-                value={searchTerm}
-                className="w-full sm:max-w-[44%]"
-              />
+              <div className="relative w-full sm:max-w-[44%]">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
+                  <SearchIcon className="w-4 h-4 text-gray-400" />
+                </div>
+                <Input
+                  placeholder="Søk etter bruker..."
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  value={searchTerm}
+                  className="w-full pl-10"
+                />
+              </div>
               <Button
                 className="h-auto"
                 type="submit"
@@ -300,58 +288,77 @@ export default function EditUser() {
             )}
           </div>
 
-          <Table
-            className="mb-16 "
-            shadow="none"
-            isCompact
-            aria-label="Tabell med oversikt over brukere"
-            onRowAction={(id) => {
-              const userToEdit = foundUsers.find((user) => user.id === id);
-              setSelectedUser(userToEdit as UserWithEmails);
-            }}
-          >
-            <TableHeader>
-              <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
-                Navn
-              </TableColumn>
-              <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
-                E-post
-              </TableColumn>
+          <div className="mb-16 overflow-x-auto">
+            <table
+              className="w-full min-w-[640px] border-collapse text-sm"
+              aria-label="Tabell med oversikt over brukere"
+            >
+              <thead>
+                <tr>
+                  <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-3 text-left">
+                    Navn
+                  </th>
+                  <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-3 text-left">
+                    E-post
+                  </th>
+                  <th className="hidden bg-brand-primary/20 text-sm font-bold sm:table-cell md:text-base p-3 text-left">
+                    Roller
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan={3} className="p-8 text-center">
+                      <Spinner />
+                    </td>
+                  </tr>
+                ) : foundUsers && foundUsers.length > 0 ? (
+                  foundUsers.map((user, index) => {
+                    let roles;
+                    if (Array.isArray(user.roles)) {
+                      roles = user.roles
+                        .map((role) =>
+                          role === "admin" ? (
+                            <CircleAdmin key={`${user.id}-admin`} />
+                          ) : role === "editor" ? (
+                            <CircleEditor key={`${user.id}-editor`} />
+                          ) : null,
+                        )
+                        .sort();
+                    }
 
-              <TableColumn className="hidden bg-brand-primary/20 text-sm font-bold sm:table-cell md:text-base">
-                Roller
-              </TableColumn>
-            </TableHeader>
-
-            <TableBody emptyContent={loading && <Spinner />}>
-              {foundUsers.map((user) => {
-                let roles;
-                if (Array.isArray(user.roles)) {
-                  roles = user.roles
-                    .map((role) =>
-                      role === "admin" ? (
-                        <CircleAdmin key={`${user.id}-admin`} />
-                      ) : role === "editor" ? (
-                        <CircleEditor key={`${user.id}-editor`} />
-                      ) : null,
-                    )
-                    .sort();
-                }
-
-                return (
-                  <TableRow key={user.id} className="text-left group">
-                    <TableCell className="group-hover:bg-brand-black/10 cursor-pointer">{`${user.firstName} ${user.lastName}`}</TableCell>
-                    <TableCell className="group-hover:bg-brand-black/10 cursor-pointer">
-                      {user.email}
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell group-hover:bg-brand-black/10 cursor-pointer">
-                      {roles}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+                    return (
+                      <tr
+                        key={user.id}
+                        className={`text-left group ${index % 2 === 0 ? "bg-gray-50 dark:bg-gray-900" : ""}`}
+                        onClick={() => {
+                          const userToEdit = foundUsers.find(
+                            (u) => u.id === user.id,
+                          );
+                          setSelectedUser(userToEdit as UserWithEmails);
+                        }}
+                      >
+                        <td className="group-hover:bg-brand-black/10 cursor-pointer p-3">{`${user.firstName} ${user.lastName}`}</td>
+                        <td className="group-hover:bg-brand-black/10 cursor-pointer p-3">
+                          {user.email}
+                        </td>
+                        <td className="hidden sm:table-cell group-hover:bg-brand-black/10 cursor-pointer p-3">
+                          {roles}
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan={3} className="p-8 text-center text-gray-500">
+                      Ingen brukere funnet
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
       <DeleteUserModal
@@ -365,19 +372,15 @@ export default function EditUser() {
         onOpenChange={modalUserUpdated.onOpenChange}
         backdrop="blur"
       >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader>{modalTitle}</ModalHeader>
-              <ModalBody>{modalBody}</ModalBody>
-              <ModalFooter>
-                <Button color="success" onPress={onClose}>
-                  Lukk
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
+          <div className="mb-4 font-semibold text-lg">{modalTitle}</div>
+          <div className="mb-4">{modalBody}</div>
+          <div className="flex justify-end gap-2">
+            <Button color="success" onPress={modalUserUpdated.onClose}>
+              Lukk
+            </Button>
+          </div>
+        </div>
       </Modal>
     </>
   );

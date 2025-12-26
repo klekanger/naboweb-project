@@ -10,7 +10,6 @@ import {
   documentMenuQuery,
 } from "@/sanity/lib/queries";
 import { currentUser } from "@clerk/nextjs/server";
-import { Spacer } from "@heroui/react";
 import { Info, Pencil, RefreshCw, User } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -95,7 +94,7 @@ export default async function PrivateInfoPage(props: Props) {
           icon={<Info />}
         />
       )}
-      <div className="my-16 rounded-xl border border-dashed border-brand-black border-opacity-60 p-4 pt-8 dark:border-brand-white">
+      <div className="my-16 rounded-xl border border-dashed border-brand-black/60 p-4 pt-8 dark:border-brand-white/60">
         <div className="pl-1">
           {user ? (
             <div className="flex gap-4">
@@ -136,7 +135,7 @@ export default async function PrivateInfoPage(props: Props) {
             </Link>
           </div>
         )}
-        <Spacer y={8} />
+        <div className="h-8" />
         <DocumentMenu content={documentMenu} />
       </div>
 

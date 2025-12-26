@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, CardHeader, Divider } from "@heroui/react";
+import { Card } from "@heroui/react";
 import { AlertCircle } from "lucide-react";
 
 type AlertUserProps = {
@@ -16,14 +16,14 @@ export default function AlertUser({
 
   return (
     <Card className="max-w-[400px] bg-brand-dark-warning text-brand-black dark:bg-brand-dark-warning">
-      <CardHeader className="text-brand-primaryLight flex gap-3">
+      <div className="text-brand-primaryLight flex gap-3 p-4">
         <AlertCircle size={24} />
         <span className="text-xl font-semibold">{alertTitle}</span>
-      </CardHeader>
-      <Divider />
-      <CardBody>
+      </div>
+      <hr className="border-t border-divider" />
+      <div className="p-4">
         <p className="">{alertMessage}</p>
-      </CardBody>
+      </div>
     </Card>
   );
 }

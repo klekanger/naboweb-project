@@ -1,16 +1,7 @@
 "use client";
 
 import { formatDate } from "@/lib/format-date";
-import {
-  Button,
-  Spacer,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-} from "@heroui/react";
+import { Button } from "@heroui/react";
 import { ArrowBigLeft } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
@@ -80,7 +71,7 @@ export default function MeetingMinutesDetails({ data }: Props) {
         {title}
       </h1>
       <p>{description}</p>
-      <Spacer y={8} />
+      <div className="h-8" />
       <p>
         <strong>Sted: </strong>
         {meetingPlace}
@@ -101,62 +92,74 @@ export default function MeetingMinutesDetails({ data }: Props) {
           ))}
       </p>
 
-      <Spacer y={8} />
-      <Table
-        className="mb-16"
-        aria-label="Tabell med oversikt over dokumenter"
-        isStriped
-      >
-        <TableHeader>
-          <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
-            Dokument
-          </TableColumn>
-          <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base hidden sm:table-cell">
-            Type
-          </TableColumn>
-          <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base hidden sm:table-cell">
-            Filstørrelse
-          </TableColumn>
-
-          <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
-            Lastet opp
-          </TableColumn>
-        </TableHeader>
-        <TableBody>
-          {(sortedDocuments
-            ? sortedDocuments.map((item) => {
-                return (
-                  <TableRow key={item.asset?._id}>
-                    <TableCell>
-                      <a
-                        href={item?.asset?.url ?? "#"}
-                        target="blank"
-                        rel="noopener noreferrer"
-                      >
-                        {item.asset?.originalFilename ?? "N/A"}
-                      </a>
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell">
-                      {item?.asset?.extension
-                        ? item.asset.extension.toUpperCase()
-                        : "-"}
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell">
-                      {item.asset?.size
-                        ? `${(item.asset.size / 1024).toFixed(0)} kB`
-                        : "-"}
-                    </TableCell>
-                    <TableCell>
-                      {item.asset?._createdAt
-                        ? formatDate(item.asset._createdAt)
-                        : "-"}
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            : null) ?? []}
-        </TableBody>
-      </Table>
+      <div className="h-8" />
+      <div className="mb-16 overflow-x-auto">
+        <table
+          className="w-full min-w-[640px] border-collapse"
+          aria-label="Tabell med oversikt over dokumenter"
+        >
+          <thead>
+            <tr>
+              <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-4 text-left">
+                Dokument
+              </th>
+              <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-4 text-left hidden sm:table-cell">
+                Type
+              </th>
+              <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-4 text-left hidden sm:table-cell">
+                Filstørrelse
+              </th>
+              <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-4 text-left">
+                Lastet opp
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedDocuments && sortedDocuments.length > 0 ? (
+              sortedDocuments.map((item, index) => (
+                <tr
+                  key={item.asset?._id}
+                  className={
+                    index % 2 === 0 ? "bg-gray-50 dark:bg-gray-900" : ""
+                  }
+                >
+                  <td className="p-4">
+                    <a
+                      href={item?.asset?.url ?? "#"}
+                      target="blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80"
+                    >
+                      {item.asset?.originalFilename ?? "N/A"}
+                    </a>
+                  </td>
+                  <td className="hidden sm:table-cell p-4">
+                    {item?.asset?.extension
+                      ? item.asset.extension.toUpperCase()
+                      : "-"}
+                  </td>
+                  <td className="hidden sm:table-cell p-4">
+                    {item.asset?.size
+                      ? `${(item.asset.size / 1024).toFixed(0)} kB`
+                      : "-"}
+                  </td>
+                  <td className="p-4">
+                    {item.asset?._createdAt
+                      ? formatDate(item.asset._createdAt)
+                      : "-"}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={4} className="p-4 text-center text-gray-500">
+                  Ingen dokumenter
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
       <BackButton buttonLink="/information/referater" />
     </>
   );

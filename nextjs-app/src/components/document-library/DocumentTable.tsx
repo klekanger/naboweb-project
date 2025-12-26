@@ -7,20 +7,10 @@ import {
   PowerPointIcon,
   WordIcon,
 } from "@/components/icons";
+import Pagination from "@/components/common/Pagination";
 import { formatDate } from "@/lib/format-date";
 import { OtherDocumentsQueryResult } from "@/types/sanity.types";
-import {
-  Button,
-  Input,
-  Pagination,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-  Tooltip,
-} from "@heroui/react";
+import { Button, Input, Tooltip } from "@heroui/react";
 import { ArrowBigLeft, SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
@@ -117,15 +107,17 @@ export default function DocumentTable({
   const topContent = useMemo(() => {
     return (
       <div>
-        <Input
-          isClearable
-          className="w-full sm:max-w-[44%]"
-          placeholder="Søk i dokumentnavn eller beskrivelse"
-          startContent={<SearchIcon />}
-          value={filterValue}
-          onClear={() => setFilterValue("")}
-          onValueChange={onSearchChange}
-        />
+        <div className="relative w-full sm:max-w-[44%]">
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
+            <SearchIcon className="w-4 h-4 text-gray-400" />
+          </div>
+          <Input
+            className="w-full pl-10"
+            placeholder="Søk i dokumentnavn eller beskrivelse"
+            value={filterValue}
+            onChange={(e) => onSearchChange(e.target.value || "")}
+          />
+        </div>
         <div className="pl-2 pt-4">
           <span className="font-semibold">Antall dokumenter:</span>{" "}
           {filteredItems.length.toString()}
@@ -148,106 +140,107 @@ export default function DocumentTable({
 
   return (
     <>
-      <Table
-        className="mb-16"
-        aria-label="Tabell med oversikt over dokumenter"
-        topContent={topContent}
-        isStriped
-        bottomContent={
-          pages > 1 && (
-            <div className="flex w-full justify-center">
-              <Pagination
-                isCompact
-                isDisabled={hasSearchFilter}
-                showControls
-                showShadow
-                color="secondary"
-                page={page}
-                total={pages}
-                onChange={(page) => setPage(page)}
-              />
-            </div>
-          )
-        }
-      >
-        <TableHeader>
-          <TableColumn
-            className="bg-brand-primary/20 text-sm font-bold md:text-base"
-            width={"60%"}
+      <div className="mb-16">
+        {topContent}
+        <div className="overflow-x-auto">
+          <table
+            className="w-full min-w-[640px] border-collapse"
+            aria-label="Tabell med oversikt over dokumenter"
           >
-            Dokumentnavn
-          </TableColumn>
+            <thead>
+              <tr>
+                <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-4 text-left w-[60%]">
+                  Dokumentnavn
+                </th>
+                <th className="bg-brand-primary/20 text-sm font-bold md:text-lg p-4 text-left w-[20%]">
+                  Oppdatert
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {itemsToRender && itemsToRender.length > 0 ? (
+                itemsToRender.map((item, index) => {
+                  const FileIcon = returnIconFromFileType(
+                    item?.document?.asset?.url ?? "",
+                  );
 
-          <TableColumn
-            className="bg-brand-primary/20 text-sm font-bold md:text-lg"
-            width={"20%"}
-          >
-            Oppdatert
-          </TableColumn>
-        </TableHeader>
-        <TableBody emptyContent={"Ingen elementer å vise"}>
-          {(itemsToRender
-            ? itemsToRender.map((item) => {
-                const FileIcon = returnIconFromFileType(
-                  item?.document?.asset?.url ?? "",
-                );
-
-                return (
-                  <TableRow
-                    key={item.document?.asset?._id}
-                    className="text-left"
-                  >
-                    <TableCell>
-                      <Tooltip
-                        content={
-                          <span className="flex flex-row items-center gap-2 py-2 text-xs md:text-sm md:max-w-md">
-                            <div>
-                              <FileIcon
-                                fill="#fff"
-                                height={2}
-                                width={2}
-                                className="md:mx-4"
-                              />
-                            </div>
-                            <div>
-                              {item.description && (
-                                <>
-                                  <span className="">{item.description}</span>
-                                  <hr className="my-2" />
-                                </>
-                              )}
-                              <span className="font-semibold">
-                                <strong>Filnavn:</strong>{" "}
-                                {item?.document?.asset?.originalFilename}
-                              </span>
-                            </div>
-                          </span>
-                        }
-                        placement="top-start"
-                        delay={1000}
-                        color="secondary"
-                        size="lg"
-                      >
-                        <a
-                          href={item.document?.asset?.url ?? "#"}
-                          className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80 "
-                          target="blank"
-                          rel="noopener noreferrer"
+                  return (
+                    <tr
+                      key={item.document?.asset?._id}
+                      className={`text-left ${index % 2 === 0 ? "bg-gray-50 dark:bg-gray-900" : ""}`}
+                    >
+                      <td className="p-4">
+                        <Tooltip
+                          content={
+                            <span className="flex flex-row items-center gap-2 py-2 text-xs md:text-sm md:max-w-md">
+                              <div>
+                                <FileIcon
+                                  fill="#fff"
+                                  height={2}
+                                  width={2}
+                                  className="md:mx-4"
+                                />
+                              </div>
+                              <div>
+                                {item.description && (
+                                  <>
+                                    <span className="">{item.description}</span>
+                                    <hr className="my-2" />
+                                  </>
+                                )}
+                                <span className="font-semibold">
+                                  <strong>Filnavn:</strong>{" "}
+                                  {item?.document?.asset?.originalFilename}
+                                </span>
+                              </div>
+                            </span>
+                          }
+                          placement="top-start"
+                          delay={1000}
+                          color="secondary"
+                          size="lg"
                         >
-                          <span className="flex ">
-                            <FileIcon className="mr-2 h-auto" />
-                            {item.title}
-                          </span>
-                        </a>
-                      </Tooltip>
-                    </TableCell>
-                    <TableCell>{formatDate(item._createdAt)}</TableCell>
-                  </TableRow>
-                );
-              })
-            : null) ?? []}
-        </TableBody>
-      </Table>
+                          <a
+                            href={item.document?.asset?.url ?? "#"}
+                            className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80 "
+                            target="blank"
+                            rel="noopener noreferrer"
+                          >
+                            <span className="flex ">
+                              <FileIcon className="mr-2 h-auto" />
+                              {item.title}
+                            </span>
+                          </a>
+                        </Tooltip>
+                      </td>
+                      <td className="p-4">{formatDate(item._createdAt)}</td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan={2} className="p-4 text-center text-gray-500">
+                    Ingen elementer å vise
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        {pages > 1 && (
+          <div className="flex w-full justify-center mt-4">
+            <Pagination
+              isCompact
+              isDisabled={hasSearchFilter}
+              showControls
+              color="secondary"
+              page={page}
+              total={pages}
+              onChange={(page) => setPage(page)}
+            />
+          </div>
+        )}
+      </div>
       <BackButton buttonLink="/information" />
     </>
   );

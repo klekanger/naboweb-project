@@ -2,8 +2,9 @@
 
 import { CustomPortableText } from "@/lib/CustomPortableText";
 import { NewUserIntroQueryResult } from "@/types/sanity.types";
-import { Card, CardHeader, Image } from "@heroui/react";
+import { Card } from "@heroui/react";
 import { motion } from "motion/react";
+import Image from "next/image";
 
 export default function NewUserIntro({
   content,
@@ -22,8 +23,8 @@ export default function NewUserIntro({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
     >
-      <Card className="bg-brand-secondary">
-        <CardHeader className="absolute top-0 left-0 w-full h-full pb-8 z-10">
+      <Card className="bg-brand-secondary relative">
+        <div className="absolute top-0 left-0 w-full h-full pb-8 z-10">
           <div className="flex flex-col items-center justify-center m-auto px-2 md:px-0">
             <h2 className="prose text-3xl py-4 font-semibold text-brand-white text-center">
               {title}
@@ -33,13 +34,14 @@ export default function NewUserIntro({
               paragraphClasses="text-brand-white max-w-2xl m-auto text-center md:text-left"
             />
           </div>
-        </CardHeader>
+        </div>
         <Image
-          removeWrapper
           className="z-0 w-full object-cover h-96 md:h-full"
-          src="blob.svg"
+          src="/blob.svg"
           alt=""
-          role="presentation"
+          width={1200}
+          height={600}
+          priority
         />
       </Card>
     </motion.section>

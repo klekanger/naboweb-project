@@ -2,7 +2,7 @@
 
 import { formatDate } from "@/lib/format-date";
 import { MessageCardProps } from "@/types/types";
-import { Card, CardBody, CardFooter, CardHeader, Tooltip } from "@heroui/react";
+import { Card, Tooltip } from "@heroui/react";
 import { toPlainText } from "@portabletext/react";
 import { CircleUser, MessagesSquare, Shield } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -39,11 +39,18 @@ export default function MessageCard({
 
   return (
     <Card
-      isPressable
-      onPress={() => router.push(`/messageboard/${id}`)}
-      className={`p-2 ${imageUrl ? "row-span-2" : "row-span-1"} hover:scale-[102%]`}
+      className={`p-2 ${imageUrl ? "row-span-2" : "row-span-1"} hover:scale-[102%] cursor-pointer`}
+      onClick={() => router.push(`/messageboard/${id}`)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          router.push(`/messageboard/${id}`);
+        }
+      }}
     >
-      <CardHeader className="flex-col !items-start hover:">
+      <div className="flex-col !items-start">
         <div className="font-thin text-sm pb-2 flex text-brand-black/60">
           {fromAdmin ? (
             <Shield className="h-auto pr-2" />
@@ -66,13 +73,13 @@ export default function MessageCard({
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         )}
-      </CardHeader>
+      </div>
 
-      <CardBody className="pt-0 prose">
+      <div className="pt-0 prose">
         <h2 className="mt-4 text-lg font-semibold ">{title}</h2>
         <p className="text-sm whitespace-pre-line">{slicedText}</p>
-      </CardBody>
-      <CardFooter>
+      </div>
+      <div>
         <div className="flex items-center justify-between w-full">
           <div className="text-xs h-auto text-brand-black/60">
             {formatDate(createdAt)}
@@ -95,7 +102,7 @@ export default function MessageCard({
             </Tooltip>
           )}
         </div>
-      </CardFooter>
+      </div>
     </Card>
   );
 }

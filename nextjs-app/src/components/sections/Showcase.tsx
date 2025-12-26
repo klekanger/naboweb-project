@@ -2,7 +2,6 @@
 
 import { urlForImage } from "@/sanity/lib/utils";
 import { type ShowcaseQueryResult } from "@/types/sanity.types";
-import { Spacer } from "@heroui/react";
 import { motion } from "motion/react";
 import { toPlainText } from "next-sanity";
 import Image from "next/image";
@@ -83,7 +82,7 @@ export default function Showcase({
           );
         })}
       </div>
-      <Spacer />
+      <div className="flex-1" />
       <div className="prose mt-8">
         <Link
           href="/blog-collection"

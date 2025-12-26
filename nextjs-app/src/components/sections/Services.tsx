@@ -11,7 +11,7 @@ import {
 } from "@/components/icons";
 import { type FrontpageServicesQueryResult } from "@/types/sanity.types";
 import type { IconProps } from "@/types/types";
-import { Card, CardBody, CardHeader, Tooltip } from "@heroui/react";
+import { Card, Tooltip } from "@heroui/react";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { type FunctionComponent } from "react";
@@ -81,11 +81,18 @@ export default function Services({
 
     return (
       <Card
-        isPressable
-        onPress={() => handlePress(url)}
-        className="w-full p-4 hover:-translate-y-2 h-full"
+        onClick={() => handlePress(url)}
+        className="w-full p-4 hover:-translate-y-2 h-full cursor-pointer transition-transform"
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handlePress(url);
+          }
+        }}
       >
-        <CardHeader className="flex-row items-center gap-3 md:flex-col md:!items-start">
+        <div className="flex-row items-center gap-3 md:flex-col md:items-start! p-4">
           <div className="flex items-center justify-center shrink-0">
             {RenderedIcon && <RenderedIcon width={3} height={3} />}
           </div>
@@ -97,9 +104,9 @@ export default function Services({
               </Tooltip>
             )}
           </h2>
-        </CardHeader>
+        </div>
 
-        <CardBody className="pt-0 prose">
+        <div className="pt-0 prose p-4">
           <h2 className="hidden md:block mt-4 text-xl font-semibold">
             {title.toUpperCase()}{" "}
             {locked && (
@@ -109,7 +116,7 @@ export default function Services({
             )}
           </h2>
           <p>{description}</p>
-        </CardBody>
+        </div>
       </Card>
     );
   };

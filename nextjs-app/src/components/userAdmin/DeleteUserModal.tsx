@@ -3,15 +3,7 @@
 import { deleteUser } from "@/app/actions/deleteUser";
 import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 import { ShowUserProps } from "@/types/types";
-import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Spinner,
-} from "@heroui/react";
+import { Button, Modal, Spinner } from "@heroui/react";
 
 import { useState } from "react";
 
@@ -24,7 +16,7 @@ export default function DeleteUserModal({
   userDataToDelete: ShowUserProps | undefined;
   onClose: () => void;
   isOpen: boolean;
-  onOpenChange: () => void;
+  onOpenChange: (isOpen: boolean) => void;
 }) {
   const [errorToShow, setErrorToShow] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
@@ -72,86 +64,82 @@ export default function DeleteUserModal({
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} backdrop="blur">
-      <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader className="flex flex-row gap-4">
-              <div className="text-xl self-center text-brand-danger">
-                Slett bruker
-              </div>
-            </ModalHeader>
-            <ModalBody>
-              <section>
-                {errorToShow && (
-                  <div
-                    className="bg-brand-danger text-white p-4 rounded-xl"
-                    role="alert"
-                  >
-                    {errorToShow}
-                  </div>
-                )}
-
-                {successMessage && (
-                  <div
-                    className="bg-brand-danger text-white p-4 rounded-xl"
-                    role="alert"
-                  >
-                    {successMessage}
-                  </div>
-                )}
-
-                {isDeleting && <Spinner className="absolute ml-8" size="lg" />}
-
-                {!errorToShow && !successMessage && !isDeleting && (
-                  <div className="flex flex-col gap-4">
-                    <div>
-                      <div>
-                        <strong>Bruker: </strong>
-                        {`${userDataToDelete?.firstName} ${userDataToDelete?.lastName}`}
-                      </div>
-                      <div>
-                        <strong>E-post: </strong> {userDataToDelete?.email}
-                      </div>
-                    </div>
-
-                    <p>
-                      Er du helt sikker på at du vil slette brukeren{" "}
-                      <em>
-                        {`${userDataToDelete?.firstName} ${userDataToDelete?.lastName}`}
-                        ?
-                      </em>{" "}
-                      Denne operasjonen kan ikke angres!
-                    </p>
-                  </div>
-                )}
-              </section>
-            </ModalBody>
-            <ModalFooter>
-              {!errorToShow && !successMessage && (
-                <Button
-                  color="danger"
-                  onPress={() => {
-                    deleteUserWithId(userDataToDelete?.id);
-                  }}
-                >
-                  Slett
-                </Button>
-              )}
-
-              <Button
-                color="primary"
-                onPress={() => {
-                  setErrorToShow("");
-                  setSuccessMessage("");
-                  onClose();
-                }}
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
+        <div className="flex flex-row gap-4 mb-4">
+          <div className="text-xl self-center text-brand-danger">
+            Slett bruker
+          </div>
+        </div>
+        <div className="mb-4">
+          <section>
+            {errorToShow && (
+              <div
+                className="bg-brand-danger text-white p-4 rounded-xl mb-4"
+                role="alert"
               >
-                Tilbake
-              </Button>
-            </ModalFooter>
-          </>
-        )}
-      </ModalContent>
+                {errorToShow}
+              </div>
+            )}
+
+            {successMessage && (
+              <div
+                className="bg-brand-danger text-white p-4 rounded-xl mb-4"
+                role="alert"
+              >
+                {successMessage}
+              </div>
+            )}
+
+            {isDeleting && <Spinner className="absolute ml-8" size="lg" />}
+
+            {!errorToShow && !successMessage && !isDeleting && (
+              <div className="flex flex-col gap-4">
+                <div>
+                  <div>
+                    <strong>Bruker: </strong>
+                    {`${userDataToDelete?.firstName} ${userDataToDelete?.lastName}`}
+                  </div>
+                  <div>
+                    <strong>E-post: </strong> {userDataToDelete?.email}
+                  </div>
+                </div>
+
+                <p>
+                  Er du helt sikker på at du vil slette brukeren{" "}
+                  <em>
+                    {`${userDataToDelete?.firstName} ${userDataToDelete?.lastName}`}
+                    ?
+                  </em>{" "}
+                  Denne operasjonen kan ikke angres!
+                </p>
+              </div>
+            )}
+          </section>
+        </div>
+        <div className="flex justify-end gap-2">
+          {!errorToShow && !successMessage && (
+            <Button
+              color="danger"
+              onPress={() => {
+                deleteUserWithId(userDataToDelete?.id);
+              }}
+            >
+              Slett
+            </Button>
+          )}
+
+          <Button
+            color="primary"
+            onPress={() => {
+              setErrorToShow("");
+              setSuccessMessage("");
+              onClose();
+            }}
+          >
+            Tilbake
+          </Button>
+        </div>
+      </div>
     </Modal>
   );
 }

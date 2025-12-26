@@ -3,7 +3,7 @@ import { UserWithRoles } from "@/types/types";
 import { UserProfile } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";
 import type { UserData } from "@clerk/types";
-import { Spinner } from "@heroui/spinner";
+import { Spinner } from "@heroui/react";
 
 export default async function Page() {
   const user = (await currentUser()) as UserData;

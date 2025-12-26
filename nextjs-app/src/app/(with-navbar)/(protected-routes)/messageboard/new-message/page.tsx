@@ -8,15 +8,8 @@ import { useUser } from "@clerk/nextjs";
 import {
   Button,
   Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
   Checkbox,
   Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
   Spinner,
 } from "@heroui/react";
 import { htmlToBlocks } from "@portabletext/block-tools";
@@ -228,7 +221,7 @@ export default function NewMessage() {
   return (
     <>
       <Card className="p-2 py-8 mb-16">
-        <CardHeader className="flex flex-col mb-0 pb-0">
+        <Card.Header className="flex flex-col mb-0 pb-0">
           <div className="pb-4 pr-4 md:pb-8 flex gap-3 w-full">
             <div className="border-r-1 border-black/20 pr-4">
               <MessagesSquare className="h-full" />
@@ -237,10 +230,10 @@ export default function NewMessage() {
               Opprett nytt innlegg
             </h1>
           </div>
-        </CardHeader>
-        <CardBody className="pt-0 grid grid-cols-1 lg:grid-cols-2 gap-4">
+        </Card.Header>
+        <Card.Content className="pt-0 grid grid-cols-1 lg:grid-cols-2 gap-4">
           <MessageEditor />
-        </CardBody>
+        </Card.Content>
 
         <CardFooter>
           <div>
@@ -281,7 +274,7 @@ export default function NewMessage() {
             </div>
           </div>
         </CardFooter>
-      </Card>
+      </CardRoot>
 
       {/*
         Modal for errors and messages
@@ -290,40 +283,36 @@ export default function NewMessage() {
         isOpen={modalForMessages.isOpen}
         onOpenChange={modalForMessages.onOpenChange}
       >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                {modalTitle}
-              </ModalHeader>
-              <ModalBody>{modalBody}</ModalBody>
-              <ModalFooter>
-                <Button
-                  color="danger"
-                  variant="light"
-                  className={`${modalCancelDisabled ? "hidden" : ""}`}
-                  isDisabled={modalCancelDisabled}
-                  onPress={() => {
-                    resetModal();
-                    modalForMessages.onClose();
-                  }}
-                >
-                  {modalCancelText}
-                </Button>
-                <Button
-                  color="primary"
-                  onPress={() => {
-                    resetModal();
-                    modalForMessages.onClose();
-                    router.push(modalOkUrl);
-                  }}
-                >
-                  {modalOkText}
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
+          <div className="flex flex-col gap-1 mb-4 font-semibold text-lg">
+            {modalTitle}
+          </div>
+          <div className="mb-4">{modalBody}</div>
+          <div className="flex justify-end gap-2">
+            <Button
+              color="danger"
+              variant="light"
+              className={`${modalCancelDisabled ? "hidden" : ""}`}
+              isDisabled={modalCancelDisabled}
+              onPress={() => {
+                resetModal();
+                modalForMessages.onClose();
+              }}
+            >
+              {modalCancelText}
+            </Button>
+            <Button
+              color="primary"
+              onPress={() => {
+                resetModal();
+                modalForMessages.onClose();
+                router.push(modalOkUrl);
+              }}
+            >
+              {modalOkText}
+            </Button>
+          </div>
+        </div>
       </Modal>
     </>
   );

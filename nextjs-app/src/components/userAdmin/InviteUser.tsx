@@ -6,13 +6,8 @@ import {
   Button,
   Checkbox,
   CheckboxGroup,
-  Divider,
   Input,
   Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
 } from "@heroui/react";
 import { useContext, useMemo, useState } from "react";
 
@@ -133,22 +128,27 @@ export default function InviteUser() {
         Dette er den <em>anbefalte</em> måten å gjøre det på, da brukeren selv
         kan velge passord, navn og foretrukket innloggingsmetode.
       </p>
-      <Divider className="mt-4" />
+      <hr className="mt-4 border-t border-divider" />
       <form onSubmit={handleSubmit} className="py-8" id="form">
-        <Input
-          label="E-post"
-          type="email"
-          required
-          value={emailToInvite}
-          isInvalid={isInvalidEmail}
-          errorMessage={isInvalidEmail && "Tast inn en gyldig e-postadresse"}
-          onValueChange={(value) => {
-            setErrorMessage("");
-            setEmailToInvite(value);
-          }}
-          className="mb-5 sm:w-2/3"
-          description="E-postadressen til den du vil invitere."
-        />
+        <div className="mb-5 sm:w-2/3">
+          <Input
+            label="E-post"
+            type="email"
+            required
+            value={emailToInvite}
+            onChange={(e) => {
+              setErrorMessage("");
+              setEmailToInvite(e.target.value);
+            }}
+            description="E-postadressen til den du vil invitere."
+            className={isInvalidEmail ? "border-danger" : ""}
+          />
+          {isInvalidEmail && (
+            <div className="text-danger text-sm mt-1">
+              Tast inn en gyldig e-postadresse
+            </div>
+          )}
+        </div>
 
         <CheckboxGroup
           label="Velg roller"
@@ -186,29 +186,25 @@ export default function InviteUser() {
         isOpen={modalInviteUser.isOpen}
         onOpenChange={modalInviteUser.onOpenChange}
       >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                {inviteTitle}
-              </ModalHeader>
-              <ModalBody>{inviteBody}</ModalBody>
-              <ModalFooter>
-                <Button
-                  onPress={() => {
-                    handleInviteUser();
-                    modalInviteUser.onClose();
-                  }}
-                >
-                  {inviteOkText}
-                </Button>
-                <Button color="danger" onPress={modalInviteUser.onClose}>
-                  {inviteCancelText}
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
+          <div className="flex flex-col gap-1 mb-4">
+            {inviteTitle}
+          </div>
+          <div className="mb-4">{inviteBody}</div>
+          <div className="flex justify-end gap-2">
+            <Button
+              onPress={() => {
+                handleInviteUser();
+                modalInviteUser.onClose();
+              }}
+            >
+              {inviteOkText}
+            </Button>
+            <Button color="danger" onPress={modalInviteUser.onClose}>
+              {inviteCancelText}
+            </Button>
+          </div>
+        </div>
       </Modal>
 
       {/* MODAL FOR DISPLAYING SUCCESS MESSAGE */}
@@ -216,24 +212,20 @@ export default function InviteUser() {
         isOpen={modalInviteUserSuccess.isOpen}
         onOpenChange={modalInviteUserSuccess.onOpenChange}
       >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                {successTitle}
-              </ModalHeader>
-              <ModalBody>{successBody}</ModalBody>
-              <ModalFooter>
-                <Button
-                  color="primary"
-                  onPress={modalInviteUserSuccess.onClose}
-                >
-                  {successOkText}
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
+          <div className="flex flex-col gap-1 mb-4">
+            {successTitle}
+          </div>
+          <div className="mb-4">{successBody}</div>
+          <div className="flex justify-end gap-2">
+            <Button
+              color="primary"
+              onPress={modalInviteUserSuccess.onClose}
+            >
+              {successOkText}
+            </Button>
+          </div>
+        </div>
       </Modal>
 
       {/* MODAL FOR DISPLAYING ERRORS */}
@@ -241,33 +233,29 @@ export default function InviteUser() {
         isOpen={modalErrorMessage.isOpen}
         onOpenChange={modalErrorMessage.onOpenChange}
       >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                {errorTitle}
-              </ModalHeader>
-              <ModalBody>
-                <p>{errorBody}</p>
-                <p>
-                  Hvis du mener noe er galt, ta kontakt med styret eller
-                  web-administrator.
-                </p>
-              </ModalBody>
-              <ModalFooter>
-                <Button
-                  color="primary"
-                  onPress={() => {
-                    setErrorMessage("");
-                    modalErrorMessage.onClose();
-                  }}
-                >
-                  {errorOkText}
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
+          <div className="flex flex-col gap-1 mb-4">
+            {errorTitle}
+          </div>
+          <div className="mb-4">
+            <p>{errorBody}</p>
+            <p>
+              Hvis du mener noe er galt, ta kontakt med styret eller
+              web-administrator.
+            </p>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button
+              color="primary"
+              onPress={() => {
+                setErrorMessage("");
+                modalErrorMessage.onClose();
+              }}
+            >
+              {errorOkText}
+            </Button>
+          </div>
+        </div>
       </Modal>
     </div>
   );

@@ -1,4 +1,4 @@
-import { Chip, type ChipProps } from "@heroui/chip";
+import { Chip, type ChipProps } from "@heroui/react";
 
 type FriendlyUserRole = {
   role: string;
@@ -8,7 +8,9 @@ type FriendlyUserRole = {
 
 export default function RoleDisplay({
   roles,
-}: { roles: string[] | undefined }) {
+}: {
+  roles: string[] | undefined;
+}) {
   const friendlyUserRoles: FriendlyUserRole[] = [
     {
       role: "admin",

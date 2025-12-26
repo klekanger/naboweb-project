@@ -1,6 +1,7 @@
 "use client";
 
 import { getUser } from "@/app/actions/getUser";
+import Pagination from "@/components/common/Pagination";
 import DeleteUserModal from "@/components/userAdmin/DeleteUserModal";
 import ShowUserModal from "@/components/userAdmin/ShowUserModal";
 import { useUser } from "@clerk/nextjs";
@@ -10,25 +11,15 @@ import {
   type ShowUserProps,
   type UserTableProps,
 } from "@/types/types";
-import { Input } from "@heroui/input";
+import { Input } from "@heroui/react";
 import {
   Button,
   Checkbox,
   Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-  Pagination,
   Spinner,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
   Tooltip,
-  useDisclosure,
 } from "@heroui/react";
+import { useDisclosure } from "@/hooks/useDisclosure";
 import { MoreVertical, SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, {
@@ -220,16 +211,19 @@ export default function UserTable({
       <div className="space-y-4">
         {/* Global Search */}
         <div className="flex gap-2 max-w-md">
-          <Input
-            placeholder="Søk etter bruker"
-            type="search"
-            startContent={<SearchIcon />}
-            value={globalSearchValue}
-            onClear={onGlobalSearchClear}
-            onValueChange={onGlobalSearchChange}
-            onKeyDown={handleGlobalSearchKeyPress}
-            className="flex-1"
-          />
+          <div className="relative flex-1">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
+              <SearchIcon className="w-4 h-4 text-gray-400" />
+            </div>
+            <Input
+              placeholder="Søk etter bruker"
+              type="search"
+              value={globalSearchValue}
+              onChange={(e) => onGlobalSearchChange(e.target.value || "")}
+              onKeyDown={handleGlobalSearchKeyPress}
+              className="flex-1 pl-10"
+            />
+          </div>
           <Button
             color="primary"
             onPress={handleGlobalSearch}
@@ -261,18 +255,171 @@ export default function UserTable({
 
   return (
     <div className={rest?.className ?? ""}>
-      <Table
-        className="mb-16"
-        shadow="none"
-        isCompact
-        aria-label={
-          isSearchResult
-            ? `Tabell med globale søkeresultater`
-            : "Tabell med oversikt over brukere"
-        }
-        topContent={topContent}
-        bottomContent={
-          !isSearchResult &&
+      <div className="mb-16">
+        {topContent}
+        <div className="overflow-x-auto">
+          <table
+            className="w-full min-w-[640px] border-collapse text-sm"
+            aria-label={
+              isSearchResult
+                ? `Tabell med globale søkeresultater`
+                : "Tabell med oversikt over brukere"
+            }
+          >
+            <thead>
+              <tr>
+                <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-3 text-left">
+                  Navn
+                </th>
+                <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-3 text-left">
+                  E-post
+                </th>
+                <th className="hidden bg-brand-primary/20 text-sm font-bold sm:table-cell md:text-base p-3 text-left">
+                  Opprettet
+                </th>
+                <th className="hidden bg-brand-primary/20 text-sm font-bold sm:table-cell md:text-base p-3 text-left">
+                  Roller
+                </th>
+                <th className="hidden bg-brand-primary/20 text-sm font-bold sm:table-cell md:text-base p-3 text-left">
+                  Varsling
+                </th>
+                <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-3 text-left">
+                  Oppgaver
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {isPaginating ? (
+                <tr>
+                  <td colSpan={6} className="p-8 text-center">
+                    <Spinner />
+                  </td>
+                </tr>
+              ) : sortedUsers && sortedUsers.length > 0 ? (
+                sortedUsers.map((user, index) => {
+                  let roles;
+
+                  if (Array.isArray(user.roles)) {
+                    roles = user.roles
+                      .map((role) =>
+                        role === "admin" ? (
+                          <CircleAdmin key={`${user.id}-admin`} />
+                        ) : role === "editor" ? (
+                          <CircleEditor key={`${user.id}-editor`} />
+                        ) : null,
+                      )
+                      .sort();
+                  }
+
+                  const isCurrentUser = myUser?.id === user.id;
+
+                  return (
+                    <tr
+                      key={user.id}
+                      className={`text-left ${index % 2 === 0 ? "bg-gray-50 dark:bg-gray-900" : ""}`}
+                    >
+                      <td className="p-3">
+                        {`${user.firstName} ${user.lastName}`}
+                        {isCurrentUser && (
+                          <span className="text-brand-dark-danger"> (Deg)</span>
+                        )}
+                      </td>
+                      <td className="p-3">{user.email}</td>
+                      <td className="hidden sm:table-cell p-3">
+                        {user.createdAt
+                          ? new Date(user.createdAt).toLocaleDateString("nb-NO", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            })
+                          : "-"}
+                      </td>
+                      <td className="hidden sm:table-cell p-3">{roles}</td>
+                      <td className="hidden sm:table-cell p-3">
+                        <Checkbox
+                          isSelected={user?.emailSubscription ?? false}
+                          onValueChange={(isSelected) =>
+                            handleUpdateEmailSubscription(user.id, isSelected)
+                          }
+                        />
+                      </td>
+                      <td className="p-3">
+                        <Dropdown>
+                          <Dropdown.Trigger asChild>
+                            <div
+                              role="button"
+                              tabIndex={0}
+                              className="inline-flex items-center justify-center gap-2 rounded-md bg-transparent px-2 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer dark:text-gray-300 dark:hover:bg-gray-800"
+                              aria-label="Meny for brukeroperasjoner"
+                              aria-haspopup="true"
+                            >
+                              <MoreVertical className="h-4 w-4 text-gray-400" />
+                            </div>
+                          </Dropdown.Trigger>
+                          <Dropdown.Menu
+                            closeOnSelect={true}
+                            aria-label="Meny for brukeroperasjoner"
+                            disabledKeys={isCurrentUser ? ["delete_user"] : []}
+                          >
+                            <Dropdown.Item
+                              key="show_user"
+                              onPress={() => {
+                                setUserDataToShowOrDelete({
+                                  firstName: "",
+                                  lastName: "",
+                                  email: "",
+                                  createdAt: null,
+                                  imageUrl: "",
+                                  lastSignInAt: null,
+                                  roles: [],
+                                });
+                                modalViewUser.onOpen();
+                                showUserWithIdModal(user.id);
+                              }}
+                            >
+                              Vis
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                              key="edit_user"
+                              onPress={handleEditUser(user)}
+                            >
+                              Rediger
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                              key="delete_user"
+                              onPress={() => {
+                                modalDeleteUser.onOpen();
+                                setUserDataToShowOrDelete({
+                                  ...userDataToShowOrDelete,
+                                  id: user?.id,
+                                  firstName: user?.firstName ?? "",
+                                  lastName: user?.lastName ?? "",
+                                  email: user?.email ?? "",
+                                  imageUrl: user?.imageUrl,
+                                });
+                              }}
+                            >
+                              Slett
+                            </Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan={6} className="p-8 text-center text-gray-500">
+                    {isSearchResult
+                      ? "Ingen brukere funnet i søket. Prøv andre søkeord."
+                      : "Ingen brukere"}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        {!isSearchResult &&
           pagination &&
           pagination.totalPages > 1 && (
             <div className="flex justify-center my-8">
@@ -292,144 +439,8 @@ export default function UserTable({
                 }}
               />
             </div>
-          )
-        }
-      >
-        <TableHeader>
-          <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
-            Navn
-          </TableColumn>
-          <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
-            E-post
-          </TableColumn>
-          <TableColumn className="hidden bg-brand-primary/20 text-sm font-bold sm:table-cell md:text-base">
-            Opprettet
-          </TableColumn>
-          <TableColumn className="hidden bg-brand-primary/20 text-sm font-bold sm:table-cell md:text-base">
-            Roller
-          </TableColumn>
-
-          <TableColumn className="hidden bg-brand-primary/20 text-sm font-bold sm:table-cell md:text-base">
-            Varsling
-          </TableColumn>
-
-          <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
-            Oppgaver
-          </TableColumn>
-        </TableHeader>
-        <TableBody
-          emptyContent={
-            isSearchResult
-              ? "Ingen brukere funnet i søket. Prøv andre søkeord."
-              : "Ingen brukere"
-          }
-          isLoading={isPaginating}
-          loadingContent={<Spinner />}
-        >
-          {sortedUsers.map((user) => {
-            let roles;
-
-            if (Array.isArray(user.roles)) {
-              roles = user.roles
-                .map((role) =>
-                  role === "admin" ? (
-                    <CircleAdmin key={`${user.id}-admin`} />
-                  ) : role === "editor" ? (
-                    <CircleEditor key={`${user.id}-editor`} />
-                  ) : null,
-                )
-                .sort();
-            }
-
-            const isCurrentUser = myUser?.id === user.id;
-
-            return (
-              <TableRow key={user.id} className="text-left">
-                <TableCell>
-                  {`${user.firstName} ${user.lastName}`}
-                  {isCurrentUser && (
-                    <span className="text-brand-dark-danger"> (Deg)</span>
-                  )}
-                </TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell className="hidden sm:table-cell">
-                  {user.createdAt
-                    ? new Date(user.createdAt).toLocaleDateString("nb-NO", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                      })
-                    : "-"}
-                </TableCell>
-                <TableCell className="hidden sm:table-cell">{roles}</TableCell>
-                <TableCell className="hidden sm:table-cell">
-                  <Checkbox
-                    isSelected={user?.emailSubscription ?? false}
-                    onValueChange={(isSelected) =>
-                      handleUpdateEmailSubscription(user.id, isSelected)
-                    }
-                  />
-                </TableCell>
-                <TableCell>
-                  <Dropdown>
-                    <DropdownTrigger>
-                      <Button isIconOnly size="sm" variant="light">
-                        <MoreVertical className="text-default-300" />
-                      </Button>
-                    </DropdownTrigger>
-                    <DropdownMenu
-                      closeOnSelect={true}
-                      aria-label="Meny for brukeroperasjoner"
-                      disabledKeys={isCurrentUser ? ["delete_user"] : []}
-                    >
-                      <DropdownItem
-                        key="show_user"
-                        onPress={() => {
-                          setUserDataToShowOrDelete({
-                            firstName: "",
-                            lastName: "",
-                            email: "",
-                            createdAt: null,
-                            imageUrl: "",
-                            lastSignInAt: null,
-                            roles: [],
-                          });
-                          modalViewUser.onOpen();
-                          showUserWithIdModal(user.id);
-                        }}
-                      >
-                        Vis
-                      </DropdownItem>
-                      <DropdownItem
-                        key="edit_user"
-                        onPress={handleEditUser(user)}
-                      >
-                        Rediger
-                      </DropdownItem>
-                      <DropdownItem
-                        key="delete_user"
-                        onPress={() => {
-                          modalDeleteUser.onOpen();
-                          setUserDataToShowOrDelete({
-                            ...userDataToShowOrDelete,
-                            id: user?.id,
-                            firstName: user?.firstName ?? "",
-                            lastName: user?.lastName ?? "",
-                            email: user?.email ?? "",
-                            imageUrl: user?.imageUrl,
-                          });
-                        }}
-                      >
-                        Slett
-                      </DropdownItem>
-                    </DropdownMenu>
-                  </Dropdown>
-                </TableCell>
-              </TableRow>
-            );
-          }) || []}
-        </TableBody>
-      </Table>
+          )}
+      </div>
 
       <ShowUserModal
         userDataToShow={userDataToShowOrDelete}

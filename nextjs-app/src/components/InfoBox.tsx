@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, CardFooter, CardHeader } from "@heroui/react";
+import { Card } from "@heroui/react";
 
 type InfoBoxProps = {
   title: string;
@@ -19,17 +19,19 @@ export default function InfoBox({
 }: InfoBoxProps) {
   return (
     <Card className={`p-2 py-8 ${rest?.className ?? ""}`}>
-      <CardHeader className="flex gap-3">
+      <div className="flex gap-3 p-4">
         {icon && <div className="border-r-1 border-black/20 pr-4">{icon}</div>}
         <h1 className="text-xl lg:text-3xl prose lg:prose-lg ">{title}</h1>
-      </CardHeader>
-      <CardBody className="prose lg:prose-lg">
+      </div>
+      <div className="prose lg:prose-lg p-4">
         <p>{message}</p>
-      </CardBody>
+      </div>
 
-      <CardFooter>
-        <p className="text-xs h-[1rem]">{footerMessage}</p>
-      </CardFooter>
+      {footerMessage && (
+        <div className="p-4">
+          <p className="text-xs h-4">{footerMessage}</p>
+        </div>
+      )}
     </Card>
   );
 }

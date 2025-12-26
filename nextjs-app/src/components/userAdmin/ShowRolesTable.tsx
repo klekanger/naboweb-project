@@ -2,15 +2,7 @@
 
 import { SidebarMenu, UserAdminContext } from "@/context/userAdminContext";
 import { UserTableProps, UserWithEmails } from "@/types/types";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-  Tooltip,
-} from "@heroui/react";
+import { Tooltip } from "@heroui/react";
 import { Crown, Edit } from "lucide-react";
 import { useContext } from "react";
 
@@ -39,103 +31,103 @@ export default function ShowRolesTable({ users, ...rest }: UserTableProps) {
         Klikk brukeren du vil redigere, for eksempel hvis du vil fjerne eller
         legge til en rolle.{" "}
       </p>
-      <Table
-        shadow="none"
-        isCompact
-        topContent={
-          <p className="text-left text-lg">
-            <strong>
-              <Crown className="inline mr-2" /> Administratorer
-            </strong>
-          </p>
-        }
-        aria-label="Tabell med oversikt over adminbrukere"
-        onRowAction={(id) => {
-          const userToEdit = users.find((user) => user.id === id);
-          setSelectedUser(userToEdit as UserWithEmails);
-          setSelectedMenu(SidebarMenu.EDIT_USER);
-        }}
-      >
-        <TableHeader>
-          <TableColumn
-            className="bg-brand-primary/20 text-sm font-bold md:text-base"
-            width="50%"
-          >
-            Navn
-          </TableColumn>
-          <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
-            E-post
-          </TableColumn>
-        </TableHeader>
-        <TableBody>
-          {adminUsers.map((user) => (
-            <TableRow key={user?.id} className="text-left group">
-              <TableCell className="group-hover:bg-brand-black/10 cursor-pointer">
-                <Tooltip
-                  content="Klikk for å redigere"
-                  delay={2000}
-                  placement="right-end"
-                >
-                  <span>{`${user?.firstName} ${user?.lastName}`}</span>
-                </Tooltip>
-              </TableCell>
-              <TableCell className="group-hover:bg-brand-black/10 cursor-pointer">
-                {user?.email}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <Table
-        className="mb-16"
-        shadow="none"
-        isCompact
-        topContent={
-          <p className="text-left text-lg">
-            <strong>
-              <Edit className="inline mr-2" />
-              Redaktører
-            </strong>
-          </p>
-        }
-        onRowAction={(id) => {
-          const userToEdit = users.find((user) => user.id === id);
-          setSelectedUser(userToEdit as UserWithEmails);
-          setSelectedMenu(SidebarMenu.EDIT_USER);
-        }}
-        aria-label="Tabell med oversikt over redaktører"
-      >
-        <TableHeader>
-          <TableColumn
-            className="bg-brand-primary/20 text-sm font-bold md:text-base"
-            width="50%"
-          >
-            Navn
-          </TableColumn>
-          <TableColumn className="bg-brand-primary/20 text-sm font-bold md:text-base">
-            E-post
-          </TableColumn>
-        </TableHeader>
-        <TableBody>
-          {editorUsers.map((user) => (
-            <TableRow key={user?.id} className="text-left group">
-              <TableCell className="group-hover:bg-brand-black/10 cursor-pointer">
-                <Tooltip
-                  content="Klikk for å redigere"
-                  delay={2000}
-                  placement="right-end"
-                >
-                  <span>{`${user?.firstName} ${user?.lastName}`}</span>
-                </Tooltip>
-              </TableCell>
-
-              <TableCell className="group-hover:bg-brand-black/10 cursor-pointer">
-                {user?.email}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <div className="mb-8 overflow-x-auto">
+        <p className="text-left text-lg mb-2">
+          <strong>
+            <Crown className="inline mr-2" /> Administratorer
+          </strong>
+        </p>
+        <table
+          className="w-full min-w-[640px] border-collapse text-sm"
+          aria-label="Tabell med oversikt over adminbrukere"
+        >
+          <thead>
+            <tr>
+              <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-3 text-left w-[50%]">
+                Navn
+              </th>
+              <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-3 text-left">
+                E-post
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {adminUsers.map((user, index) => (
+              <tr
+                key={user?.id}
+                className={`text-left group ${index % 2 === 0 ? "bg-gray-50 dark:bg-gray-900" : ""}`}
+                onClick={() => {
+                  const userToEdit = users.find((u) => u.id === user.id);
+                  setSelectedUser(userToEdit as UserWithEmails);
+                  setSelectedMenu(SidebarMenu.EDIT_USER);
+                }}
+              >
+                <td className="group-hover:bg-brand-black/10 cursor-pointer p-3">
+                  <Tooltip
+                    content="Klikk for å redigere"
+                    delay={2000}
+                    placement="right-end"
+                  >
+                    <span>{`${user?.firstName} ${user?.lastName}`}</span>
+                  </Tooltip>
+                </td>
+                <td className="group-hover:bg-brand-black/10 cursor-pointer p-3">
+                  {user?.email}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="mb-16 overflow-x-auto">
+        <p className="text-left text-lg mb-2">
+          <strong>
+            <Edit className="inline mr-2" />
+            Redaktører
+          </strong>
+        </p>
+        <table
+          className="w-full min-w-[640px] border-collapse text-sm"
+          aria-label="Tabell med oversikt over redaktører"
+        >
+          <thead>
+            <tr>
+              <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-3 text-left w-[50%]">
+                Navn
+              </th>
+              <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-3 text-left">
+                E-post
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {editorUsers.map((user, index) => (
+              <tr
+                key={user?.id}
+                className={`text-left group ${index % 2 === 0 ? "bg-gray-50 dark:bg-gray-900" : ""}`}
+                onClick={() => {
+                  const userToEdit = users.find((u) => u.id === user.id);
+                  setSelectedUser(userToEdit as UserWithEmails);
+                  setSelectedMenu(SidebarMenu.EDIT_USER);
+                }}
+              >
+                <td className="group-hover:bg-brand-black/10 cursor-pointer p-3">
+                  <Tooltip
+                    content="Klikk for å redigere"
+                    delay={2000}
+                    placement="right-end"
+                  >
+                    <span>{`${user?.firstName} ${user?.lastName}`}</span>
+                  </Tooltip>
+                </td>
+                <td className="group-hover:bg-brand-black/10 cursor-pointer p-3">
+                  {user?.email}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

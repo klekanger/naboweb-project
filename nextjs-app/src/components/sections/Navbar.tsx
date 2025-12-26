@@ -1,27 +1,15 @@
 "use client";
 
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
-import {
-  Button,
-  ButtonGroup,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-  NavbarMenu,
-  NavbarMenuItem,
-  NavbarMenuToggle,
-  Navbar as NextUINavbar,
-} from "@heroui/react";
+import { Button, ButtonGroup } from "@heroui/react";
 import {
   ChevronDown,
   Files,
   Info,
   LogIn,
   LogOut,
+  Menu,
+  X,
   MessagesSquare,
   NotebookPen,
 } from "lucide-react";
@@ -46,28 +34,29 @@ export default function Navbar() {
     setIsMenuOpen(false);
   }, [pathname]);
 
+  const isActive = (path: string) => pathname.startsWith(path);
+
   return (
-    <NextUINavbar
-      classNames={{
-        base: "dark:bg-black/80 bg-brand-white/70",
-        item: "text-brand-black dark:text-brand-white",
-      }}
-      onMenuOpenChange={() => {
-        setIsMenuOpen(!isMenuOpen);
-      }}
-      isMenuOpen={isMenuOpen}
-      shouldHideOnScroll={false}
-      maxWidth="2xl"
-      height="4.5rem"
-      isBlurred
-    >
-      <NavbarContent justify="start">
-        <NavbarMenuToggle
-          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          className="z-50 lg:hidden"
-        />
-        <NavbarBrand aria-label="Gartnerihagen-logo">
-          <Link href="/" className="cursor-pointer">
+    <nav className="sticky top-0 z-50 dark:bg-black/80 bg-brand-white/70 backdrop-blur-md border-b border-border">
+      <div className="max-w-7xl mx-auto px-4 h-18 flex items-center justify-between">
+        {/* Mobile menu toggle and logo */}
+        <div className="flex items-center gap-4 flex-1 lg:flex-none">
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            className="z-50 lg:hidden p-2"
+          >
+            {isMenuOpen ? (
+              <X className="h-6 w-6 text-brand-black dark:text-brand-white" />
+            ) : (
+              <Menu className="h-6 w-6 text-brand-black dark:text-brand-white" />
+            )}
+          </button>
+          <Link
+            href="/"
+            className="cursor-pointer"
+            aria-label="Gartnerihagen-logo"
+          >
             <Image
               src={logoLight}
               alt="Gartnerihagen-logo"
@@ -75,111 +64,123 @@ export default function Navbar() {
               priority
             />
           </Link>
-        </NavbarBrand>
-      </NavbarContent>
+        </div>
 
-      <NavbarContent className="hidden gap-8 lg:flex" justify="end">
-        {isClient && isLoaded && user && (
-          <Dropdown className="hidden lg:block">
-            <NavbarItem>
-              <DropdownTrigger>
-                <Button
-                  disableRipple
-                  className="p-0 bg-transparent data-[hover=true]:bg-transparent text-base hover:text-brand-secondary duration-200 transition"
-                  endContent={
-                    <ChevronDown className="h-[1.2rem] w-[1.2rem] mt-1" />
-                  }
-                  radius="sm"
-                  variant="light"
-                >
-                  For beboere
-                </Button>
-              </DropdownTrigger>
-            </NavbarItem>
-
-            <DropdownMenu
-              aria-label="ACME features"
-              className="w-[340px]"
-              itemClasses={{
-                base: "gap-4",
-              }}
-            >
-              <DropdownItem
-                as={Link}
-                key="informasjon"
-                description="Blogginnlegg, dokumenter og annet fra styret."
-                startContent={<Info />}
-                href="/information"
+        {/* Desktop navigation */}
+        <div className="hidden lg:flex items-center gap-8">
+          {isClient && isLoaded && user && (
+            <div className="relative group">
+              <Button
+                variant="light"
+                className="p-0 bg-transparent text-base hover:text-brand-secondary duration-200 transition text-brand-black dark:text-brand-white"
+                endContent={
+                  <ChevronDown className="h-[1.2rem] w-[1.2rem] mt-1" />
+                }
               >
-                Informasjon fra styret
-              </DropdownItem>
+                For beboere
+              </Button>
+              <div className="absolute top-full left-0 mt-2 w-[340px] bg-background border border-border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <div className="p-2 flex flex-col gap-1">
+                  <Link
+                    href="/information"
+                    className="flex items-start gap-4 p-3 rounded-md hover:bg-default-100 transition-colors"
+                  >
+                    <Info className="h-5 w-5 mt-0.5 shrink-0" />
+                    <div className="flex flex-col">
+                      <span className="font-medium">
+                        Informasjon fra styret
+                      </span>
+                      <span className="text-sm text-foreground/60">
+                        Blogginnlegg, dokumenter og annet fra styret.
+                      </span>
+                    </div>
+                  </Link>
 
-              <DropdownItem
-                as={Link}
-                key="oppslagstavle"
-                description="Oppslag om stort og smått fra beboere og styret."
-                startContent={<MessagesSquare />}
-                href="/messageboard"
-              >
-                Oppslagstavle
-              </DropdownItem>
+                  <Link
+                    href="/messageboard"
+                    className="flex items-start gap-4 p-3 rounded-md hover:bg-default-100 transition-colors"
+                  >
+                    <MessagesSquare className="h-5 w-5 mt-0.5 shrink-0" />
+                    <div className="flex flex-col">
+                      <span className="font-medium">Oppslagstavle</span>
+                      <span className="text-sm text-foreground/60">
+                        Oppslag om stort og smått fra beboere og styret.
+                      </span>
+                    </div>
+                  </Link>
 
-              <DropdownItem
-                as={Link}
-                key="møtereferater"
-                description="Referater fra årsmøter."
-                startContent={<NotebookPen />}
-                href="/information/referater"
-              >
-                Møtereferater
-              </DropdownItem>
+                  <Link
+                    href="/information/referater"
+                    className="flex items-start gap-4 p-3 rounded-md hover:bg-default-100 transition-colors"
+                  >
+                    <NotebookPen className="h-5 w-5 mt-0.5 shrink-0" />
+                    <div className="flex flex-col">
+                      <span className="font-medium">Møtereferater</span>
+                      <span className="text-sm text-foreground/60">
+                        Referater fra årsmøter.
+                      </span>
+                    </div>
+                  </Link>
 
-              <DropdownItem
-                as={Link}
-                key="diverse-dokumenter"
-                description="Husfarger og andre dokumenter fra styret."
-                startContent={<Files />}
-                href="/information/dokumenter"
-              >
-                Diverse dokumenter
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        )}
+                  <Link
+                    href="/information/dokumenter"
+                    className="flex items-start gap-4 p-3 rounded-md hover:bg-default-100 transition-colors"
+                  >
+                    <Files className="h-5 w-5 mt-0.5 shrink-0" />
+                    <div className="flex flex-col">
+                      <span className="font-medium">Diverse dokumenter</span>
+                      <span className="text-sm text-foreground/60">
+                        Husfarger og andre dokumenter fra styret.
+                      </span>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
 
-        <NavbarItem
-          isActive={pathname.startsWith("/blog-collection")}
-          className="hover:text-brand-secondary duration-200 transition"
-        >
-          <Link href="/blog-collection">Blogg</Link>
-        </NavbarItem>
-
-        <NavbarItem
-          isActive={pathname.startsWith("/om-boligsameiet-gartnerihagen")}
-          className="hover:text-brand-secondary duration-200 transition"
-        >
-          <Link href="/om-boligsameiet-gartnerihagen">Om oss</Link>
-        </NavbarItem>
-
-        <NavbarItem
-          isActive={pathname.startsWith("/styret")}
-          className="hover:text-brand-secondary duration-200 transition"
-        >
-          <Link href="/styret">Styret</Link>
-        </NavbarItem>
-
-        {isClient && isLoaded && user && (
-          <NavbarItem
-            isActive={pathname.startsWith("/min-side")}
-            className="hover:text-brand-secondary duration-200 transition"
+          <Link
+            href="/blog-collection"
+            className={`text-brand-black dark:text-brand-white hover:text-brand-secondary duration-200 transition ${
+              isActive("/blog-collection") ? "text-brand-secondary" : ""
+            }`}
           >
-            <Link href="/min-side">Min side</Link>
-          </NavbarItem>
-        )}
+            Blogg
+          </Link>
 
-        {isClient && isLoaded && (
-          <ButtonGroup>
-            <NavbarItem>
+          <Link
+            href="/om-boligsameiet-gartnerihagen"
+            className={`text-brand-black dark:text-brand-white hover:text-brand-secondary duration-200 transition ${
+              isActive("/om-boligsameiet-gartnerihagen")
+                ? "text-brand-secondary"
+                : ""
+            }`}
+          >
+            Om oss
+          </Link>
+
+          <Link
+            href="/styret"
+            className={`text-brand-black dark:text-brand-white hover:text-brand-secondary duration-200 transition ${
+              isActive("/styret") ? "text-brand-secondary" : ""
+            }`}
+          >
+            Styret
+          </Link>
+
+          {isClient && isLoaded && user && (
+            <Link
+              href="/min-side"
+              className={`text-brand-black dark:text-brand-white hover:text-brand-secondary duration-200 transition ${
+                isActive("/min-side") ? "text-brand-secondary" : ""
+              }`}
+            >
+              Min side
+            </Link>
+          )}
+
+          {isClient && isLoaded && (
+            <ButtonGroup>
               {isSignedIn ? (
                 <SignOutButton redirectUrl="/">
                   <Button
@@ -201,81 +202,109 @@ export default function Navbar() {
                   </Button>
                 </SignInButton>
               )}
-            </NavbarItem>
-          </ButtonGroup>
-        )}
-      </NavbarContent>
+            </ButtonGroup>
+          )}
+        </div>
+      </div>
 
-      {/* ************** */}
-      {/* HAMBURGER MENU */}
-      {/* ************** */}
-      <NavbarMenu className="pt-8 text-center">
-        {isClient && isLoaded && user && (
-          <>
-            <NavbarItem
-              isActive={pathname.startsWith("/information")}
-              className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
-            >
-              <Link href="/information">Informasjon fra styret</Link>
-            </NavbarItem>
+      {/* Mobile menu */}
+      {isMenuOpen && (
+        <div className="lg:hidden pt-8 pb-4 px-4 text-center border-t border-border">
+          {isClient && isLoaded && user && (
+            <>
+              <Link
+                href="/information"
+                className={`block py-2 text-brand-black dark:text-brand-white duration-100 transition hover:text-brand-black/60 dark:hover:text-brand-white/60 ${
+                  isActive("/information") ? "text-brand-secondary" : ""
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Informasjon fra styret
+              </Link>
 
-            <NavbarItem
-              isActive={pathname.startsWith("/messageboard")}
-              className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
-            >
-              <Link href="/messageboard">Oppslagstavle</Link>
-            </NavbarItem>
+              <Link
+                href="/messageboard"
+                className={`block py-2 text-brand-black dark:text-brand-white duration-100 transition hover:text-brand-black/60 dark:hover:text-brand-white/60 ${
+                  isActive("/messageboard") ? "text-brand-secondary" : ""
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Oppslagstavle
+              </Link>
 
-            <NavbarItem
-              isActive={pathname.startsWith("/information/referater")}
-              className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
-            >
-              <Link href="/information/referater">Møtereferater</Link>
-            </NavbarItem>
+              <Link
+                href="/information/referater"
+                className={`block py-2 text-brand-black dark:text-brand-white duration-100 transition hover:text-brand-black/60 dark:hover:text-brand-white/60 ${
+                  isActive("/information/referater")
+                    ? "text-brand-secondary"
+                    : ""
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Møtereferater
+              </Link>
 
-            <NavbarItem
-              isActive={pathname.startsWith("/information/dokumenter")}
-              className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
-            >
-              <Link href="/information/dokumenter">Diverse dokumenter</Link>
-            </NavbarItem>
+              <Link
+                href="/information/dokumenter"
+                className={`block py-2 text-brand-black dark:text-brand-white duration-100 transition hover:text-brand-black/60 dark:hover:text-brand-white/60 ${
+                  isActive("/information/dokumenter")
+                    ? "text-brand-secondary"
+                    : ""
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Diverse dokumenter
+              </Link>
 
-            <hr className="my-4" />
-          </>
-        )}
+              <hr className="my-4" />
+            </>
+          )}
 
-        <NavbarItem
-          isActive={pathname.startsWith("/blog-collection")}
-          className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
-        >
-          <Link href="/blog-collection">Blogg</Link>
-        </NavbarItem>
-
-        <NavbarItem
-          isActive={pathname.startsWith("/om-boligsameiet-gartnerihagen")}
-          className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
-        >
-          <Link href="/om-boligsameiet-gartnerihagen">Om oss</Link>
-        </NavbarItem>
-
-        <NavbarItem
-          isActive={pathname.startsWith("/styret")}
-          className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
-        >
-          <Link href="/styret">Styret</Link>
-        </NavbarItem>
-
-        {isClient && isLoaded && user && (
-          <NavbarItem
-            isActive={pathname.startsWith("/min-side")}
-            className="text-brand-black duration-100 transition hover:text-brand-black/60 dark:text-brand-white dark:hover:text-brand-white/60"
+          <Link
+            href="/blog-collection"
+            className={`block py-2 text-brand-black dark:text-brand-white duration-100 transition hover:text-brand-black/60 dark:hover:text-brand-white/60 ${
+              isActive("/blog-collection") ? "text-brand-secondary" : ""
+            }`}
+            onClick={() => setIsMenuOpen(false)}
           >
-            <Link href="/min-side">Min side</Link>
-          </NavbarItem>
-        )}
+            Blogg
+          </Link>
 
-        <ButtonGroup className="mt-8">
-          <NavbarMenuItem>
+          <Link
+            href="/om-boligsameiet-gartnerihagen"
+            className={`block py-2 text-brand-black dark:text-brand-white duration-100 transition hover:text-brand-black/60 dark:hover:text-brand-white/60 ${
+              isActive("/om-boligsameiet-gartnerihagen")
+                ? "text-brand-secondary"
+                : ""
+            }`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Om oss
+          </Link>
+
+          <Link
+            href="/styret"
+            className={`block py-2 text-brand-black dark:text-brand-white duration-100 transition hover:text-brand-black/60 dark:hover:text-brand-white/60 ${
+              isActive("/styret") ? "text-brand-secondary" : ""
+            }`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Styret
+          </Link>
+
+          {isClient && isLoaded && user && (
+            <Link
+              href="/min-side"
+              className={`block py-2 text-brand-black dark:text-brand-white duration-100 transition hover:text-brand-black/60 dark:hover:text-brand-white/60 ${
+                isActive("/min-side") ? "text-brand-secondary" : ""
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Min side
+            </Link>
+          )}
+
+          <div className="mt-8 flex justify-center">
             {isClient && isLoaded && user ? (
               <SignOutButton redirectUrl="/">
                 <Button
@@ -293,9 +322,9 @@ export default function Navbar() {
                 </Button>
               </SignInButton>
             )}
-          </NavbarMenuItem>
-        </ButtonGroup>
-      </NavbarMenu>
-    </NextUINavbar>
+          </div>
+        </div>
+      )}
+    </nav>
   );
 }
