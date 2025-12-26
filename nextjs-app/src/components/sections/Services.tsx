@@ -82,7 +82,7 @@ export default function Services({
     return (
       <Card
         onClick={() => handlePress(url)}
-        className="w-full p-4 hover:-translate-y-2 h-full cursor-pointer transition-transform"
+        className="w-full p-4 hover:-translate-y-2 h-full cursor-pointer transition-transform shadow-lg border border-gray-200"
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
