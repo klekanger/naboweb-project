@@ -8,11 +8,10 @@ const nextConfig = {
         hostname: "cdn.sanity.io",
       },
     ],
-
   },
   experimental: {
     taint: true,
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;

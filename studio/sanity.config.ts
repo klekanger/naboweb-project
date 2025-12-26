@@ -2,35 +2,34 @@
  * This configuration is used for the standalone Sanity Studio
  */
 
-import { pageStructure, singletonPlugin } from "./plugins/settings";
-import authors from "./schemas/documents/authors";
-import blogPost from "./schemas/documents/blog";
-import fileMeetingMinutes from "./schemas/documents/fileMeetingMinutes";
-import fileOtherDocuments from "./schemas/documents/fileOtherDocuments";
-import { message } from "./schemas/documents/message";
-import page from "./schemas/documents/page";
-import { iconType } from "./schemas/objects/icons";
-import { twitter } from "./schemas/objects/twitter";
-import { youtube } from "./schemas/objects/youtube";
-import documentMenu from "./schemas/singletons/documentMenu";
-import frontpageHero from "./schemas/singletons/frontpage-hero";
-import services from "./schemas/singletons/services";
-import settings from "./schemas/singletons/settings";
-import frontpageShowcase from "./schemas/singletons/showcase";
-import newUserIntro from "./schemas/singletons/newUserIntro";
-import { nbNOLocale } from "@sanity/locale-nb-no";
-import { visionTool } from "@sanity/vision";
-import { defineConfig } from "sanity";
-import { presentationTool } from "sanity/presentation";
-import { structureTool } from "sanity/structure";
+import {pageStructure, singletonPlugin} from './plugins/settings'
+import authors from './schemaTypes/documents/authors'
+import blogPost from './schemaTypes/documents/blog'
+import fileMeetingMinutes from './schemaTypes/documents/fileMeetingMinutes'
+import fileOtherDocuments from './schemaTypes/documents/fileOtherDocuments'
+import {message} from './schemaTypes/documents/message'
+import page from './schemaTypes/documents/page'
+import {iconType} from './schemaTypes/objects/icons'
+import {twitter} from './schemaTypes/objects/twitter'
+import {youtube} from './schemaTypes/objects/youtube'
+import documentMenu from './schemaTypes/singletons/documentMenu'
+import frontpageHero from './schemaTypes/singletons/frontpage-hero'
+import services from './schemaTypes/singletons/services'
+import settings from './schemaTypes/singletons/settings'
+import frontpageShowcase from './schemaTypes/singletons/showcase'
+import newUserIntro from './schemaTypes/singletons/newUserIntro'
+import {nbNOLocale} from '@sanity/locale-nb-no'
+import {visionTool} from '@sanity/vision'
+import {defineConfig} from 'sanity'
+import {presentationTool} from 'sanity/presentation'
+import {structureTool} from 'sanity/structure'
 
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
-import { apiVersion, dataset, projectId } from "./lib/api";
-import { bodyText } from "./schemas/objects/bodyText";
+import {apiVersion, dataset, projectId} from './lib/api'
+import {bodyText} from './schemaTypes/objects/bodyText'
 
 // URL for preview functionality, defaults to localhost:3000 if not set
-const SANITY_STUDIO_PREVIEW_URL =
-  import.meta.env.VITE_SANITY_STUDIO_PREVIEW_URL || "http://localhost:3000";
+const SANITY_STUDIO_PREVIEW_URL = process.env.SANITY_STUDIO_PREVIEW_URL || 'http://localhost:3000'
 
 export default defineConfig({
   title: `gartnerihagen-askim.no [dataset: ${dataset}]`,
@@ -64,7 +63,7 @@ export default defineConfig({
   },
   plugins: [
     structureTool({
-      title: "Innhold",
+      title: 'Innhold',
       structure: pageStructure([
         settings,
         frontpageHero,
@@ -83,18 +82,18 @@ export default defineConfig({
       documentMenu.name,
     ]),
 
-    visionTool({ defaultApiVersion: apiVersion }),
+    visionTool({defaultApiVersion: apiVersion}),
 
     nbNOLocale(),
     // Presentation tool configuration for Visual Editing
     presentationTool({
-      title: "Presentasjon",
+      title: 'Presentasjon',
       previewUrl: {
         origin: SANITY_STUDIO_PREVIEW_URL,
         previewMode: {
-          enable: "/api/draft-mode/enable",
+          enable: '/api/draft-mode/enable',
         },
       },
     }),
   ],
-});
+})
