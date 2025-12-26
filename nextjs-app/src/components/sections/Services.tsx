@@ -93,28 +93,29 @@ export default function Services({
         }}
       >
         <div className="flex-row items-center gap-3 md:flex-col md:items-start! p-4">
-          <div className="flex items-center justify-center shrink-0">
+          <div className="flex items-center shrink-0">
             {RenderedIcon && <RenderedIcon width={3} height={3} />}
-          </div>
-          <h2 className="text-xl font-semibold md:hidden">
-            {title.toUpperCase()}{" "}
-            {locked && (
-              <Tooltip content="Krever innlogging">
-                <span className="pl-[0.5em]">🔐</span>
-              </Tooltip>
-            )}
-          </h2>
-        </div>
 
-        <div className="pt-0 prose p-4">
-          <h2 className="hidden md:block mt-4 text-xl font-semibold">
-            {title.toUpperCase()}{" "}
-            {locked && (
-              <Tooltip content="Krever innlogging">
-                <span className="pl-[0.5em]">🔐</span>
-              </Tooltip>
-            )}
-          </h2>
+            <h2 className="text-xl font-semibold md:hidden pl-4">
+              {title.toUpperCase()}
+              {locked && (
+                <Tooltip content="Krever innlogging">
+                  <span className="pl-[0.5em]">🔐</span>
+                </Tooltip>
+              )}
+            </h2>
+          </div>
+
+          <div className="py-2 md:py-4 prose">
+            <h2 className="hidden md:block text-xl font-semibold">
+              {title.toUpperCase()}{" "}
+              {locked && (
+                <Tooltip content="Krever innlogging">
+                  <span className="pl-[0.5em]">🔐</span>
+                </Tooltip>
+              )}
+            </h2>
+          </div>
           <p>{description}</p>
         </div>
       </Card>
