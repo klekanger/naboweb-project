@@ -22,7 +22,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
-import { htmlToBlocks } from "@sanity/block-tools";
+import { htmlToBlocks } from "@portabletext/block-tools";
 import { Schema } from "@sanity/schema";
 import {
   ArrowLeftIcon,

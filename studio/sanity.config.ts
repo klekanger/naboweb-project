@@ -89,6 +89,7 @@ export default defineConfig({
       title: 'Presentasjon',
       previewUrl: {
         origin: SANITY_STUDIO_PREVIEW_URL,
+        preview: '/',
         previewMode: {
           enable: '/api/draft-mode/enable',
         },

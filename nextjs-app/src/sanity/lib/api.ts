@@ -36,3 +36,6 @@ export const studioUrl =
   process.env.NEXT_PUBLIC_SANITY_STUDIO_URL || "http://localhost:3333";
 
 export const revalidateSecret = process.env.SANITY_REVALIDATE_SECRET;
+
+// viewerToken is exported from token.ts (server-only)
+// Import it from there instead to avoid client-side evaluation

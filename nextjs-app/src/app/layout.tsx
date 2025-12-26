@@ -12,7 +12,7 @@ import { SanityLive } from "@/sanity/lib/live";
 import { handleError } from "./client-utils";
 import { draftMode } from "next/headers";
 import { Toaster } from "sonner";
-import { VisualEditing } from "next-sanity";
+import { VisualEditing } from "next-sanity/visual-editing";
 import DraftModeToast from "@/components/DraftModeToast";
 
 const openSans = Open_Sans({

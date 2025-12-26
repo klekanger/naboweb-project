@@ -2,6 +2,7 @@
 
 import MessageEditor from "@/components/pages/messageBoard/MessageEditor";
 import { MessageEditorContext } from "@/context/messageEditorContext";
+import { useModalState } from "@/hooks/useModalState";
 import { currentUserRoles } from "@/lib/currentUserRoles";
 import { useUser } from "@clerk/nextjs";
 import {
@@ -17,10 +18,9 @@ import {
   ModalFooter,
   ModalHeader,
   Spinner,
-  useDisclosure,
 } from "@heroui/react";
+import { htmlToBlocks } from "@portabletext/block-tools";
 import { PortableTextBlock } from "@portabletext/types";
-import { htmlToBlocks } from "@sanity/block-tools";
 import { Schema } from "@sanity/schema";
 import { Editor } from "@tiptap/react";
 import {
@@ -33,7 +33,6 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
-import { useModalState } from "@/hooks/useModalState";
 
 const MAX_CHARACTERS = 1000;
 const DEFAULT_REDIRECT_URL = "/messageboard/new-message";

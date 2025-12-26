@@ -41,7 +41,7 @@ const validEnvVars = {
   AWS_SMTP_USER: "user@example.com",
   AWS_SMTP_PASSWORD: "password",
   AWS_SMTP_FROM_EMAIL: "from@example.com",
-  SANITY_API_READ_TOKEN: "sanity-token",
+  SANITY_VIEWER_TOKEN: "sanity-token",
   NEXT_PUBLIC_SANITY_DATASET: "test-dataset",
   NEXT_PUBLIC_SANITY_PROJECT_ID: "test-project-id",
 };
@@ -71,7 +71,7 @@ describe("/api/send-email-alerts - Environment Validation", () => {
     expect(result.AWS_SMTP_USER).toBe("user@example.com");
     expect(result.AWS_SMTP_PASSWORD).toBe("password");
     expect(result.AWS_SMTP_FROM_EMAIL).toBe("from@example.com");
-    expect(result.SANITY_API_READ_TOKEN).toBe("sanity-token");
+    expect(result.SANITY_VIEWER_TOKEN).toBe("sanity-token");
   });
 
   it("should throw error when EMAIL_SECRET_TOKEN is missing", () => {
@@ -100,21 +100,21 @@ describe("/api/send-email-alerts - Environment Validation", () => {
     );
   });
 
-  it("should throw error when SANITY_API_READ_TOKEN is missing", () => {
-    delete process.env.SANITY_API_READ_TOKEN;
+  it("should throw error when SANITY_VIEWER_TOKEN is missing", () => {
+    delete process.env.SANITY_VIEWER_TOKEN;
 
     expect(() => validateEnvironmentVariables()).toThrow(
-      "Missing required environment variables: SANITY_API_READ_TOKEN",
+      "Missing required environment variables: SANITY_VIEWER_TOKEN",
     );
   });
 
   it("should throw error when multiple environment variables are missing", () => {
     delete process.env.EMAIL_SECRET_TOKEN;
     delete process.env.AWS_SMTP_HOST;
-    delete process.env.SANITY_API_READ_TOKEN;
+    delete process.env.SANITY_VIEWER_TOKEN;
 
     expect(() => validateEnvironmentVariables()).toThrow(
-      "Missing required environment variables: EMAIL_SECRET_TOKEN, AWS_SMTP_HOST, SANITY_API_READ_TOKEN",
+      "Missing required environment variables: EMAIL_SECRET_TOKEN, AWS_SMTP_HOST, SANITY_VIEWER_TOKEN",
     );
   });
 });

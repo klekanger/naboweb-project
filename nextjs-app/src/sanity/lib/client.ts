@@ -7,6 +7,7 @@ import {
   useCdn,
   studioUrl,
 } from "@/sanity/lib/api";
+import { token as viewerToken } from "@/sanity/lib/token";
 
 export const client = createClient({
   projectId,
@@ -14,6 +15,7 @@ export const client = createClient({
   apiVersion,
   useCdn,
   perspective: "published",
+  token: viewerToken,
   stega: {
     studioUrl: studioUrl ?? "/studio",
     // Set logger to 'console' for more verbose logging

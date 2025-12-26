@@ -6,7 +6,7 @@ export function validateEnvironmentVariables() {
     AWS_SMTP_USER: process.env.AWS_SMTP_USER,
     AWS_SMTP_PASSWORD: process.env.AWS_SMTP_PASSWORD,
     AWS_SMTP_FROM_EMAIL: process.env.AWS_SMTP_FROM_EMAIL,
-    SANITY_API_READ_TOKEN: process.env.SANITY_API_READ_TOKEN,
+    SANITY_VIEWER_TOKEN: process.env.SANITY_VIEWER_TOKEN,
   };
 
   const missingVars = Object.entries(requiredEnvVars)
