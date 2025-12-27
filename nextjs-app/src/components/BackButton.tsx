@@ -19,7 +19,7 @@ export default function BackButton({
       onClick={() => router.push(buttonLink)}
       startContent={<ArrowBigLeft />}
       color="primary"
-      className="btn-link no-underline"
+      className="no-underline"
       role="link"
     >
       Gå tilbake
