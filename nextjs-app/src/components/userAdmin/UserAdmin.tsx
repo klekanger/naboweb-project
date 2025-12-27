@@ -12,7 +12,9 @@ import {
   Button,
   Checkbox,
   CheckboxGroup,
+  Description,
   Input,
+  Label,
   Modal,
   Spinner,
 } from "@heroui/react";
@@ -211,24 +213,42 @@ export default function UserAdmin({
                 </div>
 
                 <CheckboxGroup
-                  label="Velg roller"
                   name="roles"
-                  orientation="horizontal"
-                  color="secondary"
                   defaultValue={["user"]}
-                  onValueChange={(value) => {
+                  onChange={(value) => {
                     setNewUser({ ...newUser, roles: value });
                   }}
-                  description="Alle må ha rollen 'Bruker' for å få tilgang til systemet. Redaktører kan opprette og redigere innhold, mens administratorer har tilgang til alle funksjoner."
+                  className="flex flex-row gap-4"
                 >
+                  <Label>Velg roller</Label>
+                  <Description>
+                    Alle må ha rollen 'Bruker' for å få tilgang til systemet.
+                    Redaktører kan opprette og redigere innhold, mens
+                    administratorer har tilgang til alle funksjoner.
+                  </Description>
                   <Checkbox value="user" name="role-user" isDisabled>
-                    Bruker
+                    <Checkbox.Control>
+                      <Checkbox.Indicator />
+                    </Checkbox.Control>
+                    <Checkbox.Content>
+                      <Label>Bruker</Label>
+                    </Checkbox.Content>
                   </Checkbox>
                   <Checkbox value="editor" name="role-editor">
-                    Redaktør
+                    <Checkbox.Control>
+                      <Checkbox.Indicator />
+                    </Checkbox.Control>
+                    <Checkbox.Content>
+                      <Label>Redaktør</Label>
+                    </Checkbox.Content>
                   </Checkbox>
                   <Checkbox value="admin" name="role-admin">
-                    Administrator
+                    <Checkbox.Control>
+                      <Checkbox.Indicator />
+                    </Checkbox.Control>
+                    <Checkbox.Content>
+                      <Label>Administrator</Label>
+                    </Checkbox.Content>
                   </Checkbox>
                 </CheckboxGroup>
 

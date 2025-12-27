@@ -39,7 +39,7 @@ export default function MessageCard({
 
   return (
     <Card
-      className={`p-2 ${imageUrl ? "row-span-2" : "row-span-1"} hover:scale-[102%] cursor-pointer`}
+      className={`p-2 ${imageUrl ? "row-span-2" : "row-span-1"} hover:scale-[102%] transition-transform cursor-pointer border border-gray-200 shadow-lg rounded-xl`}
       onClick={() => router.push(`/messageboard/${id}`)}
       role="button"
       tabIndex={0}
@@ -50,7 +50,7 @@ export default function MessageCard({
         }
       }}
     >
-      <div className="flex-col !items-start">
+      <div className="flex-col items-start!">
         <div className="font-thin text-sm pb-2 flex text-brand-black/60">
           {fromAdmin ? (
             <Shield className="h-auto pr-2" />

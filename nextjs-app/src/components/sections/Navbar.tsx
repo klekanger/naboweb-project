@@ -1,7 +1,8 @@
 "use client";
 
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
-import { Button, ButtonGroup } from "@heroui/react";
+import { ButtonGroup } from "@heroui/react";
+import CustomButton from "@/components/CustomButton";
 import {
   ChevronDown,
   Files,
@@ -37,8 +38,8 @@ export default function Navbar() {
   const isActive = (path: string) => pathname.startsWith(path);
 
   return (
-    <nav className="sticky top-0 z-50 dark:bg-black/80 bg-brand-white/70 backdrop-blur-md border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 h-18 flex items-center justify-between">
+    <nav className="sticky top-0 z-50 dark:bg-black/80 bg-brand-white/70 backdrop-blur-md border-b border-border w-full">
+      <div className="max-w-7xl px-4 h-18 flex justify-between mx-auto items-center">
         {/* Mobile menu toggle and logo */}
         <div className="flex items-center gap-4 flex-1 lg:flex-none">
           <button
@@ -70,22 +71,20 @@ export default function Navbar() {
         <div className="hidden lg:flex items-center gap-8">
           {isClient && isLoaded && user && (
             <div className="relative group">
-              <Button
-                variant="light"
+              <CustomButton
+                variant="ghost"
                 className="p-0 bg-transparent text-base hover:text-brand-secondary duration-200 transition text-brand-black dark:text-brand-white"
-                endContent={
-                  <ChevronDown className="h-[1.2rem] w-[1.2rem] mt-1" />
-                }
               >
                 For beboere
-              </Button>
+                <ChevronDown className="h-[1.2rem] w-[1.2rem] mt-1 ml-1" />
+              </CustomButton>
               <div className="absolute top-full left-0 mt-2 w-[340px] bg-background border border-border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <div className="p-2 flex flex-col gap-1">
+                <div className="flex flex-col p-2 gap-0.5">
                   <Link
                     href="/information"
-                    className="flex items-start gap-4 p-3 rounded-md hover:bg-default-100 transition-colors"
+                    className="flex items-start gap-4 py-2 px-3 rounded-md hover:bg-gray-200 transition-colors"
                   >
-                    <Info className="h-5 w-5 mt-0.5 shrink-0" />
+                    <Info className="h-5 w-5 mt-1.5 shrink-0" />
                     <div className="flex flex-col">
                       <span className="font-medium">
                         Informasjon fra styret
@@ -98,9 +97,9 @@ export default function Navbar() {
 
                   <Link
                     href="/messageboard"
-                    className="flex items-start gap-4 p-3 rounded-md hover:bg-default-100 transition-colors"
+                    className="flex items-start gap-4 py-2 px-3 rounded-md hover:bg-gray-200 transition-colors"
                   >
-                    <MessagesSquare className="h-5 w-5 mt-0.5 shrink-0" />
+                    <MessagesSquare className="h-5 w-5 mt-1.5 shrink-0" />
                     <div className="flex flex-col">
                       <span className="font-medium">Oppslagstavle</span>
                       <span className="text-sm text-foreground/60">
@@ -111,9 +110,9 @@ export default function Navbar() {
 
                   <Link
                     href="/information/referater"
-                    className="flex items-start gap-4 p-3 rounded-md hover:bg-default-100 transition-colors"
+                    className="flex items-start gap-4 py-2 px-3 rounded-md hover:bg-gray-200 transition-colors"
                   >
-                    <NotebookPen className="h-5 w-5 mt-0.5 shrink-0" />
+                    <NotebookPen className="h-5 w-5 mt-1.5 shrink-0" />
                     <div className="flex flex-col">
                       <span className="font-medium">Møtereferater</span>
                       <span className="text-sm text-foreground/60">
@@ -124,9 +123,9 @@ export default function Navbar() {
 
                   <Link
                     href="/information/dokumenter"
-                    className="flex items-start gap-4 p-3 rounded-md hover:bg-default-100 transition-colors"
+                    className="flex items-start gap-4 py-2 px-3 rounded-md hover:bg-gray-200 transition-colors"
                   >
-                    <Files className="h-5 w-5 mt-0.5 shrink-0" />
+                    <Files className="h-5 w-5 mt-1.5 shrink-0" />
                     <div className="flex flex-col">
                       <span className="font-medium">Diverse dokumenter</span>
                       <span className="text-sm text-foreground/60">
@@ -183,23 +182,17 @@ export default function Navbar() {
             <ButtonGroup>
               {isSignedIn ? (
                 <SignOutButton redirectUrl="/">
-                  <Button
-                    variant="flat"
-                    className="ml-8 bg-secondary"
-                    startContent={<LogOut />}
-                  >
+                  <CustomButton className="ml-8">
+                    <LogOut className="mr-1" />
                     Logg ut
-                  </Button>
+                  </CustomButton>
                 </SignOutButton>
               ) : (
                 <SignInButton>
-                  <Button
-                    variant="flat"
-                    className="ml-8 bg-secondary"
-                    startContent={<LogIn />}
-                  >
+                  <CustomButton className="ml-8">
+                    <LogIn className="mr-1" />
                     Logg inn
-                  </Button>
+                  </CustomButton>
                 </SignInButton>
               )}
             </ButtonGroup>
@@ -307,19 +300,17 @@ export default function Navbar() {
           <div className="mt-8 flex justify-center">
             {isClient && isLoaded && user ? (
               <SignOutButton redirectUrl="/">
-                <Button
-                  color="primary"
-                  variant="flat"
-                  startContent={<LogOut />}
-                >
+                <CustomButton variant="primary">
+                  <LogOut className="mr-2" />
                   Logg ut
-                </Button>
+                </CustomButton>
               </SignOutButton>
             ) : (
               <SignInButton>
-                <Button color="primary" variant="flat" startContent={<LogIn />}>
+                <CustomButton variant="primary">
+                  <LogIn className="mr-2" />
                   Logg inn
-                </Button>
+                </CustomButton>
               </SignInButton>
             )}
           </div>

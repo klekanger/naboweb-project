@@ -9,6 +9,7 @@ import {
   Button,
   Card,
   Checkbox,
+  Label,
   Modal,
   Spinner,
 } from "@heroui/react";
@@ -263,12 +264,20 @@ export default function NewMessage() {
               </Button>
               {isAdmin && (
                 <Checkbox
+                  id="publish-as-admin"
                   isSelected={message.fromAdmin}
-                  onValueChange={(e) =>
+                  onChange={(e) =>
                     setMessage({ ...message, fromAdmin: e })
                   }
                 >
-                  Publiser på vegne av styret
+                  <Checkbox.Control>
+                    <Checkbox.Indicator />
+                  </Checkbox.Control>
+                  <Checkbox.Content>
+                    <Label htmlFor="publish-as-admin">
+                      Publiser på vegne av styret
+                    </Label>
+                  </Checkbox.Content>
                 </Checkbox>
               )}
             </div>

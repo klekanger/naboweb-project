@@ -15,7 +15,9 @@ import {
   Button,
   Checkbox,
   CheckboxGroup,
+  Description,
   Input,
+  Label,
   Modal,
   Tooltip,
 } from "@heroui/react";
@@ -185,27 +187,45 @@ export default function EditUser() {
             </div>
 
             <CheckboxGroup
-              label="Velg roller"
               name="roles"
-              orientation="horizontal"
-              color="secondary"
               defaultValue={["user"]}
               value={
                 Array.isArray(selectedUser.roles) ? selectedUser.roles : []
               }
-              onValueChange={(value) => {
+              onChange={(value) => {
                 setSelectedUser({ ...selectedUser, roles: value });
               }}
-              description="Alle må ha rollen 'Bruker' for å få tilgang til systemet. Redaktører kan opprette og redigere innhold, mens administratorer har tilgang til alle funksjoner."
+              className="flex flex-row gap-4"
             >
+              <Label>Velg roller</Label>
+              <Description>
+                Alle må ha rollen 'Bruker' for å få tilgang til systemet.
+                Redaktører kan opprette og redigere innhold, mens
+                administratorer har tilgang til alle funksjoner.
+              </Description>
               <Checkbox value="user" name="role-user">
-                Bruker
+                <Checkbox.Control>
+                  <Checkbox.Indicator />
+                </Checkbox.Control>
+                <Checkbox.Content>
+                  <Label>Bruker</Label>
+                </Checkbox.Content>
               </Checkbox>
               <Checkbox value="editor" name="role-editor">
-                Redaktør
+                <Checkbox.Control>
+                  <Checkbox.Indicator />
+                </Checkbox.Control>
+                <Checkbox.Content>
+                  <Label>Redaktør</Label>
+                </Checkbox.Content>
               </Checkbox>
               <Checkbox value="admin" name="role-admin">
-                Administrator
+                <Checkbox.Control>
+                  <Checkbox.Indicator />
+                </Checkbox.Control>
+                <Checkbox.Content>
+                  <Label>Administrator</Label>
+                </Checkbox.Content>
               </Checkbox>
             </CheckboxGroup>
 

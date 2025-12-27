@@ -1,7 +1,7 @@
 "use client";
 
 import { updateSubscriptionStatus } from "@/app/actions/updateSubscriptionStatus";
-import { Checkbox, Spinner } from "@heroui/react";
+import { Checkbox, Label, Spinner } from "@heroui/react";
 import { useState } from "react";
 
 type SubscriptionStatusProps = {
@@ -50,11 +50,19 @@ export default function SubscriptionStatus({
   return (
     <>
       <Checkbox
+        id="email-subscription"
         isSelected={isSubscribed}
-        onValueChange={handleSubscriptionChange}
+        onChange={handleSubscriptionChange}
         isDisabled={isPending}
       >
-        Aktiver e-postvarsling {isPending ? <Spinner size="sm" /> : ""}
+        <Checkbox.Control>
+          <Checkbox.Indicator />
+        </Checkbox.Control>
+        <Checkbox.Content>
+          <Label htmlFor="email-subscription">
+            Aktiver e-postvarsling {isPending ? <Spinner size="sm" /> : ""}
+          </Label>
+        </Checkbox.Content>
       </Checkbox>
 
       <div>

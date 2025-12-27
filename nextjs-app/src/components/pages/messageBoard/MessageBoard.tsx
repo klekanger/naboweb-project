@@ -1,14 +1,13 @@
 "use client";
 
 import InfoBox from "@/components/InfoBox";
+import CustomButton from "@/components/CustomButton";
 import { urlForImage } from "@/sanity/lib/utils";
 import { MessageboardQueryResult } from "@/types/sanity.types";
 import { useUser } from "@clerk/nextjs";
-import { Button, Checkbox } from "@heroui/react";
-import { CirclePlus, CircleUser, MessagesSquare } from "lucide-react";
-import Link from "next/link";
+import { Checkbox, Label } from "@heroui/react";
+import { CircleUser, MessagesSquare, CirclePlus } from "lucide-react";
 import { useState } from "react";
-import { type Image as SanityImage } from "sanity";
 import MessageCard from "./MessageCard";
 
 export default function MessageBoard({
@@ -45,29 +44,30 @@ export default function MessageBoard({
 
       <div className="flex flex-col md:flex-row gap-4 mb-4 md:mb-8 md:justify-between">
         <div className="flex gap-4">
-          <Button
-            as={Link}
-            href="/messageboard/new-message"
-            color="primary"
-            startContent={<CirclePlus />}
-          >
+          <CustomButton href="/messageboard/new-message">
+            <CirclePlus className="mr-1 size-6" />
             Opprett innlegg
-          </Button>
+          </CustomButton>
 
-          <Button
-            color="primary"
-            startContent={<CircleUser />}
+          <CustomButton
             onPress={() => setShowOnlyMyMessages(!showOnlyMyMessages)}
           >
+            <CircleUser className="mr-1 size-6" />
             {`Se ${showOnlyMyMessages ? "alle" : "mine"} innlegg`}
-          </Button>
+          </CustomButton>
         </div>
 
         <Checkbox
+          id="show-only-admin"
           isSelected={showOnlyFromAdmin}
-          onValueChange={setShowOnlyFromAdmin}
+          onChange={setShowOnlyFromAdmin}
         >
-          Kun innlegg fra styret
+          <Checkbox.Control>
+            <Checkbox.Indicator />
+          </Checkbox.Control>
+          <Checkbox.Content>
+            <Label htmlFor="show-only-admin">Kun innlegg fra styret</Label>
+          </Checkbox.Content>
         </Checkbox>
       </div>
       <div className="text-sm text-brand-black/60 pb-4">{`Totalt ${messageCount} innlegg`}</div>

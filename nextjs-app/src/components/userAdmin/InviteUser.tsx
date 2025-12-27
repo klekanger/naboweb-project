@@ -6,7 +6,9 @@ import {
   Button,
   Checkbox,
   CheckboxGroup,
+  Description,
   Input,
+  Label,
   Modal,
 } from "@heroui/react";
 import { useContext, useMemo, useState } from "react";
@@ -151,23 +153,41 @@ export default function InviteUser() {
         </div>
 
         <CheckboxGroup
-          label="Velg roller"
           name="roles"
-          orientation="horizontal"
-          color="secondary"
           defaultValue={["user"]}
           value={roles}
-          onValueChange={setRoles}
-          description="Alle må ha rollen 'Bruker' for å få tilgang til systemet. Redaktører kan opprette og redigere innhold, mens administratorer har tilgang til alle funksjoner."
+          onChange={setRoles}
+          className="flex flex-row gap-4"
         >
+          <Label>Velg roller</Label>
+          <Description>
+            Alle må ha rollen 'Bruker' for å få tilgang til systemet. Redaktører
+            kan opprette og redigere innhold, mens administratorer har tilgang
+            til alle funksjoner.
+          </Description>
           <Checkbox value="user" name="role-user" isDisabled>
-            Bruker
+            <Checkbox.Control>
+              <Checkbox.Indicator />
+            </Checkbox.Control>
+            <Checkbox.Content>
+              <Label>Bruker</Label>
+            </Checkbox.Content>
           </Checkbox>
           <Checkbox value="editor" name="role-editor">
-            Redaktør
+            <Checkbox.Control>
+              <Checkbox.Indicator />
+            </Checkbox.Control>
+            <Checkbox.Content>
+              <Label>Redaktør</Label>
+            </Checkbox.Content>
           </Checkbox>
           <Checkbox value="admin" name="role-admin">
-            Administrator
+            <Checkbox.Control>
+              <Checkbox.Indicator />
+            </Checkbox.Control>
+            <Checkbox.Content>
+              <Label>Administrator</Label>
+            </Checkbox.Content>
           </Checkbox>
         </CheckboxGroup>
 
@@ -187,9 +207,7 @@ export default function InviteUser() {
         onOpenChange={modalInviteUser.onOpenChange}
       >
         <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
-          <div className="flex flex-col gap-1 mb-4">
-            {inviteTitle}
-          </div>
+          <div className="flex flex-col gap-1 mb-4">{inviteTitle}</div>
           <div className="mb-4">{inviteBody}</div>
           <div className="flex justify-end gap-2">
             <Button
@@ -213,15 +231,10 @@ export default function InviteUser() {
         onOpenChange={modalInviteUserSuccess.onOpenChange}
       >
         <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
-          <div className="flex flex-col gap-1 mb-4">
-            {successTitle}
-          </div>
+          <div className="flex flex-col gap-1 mb-4">{successTitle}</div>
           <div className="mb-4">{successBody}</div>
           <div className="flex justify-end gap-2">
-            <Button
-              color="primary"
-              onPress={modalInviteUserSuccess.onClose}
-            >
+            <Button color="primary" onPress={modalInviteUserSuccess.onClose}>
               {successOkText}
             </Button>
           </div>
@@ -234,9 +247,7 @@ export default function InviteUser() {
         onOpenChange={modalErrorMessage.onOpenChange}
       >
         <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
-          <div className="flex flex-col gap-1 mb-4">
-            {errorTitle}
-          </div>
+          <div className="flex flex-col gap-1 mb-4">{errorTitle}</div>
           <div className="mb-4">
             <p>{errorBody}</p>
             <p>

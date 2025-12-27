@@ -2,7 +2,15 @@ import { compareClerkAndSanityUser } from "@/lib/compareClerkAndSanityUser";
 import { formatDate } from "@/lib/format-date";
 import { MessageByIdQueryResult } from "@/types/sanity.types";
 import { useUser } from "@clerk/nextjs";
-import { Button, Card, Form, Input, Modal, Textarea } from "@heroui/react";
+import {
+  Button,
+  Card,
+  Form,
+  Input,
+  Label,
+  Modal,
+  TextArea,
+} from "@heroui/react";
 import { MessageSquare, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -226,7 +234,7 @@ export default function MessageComments({
   return (
     <>
       <Card className="lg:p-4">
-        <div className="flex-col !items-start p-4">
+        <div className="flex-col items-start! p-4">
           <h2 className="text-lg font-semibold flex">
             <MessageSquare className="h-auto mr-2" />
             Kommentarer ({commentCount})
@@ -274,26 +282,33 @@ export default function MessageComments({
                       className="w-full max-w-xl mt-4"
                       validationBehavior="native"
                     >
-                      <Input
-                        label="Tittel"
-                        name="title"
-                        defaultValue={comment.commentTitle ?? ""}
-                        required
-                      />
-                      <Textarea
-                        className="w-full"
-                        name="bodyText"
-                        label="Skriv kommentaren din her"
-                        defaultValue={comment.commentText ?? ""}
-                        variant="faded"
-                        required
-                      />
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor="title-edit">Tittel</Label>
+                        <Input
+                          id="title-edit"
+                          name="title"
+                          defaultValue={comment.commentTitle ?? ""}
+                          required
+                        />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor="bodyText-edit">
+                          Skriv kommentaren din her
+                        </Label>
+                        <TextArea
+                          id="bodyText-edit"
+                          className="w-full"
+                          name="bodyText"
+                          defaultValue={comment.commentText ?? ""}
+                          required
+                        />
+                      </div>
                       <div className="flex gap-2">
-                        <Button type="submit" isLoading={isSubmitting}>
+                        <Button type="submit" isPending={isSubmitting}>
                           Lagre
                         </Button>
                         <Button
-                          variant="bordered"
+                          variant="secondary"
                           onPress={() => setEditingCommentKey("")}
                         >
                           Avbryt
@@ -310,7 +325,7 @@ export default function MessageComments({
                         <div className="flex justify-end gap-2">
                           <Button
                             size="sm"
-                            variant="bordered"
+                            variant="secondary"
                             className="mt-2"
                             onPress={() =>
                               setEditingCommentKey(comment._key ?? "")
@@ -321,8 +336,8 @@ export default function MessageComments({
 
                           <Button
                             size="sm"
-                            variant="bordered"
-                            className="mt-2 border-brand-danger"
+                            variant="danger"
+                            className="mt-2"
                             onPress={() => handleDelete(comment._key ?? "")}
                           >
                             Slett
@@ -357,20 +372,27 @@ export default function MessageComments({
                   <h3 className="text-lg font-semibold">
                     Opprett ny kommentar
                   </h3>
-                  <Input label="Tittel" name="title" required />
-                  <Textarea
-                    className="w-full"
-                    name="bodyText"
-                    label="Skriv kommentaren din her"
-                    variant="faded"
-                    required
-                  />
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="title-create">Tittel</Label>
+                    <Input id="title-create" name="title" required />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="bodyText-create">
+                      Skriv kommentaren din her
+                    </Label>
+                    <TextArea
+                      id="bodyText-create"
+                      className="w-full"
+                      name="bodyText"
+                      required
+                    />
+                  </div>
                   <div className="flex gap-2">
-                    <Button type="submit" isLoading={isSubmitting}>
+                    <Button type="submit" isPending={isSubmitting}>
                       Svar
                     </Button>
                     <Button
-                      variant="bordered"
+                      variant="secondary"
                       onPress={() => setIsCreatingComment(false)}
                     >
                       Avbryt
@@ -395,8 +417,7 @@ export default function MessageComments({
             <div className="mb-4">{modalBody}</div>
             <div className="flex justify-end gap-2">
               <Button
-                color="danger"
-                variant="light"
+                variant="ghost"
                 className={`${modalCancelDisabled ? "hidden" : ""}`}
                 isDisabled={modalCancelDisabled}
                 onPress={() => {
@@ -407,7 +428,7 @@ export default function MessageComments({
                 {modalCancelText}
               </Button>
               <Button
-                color={isConfirmDelete ? "danger" : "primary"}
+                variant={isConfirmDelete ? "danger" : "primary"}
                 onPress={() => {
                   if (isConfirmDelete) {
                     handleConfirmDelete();
@@ -416,7 +437,7 @@ export default function MessageComments({
                     modalForComments.onClose();
                   }
                 }}
-                isLoading={isDeletingComment}
+                isPending={isDeletingComment}
               >
                 {modalOkText}
               </Button>
