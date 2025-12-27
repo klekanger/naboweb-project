@@ -23,26 +23,31 @@ export default function NewUserIntro({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
     >
-      <Card className="bg-brand-secondary relative">
-        <div className="absolute top-0 left-0 w-full h-full pb-8 z-10">
-          <div className="flex flex-col items-center justify-center m-auto px-2 md:px-0">
-            <h2 className="prose text-3xl py-4 font-semibold text-brand-white text-center">
-              {title}
-            </h2>
-            <CustomPortableText
-              value={introText.body}
-              paragraphClasses="text-brand-white max-w-2xl m-auto text-center md:text-left"
-            />
-          </div>
-        </div>
+      <Card className="relative min-h-[300px] overflow-hidden">
+        {/* Background image */}
         <Image
-          className="z-0 w-full object-cover h-96 md:h-full"
-          src="/blob.svg"
           alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover"
+          src="/blob.svg"
           width={1200}
           height={600}
           priority
         />
+        {/* Content overlay */}
+        <div className="relative z-10 flex flex-col items-center justify-center m-auto px-2 md:px-0 py-8 md:py-16">
+          <Card.Header className="text-center">
+            <Card.Title className="prose text-3xl py-4 font-semibold text-brand-white text-center">
+              {title}
+            </Card.Title>
+          </Card.Header>
+          <Card.Content>
+            <CustomPortableText
+              value={introText.body}
+              paragraphClasses="text-brand-white max-w-2xl m-auto text-center md:text-left"
+            />
+          </Card.Content>
+        </div>
       </Card>
     </motion.section>
   );
