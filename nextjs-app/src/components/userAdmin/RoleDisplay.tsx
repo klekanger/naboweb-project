@@ -61,8 +61,8 @@ export default function RoleDisplay({
           role?.name !== "unknown" && (
             <Chip
               key={`chip-${i}`}
-              size="sm"
               color={role?.color as ChipProps["color"]}
+              variant="primary"
             >
               {role.name}
             </Chip>
