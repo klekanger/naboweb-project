@@ -1,28 +1,20 @@
 "use client";
 
-import { Button } from "@heroui/react";
+import CustomButton from "./CustomButton";
 import { ArrowBigLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 export default function BackButton({
   buttonLink = "/",
 }: {
   buttonLink?: string;
 }) {
-  const router = useRouter();
-
   if (!buttonLink) {
     return null;
   }
   return (
-    <Button
-      onClick={() => router.push(buttonLink)}
-      startContent={<ArrowBigLeft />}
-      color="primary"
-      className="no-underline"
-      role="link"
-    >
+    <CustomButton href={buttonLink} variant="primary" className="no-underline">
+      <ArrowBigLeft className="h-5 w-5 mt-1.5" />
       Gå tilbake
-    </Button>
+    </CustomButton>
   );
 }
