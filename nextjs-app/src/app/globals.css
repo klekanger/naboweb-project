@@ -36,9 +36,9 @@
   --foreground: #090A24;
 
   /* Primary colors (using accent as primary semantic color) */
-  --accent: #386641;
+  --accent: rgb(56, 102, 65);
   --accent-foreground: #F6F7FD;
-  --primary: #386641;
+  --primary: rgb(56, 102, 65);
   --primary-foreground: #F6F7FD;
 
   /* Secondary colors */
