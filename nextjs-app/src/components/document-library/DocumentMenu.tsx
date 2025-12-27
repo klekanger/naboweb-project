@@ -24,14 +24,35 @@ export default function DocumentMenu({
 
   return (
     <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-3">
-      <CustomButton href={file1.url ?? "/"} buttonText={button1Text} />
-      <CustomButton href={file2.url ?? "/"} buttonText={button2Text} />
-      <CustomButton href={file3.url ?? "/"} buttonText={button3Text} />
-      <CustomButton href={file4.url ?? "/"} buttonText={button4Text} />
-      <CustomButton href="/information/referater" buttonText="Referater" />
+      <CustomButton
+        href={file1.url ?? "/"}
+        buttonText={button1Text}
+        className="w-full"
+      />
+      <CustomButton
+        href={file2.url ?? "/"}
+        buttonText={button2Text}
+        className="w-full"
+      />
+      <CustomButton
+        href={file3.url ?? "/"}
+        buttonText={button3Text}
+        className="w-full"
+      />
+      <CustomButton
+        href={file4.url ?? "/"}
+        buttonText={button4Text}
+        className="w-full"
+      />
+      <CustomButton
+        href="/information/referater"
+        buttonText="Referater"
+        className="w-full"
+      />
       <CustomButton
         href="/information/dokumenter"
         buttonText="Andre dokumenter"
+        className="w-full"
       />
     </div>
   );
