@@ -41,7 +41,8 @@ export default function Hero({
 
           {showButton && (
             <CustomButton
-              className="justify-self-start mb-4 no-underline mt-4 sm:mt-8"
+              className="justify-self-start mb-4 no-underline mt-4 sm:mt-8 text-md p-6"
+              size="lg"
               href={buttonLink?.slug?.current ?? "/"}
               buttonText={buttonText ?? "Les mer!"}
             />
