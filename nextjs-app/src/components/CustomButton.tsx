@@ -6,12 +6,10 @@ import { useRouter } from "next/navigation";
 /**
  * Renders a custom button component.
  *
- * @param {Object} props - The component props.
- * @param {string} props.href - The URL to navigate to when the button is clicked.
- * @param {string} props.buttonText - The text to display on the button.
- * @param {string} [props.className] - Additional CSS class name(s) for the button.
- * @param {boolean} [props.asLink=true] - Determines whether the button should be rendered as a Next.js <Link> or a <a> element.
- * @returns {JSX.Element|null} The rendered custom button component.
+ * @param props.href - The URL to navigate to when the button is clicked.
+ * @param props.buttonText - The text to display on the button.
+ * @param props.className - Additional CSS class name(s) for the button.
+ * @param props.asLink - Determines whether the button should be rendered as a Next.js <Link> or a <a> element. Defaults to true.
  */
 export default function CustomButton({
   href,
@@ -34,31 +32,27 @@ export default function CustomButton({
   // Using inline-block to avoid layout issues
   if (asLink) {
     return (
-      <span suppressHydrationWarning style={{ display: "inline-block" }}>
-        <Button
-          color="primary"
-          size="lg"
-          className={`btn-link ${className}`}
-          onPress={() => router.push(href)}
-          role="link"
-        >
-          {buttonText}
-        </Button>
-      </span>
+      <Button
+        color="primary"
+        size="lg"
+        className={`rounded-xl p-6 ${className}`}
+        onPress={() => router.push(href)}
+        role="link"
+      >
+        {buttonText}
+      </Button>
     );
   }
 
   return (
-    <span suppressHydrationWarning style={{ display: "inline-block" }}>
-      <Button
-        as="a"
-        href={href}
-        color="primary"
-        size="lg"
-        className={`btn-link ${className}`}
-      >
-        {buttonText}
-      </Button>
-    </span>
+    <Button
+      as="a"
+      href={href}
+      color="primary"
+      size="lg"
+      className={`btn-link rounded-xl p-6 ${className}`}
+    >
+      {buttonText}
+    </Button>
   );
 }
