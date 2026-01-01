@@ -212,48 +212,9 @@ body {
 
 
 @layer components {
-  .checkbox {
-    @apply inline-flex gap-3 items-center;
-  }
-
   .checkbox__control {
     @apply size-5 border border-gray-200;
 
-    /* Override default HeroUI bg-field and shadow-field */
-    background-color: var(--field-background, white) !important;
     box-shadow: none !important;
-
-    /* Animated background indicator */
-    &::before {
-      @apply bg-accent pointer-events-none absolute inset-0 z-10 origin-center scale-50 rounded-md opacity-0 content-[''];
-
-      transition:
-        scale 200ms linear,
-        opacity 200ms linear,
-        background-color 200ms ease-out;
-    }
-
-    /* Selected state - hide border and background completely */
-    &[data-selected="true"],
-    &[aria-checked="true"] {
-      border: none !important;
-      border-color: transparent !important;
-      background-color: transparent !important;
-      background: transparent !important;
-      box-shadow: none !important;
-
-      &::before {
-        @apply scale-100 opacity-100;
-        z-index: 10;
-      }
-    }
-  }
-
-  .checkbox__indicator {
-    @apply text-white;
-  }
-
-  .checkbox__content {
-    @apply flex flex-col gap-1;
   }
 }
