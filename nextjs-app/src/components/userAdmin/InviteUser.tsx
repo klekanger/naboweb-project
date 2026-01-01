@@ -3,14 +3,16 @@ import { inviteUser } from "@/app/actions/inviteUser";
 import { UserAdminContext } from "@/context/userAdminContext";
 import { useModalState } from "@/hooks/useModalState";
 import {
-  Button,
   Checkbox,
   CheckboxGroup,
   Description,
+  FieldError,
   Input,
   Label,
   Modal,
+  TextField,
 } from "@heroui/react";
+import CustomButton from "../CustomButton";
 import { useContext, useMemo, useState } from "react";
 
 export default function InviteUser() {
@@ -133,23 +135,25 @@ export default function InviteUser() {
       <hr className="mt-4 border-t border-divider" />
       <form onSubmit={handleSubmit} className="py-8" id="form">
         <div className="mb-5 sm:w-2/3">
-          <Input
-            label="E-post"
+          <TextField
+            name="email"
             type="email"
-            required
+            isRequired
+            isInvalid={isInvalidEmail}
             value={emailToInvite}
-            onChange={(e) => {
+            onChange={(value) => {
               setErrorMessage("");
-              setEmailToInvite(e.target.value);
+              setEmailToInvite(value);
             }}
-            description="E-postadressen til den du vil invitere."
-            className={isInvalidEmail ? "border-danger" : ""}
-          />
-          {isInvalidEmail && (
-            <div className="text-danger text-sm mt-1">
-              Tast inn en gyldig e-postadresse
-            </div>
-          )}
+          >
+            <Label>E-post</Label>
+            <Input />
+            {isInvalidEmail ? (
+              <FieldError>Tast inn en gyldig e-postadresse</FieldError>
+            ) : (
+              <Description>E-postadressen til den du vil invitere.</Description>
+            )}
+          </TextField>
         </div>
 
         <CheckboxGroup
@@ -192,9 +196,18 @@ export default function InviteUser() {
         </CheckboxGroup>
 
         <div className="h-32">
-          <Button type="submit" className="mt-8">
+          <CustomButton
+            variant="primary"
+            onPress={() => {
+              const form = document.getElementById("form") as HTMLFormElement;
+              if (form) {
+                form.requestSubmit();
+              }
+            }}
+            className="mt-8"
+          >
             {isInvitingUser ? "Inviterer..." : "Inviter bruker"}
-          </Button>
+          </CustomButton>
           {errorMessage && (
             <p className="text-brand-danger text-sm mt-2">{errorMessage}</p>
           )}
@@ -202,72 +215,91 @@ export default function InviteUser() {
       </form>
 
       {/* MODAL FOR CONFIRMING USER INVITE */}
-      <Modal
+      <Modal.Backdrop
         isOpen={modalInviteUser.isOpen}
         onOpenChange={modalInviteUser.onOpenChange}
       >
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
-          <div className="flex flex-col gap-1 mb-4">{inviteTitle}</div>
-          <div className="mb-4">{inviteBody}</div>
-          <div className="flex justify-end gap-2">
-            <Button
-              onPress={() => {
-                handleInviteUser();
-                modalInviteUser.onClose();
-              }}
-            >
-              {inviteOkText}
-            </Button>
-            <Button color="danger" onPress={modalInviteUser.onClose}>
-              {inviteCancelText}
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        <Modal.Container>
+          <Modal.Dialog className="sm:max-w-md">
+            <Modal.CloseTrigger />
+            <Modal.Header>
+              <Modal.Heading>{inviteTitle}</Modal.Heading>
+            </Modal.Header>
+            <Modal.Body>{inviteBody}</Modal.Body>
+            <Modal.Footer>
+              <CustomButton
+                variant="primary"
+                onPress={() => {
+                  handleInviteUser();
+                  modalInviteUser.onClose();
+                }}
+              >
+                {inviteOkText}
+              </CustomButton>
+              <CustomButton variant="danger" onPress={modalInviteUser.onClose}>
+                {inviteCancelText}
+              </CustomButton>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
 
       {/* MODAL FOR DISPLAYING SUCCESS MESSAGE */}
-      <Modal
+      <Modal.Backdrop
         isOpen={modalInviteUserSuccess.isOpen}
         onOpenChange={modalInviteUserSuccess.onOpenChange}
       >
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
-          <div className="flex flex-col gap-1 mb-4">{successTitle}</div>
-          <div className="mb-4">{successBody}</div>
-          <div className="flex justify-end gap-2">
-            <Button color="primary" onPress={modalInviteUserSuccess.onClose}>
-              {successOkText}
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        <Modal.Container>
+          <Modal.Dialog className="sm:max-w-md">
+            <Modal.CloseTrigger />
+            <Modal.Header>
+              <Modal.Heading>{successTitle}</Modal.Heading>
+            </Modal.Header>
+            <Modal.Body>{successBody}</Modal.Body>
+            <Modal.Footer>
+              <CustomButton
+                variant="primary"
+                onPress={modalInviteUserSuccess.onClose}
+              >
+                {successOkText}
+              </CustomButton>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
 
       {/* MODAL FOR DISPLAYING ERRORS */}
-      <Modal
+      <Modal.Backdrop
         isOpen={modalErrorMessage.isOpen}
         onOpenChange={modalErrorMessage.onOpenChange}
       >
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
-          <div className="flex flex-col gap-1 mb-4">{errorTitle}</div>
-          <div className="mb-4">
-            <p>{errorBody}</p>
-            <p>
-              Hvis du mener noe er galt, ta kontakt med styret eller
-              web-administrator.
-            </p>
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button
-              color="primary"
-              onPress={() => {
-                setErrorMessage("");
-                modalErrorMessage.onClose();
-              }}
-            >
-              {errorOkText}
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        <Modal.Container>
+          <Modal.Dialog className="sm:max-w-md">
+            <Modal.CloseTrigger />
+            <Modal.Header>
+              <Modal.Heading>{errorTitle}</Modal.Heading>
+            </Modal.Header>
+            <Modal.Body>
+              <p>{errorBody}</p>
+              <p>
+                Hvis du mener noe er galt, ta kontakt med styret eller
+                web-administrator.
+              </p>
+            </Modal.Body>
+            <Modal.Footer>
+              <CustomButton
+                variant="primary"
+                onPress={() => {
+                  setErrorMessage("");
+                  modalErrorMessage.onClose();
+                }}
+              >
+                {errorOkText}
+              </CustomButton>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </div>
   );
 }

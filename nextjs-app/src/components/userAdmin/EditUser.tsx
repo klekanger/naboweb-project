@@ -21,26 +21,37 @@ import {
   Modal,
   Tooltip,
 } from "@heroui/react";
-import { SearchIcon } from "lucide-react";
+import CustomSearchInput from "../CustomSearchInput";
 import { useContext, useState } from "react";
 import { useModalState } from "@/hooks/useModalState";
 import { useDisclosure } from "@/hooks/useDisclosure";
+import CustomButton from "../CustomButton";
 
 const MAX_RESULTS = 10;
 
 const CircleAdmin = () => (
-  <Tooltip content="Administrator">
-    <span className="rounded-full bg-danger/30 w-[1em] h-[1em] justify-center items-center p-2.5 inline-flex text-[1em] mr-1">
-      A
-    </span>
+  <Tooltip delay={0}>
+    <Tooltip.Trigger>
+      <span className="rounded-full bg-danger/30 w-[1em] h-[1em] justify-center items-center p-2.5 inline-flex text-[1em] mr-1 cursor-help">
+        A
+      </span>
+    </Tooltip.Trigger>
+    <Tooltip.Content>
+      <p>Administrator</p>
+    </Tooltip.Content>
   </Tooltip>
 );
 
 const CircleEditor = () => (
-  <Tooltip content="Redaktør">
-    <span className="rounded-full bg-warning/30 w-[1em] h-[1em] justify-center items-center p-2.5 inline-flex text-[1em]">
-      R
-    </span>
+  <Tooltip delay={0}>
+    <Tooltip.Trigger>
+      <span className="rounded-full bg-warning/30 w-[1em] h-[1em] justify-center items-center p-2.5 inline-flex text-[1em] cursor-help">
+        R
+      </span>
+    </Tooltip.Trigger>
+    <Tooltip.Content>
+      <p>Redaktør</p>
+    </Tooltip.Content>
   </Tooltip>
 );
 
@@ -272,27 +283,34 @@ export default function EditUser() {
                 e.preventDefault();
                 handleSubmit(searchTerm);
               }}
-              className="flex flex-row gap-4 pb-8"
+              className="pb-8"
             >
-              <div className="relative w-full sm:max-w-[44%]">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
-                  <SearchIcon className="w-4 h-4 text-gray-400" />
-                </div>
-                <Input
-                  placeholder="Søk etter bruker..."
-                  onChange={(e) => setSearchTerm(e.target.value)}
+              <div className="flex gap-2 max-w-md py-2">
+                <CustomSearchInput
                   value={searchTerm}
-                  className="w-full pl-10"
+                  onChange={(value) => setSearchTerm(value || "")}
+                  placeholder="Søk etter bruker"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleSubmit(searchTerm);
+                    }
+                  }}
                 />
+                <CustomButton
+                  variant="primary"
+                  onPress={() => {
+                    if (searchTerm.trim()) {
+                      handleSubmit(searchTerm);
+                    }
+                  }}
+                  className={
+                    !searchTerm.trim() ? "opacity-50 cursor-not-allowed" : ""
+                  }
+                >
+                  Søk
+                </CustomButton>
               </div>
-              <Button
-                className="h-auto"
-                type="submit"
-                color="default"
-                onPress={() => handleSubmit(searchTerm)}
-              >
-                Søk
-              </Button>
             </form>
             {(foundUsers.length > 0 && (
               <p>
@@ -387,21 +405,29 @@ export default function EditUser() {
         isOpen={modalDeleteUser.isOpen}
         onOpenChange={modalDeleteUser.onOpenChange}
       />
-      <Modal
+      <Modal.Backdrop
         isOpen={modalUserUpdated.isOpen}
         onOpenChange={modalUserUpdated.onOpenChange}
-        backdrop="blur"
+        variant="blur"
       >
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
-          <div className="mb-4 font-semibold text-lg">{modalTitle}</div>
-          <div className="mb-4">{modalBody}</div>
-          <div className="flex justify-end gap-2">
-            <Button color="success" onPress={modalUserUpdated.onClose}>
-              Lukk
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        <Modal.Container>
+          <Modal.Dialog className="sm:max-w-md">
+            <Modal.CloseTrigger />
+            <Modal.Header>
+              <Modal.Heading>{modalTitle}</Modal.Heading>
+            </Modal.Header>
+            <Modal.Body>{modalBody}</Modal.Body>
+            <Modal.Footer>
+              <CustomButton
+                variant="primary"
+                onPress={modalUserUpdated.onClose}
+              >
+                Lukk
+              </CustomButton>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </>
   );
 }

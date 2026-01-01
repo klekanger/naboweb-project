@@ -10,8 +10,9 @@ import {
 import Pagination from "@/components/common/Pagination";
 import { formatDate } from "@/lib/format-date";
 import { OtherDocumentsQueryResult } from "@/types/sanity.types";
-import { Button, Input, Tooltip } from "@heroui/react";
-import { ArrowBigLeft, SearchIcon } from "lucide-react";
+import { Button, Tooltip } from "@heroui/react";
+import { ArrowBigLeft } from "lucide-react";
+import CustomSearchInput from "../CustomSearchInput";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import BackButton from "../BackButton";
@@ -107,15 +108,11 @@ export default function DocumentTable({
   const topContent = useMemo(() => {
     return (
       <div>
-        <div className="relative w-full sm:max-w-[44%]">
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
-            <SearchIcon className="w-4 h-4 text-gray-400" />
-          </div>
-          <Input
-            className="w-full pl-10"
-            placeholder="Søk i dokumentnavn eller beskrivelse"
+        <div className="flex gap-2 max-w-md py-2">
+          <CustomSearchInput
             value={filterValue}
-            onChange={(e) => onSearchChange(e.target.value || "")}
+            onChange={(value) => onSearchChange(value || "")}
+            placeholder="Søk i dokumentnavn eller beskrivelse"
           />
         </div>
         <div className="pl-2 pt-4">
@@ -170,8 +167,21 @@ export default function DocumentTable({
                       className={`text-left ${index % 2 === 0 ? "bg-gray-50 dark:bg-gray-900" : ""}`}
                     >
                       <td className="p-4">
-                        <Tooltip
-                          content={
+                        <Tooltip delay={1000}>
+                          <Tooltip.Trigger>
+                            <a
+                              href={item.document?.asset?.url ?? "#"}
+                              className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80 "
+                              target="blank"
+                              rel="noopener noreferrer"
+                            >
+                              <span className="flex ">
+                                <FileIcon className="mr-2 h-auto" />
+                                {item.title}
+                              </span>
+                            </a>
+                          </Tooltip.Trigger>
+                          <Tooltip.Content placement="top start">
                             <span className="flex flex-row items-center gap-2 py-2 text-xs md:text-sm md:max-w-md">
                               <div>
                                 <FileIcon
@@ -194,23 +204,7 @@ export default function DocumentTable({
                                 </span>
                               </div>
                             </span>
-                          }
-                          placement="top-start"
-                          delay={1000}
-                          color="secondary"
-                          size="lg"
-                        >
-                          <a
-                            href={item.document?.asset?.url ?? "#"}
-                            className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80 "
-                            target="blank"
-                            rel="noopener noreferrer"
-                          >
-                            <span className="flex ">
-                              <FileIcon className="mr-2 h-auto" />
-                              {item.title}
-                            </span>
-                          </a>
+                          </Tooltip.Content>
                         </Tooltip>
                       </td>
                       <td className="p-4">{formatDate(item._createdAt)}</td>

@@ -11,7 +11,8 @@ import Pagination from "@/components/common/Pagination";
 import { formatDate } from "@/lib/format-date";
 import { MeetingMinutesQueryResult } from "@/types/sanity.types";
 import { Button, Input, Tooltip } from "@heroui/react";
-import { ArrowBigLeft, FolderOpen, SearchIcon } from "lucide-react";
+import { ArrowBigLeft, FolderOpen } from "lucide-react";
+import CustomSearchInput from "../CustomSearchInput";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import BackButton from "../BackButton";
@@ -111,15 +112,11 @@ export default function MeetingMinutes({
   const topContent = useMemo(() => {
     return (
       <div>
-        <div className="relative w-full sm:max-w-[44%]">
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
-            <SearchIcon className="w-4 h-4 text-gray-400" />
-          </div>
-          <Input
-            className="w-full pl-10"
-            placeholder="Søk i dokumentnavn eller beskrivelse"
+        <div className="flex gap-2 max-w-md py-2">
+          <CustomSearchInput
             value={filterValue}
-            onChange={(e) => onSearchChange(e.target.value || "")}
+            onChange={(value) => onSearchChange(value || "")}
+            placeholder="Søk i dokumentnavn eller beskrivelse"
           />
         </div>
         <div className="pl-2 pt-4">
@@ -141,13 +138,13 @@ export default function MeetingMinutes({
           >
             <thead>
               <tr>
-                <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-4 text-left w-[20%]">
+                <th className="bg-brand-primary/20 text-sm font-bold md:text-base px-3 py-2 text-left w-[20%]">
                   Møte
                 </th>
-                <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-4 text-left">
+                <th className="bg-brand-primary/20 text-sm font-bold md:text-base px-3 py-2 text-left">
                   Beskrivelse
                 </th>
-                <th className="bg-brand-primary/20 text-sm font-bold md:text-lg p-4 text-left w-[20%]">
+                <th className="bg-brand-primary/20 text-sm font-bold md:text-lg px-3 py-2 text-left w-[20%]">
                   Oppdatert
                 </th>
               </tr>
@@ -159,35 +156,45 @@ export default function MeetingMinutes({
                     key={item._id}
                     className={`text-left ${index % 2 === 0 ? "bg-gray-50 dark:bg-gray-900" : ""}`}
                   >
-                    <td className="p-4">
-                      <Tooltip
-                        content={
+                    <td className="px-3 py-2">
+                      <Tooltip delay={1000}>
+                        <Tooltip.Trigger>
+                          <Link
+                            href={`/information/referater/${item._id}`}
+                            className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80 "
+                          >
+                            <span className="flex ">
+                              <FolderOpen className="mr-2 h-auto" size="1em" />
+
+                              {item.title}
+                            </span>
+                          </Link>
+                        </Tooltip.Trigger>
+                        <Tooltip.Content
+                          placement="top start"
+                          className="bg-secondary text-brand-white"
+                        >
                           <div className="flex flex-row items-center gap-2 py-2 text-xs md:text-sm md:max-w-md">
                             Klikk for å vise alle dokumenter for dette møtet.
                           </div>
-                        }
-                        placement="top-start"
-                        delay={1000}
-                        color="secondary"
-                        size="lg"
-                      >
-                        <Link
-                          href={`/information/referater/${item._id}`}
-                          className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80 "
-                        >
-                          <span className="flex ">
-                            <FolderOpen className="mr-2 h-auto" size="1em" />
-
-                            {item.title}
-                          </span>
-                        </Link>
+                        </Tooltip.Content>
                       </Tooltip>
                     </td>
 
-                    <td className="p-4">
-                      <Tooltip
-                        content={
-                          <span className="flex flex-row items-center gap-2 py-2 text-xs md:text-sm md:max-w-md">
+                    <td className="px-3 py-2">
+                      <Tooltip delay={1000}>
+                        <Tooltip.Trigger>
+                          <span>
+                            {item?.description && item.description.length > 75
+                              ? item.description.substring(0, 75) + "..."
+                              : item.description}
+                          </span>
+                        </Tooltip.Trigger>
+                        <Tooltip.Content
+                          placement="top start"
+                          className="bg-secondary text-brand-white"
+                        >
+                          <div className="flex flex-row items-center gap-2 py-2 text-xs md:text-sm md:max-w-md">
                             <div>
                               <h2 className="text-lg font-semibold pb-4">
                                 {item.title}
@@ -198,6 +205,8 @@ export default function MeetingMinutes({
                                   <hr className="my-4" />
                                 </div>
                               )}
+
+                              <hr className="my-4 border-brand-white" />
 
                               <div>
                                 <strong>Sted: </strong>
@@ -229,19 +238,11 @@ export default function MeetingMinutes({
                                   ))}
                               </div>
                             </div>
-                          </span>
-                        }
-                        placement="top-start"
-                        delay={1000}
-                        color="secondary"
-                        size="lg"
-                      >
-                        {item?.description && item.description.length > 75
-                          ? item.description.substring(0, 75) + "..."
-                          : item.description}
+                          </div>
+                        </Tooltip.Content>
                       </Tooltip>
                     </td>
-                    <td className="p-4">{formatDate(item._createdAt)}</td>
+                    <td className="px-3 py-2">{formatDate(item._createdAt)}</td>
                   </tr>
                 ))
               ) : (

@@ -9,16 +9,18 @@ import {
 import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 import type { UserAdminProps } from "@/types/types";
 import {
-  Button,
   Checkbox,
   CheckboxGroup,
   Description,
+  FieldError,
   Input,
   Label,
   Modal,
   Spinner,
+  TextField,
 } from "@heroui/react";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
+import CustomButton from "../CustomButton";
 import { useDisclosure } from "@/hooks/useDisclosure";
 import EditUser from "./EditUser";
 import InviteUser from "./InviteUser";
@@ -53,6 +55,7 @@ export default function UserAdmin({
   const modalCreateUser = useDisclosure();
   const modalErrorMessage = useDisclosure();
   const [longMessage, setLongMessage] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
 
   const isInvalidEmail = isEmailInvalid(emailValue);
 
@@ -103,35 +106,34 @@ export default function UserAdmin({
 
   return (
     <>
-      <div className="grid w-full grid-rows-[auto_1fr] rounded-xl bg-content1 shadow-small lg:grid-cols-[280px_1fr] lg:grid-rows-none">
-        <div className="bg-default-100 dark:bg-zinc-800/40 lg:border-r rounded-l-xl">
+      <div className="grid w-full grid-rows-[auto_1fr] rounded-xl bg-content1 shadow-small lg:grid-cols-[280px_1fr] lg:grid-rows-none border border-gray-200 shadow-2xl">
+        <div className="bg-gray-100 lg:border-r rounded-l-xl">
           <nav className="grid grid-cols-2 lg:grid-cols-1 lg:px-4 lg:gap-4 lg:py-8">
             {menuElements.map((element) => (
-              <Button
+              <CustomButton
                 key={`menu-${element.id}`}
-                variant="light"
+                variant="ghost"
                 onPress={() => {
                   setSelectedUser(null);
                   setSelectedMenu(element.id);
                 }}
-                className={`h-24 lg:py-2 lg:justify-start lg:h-auto flex flex-col lg:flex-row rounded-none text-sm text-brand-black hover:text-brand-black/80 dark:text-brand-white dark:hover:text-brand-white/80 lg:border-none ${
-                  element.id !== 0 &&
-                  "border-l border-black/10 dark:border-white/10"
+                className={`h-24 lg:py-2 lg:justify-start lg:h-10 flex flex-col lg:flex-row rounded-none text-sm text-brand-black hover:bg-brand-black/10 lg:border-none w-full ${
+                  element.id !== 0 && "border-l border-black/10"
                 }`}
               >
-                <element.menuIcon />
+                <element.menuIcon className="w-6 h-6" />
                 {element.id === selectedMenu ? (
                   <strong>{element.name}</strong>
                 ) : (
                   <span>{element.name}</span>
                 )}
-              </Button>
+              </CustomButton>
             ))}
           </nav>
         </div>
         <section className="flex flex-col overflow-auto">
           <header
-            className="w-full border-b bg-brand-white rounded-tr-xl px-6 py-8 text-left text-base dark:bg-brand-black"
+            className="w-full border-b bg-brand-white rounded-tr-xl px-6 py-8 text-left text-base"
             dangerouslySetInnerHTML={{
               __html: menuElements[selectedMenu].description,
             }}
@@ -143,7 +145,7 @@ export default function UserAdmin({
               users={users}
               pagination={pagination}
               isSearchResult={isSearchResult}
-              className="lg:px-2"
+              className="lg:px-4 pt-4 bg-white"
             />
           )}
 
@@ -152,64 +154,74 @@ export default function UserAdmin({
             isCreatingUser === false &&
             screenToDisplay === CreateUserScreenType.FORM && (
               <form
+                ref={formRef}
                 className="px-4 lg:px-6 py-4 text-left"
                 onSubmit={handleSubmit}
               >
                 <div className="mb-5 flex flex-col gap-5 lg:flex-row">
-                  <Input
-                    type="text"
+                  <TextField
                     name="firstName"
-                    label="Fornavn"
-                    required
+                    isRequired
                     value={newUser.firstName}
-                    onChange={(e) => {
-                      setNewUser({ ...newUser, firstName: e.target.value });
+                    onChange={(value) => {
+                      setNewUser({ ...newUser, firstName: value });
                     }}
-                  />
-                  <Input
-                    type="text"
+                  >
+                    <Label>Fornavn</Label>
+                    <Input type="text" />
+                  </TextField>
+                  <TextField
                     name="lastName"
-                    label="Etternavn"
-                    required
+                    isRequired
                     value={newUser.lastName}
-                    onChange={(e) => {
-                      setNewUser({ ...newUser, lastName: e.target.value });
+                    onChange={(value) => {
+                      setNewUser({ ...newUser, lastName: value });
                     }}
-                  />
+                  >
+                    <Label>Etternavn</Label>
+                    <Input type="text" />
+                  </TextField>
                 </div>
-                <div className="mb-5 flex flex-col gap-5  lg:flex-row">
-                  <div>
-                    <Input
-                      type="email"
-                      name="email"
-                      label="E-post"
-                      description="E-posten som vil bli brukt til innlogging"
-                      required
-                      value={newUser.email}
-                      onChange={(e) => {
-                        setNewUser({ ...newUser, email: e.target.value });
-                        setEmailValue(e.target.value); // Only for visual validation feedback in the input field
-                      }}
-                      className={isInvalidEmail ? "border-danger" : ""}
-                    />
-                    {isInvalidEmail && (
-                      <div className="text-danger text-sm mt-1">
-                        Tast inn en gyldig e-postadresse
-                      </div>
-                    )}
-                  </div>
-
-                  <Input
-                    type="password"
-                    name="password"
-                    label="Passord"
-                    description="Midlertidig passord som kan endres av brukeren senere. Brukeren kan også velge å logge inn med e-post-lenke uten passord."
-                    required
-                    value={newUser.password}
-                    onChange={(e) => {
-                      setNewUser({ ...newUser, password: e.target.value });
+                <div className="mb-5 flex flex-col gap-5 lg:flex-row">
+                  <TextField
+                    name="email"
+                    type="email"
+                    isRequired
+                    isInvalid={isInvalidEmail}
+                    value={newUser.email}
+                    onChange={(value) => {
+                      setNewUser({ ...newUser, email: value });
+                      setEmailValue(value); // Only for visual validation feedback in the input field
                     }}
-                  />
+                  >
+                    <Label>E-post</Label>
+                    <Input />
+                    {isInvalidEmail ? (
+                      <FieldError>Tast inn en gyldig e-postadresse</FieldError>
+                    ) : (
+                      <Description>
+                        E-posten som vil bli brukt til innlogging
+                      </Description>
+                    )}
+                  </TextField>
+
+                  <TextField
+                    name="password"
+                    type="password"
+                    isRequired
+                    value={newUser.password}
+                    onChange={(value) => {
+                      setNewUser({ ...newUser, password: value });
+                    }}
+                  >
+                    <Label>Passord</Label>
+                    <Input />
+                    <Description>
+                      Midlertidig passord som kan endres av brukeren senere.
+                      Brukeren kan også velge å logge inn med e-post-lenke uten
+                      passord.
+                    </Description>
+                  </TextField>
                 </div>
 
                 <CheckboxGroup
@@ -253,17 +265,19 @@ export default function UserAdmin({
                 </CheckboxGroup>
 
                 <div className="flex justify-center lg:justify-start gap-4 pb-8">
-                  <Button
-                    type="submit"
-                    color="default"
-                    aria-disabled={isCreatingUser}
-                    isDisabled={isCreatingUser}
+                  <CustomButton
+                    variant="primary"
+                    onPress={() => {
+                      if (formRef.current && !isCreatingUser) {
+                        formRef.current.requestSubmit();
+                      }
+                    }}
                     className="mt-8"
                   >
                     {isCreatingUser ? "Jobber..." : "Legg til"}
-                  </Button>
-                  <Button
-                    color="danger"
+                  </CustomButton>
+                  <CustomButton
+                    variant="danger"
                     className="mt-8"
                     onPress={() => {
                       setScreenToDisplay(CreateUserScreenType.FORM);
@@ -276,7 +290,7 @@ export default function UserAdmin({
                     }}
                   >
                     Avbryt
-                  </Button>
+                  </CustomButton>
                 </div>
               </form>
             )}
@@ -319,10 +333,9 @@ export default function UserAdmin({
                 </p>
 
                 <div className="flex justify-center lg:justify-start">
-                  <Button
-                    color="primary"
+                  <CustomButton
+                    variant="primary"
                     className="mt-8"
-                    name="submit-form"
                     onPress={() => {
                       setScreenToDisplay(CreateUserScreenType.FORM);
                       setNewUser({
@@ -334,7 +347,7 @@ export default function UserAdmin({
                     }}
                   >
                     Tilbake
-                  </Button>
+                  </CustomButton>
                 </div>
               </section>
             )}
@@ -357,67 +370,79 @@ export default function UserAdmin({
       </div>
 
       {/* CREATE NEW USER MODAL - USER NEEDS TO CONFIRM BEFORE CALLING THE SERVER ACTION */}
-      <Modal
+      <Modal.Backdrop
         isOpen={modalCreateUser.isOpen}
         onOpenChange={modalCreateUser.onOpenChange}
       >
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
-          <div className="flex flex-col gap-1 mb-4 font-semibold text-lg">
-            Er du sikker?
-          </div>
-          <div className="mb-4">
-            <p>
-              Du er i ferd med å opprette en ny bruker. Bekreft at du ønsker å
-              gjøre dette.
-            </p>
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button color="danger" onPress={modalCreateUser.onClose}>
-              Avbryt
-            </Button>
-            <Button
-              onPress={() => {
-                handleCreateNewUser();
-                modalCreateUser.onClose();
-              }}
-            >
-              Opprett
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        <Modal.Container>
+          <Modal.Dialog className="sm:max-w-md">
+            <Modal.CloseTrigger />
+            <Modal.Header>
+              <Modal.Heading>Er du sikker?</Modal.Heading>
+            </Modal.Header>
+            <Modal.Body>
+              <p>
+                Du er i ferd med å opprette en ny bruker. Bekreft at du ønsker å
+                gjøre dette.
+              </p>
+            </Modal.Body>
+            <Modal.Footer>
+              <CustomButton variant="danger" onPress={modalCreateUser.onClose}>
+                Avbryt
+              </CustomButton>
+              <CustomButton
+                variant="primary"
+                onPress={() => {
+                  handleCreateNewUser();
+                  modalCreateUser.onClose();
+                }}
+              >
+                Opprett
+              </CustomButton>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
 
       {/* MODAL FOR DISPLAYING ERRORS */}
-      <Modal
+      <Modal.Backdrop
         isOpen={modalErrorMessage.isOpen || generalError !== ""}
-        onOpenChange={modalErrorMessage.onOpenChange}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) {
+            setGeneralError("");
+          }
+          modalErrorMessage.onOpenChange(isOpen);
+        }}
       >
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
-          <div className="flex flex-col gap-1 mb-4 font-semibold text-lg">
-            Det har oppstått en feil
-          </div>
-          <div className="mb-4">
-            <p>
-              {generalError} {`${longMessage ? `(${longMessage})` : ""}`}
-            </p>
-            <p>
-              Hvis du mener noe er galt, ta kontakt med styret eller
-              web-administrator.
-            </p>
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button
-              color="primary"
-              onPress={() => {
-                setGeneralError("");
-                modalErrorMessage.onClose();
-              }}
-            >
-              Ok
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        <Modal.Container>
+          <Modal.Dialog className="sm:max-w-md">
+            <Modal.CloseTrigger />
+            <Modal.Header>
+              <Modal.Heading>Det har oppstått en feil</Modal.Heading>
+            </Modal.Header>
+            <Modal.Body>
+              <p>
+                {generalError} {`${longMessage ? `(${longMessage})` : ""}`}
+              </p>
+              <p>
+                Hvis du mener noe er galt, ta kontakt med styret eller
+                web-administrator.
+              </p>
+            </Modal.Body>
+            <Modal.Footer>
+              <CustomButton
+                variant="primary"
+                onPress={() => {
+                  setGeneralError("");
+                  modalErrorMessage.onClose();
+                }}
+              >
+                Ok
+              </CustomButton>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </>
   );
 }

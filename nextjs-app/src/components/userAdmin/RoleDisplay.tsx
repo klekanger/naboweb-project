@@ -14,7 +14,7 @@ export default function RoleDisplay({
   const friendlyUserRoles: FriendlyUserRole[] = [
     {
       role: "admin",
-      friendlyName: "Administrator",
+      friendlyName: "Administrator!",
       color: "danger",
     },
     {

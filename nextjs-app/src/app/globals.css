@@ -17,15 +17,6 @@
   --color-brand-success: #7FA1F6;
   --color-brand-warning: #F8BD5F;
   --color-brand-danger: #FF7E7E;
-
-  /* Dark mode brand colors */
-  --color-brand-dark-background: #090A24;
-  --color-brand-dark-default: #DEF58F;
-  --color-brand-dark-primary: #84BDA4;
-  --color-brand-dark-secondary: #057A05;
-  --color-brand-dark-success: #628CF6;
-  --color-brand-dark-warning: #FFB951;
-  --color-brand-dark-danger: #E43131;
 }
 
 /* HeroUI v3 Semantic Color Variables - Light Theme */
@@ -58,35 +49,6 @@
   --default-foreground: #F6F7FD;
 }
 
-/* HeroUI v3 Semantic Color Variables - Dark Theme */
-.dark,
-[data-theme="dark"] {
-  /* Background and foreground */
-  --background: #090A24;
-  --foreground: #F6F7FD;
-
-  /* Primary colors */
-  --accent: #386641;
-  --accent-foreground: #F6F7FD;
-  --primary: #386641;
-  --primary-foreground: #F6F7FD;
-
-  /* Secondary colors */
-  --secondary: #43705d;
-  --secondary-foreground: #F6F7FD;
-
-  /* Status colors */
-  --success: #6c8729;
-  --success-foreground: #F6F7FD;
-  --warning: #af9600;
-  --warning-foreground: #090A24;
-  --danger: #842f31;
-  --danger-foreground: #F6F7FD;
-
-  /* Default color */
-  --default: #6c757d;
-  --default-foreground: #F6F7FD;
-}
 
 /* Map HeroUI semantic colors to Tailwind */
 @theme inline {
@@ -246,4 +208,52 @@ body {
 
 .tiptap li p {
   @apply pb-0 mb-0 leading-normal;
+}
+
+
+@layer components {
+  .checkbox {
+    @apply inline-flex gap-3 items-center;
+  }
+
+  .checkbox__control {
+    @apply size-5 border border-gray-200;
+
+    /* Override default HeroUI bg-field and shadow-field */
+    background-color: var(--field-background, white) !important;
+    box-shadow: none !important;
+
+    /* Animated background indicator */
+    &::before {
+      @apply bg-accent pointer-events-none absolute inset-0 z-10 origin-center scale-50 rounded-md opacity-0 content-[''];
+
+      transition:
+        scale 200ms linear,
+        opacity 200ms linear,
+        background-color 200ms ease-out;
+    }
+
+    /* Selected state - hide border and background completely */
+    &[data-selected="true"],
+    &[aria-checked="true"] {
+      border: none !important;
+      border-color: transparent !important;
+      background-color: transparent !important;
+      background: transparent !important;
+      box-shadow: none !important;
+
+      &::before {
+        @apply scale-100 opacity-100;
+        z-index: 10;
+      }
+    }
+  }
+
+  .checkbox__indicator {
+    @apply text-white;
+  }
+
+  .checkbox__content {
+    @apply flex flex-col gap-1;
+  }
 }
