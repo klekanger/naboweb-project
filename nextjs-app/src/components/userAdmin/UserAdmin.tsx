@@ -230,38 +230,40 @@ export default function UserAdmin({
                   onChange={(value) => {
                     setNewUser({ ...newUser, roles: value });
                   }}
-                  className="flex flex-row gap-4"
+                  className="flex flex-col"
                 >
                   <Label>Velg roller</Label>
-                  <Description>
+                  <div className="flex flex-row">
+                    <Checkbox value="user" name="role-user" isDisabled>
+                      <Checkbox.Control>
+                        <Checkbox.Indicator />
+                      </Checkbox.Control>
+                      <Checkbox.Content>
+                        <Label>Bruker</Label>
+                      </Checkbox.Content>
+                    </Checkbox>
+                    <Checkbox value="editor" name="role-editor">
+                      <Checkbox.Control>
+                        <Checkbox.Indicator />
+                      </Checkbox.Control>
+                      <Checkbox.Content>
+                        <Label>Redaktør</Label>
+                      </Checkbox.Content>
+                    </Checkbox>
+                    <Checkbox value="admin" name="role-admin">
+                      <Checkbox.Control>
+                        <Checkbox.Indicator />
+                      </Checkbox.Control>
+                      <Checkbox.Content>
+                        <Label>Administrator</Label>
+                      </Checkbox.Content>
+                    </Checkbox>
+                  </div>
+                  <Description className="mt-4">
                     Alle må ha rollen 'Bruker' for å få tilgang til systemet.
                     Redaktører kan opprette og redigere innhold, mens
                     administratorer har tilgang til alle funksjoner.
                   </Description>
-                  <Checkbox value="user" name="role-user" isDisabled>
-                    <Checkbox.Control>
-                      <Checkbox.Indicator />
-                    </Checkbox.Control>
-                    <Checkbox.Content>
-                      <Label>Bruker</Label>
-                    </Checkbox.Content>
-                  </Checkbox>
-                  <Checkbox value="editor" name="role-editor">
-                    <Checkbox.Control>
-                      <Checkbox.Indicator />
-                    </Checkbox.Control>
-                    <Checkbox.Content>
-                      <Label>Redaktør</Label>
-                    </Checkbox.Content>
-                  </Checkbox>
-                  <Checkbox value="admin" name="role-admin">
-                    <Checkbox.Control>
-                      <Checkbox.Indicator />
-                    </Checkbox.Control>
-                    <Checkbox.Content>
-                      <Label>Administrator</Label>
-                    </Checkbox.Content>
-                  </Checkbox>
                 </CheckboxGroup>
 
                 <div className="flex justify-center lg:justify-start gap-4 pb-8">
@@ -418,9 +420,11 @@ export default function UserAdmin({
           <Modal.Dialog className="sm:max-w-md">
             <Modal.CloseTrigger />
             <Modal.Header>
-              <Modal.Heading>Det har oppstått en feil</Modal.Heading>
+              <Modal.Heading className="text-lg">
+                Det har oppstått en feil
+              </Modal.Heading>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="mt-4 flex flex-col gap-3">
               <p>
                 {generalError} {`${longMessage ? `(${longMessage})` : ""}`}
               </p>

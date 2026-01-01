@@ -161,38 +161,40 @@ export default function InviteUser() {
           defaultValue={["user"]}
           value={roles}
           onChange={setRoles}
-          className="flex flex-row gap-4"
+          className="flex flex-col"
         >
           <Label>Velg roller</Label>
-          <Description>
+          <div className="flex flex-row">
+            <Checkbox value="user" name="role-user" isDisabled>
+              <Checkbox.Control>
+                <Checkbox.Indicator />
+              </Checkbox.Control>
+              <Checkbox.Content>
+                <Label>Bruker</Label>
+              </Checkbox.Content>
+            </Checkbox>
+            <Checkbox value="editor" name="role-editor">
+              <Checkbox.Control>
+                <Checkbox.Indicator />
+              </Checkbox.Control>
+              <Checkbox.Content>
+                <Label>Redaktør</Label>
+              </Checkbox.Content>
+            </Checkbox>
+            <Checkbox value="admin" name="role-admin">
+              <Checkbox.Control>
+                <Checkbox.Indicator />
+              </Checkbox.Control>
+              <Checkbox.Content>
+                <Label>Administrator</Label>
+              </Checkbox.Content>
+            </Checkbox>
+          </div>
+          <Description className="mt-4">
             Alle må ha rollen 'Bruker' for å få tilgang til systemet. Redaktører
             kan opprette og redigere innhold, mens administratorer har tilgang
             til alle funksjoner.
           </Description>
-          <Checkbox value="user" name="role-user" isDisabled>
-            <Checkbox.Control>
-              <Checkbox.Indicator />
-            </Checkbox.Control>
-            <Checkbox.Content>
-              <Label>Bruker</Label>
-            </Checkbox.Content>
-          </Checkbox>
-          <Checkbox value="editor" name="role-editor">
-            <Checkbox.Control>
-              <Checkbox.Indicator />
-            </Checkbox.Control>
-            <Checkbox.Content>
-              <Label>Redaktør</Label>
-            </Checkbox.Content>
-          </Checkbox>
-          <Checkbox value="admin" name="role-admin">
-            <Checkbox.Control>
-              <Checkbox.Indicator />
-            </Checkbox.Control>
-            <Checkbox.Content>
-              <Label>Administrator</Label>
-            </Checkbox.Content>
-          </Checkbox>
         </CheckboxGroup>
 
         <div className="h-32">
@@ -277,9 +279,9 @@ export default function InviteUser() {
           <Modal.Dialog className="sm:max-w-md">
             <Modal.CloseTrigger />
             <Modal.Header>
-              <Modal.Heading>{errorTitle}</Modal.Heading>
+              <Modal.Heading className="text-lg">{errorTitle}</Modal.Heading>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="mt-4 flex flex-col gap-3">
               <p>{errorBody}</p>
               <p>
                 Hvis du mener noe er galt, ta kontakt med styret eller

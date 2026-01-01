@@ -206,38 +206,40 @@ export default function EditUser() {
               onChange={(value) => {
                 setSelectedUser({ ...selectedUser, roles: value });
               }}
-              className="flex flex-row gap-4"
+              className="flex flex-col gap-4"
             >
               <Label>Velg roller</Label>
+              <div className="flex flex-row gap-3">
+                <Checkbox value="user" name="role-user">
+                  <Checkbox.Control>
+                    <Checkbox.Indicator />
+                  </Checkbox.Control>
+                  <Checkbox.Content>
+                    <Label>Bruker</Label>
+                  </Checkbox.Content>
+                </Checkbox>
+                <Checkbox value="editor" name="role-editor">
+                  <Checkbox.Control>
+                    <Checkbox.Indicator />
+                  </Checkbox.Control>
+                  <Checkbox.Content>
+                    <Label>Redaktør</Label>
+                  </Checkbox.Content>
+                </Checkbox>
+                <Checkbox value="admin" name="role-admin">
+                  <Checkbox.Control>
+                    <Checkbox.Indicator />
+                  </Checkbox.Control>
+                  <Checkbox.Content>
+                    <Label>Administrator</Label>
+                  </Checkbox.Content>
+                </Checkbox>
+              </div>
               <Description>
                 Alle må ha rollen 'Bruker' for å få tilgang til systemet.
                 Redaktører kan opprette og redigere innhold, mens
                 administratorer har tilgang til alle funksjoner.
               </Description>
-              <Checkbox value="user" name="role-user">
-                <Checkbox.Control>
-                  <Checkbox.Indicator />
-                </Checkbox.Control>
-                <Checkbox.Content>
-                  <Label>Bruker</Label>
-                </Checkbox.Content>
-              </Checkbox>
-              <Checkbox value="editor" name="role-editor">
-                <Checkbox.Control>
-                  <Checkbox.Indicator />
-                </Checkbox.Control>
-                <Checkbox.Content>
-                  <Label>Redaktør</Label>
-                </Checkbox.Content>
-              </Checkbox>
-              <Checkbox value="admin" name="role-admin">
-                <Checkbox.Control>
-                  <Checkbox.Indicator />
-                </Checkbox.Control>
-                <Checkbox.Content>
-                  <Label>Administrator</Label>
-                </Checkbox.Content>
-              </Checkbox>
             </CheckboxGroup>
 
             <div className="flex justify-center lg:justify-start">
