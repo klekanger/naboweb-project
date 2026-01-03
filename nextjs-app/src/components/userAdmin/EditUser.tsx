@@ -12,7 +12,6 @@ import {
 } from "@/types/types";
 import {
   Avatar,
-  Button,
   Checkbox,
   CheckboxGroup,
   Description,
@@ -23,7 +22,7 @@ import {
   Tooltip,
 } from "@heroui/react";
 import CustomSearchInput from "../CustomSearchInput";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { useModalState } from "@/hooks/useModalState";
 import { useDisclosure } from "@/hooks/useDisclosure";
 import CustomButton from "../CustomButton";
@@ -60,6 +59,7 @@ export default function EditUser({ ...rest }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [foundUsers, setFoundUsers] = useState<SearchUserType[]>([]);
   const [loading, setLoading] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const {
     selectedUser,
@@ -142,7 +142,7 @@ export default function EditUser({ ...rest }) {
           */}
       {selectedUser && (
         <div className={`${rest?.className ?? ""} pb-8`}>
-          <div className="flex flex-row items-center gap-4 pb-8">
+          <div className="flex flex-row items-center gap-4 px-4 lg:px-0">
             <Avatar size="lg">
               {selectedUser?.imageUrl && (
                 <Avatar.Image
@@ -168,7 +168,11 @@ export default function EditUser({ ...rest }) {
           </div>
           <hr className="border-t border-divider" />
           <div className="h-8" />
-          <form onSubmit={handleUpdateUser}>
+          <form
+            ref={formRef}
+            onSubmit={handleUpdateUser}
+            className="py-4 text-left px-4 lg:px-0 pt-4 bg-white"
+          >
             <div className="mb-5 flex flex-col gap-5 lg:flex-row">
               <TextField
                 name="email"
@@ -177,7 +181,7 @@ export default function EditUser({ ...rest }) {
                 defaultValue={selectedUser.email ?? ""}
                 className="w-full"
               >
-                <Label>E-post</Label>
+                <Label className="text-left">E-post</Label>
                 <Input />
                 <Description>
                   E-postadressen kan ikke endres. Hvis du vil endre
@@ -197,7 +201,7 @@ export default function EditUser({ ...rest }) {
                 }}
                 className="w-full"
               >
-                <Label>Fornavn</Label>
+                <Label className="text-left">Fornavn</Label>
                 <Input type="text" />
               </TextField>
             </div>
@@ -215,7 +219,7 @@ export default function EditUser({ ...rest }) {
                 }}
                 className="w-full"
               >
-                <Label>Etternavn</Label>
+                <Label className="text-left">Etternavn</Label>
                 <Input type="text" />
               </TextField>
             </div>
@@ -231,9 +235,9 @@ export default function EditUser({ ...rest }) {
               }}
               className="flex flex-col gap-4"
             >
-              <Label>Velg roller</Label>
+              <Label className="text-left">Velg roller:</Label>
               <div className="flex flex-row gap-4">
-                <Checkbox value="user" name="role-user">
+                <Checkbox value="user" name="role-user" className="mt-0">
                   <Checkbox.Control>
                     <Checkbox.Indicator />
                   </Checkbox.Control>
@@ -241,7 +245,7 @@ export default function EditUser({ ...rest }) {
                     <Label>Bruker</Label>
                   </Checkbox.Content>
                 </Checkbox>
-                <Checkbox value="editor" name="role-editor">
+                <Checkbox value="editor" name="role-editor" className="mt-0">
                   <Checkbox.Control>
                     <Checkbox.Indicator />
                   </Checkbox.Control>
@@ -249,7 +253,7 @@ export default function EditUser({ ...rest }) {
                     <Label>Redaktør</Label>
                   </Checkbox.Content>
                 </Checkbox>
-                <Checkbox value="admin" name="role-admin">
+                <Checkbox value="admin" name="role-admin" className="mt-0">
                   <Checkbox.Control>
                     <Checkbox.Indicator />
                   </Checkbox.Control>
@@ -265,36 +269,37 @@ export default function EditUser({ ...rest }) {
               </Description>
             </CheckboxGroup>
 
-            <div className="flex justify-center lg:justify-start">
-              <Button
-                type="submit"
-                aria-disabled={isCreatingUser}
-                isDisabled={isCreatingUser}
+            <div className="flex justify-center lg:justify-start gap-4 pb-8">
+              <CustomButton
+                variant="primary"
+                onPress={() => {
+                  if (formRef.current && !isCreatingUser) {
+                    formRef.current.requestSubmit();
+                  }
+                }}
                 className="mt-8"
               >
                 {isCreatingUser ? "Oppdaterer..." : "Oppdater"}
-              </Button>
+              </CustomButton>
 
-              <Button
-                type="button"
-                color="warning"
+              <CustomButton
+                variant="secondary"
                 onPress={() => {
                   setSelectedUser(null);
                 }}
-                className="mt-8 ml-4"
+                className="mt-8"
               >
                 Avbryt
-              </Button>
-              <Button
-                type="button"
-                color="danger"
+              </CustomButton>
+              <CustomButton
+                variant="danger"
                 onPress={() => {
                   modalDeleteUser.onOpen();
                 }}
-                className="mt-8 ml-4"
+                className="mt-8"
               >
                 Slett bruker
-              </Button>
+              </CustomButton>
             </div>
           </form>
         </div>

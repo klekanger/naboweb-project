@@ -241,4 +241,22 @@ body {
       }
     }
   }
+
+  /* Override secondary button to use warning colors (yellow background, black text) */
+  .button--secondary {
+    @apply bg-warning text-warning-foreground;
+
+    &:active,
+    &[data-pressed="true"] {
+      @apply bg-warning-hover;
+    }
+
+    @media (hover: hover) {
+
+      &:hover,
+      &[data-hovered="true"] {
+        @apply bg-warning-hover;
+      }
+    }
+  }
 }
