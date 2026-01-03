@@ -151,11 +151,11 @@ export default function UserAdmin({
 
           {/* CREATE NEW USER SCREEN - SHOW FORM */}
           {selectedMenu === SidebarMenu.CREATE_USER &&
-            isCreatingUser === false &&
+            !isCreatingUser &&
             screenToDisplay === CreateUserScreenType.FORM && (
               <form
                 ref={formRef}
-                className="px-4 lg:px-6 py-4 text-left"
+                className="px-4 py-4 text-left lg:px-4 pt-4 bg-white"
                 onSubmit={handleSubmit}
               >
                 <div className="mb-5 flex flex-col gap-5 lg:flex-row">
@@ -166,6 +166,7 @@ export default function UserAdmin({
                     onChange={(value) => {
                       setNewUser({ ...newUser, firstName: value });
                     }}
+                    className="w-full"
                   >
                     <Label>Fornavn</Label>
                     <Input type="text" />
@@ -177,6 +178,7 @@ export default function UserAdmin({
                     onChange={(value) => {
                       setNewUser({ ...newUser, lastName: value });
                     }}
+                    className="w-full"
                   >
                     <Label>Etternavn</Label>
                     <Input type="text" />
@@ -193,6 +195,7 @@ export default function UserAdmin({
                       setNewUser({ ...newUser, email: value });
                       setEmailValue(value); // Only for visual validation feedback in the input field
                     }}
+                    className="w-full"
                   >
                     <Label>E-post</Label>
                     <Input />
@@ -213,6 +216,7 @@ export default function UserAdmin({
                     onChange={(value) => {
                       setNewUser({ ...newUser, password: value });
                     }}
+                    className="w-full"
                   >
                     <Label>Passord</Label>
                     <Input />
@@ -233,7 +237,7 @@ export default function UserAdmin({
                   className="flex flex-col"
                 >
                   <Label>Velg roller</Label>
-                  <div className="flex flex-row">
+                  <div className="flex flex-row gap-4">
                     <Checkbox value="user" name="role-user" isDisabled>
                       <Checkbox.Control>
                         <Checkbox.Indicator />
@@ -300,8 +304,8 @@ export default function UserAdmin({
           {/* SHOW LOADING SPINNER WHILE CREATING USER */}
           {selectedMenu === SidebarMenu.CREATE_USER && isCreatingUser && (
             <div className="mt-24 flex flex-col items-center justify-center gap-4">
-              <Spinner />
-              <p>
+              <Spinner size="md" />
+              <p className="text-center text-brand-black/50">
                 Oppretter bruker <br />
                 {newUser.email}
               </p>
@@ -358,14 +362,14 @@ export default function UserAdmin({
           {selectedMenu === 1 && <InviteUser />}
 
           {/* EDIT EXISTING USER */}
-          {selectedMenu === 3 && <EditUser />}
+          {selectedMenu === 3 && <EditUser className="lg:px-4 pt-4 bg-white" />}
 
           {/* SHOW USERS WITH ADMIN OR OTHER SUPER USER ROLES */}
           {selectedMenu === 4 && (
             <AssignRolesTable
               users={users}
               pagination={pagination}
-              className="lg:px-2"
+              className="lg:px-4 pt-4 bg-white"
             />
           )}
         </section>

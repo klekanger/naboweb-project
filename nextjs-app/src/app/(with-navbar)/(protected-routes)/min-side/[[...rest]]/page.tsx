@@ -20,7 +20,7 @@ export default async function Page() {
           <UserProfile />
         </div>
       ) : (
-        <Spinner />
+        <Spinner size="md" />
       )}
     </section>
   );

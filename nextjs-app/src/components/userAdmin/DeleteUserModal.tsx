@@ -99,7 +99,9 @@ export default function DeleteUserModal({
                 </div>
               )}
 
-              {isDeleting && <Spinner className="absolute ml-8" size="lg" />}
+              {isDeleting && (
+                <Spinner className="absolute ml-8 w-4 h-4" size="md" />
+              )}
 
               {!errorToShow && !successMessage && !isDeleting && (
                 <div className="flex flex-col gap-4">

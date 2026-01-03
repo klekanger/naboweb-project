@@ -19,6 +19,7 @@ import {
   Input,
   Label,
   Modal,
+  TextField,
   Tooltip,
 } from "@heroui/react";
 import CustomSearchInput from "../CustomSearchInput";
@@ -55,7 +56,7 @@ const CircleEditor = () => (
   </Tooltip>
 );
 
-export default function EditUser() {
+export default function EditUser({ ...rest }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [foundUsers, setFoundUsers] = useState<SearchUserType[]>([]);
   const [loading, setLoading] = useState(false);
@@ -140,9 +141,21 @@ export default function EditUser() {
           If not, we show a search form to find the user we want to edit.
           */}
       {selectedUser && (
-        <div className="px-4 lg:px-6 py-4 text-left">
+        <div className={`${rest?.className ?? ""} pb-8`}>
           <div className="flex flex-row items-center gap-4 pb-8">
-            <Avatar size="lg" src={selectedUser?.imageUrl || undefined} />
+            <Avatar size="lg">
+              {selectedUser?.imageUrl && (
+                <Avatar.Image
+                  src={selectedUser.imageUrl}
+                  alt={`${selectedUser.firstName} ${selectedUser.lastName}`}
+                />
+              )}
+              <Avatar.Fallback>
+                {selectedUser?.firstName?.[0]}
+                {selectedUser?.lastName?.[0]}
+              </Avatar.Fallback>
+            </Avatar>
+
             <div>
               <h2 className="m-0 p-0 text-xl">
                 {selectedUser?.firstName} {selectedUser?.lastName}
@@ -157,44 +170,54 @@ export default function EditUser() {
           <div className="h-8" />
           <form onSubmit={handleUpdateUser}>
             <div className="mb-5 flex flex-col gap-5 lg:flex-row">
-              <Input
-                type="email"
+              <TextField
                 name="email"
-                disabled
-                label="E-post"
+                type="email"
+                isDisabled
                 defaultValue={selectedUser.email ?? ""}
-                description="E-postadressen kan ikke endres. Hvis du vil endre e-postadressen, må du slette brukeren og opprette en ny."
-              />
+                className="w-full"
+              >
+                <Label>E-post</Label>
+                <Input />
+                <Description>
+                  E-postadressen kan ikke endres. Hvis du vil endre
+                  e-postadressen, må du slette brukeren og opprette en ny.
+                </Description>
+              </TextField>
 
-              <Input
-                type="text"
+              <TextField
                 name="firstName"
-                label="Fornavn"
-                required
+                isRequired
                 value={selectedUser.firstName ?? ""}
-                onChange={(e) => {
+                onChange={(value) => {
                   setSelectedUser({
                     ...selectedUser,
-                    firstName: e.target.value,
+                    firstName: value,
                   });
                 }}
-              />
+                className="w-full"
+              >
+                <Label>Fornavn</Label>
+                <Input type="text" />
+              </TextField>
             </div>
 
             <div className="mb-5 flex flex-col gap-5  lg:flex-row">
-              <Input
-                type="text"
+              <TextField
                 name="lastName"
-                label="Etternavn"
-                required
+                isRequired
                 value={selectedUser.lastName ?? ""}
-                onChange={(e) => {
+                onChange={(value) => {
                   setSelectedUser({
                     ...selectedUser,
-                    lastName: e.target.value,
+                    lastName: value,
                   });
                 }}
-              />
+                className="w-full"
+              >
+                <Label>Etternavn</Label>
+                <Input type="text" />
+              </TextField>
             </div>
 
             <CheckboxGroup
@@ -209,7 +232,7 @@ export default function EditUser() {
               className="flex flex-col gap-4"
             >
               <Label>Velg roller</Label>
-              <div className="flex flex-row gap-3">
+              <div className="flex flex-row gap-4">
                 <Checkbox value="user" name="role-user">
                   <Checkbox.Control>
                     <Checkbox.Indicator />
@@ -278,16 +301,16 @@ export default function EditUser() {
       )}
 
       {!selectedUser && (
-        <>
-          <div className="px-4 lg:px-6 py-4 text-left">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSubmit(searchTerm);
-              }}
-              className="pb-8"
-            >
-              <div className="flex gap-2 max-w-md py-2">
+        <div className={rest?.className ?? ""}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSubmit(searchTerm);
+            }}
+            className="pb-8"
+          >
+            <div className="flex flex-col gap-2 max-w-md">
+              <div className="flex gap-2 py-2">
                 <CustomSearchInput
                   value={searchTerm}
                   onChange={(value) => setSearchTerm(value || "")}
@@ -313,20 +336,21 @@ export default function EditUser() {
                   Søk
                 </CustomButton>
               </div>
-            </form>
-            {(foundUsers.length > 0 && (
-              <p>
-                <strong>
-                  Viser inntil {MAX_RESULTS} første treff &ndash; klikk brukeren
-                  du vil redigere:
-                </strong>
-              </p>
-            )) || (
-              <p>
-                Begynn å skrive i søkefeltet for å finne brukeren du vil endre.
-              </p>
-            )}
-          </div>
+              {(foundUsers.length > 0 && (
+                <p className="text-left">
+                  <strong>
+                    Viser inntil {MAX_RESULTS} første treff &ndash; klikk
+                    brukeren du vil redigere:
+                  </strong>
+                </p>
+              )) || (
+                <p className="text-left">
+                  Begynn å skrive i søkefeltet for å finne brukeren du vil
+                  endre.
+                </p>
+              )}
+            </div>
+          </form>
 
           <div className="mb-16 overflow-x-auto">
             <table
@@ -334,7 +358,7 @@ export default function EditUser() {
               aria-label="Tabell med oversikt over brukere"
             >
               <thead>
-                <tr>
+                <tr className="[&>th]:first:rounded-l-lg [&>th]:last:rounded-r-lg text-gray-500">
                   <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-3 text-left">
                     Navn
                   </th>
@@ -349,8 +373,12 @@ export default function EditUser() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={3} className="p-8 text-center">
-                      <Spinner />
+                    <td colSpan={3} className="p-4 text-center">
+                      <div className="flex justify-center items-center w-full">
+                        <div className="w-8 h-8 flex items-center justify-center">
+                          <Spinner size="md" className="w-full h-full" />
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 ) : foundUsers && foundUsers.length > 0 ? (
@@ -371,7 +399,7 @@ export default function EditUser() {
                     return (
                       <tr
                         key={user.id}
-                        className={`text-left group ${index % 2 === 0 ? "bg-gray-50 dark:bg-gray-900" : ""}`}
+                        className={`text-left ${index === 0 ? "[&>td]:pt-4" : ""}`}
                         onClick={() => {
                           const userToEdit = foundUsers.find(
                             (u) => u.id === user.id,
@@ -384,7 +412,7 @@ export default function EditUser() {
                           {user.email}
                         </td>
                         <td className="hidden sm:table-cell group-hover:bg-brand-black/10 cursor-pointer p-3">
-                          {roles}
+                          <span className="flex flex-row ">{roles}</span>
                         </td>
                       </tr>
                     );
@@ -399,7 +427,7 @@ export default function EditUser() {
               </tbody>
             </table>
           </div>
-        </>
+        </div>
       )}
       <DeleteUserModal
         userDataToDelete={selectedUser as ShowUserProps}

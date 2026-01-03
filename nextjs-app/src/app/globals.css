@@ -217,4 +217,28 @@ body {
 
     box-shadow: none !important;
   }
+
+  .input-group {
+    @apply bg-default/10 h-10;
+
+    @media (hover: hover) {
+
+      &:hover:not(:focus-within),
+      &[data-hovered="true"]:not([data-focus-within="true"]) {
+        @apply bg-default/20;
+      }
+    }
+  }
+
+  .input {
+    @apply bg-default/10 h-10;
+
+    @media (hover: hover) {
+
+      &:hover:not(:focus):not(:focus-visible),
+      &[data-hovered="true"]:not([data-focused="true"]):not([data-focus-visible="true"]) {
+        @apply bg-default/20;
+      }
+    }
+  }
 }

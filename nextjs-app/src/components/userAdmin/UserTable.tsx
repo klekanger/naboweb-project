@@ -304,7 +304,7 @@ export default function UserTable({
               {isPaginating ? (
                 <tr>
                   <td colSpan={6} className="p-8 text-center">
-                    <Spinner />
+                    <Spinner size="md" />
                   </td>
                 </tr>
               ) : sortedUsers && sortedUsers.length > 0 ? (

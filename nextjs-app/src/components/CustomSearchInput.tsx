@@ -37,7 +37,7 @@ export default function CustomSearchInput({
       value={value}
       onChange={(newValue) => onChange(newValue || "")}
     >
-      <InputGroup className="bg-gray-100 h-full">
+      <InputGroup>
         <InputGroup.Prefix>
           <SearchIcon className="w-6 h-6 text-brand-black" />
         </InputGroup.Prefix>

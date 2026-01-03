@@ -122,8 +122,8 @@ export default function InviteUser() {
   };
 
   return (
-    <div className="px-4 lg:px-6 py-4 text-left mb-16">
-      <h3 className="mt-0">Opprett invitasjon</h3>
+    <div className="px-4 py-4 text-left mb-8 pt-4 bg-white">
+      <h3 className="mt-0 text-lg font-semibold">Opprett invitasjon</h3>
       <p>
         I stedet for å opprette en bruker med brukernavn og passord, kan du{" "}
         <em>invitere</em> brukeren til å opprette kontoen sin selv.

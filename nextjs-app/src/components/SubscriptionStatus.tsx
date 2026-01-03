@@ -59,8 +59,12 @@ export default function SubscriptionStatus({
           <Checkbox.Indicator />
         </Checkbox.Control>
         <Checkbox.Content>
-          <Label htmlFor="email-subscription">
-            Aktiver e-postvarsling {isPending ? <Spinner size="sm" /> : ""}
+          <Label
+            htmlFor="email-subscription"
+            className="flex items-center gap-2"
+          >
+            Aktiver e-postvarsling
+            {isPending && <Spinner size="sm" className="w-3 h-3" />}
           </Label>
         </Checkbox.Content>
       </Checkbox>

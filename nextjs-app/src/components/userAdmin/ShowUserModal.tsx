@@ -29,14 +29,25 @@ export default function ShowUserModal({
           <Modal.CloseTrigger />
           <Modal.Header>
             <div className="flex flex-row gap-4">
-              <Avatar src={userDataToShow?.imageUrl || undefined} />
-              <Modal.Heading>
+              <Avatar>
+                {userDataToShow?.imageUrl && (
+                  <Avatar.Image
+                    src={userDataToShow.imageUrl}
+                    alt={`${userDataToShow.firstName} ${userDataToShow.lastName}`}
+                  />
+                )}
+                <Avatar.Fallback>
+                  {userDataToShow?.firstName?.[0]}
+                  {userDataToShow?.lastName?.[0]}
+                </Avatar.Fallback>
+              </Avatar>
+              <Modal.Heading className="text-xl flex items-center mb-8">
                 {`${userDataToShow?.firstName} ${userDataToShow?.lastName}`}
               </Modal.Heading>
             </div>
           </Modal.Header>
           <Modal.Body>
-            <section>
+            <section className="text-brand-black font-medium text-base">
               <div className="flex flex-col gap-4">
                 <div>
                   <strong>E-post:</strong>
@@ -50,7 +61,7 @@ export default function ShowUserModal({
                   <div>
                     {formatDate(userDataToShow?.createdAt)}
                     {userDataToShow?.email === "" ? (
-                      <Spinner className="absolute ml-8" size="lg" />
+                      <Spinner className="absolute ml-8 w-4 h-4" size="sm" />
                     ) : null}
                   </div>
                 </div>
