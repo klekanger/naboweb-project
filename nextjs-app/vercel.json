@@ -1,5 +1,5 @@
 {
-  "installCommand": "pnpm install",
+  "installCommand": "cd .. && pnpm install",
   "buildCommand": "cd .. && pnpm run build",
   "crons": [{
     "schedule": "0 6 * * *",
