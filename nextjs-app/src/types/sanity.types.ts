@@ -13,6 +13,53 @@
  */
 
 // Source: schema.json
+export type SanityImageAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+};
+
+export type Bodytext = {
+  _type: "bodytext";
+  body?: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: "span";
+          _key: string;
+        }>;
+        style?: "normal" | "h2" | "h3" | "h4" | "blockquote";
+        listItem?: "bullet" | "number";
+        markDefs?: Array<{
+          href?: string;
+          _type: "link";
+          _key: string;
+        }>;
+        level?: number;
+        _type: "block";
+        _key: string;
+      }
+    | {
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        caption?: string;
+        alt?: string;
+        _type: "image";
+        _key: string;
+      }
+    | ({
+        _key: string;
+      } & Youtube)
+    | ({
+        _key: string;
+      } & Twitter)
+  >;
+};
+
 export type MyIcon = "BookIcon" | "HouseIcon" | "NewsIcon" | "PencilIcon";
 
 export type Twitter = {
@@ -24,6 +71,13 @@ export type Twitter = {
 export type Youtube = {
   _type: "youtube";
   url?: string;
+};
+
+export type PageReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "page";
 };
 
 export type Settings = {
@@ -43,12 +97,7 @@ export type Settings = {
   metaDescription?: string;
   metaKeywords?: string;
   metaOgImage?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -56,22 +105,35 @@ export type Settings = {
   };
   menuItem1?: {
     title?: string;
-    menuLink?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "page";
-    };
+    menuLink?: PageReference;
   };
   menuItem2?: {
     title?: string;
-    menuLink?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "page";
-    };
+    menuLink?: PageReference;
   };
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x?: number;
+  y?: number;
+  height?: number;
+  width?: number;
+};
+
+export type FileOtherDocumentsReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "fileOtherDocuments";
 };
 
 export type DocumentMenu = {
@@ -81,33 +143,20 @@ export type DocumentMenu = {
   _updatedAt: string;
   _rev: string;
   button1Text?: string;
-  button1File?: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "fileOtherDocuments";
-  };
+  button1File?: FileOtherDocumentsReference;
   button2Text?: string;
-  button2File?: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "fileOtherDocuments";
-  };
+  button2File?: FileOtherDocumentsReference;
   button3Text?: string;
-  button3File?: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "fileOtherDocuments";
-  };
+  button3File?: FileOtherDocumentsReference;
   button4Text?: string;
-  button4File?: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "fileOtherDocuments";
-  };
+  button4File?: FileOtherDocumentsReference;
+};
+
+export type SanityFileAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.fileAsset";
 };
 
 export type FileOtherDocuments = {
@@ -119,12 +168,7 @@ export type FileOtherDocuments = {
   title?: string;
   description?: string;
   otherDocument?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.fileAsset";
-    };
+    asset?: SanityFileAssetReference;
     media?: unknown;
     _type: "file";
   };
@@ -140,12 +184,7 @@ export type FileMeetingMinutes = {
   title?: string;
   description?: string;
   meetingDocuments?: Array<{
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.fileAsset";
-    };
+    asset?: SanityFileAssetReference;
     media?: unknown;
     _type: "file";
     _key: string;
@@ -189,49 +228,11 @@ export type FrontpageNewUserIntro = {
   introText?: Bodytext;
 };
 
-export type Bodytext = {
-  _type: "bodytext";
-  body?: Array<
-    | {
-        children?: Array<{
-          marks?: Array<string>;
-          text?: string;
-          _type: "span";
-          _key: string;
-        }>;
-        style?: "normal" | "h2" | "h3" | "h4" | "blockquote";
-        listItem?: "bullet" | "number";
-        markDefs?: Array<{
-          href?: string;
-          _type: "link";
-          _key: string;
-        }>;
-        level?: number;
-        _type: "block";
-        _key: string;
-      }
-    | {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
-        media?: unknown;
-        hotspot?: SanityImageHotspot;
-        crop?: SanityImageCrop;
-        caption?: string;
-        alt?: string;
-        _type: "image";
-        _key: string;
-      }
-    | ({
-        _key: string;
-      } & Youtube)
-    | ({
-        _key: string;
-      } & Twitter)
-  >;
+export type BlogPostReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "blogPost";
 };
 
 export type FrontpageShowcase = {
@@ -242,13 +243,11 @@ export type FrontpageShowcase = {
   _rev: string;
   enableShowcase?: boolean;
   showcaseTitle?: string;
-  showcaseBlogposts?: Array<{
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    _key: string;
-    [internalGroqTypeReferenceTo]?: "blogPost";
-  }>;
+  showcaseBlogposts?: Array<
+    {
+      _key: string;
+    } & BlogPostReference
+  >;
 };
 
 export type FrontpageHero = {
@@ -260,12 +259,7 @@ export type FrontpageHero = {
   title?: string;
   subtitle?: string;
   heroImage?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -275,12 +269,14 @@ export type FrontpageHero = {
   bodyText?: string;
   showButton?: boolean;
   buttonText?: string;
-  buttonLink?: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "page";
-  };
+  buttonLink?: PageReference;
+};
+
+export type AuthorsReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "authors";
 };
 
 export type Message = {
@@ -290,12 +286,7 @@ export type Message = {
   _updatedAt: string;
   _rev: string;
   title?: string;
-  author?: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "authors";
-  };
+  author?: AuthorsReference;
   fromAdmin?: boolean;
   bodyText?: Array<{
     children?: Array<{
@@ -316,12 +307,7 @@ export type Message = {
     _key: string;
   }>;
   messageImage?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -332,12 +318,7 @@ export type Message = {
   comments?: Array<{
     commentTitle?: string;
     commentText?: string;
-    commentAuthor?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "authors";
-    };
+    commentAuthor?: AuthorsReference;
     published?: string;
     _type: "comment";
     _key: string;
@@ -355,12 +336,7 @@ export type Authors = {
   email?: string;
   emailSubscription?: boolean;
   authorImage?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -405,12 +381,7 @@ export type BlogPost = {
         _key: string;
       }
     | {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
+        asset?: SanityImageAssetReference;
         media?: unknown;
         hotspot?: SanityImageHotspot;
         crop?: SanityImageCrop;
@@ -419,12 +390,7 @@ export type BlogPost = {
       }
   >;
   featuredImage?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -452,12 +418,7 @@ export type BlogPost = {
         _key: string;
       }
     | {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
+        asset?: SanityImageAssetReference;
         media?: unknown;
         hotspot?: SanityImageHotspot;
         crop?: SanityImageCrop;
@@ -473,13 +434,17 @@ export type BlogPost = {
         _key: string;
       } & Twitter)
   >;
-  author?: Array<{
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    _key: string;
-    [internalGroqTypeReferenceTo]?: "authors";
-  }>;
+  author?: Array<
+    {
+      _key: string;
+    } & AuthorsReference
+  >;
+};
+
+export type Slug = {
+  _type: "slug";
+  current?: string;
+  source?: string;
 };
 
 export type Page = {
@@ -505,12 +470,7 @@ export type Page = {
     _key: string;
   }>;
   mainImage?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -537,12 +497,7 @@ export type Page = {
         _key: string;
       }
     | {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
+        asset?: SanityImageAssetReference;
         media?: unknown;
         hotspot?: SanityImageHotspot;
         crop?: SanityImageCrop;
@@ -586,20 +541,15 @@ export type SanityImageDimensions = {
   aspectRatio?: number;
 };
 
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
-};
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
+export type SanityImageMetadata = {
+  _type: "sanity.imageMetadata";
+  location?: Geopoint;
+  dimensions?: SanityImageDimensions;
+  palette?: SanityImagePalette;
+  lqip?: string;
+  blurHash?: string;
+  hasAlpha?: boolean;
+  isOpaque?: boolean;
 };
 
 export type SanityFileAsset = {
@@ -622,6 +572,13 @@ export type SanityFileAsset = {
   path?: string;
   url?: string;
   source?: SanityAssetSourceData;
+};
+
+export type SanityAssetSourceData = {
+  _type: "sanity.assetSourceData";
+  name?: string;
+  id?: string;
+  url?: string;
 };
 
 export type SanityImageAsset = {
@@ -647,17 +604,6 @@ export type SanityImageAsset = {
   source?: SanityAssetSourceData;
 };
 
-export type SanityImageMetadata = {
-  _type: "sanity.imageMetadata";
-  location?: Geopoint;
-  dimensions?: SanityImageDimensions;
-  palette?: SanityImagePalette;
-  lqip?: string;
-  blurHash?: string;
-  hasAlpha?: boolean;
-  isOpaque?: boolean;
-};
-
 export type Geopoint = {
   _type: "geopoint";
   lat?: number;
@@ -665,54 +611,51 @@ export type Geopoint = {
   alt?: number;
 };
 
-export type Slug = {
-  _type: "slug";
-  current?: string;
-  source?: string;
-};
-
-export type SanityAssetSourceData = {
-  _type: "sanity.assetSourceData";
-  name?: string;
-  id?: string;
-  url?: string;
-};
-
 export type AllSanitySchemaTypes =
+  | SanityImageAssetReference
+  | Bodytext
   | MyIcon
   | Twitter
   | Youtube
+  | PageReference
   | Settings
+  | SanityImageCrop
+  | SanityImageHotspot
+  | FileOtherDocumentsReference
   | DocumentMenu
+  | SanityFileAssetReference
   | FileOtherDocuments
   | FileMeetingMinutes
   | FrontpageServices
   | FrontpageNewUserIntro
-  | Bodytext
+  | BlogPostReference
   | FrontpageShowcase
   | FrontpageHero
+  | AuthorsReference
   | Message
   | Authors
   | BlogPost
+  | Slug
   | Page
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
-  | SanityImageHotspot
-  | SanityImageCrop
-  | SanityFileAsset
-  | SanityImageAsset
   | SanityImageMetadata
-  | Geopoint
-  | Slug
-  | SanityAssetSourceData;
+  | SanityFileAsset
+  | SanityAssetSourceData
+  | SanityImageAsset
+  | Geopoint;
+
 export declare const internalGroqTypeReferenceTo: unique symbol;
-// Source: ./src/sanity/lib/queries.ts
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: userSubscriptionStatusQuery
 // Query: *[_type=="authors" && _id==$id][0] {    emailSubscription  }
 export type UserSubscriptionStatusQueryResult = {
   emailSubscription: boolean | null;
 } | null;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: documentMenuQuery
 // Query: *[_type=="documentMenu"] {    button1Text,    button2Text,    button3Text,    button4Text,    'file1': button1File->otherDocument.asset->{url},    'file2': button2File->otherDocument.asset->{url},    'file3': button3File->otherDocument.asset->{url},    'file4': button4File->otherDocument.asset->{url},  }[0]
 export type DocumentMenuQueryResult = {
@@ -733,6 +676,8 @@ export type DocumentMenuQueryResult = {
     url: string | null;
   } | null;
 } | null;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: otherDocumentsQuery
 // Query: *[_type=="fileOtherDocuments"] {    title,    description,    tags,    _createdAt,    _updatedAt,    'document': otherDocument{      asset->{url, _id, originalFilename}    }  }
 export type OtherDocumentsQueryResult = Array<{
@@ -749,8 +694,10 @@ export type OtherDocumentsQueryResult = Array<{
     } | null;
   } | null;
 }>;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: meetingMinutesQuery
-// Query: *[_type=="fileMeetingMinutes"] | order(_createdAt asc) {    _id,    title,    description,    meetingDate,    meetingPlace,    tags,    _createdAt,    _updatedAt,    "documentCount": count(meetingDocuments)  }
+// Query: *[_type=="fileMeetingMinutes"] | order(_createdAt desc) | order(meetingDate desc) {    _id,    title,    description,    meetingDate,    meetingPlace,    tags,    _createdAt,    _updatedAt,    "documentCount": count(meetingDocuments)  }
 export type MeetingMinutesQueryResult = Array<{
   _id: string;
   title: string | null;
@@ -762,8 +709,10 @@ export type MeetingMinutesQueryResult = Array<{
   _updatedAt: string;
   documentCount: number | null;
 }>;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: meetingMinutesByIdQuery
-// Query: *[_type=="fileMeetingMinutes" && _id == $meeting] | order(_createdAt asc)[0] {    _id,    title,    description,    meetingDate,    meetingPlace,    tags,    _createdAt,    _updatedAt,    meetingDocuments[]{asset->{      url,       _id,       originalFilename,      extension,      size,      _createdAt,       _updatedAt    }}  }
+// Query: *[_type=="fileMeetingMinutes" && _id == $meeting][0] {    _id,    title,    description,    meetingDate,    meetingPlace,    tags,    _createdAt,    _updatedAt,    meetingDocuments[]{asset->{      url,       _id,       originalFilename,      extension,      size,      _createdAt,       _updatedAt    }}  }
 export type MeetingMinutesByIdQueryResult = {
   _id: string;
   title: string | null;
@@ -785,6 +734,8 @@ export type MeetingMinutesByIdQueryResult = {
     } | null;
   }> | null;
 } | null;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: frontpageHeroQuery
 // Query: *[_type=="frontpage-hero"]{    title,    subtitle,    showButton,    buttonText,    buttonLink->{slug},    heroImage{..., "lqip": asset->metadata.lqip},    bodyText  }[0]
 export type FrontpageHeroQueryResult = {
@@ -796,12 +747,7 @@ export type FrontpageHeroQueryResult = {
     slug: Slug | null;
   } | null;
   heroImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -811,6 +757,8 @@ export type FrontpageHeroQueryResult = {
   } | null;
   bodyText: string | null;
 } | null;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: frontpageServicesQuery
 // Query: *[_type=="frontpage-services"]{    title1,title2,title3,    url1,url2,url3,    description1,description2,description3,    url1,url2,url3,    icon1,icon2,icon3,    private1,private2,private3  }[0]
 export type FrontpageServicesQueryResult = {
@@ -830,6 +778,8 @@ export type FrontpageServicesQueryResult = {
   private2: boolean | null;
   private3: boolean | null;
 } | null;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: pageBySlugQuery
 // Query: *[_type=="page" && slug.current == $slug][0]{    _id,    _createdAt,    _updatedAt,    title,    mainImage{..., "lqip": asset->metadata.lqip},    overview,    body[]{      ...,      _type == "image" => {        ...,        "lqip": asset->metadata.lqip      }    },    "slug": slug.current  }
 export type PageBySlugQueryResult = {
@@ -838,12 +788,7 @@ export type PageBySlugQueryResult = {
   _updatedAt: string;
   title: string | null;
   mainImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -885,12 +830,7 @@ export type PageBySlugQueryResult = {
         _key: string;
       }
     | {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
+        asset?: SanityImageAssetReference;
         media?: unknown;
         hotspot?: SanityImageHotspot;
         crop?: SanityImageCrop;
@@ -914,6 +854,8 @@ export type PageBySlugQueryResult = {
   > | null;
   slug: string | null;
 } | null;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: blogBySlugQuery
 // Query: *[_type=="blogPost" && slug.current == $slug && privatePost != true][0]{    _id,    _createdAt,    _updatedAt,    privatePost,    title,    excerpt,    featuredImage{..., "lqip": asset->metadata.lqip},    bodyText[]{      ...,      _type == "image" => {        ...,        "lqip": asset->metadata.lqip      }    },    "slug": slug.current,    author[]->{...},  }
 export type BlogBySlugQueryResult = {
@@ -950,12 +892,7 @@ export type BlogBySlugQueryResult = {
         _key: string;
       }
     | {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
+        asset?: SanityImageAssetReference;
         media?: unknown;
         hotspot?: SanityImageHotspot;
         crop?: SanityImageCrop;
@@ -964,12 +901,7 @@ export type BlogBySlugQueryResult = {
       }
   > | null;
   featuredImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -998,12 +930,7 @@ export type BlogBySlugQueryResult = {
         _key: string;
       }
     | {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
+        asset?: SanityImageAssetReference;
         media?: unknown;
         hotspot?: SanityImageHotspot;
         crop?: SanityImageCrop;
@@ -1037,12 +964,7 @@ export type BlogBySlugQueryResult = {
     email?: string;
     emailSubscription?: boolean;
     authorImage?: {
-      asset?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-      };
+      asset?: SanityImageAssetReference;
       media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
@@ -1050,6 +972,8 @@ export type BlogBySlugQueryResult = {
     };
   }> | null;
 } | null;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: allBlogBySlugQuery
 // Query: *[_type=="blogPost" && slug.current == $slug][0]{    _id,    _createdAt,    _updatedAt,    privatePost,    title,    excerpt,    featuredImage{..., "lqip": asset->metadata.lqip},    bodyText[]{      ...,      _type == "image" => {        ...,        "lqip": asset->metadata.lqip      }    },    "slug": slug.current,    author[]->{...},  }
 export type AllBlogBySlugQueryResult = {
@@ -1086,12 +1010,7 @@ export type AllBlogBySlugQueryResult = {
         _key: string;
       }
     | {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
+        asset?: SanityImageAssetReference;
         media?: unknown;
         hotspot?: SanityImageHotspot;
         crop?: SanityImageCrop;
@@ -1100,12 +1019,7 @@ export type AllBlogBySlugQueryResult = {
       }
   > | null;
   featuredImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -1134,12 +1048,7 @@ export type AllBlogBySlugQueryResult = {
         _key: string;
       }
     | {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
+        asset?: SanityImageAssetReference;
         media?: unknown;
         hotspot?: SanityImageHotspot;
         crop?: SanityImageCrop;
@@ -1173,12 +1082,7 @@ export type AllBlogBySlugQueryResult = {
     email?: string;
     emailSubscription?: boolean;
     authorImage?: {
-      asset?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-      };
+      asset?: SanityImageAssetReference;
       media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
@@ -1186,6 +1090,8 @@ export type AllBlogBySlugQueryResult = {
     };
   }> | null;
 } | null;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: privateBlogBySlugQuery
 // Query: *[_type=="blogPost" && slug.current == $slug && privatePost == true][0]{    _id,    _createdAt,    _updatedAt,    privatePost,    title,    excerpt,    featuredImage{..., "lqip": asset->metadata.lqip},    bodyText[]{      ...,      _type == "image" => {        ...,        "lqip": asset->metadata.lqip      }    },    "slug": slug.current,    author[]->{...},  }
 export type PrivateBlogBySlugQueryResult = {
@@ -1222,12 +1128,7 @@ export type PrivateBlogBySlugQueryResult = {
         _key: string;
       }
     | {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
+        asset?: SanityImageAssetReference;
         media?: unknown;
         hotspot?: SanityImageHotspot;
         crop?: SanityImageCrop;
@@ -1236,12 +1137,7 @@ export type PrivateBlogBySlugQueryResult = {
       }
   > | null;
   featuredImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -1270,12 +1166,7 @@ export type PrivateBlogBySlugQueryResult = {
         _key: string;
       }
     | {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
+        asset?: SanityImageAssetReference;
         media?: unknown;
         hotspot?: SanityImageHotspot;
         crop?: SanityImageCrop;
@@ -1309,12 +1200,7 @@ export type PrivateBlogBySlugQueryResult = {
     email?: string;
     emailSubscription?: boolean;
     authorImage?: {
-      asset?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-      };
+      asset?: SanityImageAssetReference;
       media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
@@ -1322,6 +1208,8 @@ export type PrivateBlogBySlugQueryResult = {
     };
   }> | null;
 } | null;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: showcaseQuery
 // Query: *[_type=="frontpage-showcase"][0]{    "enableShowcase": coalesce(enableShowcase, true),    _id,    _createdAt,    _updatedAt,    showcaseTitle,    showcaseBlogposts[]->{      _id,       title,       excerpt,       featuredImage{..., "lqip": asset->metadata.lqip},       slug    },  }
 export type ShowcaseQueryResult = {
@@ -1361,12 +1249,7 @@ export type ShowcaseQueryResult = {
           _key: string;
         }
       | {
-          asset?: {
-            _ref: string;
-            _type: "reference";
-            _weak?: boolean;
-            [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-          };
+          asset?: SanityImageAssetReference;
           media?: unknown;
           hotspot?: SanityImageHotspot;
           crop?: SanityImageCrop;
@@ -1375,12 +1258,7 @@ export type ShowcaseQueryResult = {
         }
     > | null;
     featuredImage: {
-      asset?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-      };
+      asset?: SanityImageAssetReference;
       media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
@@ -1392,6 +1270,8 @@ export type ShowcaseQueryResult = {
     slug: Slug | null;
   }> | null;
 } | null;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: newUserIntroQuery
 // Query: *[_type=="frontpage-new-user-intro"][0]{    "enableNewUserIntro": coalesce(enableNewUserIntro, true),    title,    introText  }
 export type NewUserIntroQueryResult = {
@@ -1399,15 +1279,23 @@ export type NewUserIntroQueryResult = {
   title: string | null;
   introText: Bodytext | null;
 } | null;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: countPublicBlogPostsQuery
 // Query: count(*[_type=="blogPost" && privatePost==false])
 export type CountPublicBlogPostsQueryResult = number;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: countPrivateBlogPostsQuery
 // Query: count(*[_type=="blogPost" && privatePost==true])
 export type CountPrivateBlogPostsQueryResult = number;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: countAllBlogPostsQuery
 // Query: count(*[_type=="blogPost"])
 export type CountAllBlogPostsQueryResult = number;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: messageboardQuery
 // Query: *[_type == "message"] | order(_createdAt desc) [$start...$end] {    _id,    _updatedAt,    _createdAt,    title,    messageImage,    bodyText,    tags,    comments[]{      _key,      commentText,      commentTitle,      commentAuthor->{_id, firstName, lastName}    },    fromAdmin,    author->{_id, firstName, lastName}  }
 export type MessageboardQueryResult = Array<{
@@ -1416,12 +1304,7 @@ export type MessageboardQueryResult = Array<{
   _createdAt: string;
   title: string | null;
   messageImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -1464,6 +1347,8 @@ export type MessageboardQueryResult = Array<{
     lastName: string | null;
   } | null;
 }>;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: messageByIdQuery
 // Query: *[_type == "message" && _id == $id][0] {    _id,    _updatedAt,    _createdAt,    title,    messageImage,    bodyText,    tags,    comments[]{      _key,      commentText,      commentTitle,      commentAuthor->{_id, firstName, lastName},      published,    },    fromAdmin,    author->{_id, firstName, lastName},  }
 export type MessageByIdQueryResult = {
@@ -1472,12 +1357,7 @@ export type MessageByIdQueryResult = {
   _createdAt: string;
   title: string | null;
   messageImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -1521,27 +1401,28 @@ export type MessageByIdQueryResult = {
     lastName: string | null;
   } | null;
 } | null;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: allMessageIdsQuery
 // Query: *[_type == "message"]{_id}
 export type AllMessageIdsQueryResult = Array<{
   _id: string;
 }>;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: countMessagesQuery
 // Query: count(*[_type=="message"])
 export type CountMessagesQueryResult = number;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: blogCollectionQuery
-// Query: *[_type=="blogPost" &&   privatePost==$isPrivate] | order(_createdAt asc) [$start...$end]  {    _id,    _createdAt,    _updatedAt,    featuredImage{..., "lqip": asset->metadata.lqip},    excerpt,    privatePost,    title,    "slug": slug.current  }
+// Query: *[_type=="blogPost" &&   privatePost==$isPrivate] | order(_createdAt desc) [$start...$end]  {    _id,    _createdAt,    _updatedAt,    featuredImage{..., "lqip": asset->metadata.lqip},    excerpt,    privatePost,    title,    "slug": slug.current  }
 export type BlogCollectionQueryResult = Array<{
   _id: string;
   _createdAt: string;
   _updatedAt: string;
   featuredImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -1578,12 +1459,7 @@ export type BlogCollectionQueryResult = Array<{
         _key: string;
       }
     | {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
+        asset?: SanityImageAssetReference;
         media?: unknown;
         hotspot?: SanityImageHotspot;
         crop?: SanityImageCrop;
@@ -1595,19 +1471,16 @@ export type BlogCollectionQueryResult = Array<{
   title: string | null;
   slug: string | null;
 }>;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: allBlogCollectionQuery
-// Query: *[_type=="blogPost"] | order(_createdAt asc) [$start...$end]  {    _id,    _createdAt,    _updatedAt,    featuredImage{..., "lqip": asset->metadata.lqip},    excerpt,    privatePost,    title,    "slug": slug.current  }
+// Query: *[_type=="blogPost"] | order(_createdAt desc) [$start...$end]  {    _id,    _createdAt,    _updatedAt,    featuredImage{..., "lqip": asset->metadata.lqip},    excerpt,    privatePost,    title,    "slug": slug.current  }
 export type AllBlogCollectionQueryResult = Array<{
   _id: string;
   _createdAt: string;
   _updatedAt: string;
   featuredImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -1644,12 +1517,7 @@ export type AllBlogCollectionQueryResult = Array<{
         _key: string;
       }
     | {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
+        asset?: SanityImageAssetReference;
         media?: unknown;
         hotspot?: SanityImageHotspot;
         crop?: SanityImageCrop;
@@ -1661,24 +1529,34 @@ export type AllBlogCollectionQueryResult = Array<{
   title: string | null;
   slug: string | null;
 }>;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: pageSlugs
 // Query: *[_type == "page" && defined(slug.current)]  {"slug": slug.current}
 export type PageSlugsResult = Array<{
   slug: string | null;
 }>;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: blogSlugs
 // Query: *[_type == "blogPost" && defined(slug.current)]  {"slug": slug.current}
 export type BlogSlugsResult = Array<{
   slug: string | null;
 }>;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: privateBlogSlugs
 // Query: *[_type == "blogPost" && defined(slug.current) && privatePost == true]  {"slug": slug.current}
 export type PrivateBlogSlugsResult = Array<{
   slug: string | null;
 }>;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: messageSlugs
 // Query: *[_type == "message" && defined(slug.current)]  {"slug": slug.current}
 export type MessageSlugsResult = Array<never>;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: meetingMinutesIds
 // Query: *[_type == "fileMeetingMinutes"]{_id}
 export type MeetingMinutesIdsResult = Array<{
@@ -1692,8 +1570,8 @@ declare module "@sanity/client" {
     '\n  *[_type=="authors" && _id==$id][0] {\n    emailSubscription\n  }\n': UserSubscriptionStatusQueryResult;
     "\n  *[_type==\"documentMenu\"] {\n    button1Text,\n    button2Text,\n    button3Text,\n    button4Text,\n    'file1': button1File->otherDocument.asset->{url},\n    'file2': button2File->otherDocument.asset->{url},\n    'file3': button3File->otherDocument.asset->{url},\n    'file4': button4File->otherDocument.asset->{url},\n  }[0]\n": DocumentMenuQueryResult;
     "\n  *[_type==\"fileOtherDocuments\"] {\n    title,\n    description,\n    tags,\n    _createdAt,\n    _updatedAt,\n    'document': otherDocument{\n      asset->{url, _id, originalFilename}\n    }\n  }\n": OtherDocumentsQueryResult;
-    '\n  *[_type=="fileMeetingMinutes"] | order(_createdAt asc) {\n    _id,\n    title,\n    description,\n    meetingDate,\n    meetingPlace,\n    tags,\n    _createdAt,\n    _updatedAt,\n    "documentCount": count(meetingDocuments)\n  }\n': MeetingMinutesQueryResult;
-    '\n  *[_type=="fileMeetingMinutes" && _id == $meeting] | order(_createdAt asc)[0] {\n    _id,\n    title,\n    description,\n    meetingDate,\n    meetingPlace,\n    tags,\n    _createdAt,\n    _updatedAt,\n    meetingDocuments[]{asset->{\n      url, \n      _id, \n      originalFilename,\n      extension,\n      size,\n      _createdAt, \n      _updatedAt\n    }}\n  }\n': MeetingMinutesByIdQueryResult;
+    '\n  *[_type=="fileMeetingMinutes"] | order(_createdAt desc) | order(meetingDate desc) {\n    _id,\n    title,\n    description,\n    meetingDate,\n    meetingPlace,\n    tags,\n    _createdAt,\n    _updatedAt,\n    "documentCount": count(meetingDocuments)\n  }\n': MeetingMinutesQueryResult;
+    '\n  *[_type=="fileMeetingMinutes" && _id == $meeting][0] {\n    _id,\n    title,\n    description,\n    meetingDate,\n    meetingPlace,\n    tags,\n    _createdAt,\n    _updatedAt,\n    meetingDocuments[]{asset->{\n      url, \n      _id, \n      originalFilename,\n      extension,\n      size,\n      _createdAt, \n      _updatedAt\n    }}\n  }\n': MeetingMinutesByIdQueryResult;
     '\n  *[_type=="frontpage-hero"]{\n    title,\n    subtitle,\n    showButton,\n    buttonText,\n    buttonLink->{slug},\n    heroImage{..., "lqip": asset->metadata.lqip},\n    bodyText\n  }[0]\n': FrontpageHeroQueryResult;
     '\n  *[_type=="frontpage-services"]{\n    title1,title2,title3,\n    url1,url2,url3,\n    description1,description2,description3,\n    url1,url2,url3,\n    icon1,icon2,icon3,\n    private1,private2,private3\n  }[0]\n': FrontpageServicesQueryResult;
     '\n  *[_type=="page" && slug.current == $slug][0]{\n    _id,\n    _createdAt,\n    _updatedAt,\n    title,\n    mainImage{..., "lqip": asset->metadata.lqip},\n    overview,\n    body[]{\n      ...,\n      _type == "image" => {\n        ...,\n        "lqip": asset->metadata.lqip\n      }\n    },\n    "slug": slug.current\n  }\n': PageBySlugQueryResult;
@@ -1709,8 +1587,8 @@ declare module "@sanity/client" {
     '\n  *[_type == "message" && _id == $id][0] {\n    _id,\n    _updatedAt,\n    _createdAt,\n    title,\n    messageImage,\n    bodyText,\n    tags,\n    comments[]{\n      _key,\n      commentText,\n      commentTitle,\n      commentAuthor->{_id, firstName, lastName},\n      published,\n    },\n    fromAdmin,\n    author->{_id, firstName, lastName},\n  }\n': MessageByIdQueryResult;
     '\n  *[_type == "message"]{_id}\n': AllMessageIdsQueryResult;
     '\n  count(*[_type=="message"])\n': CountMessagesQueryResult;
-    '\n  *[_type=="blogPost" && \n  privatePost==$isPrivate] | order(_createdAt asc) [$start...$end]\n  {\n    _id,\n    _createdAt,\n    _updatedAt,\n    featuredImage{..., "lqip": asset->metadata.lqip},\n    excerpt,\n    privatePost,\n    title,\n    "slug": slug.current\n  }      \n': BlogCollectionQueryResult;
-    '\n  *[_type=="blogPost"] | order(_createdAt asc) [$start...$end]\n  {\n    _id,\n    _createdAt,\n    _updatedAt,\n    featuredImage{..., "lqip": asset->metadata.lqip},\n    excerpt,\n    privatePost,\n    title,\n    "slug": slug.current\n  }      \n': AllBlogCollectionQueryResult;
+    '\n  *[_type=="blogPost" && \n  privatePost==$isPrivate] | order(_createdAt desc) [$start...$end]\n  {\n    _id,\n    _createdAt,\n    _updatedAt,\n    featuredImage{..., "lqip": asset->metadata.lqip},\n    excerpt,\n    privatePost,\n    title,\n    "slug": slug.current\n  }      \n': BlogCollectionQueryResult;
+    '\n  *[_type=="blogPost"] | order(_createdAt desc) [$start...$end]\n  {\n    _id,\n    _createdAt,\n    _updatedAt,\n    featuredImage{..., "lqip": asset->metadata.lqip},\n    excerpt,\n    privatePost,\n    title,\n    "slug": slug.current\n  }      \n': AllBlogCollectionQueryResult;
     '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PageSlugsResult;
     '\n  *[_type == "blogPost" && defined(slug.current)]\n  {"slug": slug.current}\n': BlogSlugsResult;
     '\n  *[_type == "blogPost" && defined(slug.current) && privatePost == true]\n  {"slug": slug.current}\n': PrivateBlogSlugsResult;
