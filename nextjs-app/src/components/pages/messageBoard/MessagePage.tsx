@@ -26,7 +26,7 @@ import Image from "next/image";
 import { notFound, useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 import type { Image as SanityImage } from "sanity";
-import MessageComments from "./MessageComments";
+import MessageComments from "./Messagecomments";
 
 const IMAGE_WIDTH = 800;
 const IMAGE_HEIGHT = 600;
