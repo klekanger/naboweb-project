@@ -6,6 +6,7 @@ import { clerkClient } from "@clerk/nextjs/server";
 import type { UserResource } from "@clerk/types";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
 
 const MAX_USERS_PER_PAGE = 30;
 const MAX_USERS_FOR_SEARCH = 50;
@@ -200,9 +201,7 @@ export default async function Page({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   return (
-    <Suspense
-      fallback={<div className="mt-32 flex justify-center">Loading...</div>}
-    >
+    <Suspense fallback={<LoadingSpinner />}>
       <UserAdminContent searchParams={searchParams} />
     </Suspense>
   );

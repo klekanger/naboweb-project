@@ -14,6 +14,7 @@ import { Info, Pencil, RefreshCw, User } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
 
 type Props = {
   params: Promise<{ page: number | undefined }>;
@@ -165,7 +166,7 @@ async function PrivateInfoContent(props: Props) {
 
 export default async function PrivateInfoPage(props: Props) {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<LoadingSpinner />}>
       <PrivateInfoContent {...props} />
     </Suspense>
   );
