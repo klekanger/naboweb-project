@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@heroui/react";
+import { Button, Spinner } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import type React from "react";
 import { forwardRef, useCallback } from "react";
@@ -16,6 +16,8 @@ import { forwardRef, useCallback } from "react";
  * @param props.children - Optional React node to render as button content (overrides buttonText).
  * @param props.variant - Button variant style (defaults to "primary").
  * @param props.size - Button size (defaults to "md").
+ * @param props.isDisabled - Whether the button is disabled.
+ * @param props.isPending - Whether the button is in a loading state (shows spinner).
  */
 const CustomButton = forwardRef<
   HTMLButtonElement,
@@ -28,6 +30,9 @@ const CustomButton = forwardRef<
     children?: React.ReactNode;
     variant?: "primary" | "secondary" | "tertiary" | "ghost" | "danger";
     size?: "sm" | "md" | "lg";
+    isDisabled?: boolean;
+    isPending?: boolean;
+    type?: "button" | "submit" | "reset";
   }
 >(function CustomButton(
   {
@@ -39,6 +44,9 @@ const CustomButton = forwardRef<
     children,
     variant = "primary",
     size = "md",
+    isDisabled,
+    isPending,
+    type,
   },
   ref,
 ) {
@@ -70,6 +78,16 @@ const CustomButton = forwardRef<
   // Merge default styling with provided className
   const mergedClassName = `rounded-xl p-4 h-10 ${className || ""}`.trim();
 
+  // When isPending is true, use render prop pattern to show spinner
+  const buttonChildren = isPending
+    ? ({ isPending: isPendingState }: { isPending: boolean }) => (
+        <>
+          {isPendingState ? <Spinner color="current" size="sm" /> : null}
+          {children ?? buttonText}
+        </>
+      )
+    : children ?? buttonText;
+
   return (
     <Button
       ref={ref}
@@ -77,8 +95,11 @@ const CustomButton = forwardRef<
       size={size}
       className={mergedClassName}
       onPress={handlePress}
+      isDisabled={isDisabled}
+      isPending={isPending}
+      type={type}
     >
-      {children ?? buttonText}
+      {buttonChildren}
     </Button>
   );
 });

@@ -30,7 +30,6 @@ export default function PaginationControls({
         page={currentPage + 1} // Convert to 1-based for display
         onChange={(page) => handlePageChange(page - 1)} // Convert back to 0-based
         showControls
-        color="primary"
         size="lg"
         radius="md"
         classNames={{

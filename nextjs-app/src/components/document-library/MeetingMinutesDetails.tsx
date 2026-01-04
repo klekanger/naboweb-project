@@ -1,11 +1,10 @@
 "use client";
 
 import { formatDate } from "@/lib/format-date";
-import { Button } from "@heroui/react";
 import { ArrowBigLeft } from "lucide-react";
-import Link from "next/link";
 import { useMemo } from "react";
 import BackButton from "../BackButton";
+import CustomButton from "../CustomButton";
 import { type MeetingMinutesByIdQueryResult } from "@/types/sanity.types";
 
 type Props = {
@@ -58,18 +57,17 @@ export default function MeetingMinutesDetails({ data }: Props) {
     return (
       <>
         <p className="pb-4">Ingen dokumenter</p>
-        <Button as={Link} href="/information/1" startContent={<ArrowBigLeft />}>
+        <CustomButton href="/information/1">
+          <ArrowBigLeft className="mr-2" />
           Gå tilbake
-        </Button>
+        </CustomButton>
       </>
     );
   }
 
   return (
     <>
-      <h1 className="text-2xl md:text-left md:text-4xl prose lg:prose-xl mb-8">
-        {title}
-      </h1>
+      <h1 className="text-2xl md:text-left md:text-4xl prose  mb-8">{title}</h1>
       <p>{description}</p>
       <div className="h-8" />
       <p>
@@ -99,17 +97,17 @@ export default function MeetingMinutesDetails({ data }: Props) {
           aria-label="Tabell med oversikt over dokumenter"
         >
           <thead>
-            <tr>
-              <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-4 text-left">
+            <tr className="[&>th]:first:rounded-l-lg [&>th]:last:rounded-r-lg text-gray-500">
+              <th className="bg-brand-primary/20 text-sm font-bold md:text-base px-3 py-2 text-left">
                 Dokument
               </th>
-              <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-4 text-left hidden sm:table-cell">
+              <th className="bg-brand-primary/20 text-sm font-bold md:text-base px-3 py-2 text-left hidden sm:table-cell">
                 Type
               </th>
-              <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-4 text-left hidden sm:table-cell">
+              <th className="bg-brand-primary/20 text-sm font-bold md:text-base px-3 py-2 text-left hidden sm:table-cell">
                 Filstørrelse
               </th>
-              <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-4 text-left">
+              <th className="bg-brand-primary/20 text-sm font-bold md:text-base px-3 py-2 text-left">
                 Lastet opp
               </th>
             </tr>
@@ -119,11 +117,9 @@ export default function MeetingMinutesDetails({ data }: Props) {
               sortedDocuments.map((item, index) => (
                 <tr
                   key={item.asset?._id}
-                  className={
-                    index % 2 === 0 ? "bg-gray-50 dark:bg-gray-900" : ""
-                  }
+                  className={`text-left [&>td]:first:rounded-l-lg [&>td]:last:rounded-r-lg ${index % 2 === 1 ? "bg-gray-200" : ""}`}
                 >
-                  <td className="p-4">
+                  <td className="px-3 py-1">
                     <a
                       href={item?.asset?.url ?? "#"}
                       target="blank"
@@ -133,17 +129,17 @@ export default function MeetingMinutesDetails({ data }: Props) {
                       {item.asset?.originalFilename ?? "N/A"}
                     </a>
                   </td>
-                  <td className="hidden sm:table-cell p-4">
+                  <td className="hidden sm:table-cell px-3 py-1">
                     {item?.asset?.extension
                       ? item.asset.extension.toUpperCase()
                       : "-"}
                   </td>
-                  <td className="hidden sm:table-cell p-4">
+                  <td className="hidden sm:table-cell px-3 py-1">
                     {item.asset?.size
                       ? `${(item.asset.size / 1024).toFixed(0)} kB`
                       : "-"}
                   </td>
-                  <td className="p-4">
+                  <td className="px-3 py-1">
                     {item.asset?._createdAt
                       ? formatDate(item.asset._createdAt)
                       : "-"}
@@ -152,7 +148,7 @@ export default function MeetingMinutesDetails({ data }: Props) {
               ))
             ) : (
               <tr>
-                <td colSpan={4} className="p-4 text-center text-gray-500">
+                <td colSpan={4} className="px-3 py-1 text-center text-gray-500">
                   Ingen dokumenter
                 </td>
               </tr>

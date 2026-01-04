@@ -26,7 +26,6 @@ export default function Pagination({
   page,
   onChange,
   showControls = true,
-  color = "primary",
   size = "md",
   radius = "md",
   isDisabled = false,
@@ -71,10 +70,12 @@ export default function Pagination({
   };
 
   const pageNumbers = getPageNumbers();
+
+  // Size classes for square buttons
   const sizeClasses = {
-    sm: "h-8 min-w-[2rem] text-sm",
-    md: "h-10 min-w-[2.5rem]",
-    lg: "h-12 min-w-[3rem] text-lg",
+    sm: "h-8 w-8 text-sm",
+    md: "h-10 w-10",
+    lg: "h-12 w-12 text-lg",
   };
 
   const radiusClasses = {
@@ -85,12 +86,6 @@ export default function Pagination({
     full: "rounded-full",
   };
 
-  const colorClasses = {
-    primary: "bg-blue-600 text-white border-blue-600",
-    secondary: "bg-brand-secondary text-white border-brand-secondary",
-    default: "bg-gray-600 text-white border-gray-600",
-  };
-
   return (
     <div
       className={`flex justify-center items-center gap-2 ${classNames.base || ""}`}
@@ -98,12 +93,11 @@ export default function Pagination({
       {showControls && (
         <Button
           isIconOnly
-          variant="flat"
+          variant="ghost"
           size={size}
-          radius={radius}
           isDisabled={isDisabled || page === 1}
           onPress={() => onChange(page - 1)}
-          className={`${classNames.item || "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"} ${radiusClasses[radius]}`}
+          className={`bg-transparent text-gray-700 hover:bg-default/10 ${sizeClasses[size]} ${radiusClasses[radius]} p-0`}
           aria-label="Previous page"
         >
           <ChevronLeft
@@ -127,17 +121,15 @@ export default function Pagination({
         return (
           <Button
             key={pageNumber}
-            isIconOnly={false}
-            variant="flat"
+            variant="ghost"
             size={size}
-            radius={radius}
             isDisabled={isDisabled}
             onPress={() => onChange(pageNumber)}
-            className={
+            className={`${sizeClasses[size]} ${radiusClasses[radius]} p-0 ${
               isActive
-                ? `${colorClasses[color]} ${sizeClasses[size]} ${radiusClasses[radius]} ${classNames.cursor || ""}`
-                : `${classNames.item || "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"} ${sizeClasses[size]} ${radiusClasses[radius]}`
-            }
+                ? "bg-brand-secondary! text-white! border-brand-primary"
+                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+            }`}
             aria-label={`Page ${pageNumber}`}
             aria-current={isActive ? "page" : undefined}
           >
@@ -149,12 +141,11 @@ export default function Pagination({
       {showControls && (
         <Button
           isIconOnly
-          variant="flat"
+          variant="ghost"
           size={size}
-          radius={radius}
           isDisabled={isDisabled || page === total}
           onPress={() => onChange(page + 1)}
-          className={`${classNames.item || "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"} ${radiusClasses[radius]}`}
+          className={`bg-transparent text-gray-700 hover:bg-default/10 ${sizeClasses[size]} ${radiusClasses[radius]} p-0`}
           aria-label="Next page"
         >
           <ChevronRight

@@ -25,7 +25,7 @@ export default async function Page() {
 
   return (
     <section>
-      <h1 className="text-center text-2xl md:text-left md:text-4xl prose lg:prose-xl mb-8">
+      <h1 className="text-center text-2xl md:text-left md:text-4xl prose mb-8">
         Dokumenter fra årsmøter
       </h1>
       <MeetingMinutes documents={documents} />

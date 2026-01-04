@@ -140,7 +140,7 @@ body {
 }
 
 .tiptap {
-  @apply bg-slate-50 pt-0 mt-0 overflow-auto;
+  @apply bg-default/10 pt-0 mt-0 overflow-auto;
 }
 
 .tiptap :first-child {

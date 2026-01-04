@@ -5,14 +5,7 @@ import { MessageEditorContext } from "@/context/messageEditorContext";
 import { useModalState } from "@/hooks/useModalState";
 import { currentUserRoles } from "@/lib/currentUserRoles";
 import { useUser } from "@clerk/nextjs";
-import {
-  Button,
-  Card,
-  Checkbox,
-  Label,
-  Modal,
-  Spinner,
-} from "@heroui/react";
+import { Button, Card, Checkbox, Label, Modal, Spinner } from "@heroui/react";
 import { htmlToBlocks } from "@portabletext/block-tools";
 import { PortableTextBlock } from "@portabletext/types";
 import { Schema } from "@sanity/schema";
@@ -27,6 +20,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
+import CustomButton from "@/components/CustomButton";
 
 const MAX_CHARACTERS = 1000;
 const DEFAULT_REDIRECT_URL = "/messageboard/new-message";
@@ -236,39 +230,41 @@ export default function NewMessage() {
           <MessageEditor />
         </Card.Content>
 
-        <CardFooter>
+        <Card.Footer>
           <div>
             <p className="text-xs mt-4 mb-4">
               Du publiserer som:{" "}
               {`${!message.fromAdmin ? `${firstName} ${lastName}` : "Styret"}`}
             </p>
             <div className="flex gap-4 flex-col md:flex-row">
-              <Button
-                color="danger"
-                as={Link}
+              <CustomButton
+                variant="danger"
                 href="/messageboard"
                 className="no-underline"
               >
                 Avbryt
-              </Button>
-              <Button
-                color="primary"
+              </CustomButton>
+              <CustomButton
+                variant="primary"
                 onPress={handleSubmit}
-                isLoading={isSubmittingMessage || isUploadingImage}
-                startContent={
-                  !isUploadingImage && !isSubmittingMessage && <UploadIcon />
-                }
                 className="w-32"
+                isPending={isSubmittingMessage || isUploadingImage}
+                isDisabled={isSubmittingMessage || isUploadingImage}
               >
-                Send inn
-              </Button>
+                {isSubmittingMessage || isUploadingImage ? (
+                  "Sender..."
+                ) : (
+                  <>
+                    <UploadIcon className="mr-2" />
+                    Send inn
+                  </>
+                )}
+              </CustomButton>
               {isAdmin && (
                 <Checkbox
                   id="publish-as-admin"
                   isSelected={message.fromAdmin}
-                  onChange={(e) =>
-                    setMessage({ ...message, fromAdmin: e })
-                  }
+                  onChange={(e) => setMessage({ ...message, fromAdmin: e })}
                 >
                   <Checkbox.Control>
                     <Checkbox.Indicator />
@@ -282,131 +278,52 @@ export default function NewMessage() {
               )}
             </div>
           </div>
-        </CardFooter>
-      </CardRoot>
+        </Card.Footer>
+      </Card>
 
       {/*
         Modal for errors and messages
       */}
-      <Modal
+      <Modal.Backdrop
         isOpen={modalForMessages.isOpen}
         onOpenChange={modalForMessages.onOpenChange}
+        variant="blur"
       >
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
-          <div className="flex flex-col gap-1 mb-4 font-semibold text-lg">
-            {modalTitle}
-          </div>
-          <div className="mb-4">{modalBody}</div>
-          <div className="flex justify-end gap-2">
-            <Button
-              color="danger"
-              variant="light"
-              className={`${modalCancelDisabled ? "hidden" : ""}`}
-              isDisabled={modalCancelDisabled}
-              onPress={() => {
-                resetModal();
-                modalForMessages.onClose();
-              }}
-            >
-              {modalCancelText}
-            </Button>
-            <Button
-              color="primary"
-              onPress={() => {
-                resetModal();
-                modalForMessages.onClose();
-                router.push(modalOkUrl);
-              }}
-            >
-              {modalOkText}
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        <Modal.Container>
+          <Modal.Dialog className="sm:max-w-md">
+            <Modal.CloseTrigger />
+            <Modal.Header>
+              <Modal.Heading>{modalTitle}</Modal.Heading>
+            </Modal.Header>
+            <Modal.Body>{modalBody}</Modal.Body>
+            <Modal.Footer>
+              <div className="flex justify-end gap-2 w-full">
+                {!modalCancelDisabled && (
+                  <CustomButton
+                    variant="danger"
+                    onPress={() => {
+                      resetModal();
+                      modalForMessages.onClose();
+                    }}
+                  >
+                    {modalCancelText}
+                  </CustomButton>
+                )}
+                <CustomButton
+                  variant="primary"
+                  onPress={() => {
+                    resetModal();
+                    modalForMessages.onClose();
+                    router.push(modalOkUrl);
+                  }}
+                >
+                  {modalOkText}
+                </CustomButton>
+              </div>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </>
   );
 }
-
-// Text editor toolbar
-const MenuBar = ({
-  editor,
-  percentage,
-}: {
-  editor: Editor | null;
-  percentage: number;
-}) => {
-  if (!editor) {
-    return null;
-  }
-
-  return (
-    <div role="toolbar">
-      <div className="button-group flex gap-2 py-2 bg-default-100 px-2 rounded-t-lg">
-        <Button
-          size="sm"
-          isIconOnly
-          onPress={() => editor.chain().focus().toggleBold().run()}
-          disabled={!editor.can().chain().focus().toggleBold().run()}
-          className={editor.isActive("bold") ? "bg-brand-primary" : ""}
-          aria-label="Bold"
-          title="Bold"
-        >
-          <Bold className="w-[1rem] h-[1rem]" strokeWidth={3} />
-        </Button>
-        <Button
-          size="sm"
-          isIconOnly
-          onPress={() => editor.chain().focus().toggleItalic().run()}
-          disabled={!editor.can().chain().focus().toggleItalic().run()}
-          className={editor.isActive("italic") ? "bg-brand-primary" : ""}
-          aria-label="Italic"
-          title="Italic"
-        >
-          <Italic className="w-[1rem] h-[1rem]" />
-        </Button>
-        <Button
-          size="sm"
-          isIconOnly
-          onPress={() => editor.chain().focus().toggleUnderline().run()}
-          className={editor.isActive("underline") ? "bg-brand-primary" : ""}
-          aria-label="Underline"
-          title="Underline"
-        >
-          <UnderlineIcon className="w-[1rem] h-[1rem]" />
-        </Button>
-
-        <Button
-          size="sm"
-          onPress={() =>
-            editor.chain().focus().toggleHeading({ level: 2 }).run()
-          }
-          className={
-            editor.isActive("heading", { level: 2 }) ? "bg-brand-primary" : ""
-          }
-        >
-          Mellomtittel
-        </Button>
-        <div
-          className={`items-center flex text-xs text-brand-black/60 gap-2 ml-4 ${editor && editor.storage.characterCount.characters() === MAX_CHARACTERS ? "character-count--warning" : ""}`}
-        >
-          <svg height="20" width="20" viewBox="0 0 20 20">
-            <circle r="10" cx="10" cy="10" fill="#C8DD80" />
-            <circle
-              r="5"
-              cx="10"
-              cy="10"
-              fill="transparent"
-              stroke="#005600"
-              strokeWidth="10"
-              strokeDasharray={`calc(${percentage} * 31.4 / 100) 31.4`}
-              transform="rotate(-90) translate(-20)"
-            />
-            <circle r="6" cx="10" cy="10" fill="white" />
-          </svg>
-          {editor && editor.storage.characterCount.characters()} /{" "}
-          {MAX_CHARACTERS} tegn
-        </div>
-      </div>
-    </div>
-  );
-};

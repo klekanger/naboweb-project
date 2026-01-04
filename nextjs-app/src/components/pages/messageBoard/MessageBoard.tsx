@@ -8,6 +8,7 @@ import { useUser } from "@clerk/nextjs";
 import { Checkbox, Label } from "@heroui/react";
 import { CircleUser, MessagesSquare, CirclePlus } from "lucide-react";
 import { useState } from "react";
+import type { Image as SanityImage } from "sanity";
 import MessageCard from "./MessageCard";
 
 export default function MessageBoard({

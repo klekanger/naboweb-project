@@ -124,15 +124,20 @@ export default async function PrivateInfoPage(props: Props) {
         </div>
         {(isAdmin || isEditor) && (
           <div className="pl-1 font-semibold">
-            <Link
+            <a
               className="animate duration-100 hover:text-brand-black/70 "
-              href="/studio/structure/dokumentmeny"
+              href={
+                process.env.NEXT_PUBLIC_SANITY_STUDIO_URL +
+                "/structure/dokumentmeny"
+              }
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <span className="flex gap-2">
                 <Pencil className="text-brand-secondary" />
                 Rediger denne dokumentmenyen
               </span>
-            </Link>
+            </a>
           </div>
         )}
         <div className="h-8" />

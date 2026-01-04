@@ -53,7 +53,7 @@ const fileTypes: FileTypes = {
 
 export default function DocumentTable({
   documents,
-  rowsPerPage = 10,
+  rowsPerPage = 20,
   startPage = 1,
 }: Props) {
   const [page, setPage] = useState(startPage);
@@ -115,7 +115,7 @@ export default function DocumentTable({
             placeholder="Søk i dokumentnavn eller beskrivelse"
           />
         </div>
-        <div className="pl-2 pt-4">
+        <div className="pl-2 py-4">
           <span className="font-semibold">Antall dokumenter:</span>{" "}
           {filteredItems.length.toString()}
         </div>
@@ -145,11 +145,11 @@ export default function DocumentTable({
             aria-label="Tabell med oversikt over dokumenter"
           >
             <thead>
-              <tr>
-                <th className="bg-brand-primary/20 text-sm font-bold md:text-base p-4 text-left w-[60%]">
+              <tr className="text-left [&>th]:first:rounded-l-lg [&>th]:last:rounded-r-lg text-gray-500">
+                <th className="bg-brand-primary/20 text-sm font-bold md:text-base px-3 py-2 text-left w-[60%]">
                   Dokumentnavn
                 </th>
-                <th className="bg-brand-primary/20 text-sm font-bold md:text-lg p-4 text-left w-[20%]">
+                <th className="bg-brand-primary/20 text-sm font-bold md:text-lg px-3 py-2 text-left w-[20%]">
                   Oppdatert
                 </th>
               </tr>
@@ -164,9 +164,9 @@ export default function DocumentTable({
                   return (
                     <tr
                       key={item.document?.asset?._id}
-                      className={`text-left ${index % 2 === 0 ? "bg-gray-50 dark:bg-gray-900" : ""}`}
+                      className={`text-left [&>td]:first:rounded-l-lg [&>td]:last:rounded-r-lg ${index % 2 === 1 ? "bg-gray-200" : ""}`}
                     >
-                      <td className="p-4">
+                      <td className="px-3 py-1">
                         <Tooltip delay={1000}>
                           <Tooltip.Trigger>
                             <a
@@ -207,13 +207,18 @@ export default function DocumentTable({
                           </Tooltip.Content>
                         </Tooltip>
                       </td>
-                      <td className="p-4">{formatDate(item._createdAt)}</td>
+                      <td className="px-3 py-1">
+                        {formatDate(item._createdAt)}
+                      </td>
                     </tr>
                   );
                 })
               ) : (
                 <tr>
-                  <td colSpan={2} className="p-4 text-center text-gray-500">
+                  <td
+                    colSpan={2}
+                    className="px-3 py-1 text-center text-gray-500"
+                  >
                     Ingen elementer å vise
                   </td>
                 </tr>

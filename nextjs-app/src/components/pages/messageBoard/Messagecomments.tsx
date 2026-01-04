@@ -2,15 +2,8 @@ import { compareClerkAndSanityUser } from "@/lib/compareClerkAndSanityUser";
 import { formatDate } from "@/lib/format-date";
 import { MessageByIdQueryResult } from "@/types/sanity.types";
 import { useUser } from "@clerk/nextjs";
-import {
-  Button,
-  Card,
-  Form,
-  Input,
-  Label,
-  Modal,
-  TextArea,
-} from "@heroui/react";
+import { Card, Form, Input, Label, Modal, TextArea } from "@heroui/react";
+import CustomButton from "@/components/CustomButton";
 import { MessageSquare, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -279,11 +272,13 @@ export default function MessageComments({
                   {isClient && isEditing ? (
                     <Form
                       onSubmit={handleEditComment}
-                      className="w-full max-w-xl mt-4"
+                      className="w-full max-w-xl mt-4 flex flex-col gap-4"
                       validationBehavior="native"
                     >
                       <div className="flex flex-col gap-2">
-                        <Label htmlFor="title-edit">Tittel</Label>
+                        <Label htmlFor="title-edit" isRequired>
+                          Tittel
+                        </Label>
                         <Input
                           id="title-edit"
                           name="title"
@@ -292,7 +287,7 @@ export default function MessageComments({
                         />
                       </div>
                       <div className="flex flex-col gap-2">
-                        <Label htmlFor="bodyText-edit">
+                        <Label htmlFor="bodyText-edit" isRequired>
                           Skriv kommentaren din her
                         </Label>
                         <TextArea
@@ -304,15 +299,19 @@ export default function MessageComments({
                         />
                       </div>
                       <div className="flex gap-2">
-                        <Button type="submit" isPending={isSubmitting}>
+                        <CustomButton
+                          type="submit"
+                          isPending={isSubmitting}
+                          isDisabled={isSubmitting}
+                        >
                           Lagre
-                        </Button>
-                        <Button
+                        </CustomButton>
+                        <CustomButton
                           variant="secondary"
                           onPress={() => setEditingCommentKey("")}
                         >
                           Avbryt
-                        </Button>
+                        </CustomButton>
                       </div>
                     </Form>
                   ) : (
@@ -323,25 +322,25 @@ export default function MessageComments({
                       <p className="prose">{comment.commentText}</p>
                       {isClient && userIsMessageAuthor && (
                         <div className="flex justify-end gap-2">
-                          <Button
+                          <CustomButton
                             size="sm"
-                            variant="secondary"
+                            variant="primary"
                             className="mt-2"
                             onPress={() =>
                               setEditingCommentKey(comment._key ?? "")
                             }
                           >
                             Rediger
-                          </Button>
+                          </CustomButton>
 
-                          <Button
+                          <CustomButton
                             size="sm"
                             variant="danger"
                             className="mt-2"
                             onPress={() => handleDelete(comment._key ?? "")}
                           >
                             Slett
-                          </Button>
+                          </CustomButton>
                         </div>
                       )}
                     </>
@@ -355,12 +354,12 @@ export default function MessageComments({
           {isClient && (
             <>
               {!isCreatingComment && (
-                <Button
+                <CustomButton
                   onPress={() => setIsCreatingComment(true)}
                   isDisabled={editingCommentKey !== ""}
                 >
                   Ny kommentar
-                </Button>
+                </CustomButton>
               )}
 
               {isCreatingComment && (
@@ -388,15 +387,19 @@ export default function MessageComments({
                     />
                   </div>
                   <div className="flex gap-2">
-                    <Button type="submit" isPending={isSubmitting}>
+                    <CustomButton
+                      type="submit"
+                      isPending={isSubmitting}
+                      isDisabled={isSubmitting}
+                    >
                       Svar
-                    </Button>
-                    <Button
+                    </CustomButton>
+                    <CustomButton
                       variant="secondary"
                       onPress={() => setIsCreatingComment(false)}
                     >
                       Avbryt
-                    </Button>
+                    </CustomButton>
                   </div>
                 </Form>
               )}
@@ -406,44 +409,51 @@ export default function MessageComments({
       </Card>
 
       {isClient && (
-        <Modal
+        <Modal.Backdrop
           isOpen={modalForComments.isOpen}
           onOpenChange={modalForComments.onOpenChange}
+          variant="blur"
         >
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
-            <div className="flex flex-col gap-1 mb-4 font-semibold text-lg">
-              {modalTitle}
-            </div>
-            <div className="mb-4">{modalBody}</div>
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="ghost"
-                className={`${modalCancelDisabled ? "hidden" : ""}`}
-                isDisabled={modalCancelDisabled}
-                onPress={() => {
-                  resetModal();
-                  modalForComments.onClose();
-                }}
-              >
-                {modalCancelText}
-              </Button>
-              <Button
-                variant={isConfirmDelete ? "danger" : "primary"}
-                onPress={() => {
-                  if (isConfirmDelete) {
-                    handleConfirmDelete();
-                  } else {
-                    resetModal();
-                    modalForComments.onClose();
-                  }
-                }}
-                isPending={isDeletingComment}
-              >
-                {modalOkText}
-              </Button>
-            </div>
-          </div>
-        </Modal>
+          <Modal.Container>
+            <Modal.Dialog className="sm:max-w-md">
+              <Modal.CloseTrigger />
+              <Modal.Header>
+                <Modal.Heading>{modalTitle}</Modal.Heading>
+              </Modal.Header>
+              <Modal.Body>{modalBody}</Modal.Body>
+              <Modal.Footer>
+                <div className="flex justify-end gap-2 w-full">
+                  {!modalCancelDisabled && (
+                    <CustomButton
+                      variant="secondary"
+                      onPress={() => {
+                        resetModal();
+                        modalForComments.onClose();
+                      }}
+                    >
+                      {modalCancelText}
+                    </CustomButton>
+                  )}
+                  <CustomButton
+                    variant={isConfirmDelete ? "danger" : "primary"}
+                    onPress={() => {
+                      if (isConfirmDelete) {
+                        handleConfirmDelete();
+                      } else {
+                        resetModal();
+                        modalForComments.onClose();
+                      }
+                    }}
+                    isPending={isDeletingComment}
+                    isDisabled={isDeletingComment}
+                  >
+                    {modalOkText}
+                  </CustomButton>
+                </div>
+              </Modal.Footer>
+            </Modal.Dialog>
+          </Modal.Container>
+        </Modal.Backdrop>
       )}
     </>
   );

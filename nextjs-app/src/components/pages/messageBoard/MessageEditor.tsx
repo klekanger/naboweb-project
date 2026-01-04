@@ -1,10 +1,10 @@
 import ImageUploader from "@/components/shared/ImageUploader";
 import { MessageEditorContext } from "@/context/messageEditorContext";
-import { Button, Input } from "@heroui/react";
+import { Input, Label, TextField } from "@heroui/react";
 import { toHTML } from "@portabletext/to-html";
-import { Editor, EditorContent } from "@tiptap/react";
+import { Editor, EditorContent, useEditorState } from "@tiptap/react";
 import { Bold, Italic, UnderlineIcon } from "lucide-react";
-import { useContext, useEffect, useMemo } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import type { Image as SanityImage } from "sanity";
 import { PortableTextBlock } from "sanity";
 
@@ -40,35 +40,92 @@ export default function MessageEditor({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const percentage = editor
-    ? Math.round(
-        (100 / maxCharacters) * editor.storage.characterCount.characters(),
-      )
-    : 0;
+  // Prevent input when character limit is reached
+  useEffect(() => {
+    if (!editor) {
+      return;
+    }
+
+    const originalEditorProps = editor.options.editorProps;
+
+    editor.setOptions({
+      editorProps: {
+        ...originalEditorProps,
+        transformPastedText: (text: string) => {
+          const currentCount = editor.storage.characterCount.characters();
+          const remaining = maxCharacters - currentCount;
+          if (remaining <= 0) {
+            return "";
+          }
+          if (text.length > remaining) {
+            return text.slice(0, remaining);
+          }
+          return text;
+        },
+        handleDrop: (
+          view: any,
+          event: DragEvent,
+          slice: any,
+          moved: boolean,
+        ) => {
+          const currentCount = editor.storage.characterCount.characters();
+          if (currentCount >= maxCharacters && !moved) {
+            event.preventDefault();
+            return true;
+          }
+          return false;
+        },
+        handleDOMEvents: {
+          keydown: (view: any, event: KeyboardEvent) => {
+            const currentCount = editor.storage.characterCount.characters();
+            if (currentCount >= maxCharacters) {
+              // Allow backspace, delete, and arrow keys
+              if (
+                event.key === "Backspace" ||
+                event.key === "Delete" ||
+                event.key.startsWith("Arrow") ||
+                event.key === "Home" ||
+                event.key === "End" ||
+                event.ctrlKey ||
+                event.metaKey
+              ) {
+                return false; // Allow the default behavior
+              }
+              // Prevent all other input
+              event.preventDefault();
+              return true;
+            }
+            return false; // Allow the default behavior
+          },
+        },
+      },
+    });
+
+    return () => {
+      // Restore original editorProps on cleanup
+      editor.setOptions({
+        editorProps: originalEditorProps,
+      });
+    };
+  }, [editor, maxCharacters]);
 
   return (
     <>
       <div>
-        <Input
-          type="text"
-          label="Tittel"
-          size="lg"
-          required
+        <TextField
           value={message.title}
-          onChange={(e) => setMessage({ ...message, title: e.target.value })}
-        />
+          onChange={(value) => setMessage({ ...message, title: value })}
+          isRequired
+        >
+          <Label>Tittel</Label>
+          <Input type="text" />
+        </TextField>
         <div className="h-4" />
 
-        <MenuBar
-          editor={editor}
-          percentage={percentage}
-          maxCharacters={maxCharacters}
-        />
-        <EditorContent
-          editor={editor}
-          aria-label="Teksteditor"
-          className="mb-4 md:mb-8"
-        />
+        <div className="overflow-hidden mb-4 md:mb-8">
+          <MenuBar editor={editor} maxCharacters={maxCharacters} />
+          <EditorContent editor={editor} aria-label="Teksteditor" />
+        </div>
       </div>
       <ImageUploader
         onImageSelect={handleImageSelect}
@@ -82,66 +139,87 @@ export default function MessageEditor({
 // Text editor toolbar
 const MenuBar = ({
   editor,
-  percentage,
   maxCharacters,
 }: {
   editor: Editor | null;
-  percentage: number;
   maxCharacters: number;
 }) => {
   if (!editor) {
     return null;
   }
 
-  return (
-    <div role="toolbar">
-      <div className="button-group flex gap-2 py-2 bg-default-100 px-2 rounded-t-lg">
-        <Button
-          size="sm"
-          isIconOnly
-          onPress={() => editor.chain().focus().toggleBold().run()}
-          disabled={!editor.can().chain().focus().toggleBold().run()}
-          className={editor.isActive("bold") ? "bg-brand-primary" : ""}
-          aria-label="Bold"
-          title="Bold"
-        >
-          <Bold className="w-[1rem] h-[1rem]" strokeWidth={3} />
-        </Button>
-        <Button
-          size="sm"
-          isIconOnly
-          onPress={() => editor.chain().focus().toggleItalic().run()}
-          disabled={!editor.can().chain().focus().toggleItalic().run()}
-          className={editor.isActive("italic") ? "bg-brand-primary" : ""}
-          aria-label="Italic"
-          title="Italic"
-        >
-          <Italic className="w-[1rem] h-[1rem]" />
-        </Button>
-        <Button
-          size="sm"
-          isIconOnly
-          onPress={() => editor.chain().focus().toggleUnderline().run()}
-          className={editor.isActive("underline") ? "bg-brand-primary" : ""}
-          aria-label="Underline"
-          title="Underline"
-        >
-          <UnderlineIcon className="w-[1rem] h-[1rem]" />
-        </Button>
+  const editorState = useEditorState({
+    editor,
+    selector: ({ editor: editorInstance }) => ({
+      isBold: editorInstance?.isActive("bold") ?? false,
+      isItalic: editorInstance?.isActive("italic") ?? false,
+      isUnderline: editorInstance?.isActive("underline") ?? false,
+      isHeading: editorInstance?.isActive("heading", { level: 2 }) ?? false,
+      characterCount: editorInstance?.storage.characterCount.characters() ?? 0,
+    }),
+  });
 
-        <Button
-          size="sm"
-          onPress={() =>
+  const calculatedPercentage = editorState
+    ? Math.round((100 / maxCharacters) * editorState.characterCount)
+    : 0;
+
+  return (
+    <div role="toolbar" className="">
+      <div className="button-group bg-default/10 border-b border-brand-black/10 rounded-t-lg flex gap-2 py-2 px-2 justify-start">
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          disabled={!editor.can().chain().focus().toggleBold().run()}
+          className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors border border-gray-300 ${
+            editorState.isBold
+              ? "bg-brand-primary text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          } disabled:opacity-50 disabled:cursor-not-allowed`}
+          aria-label="Bold"
+        >
+          <Bold className="w-4 h-4" strokeWidth={3} />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          disabled={!editor.can().chain().focus().toggleItalic().run()}
+          className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors border border-gray-300 ${
+            editorState.isItalic
+              ? "bg-brand-primary text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          } disabled:opacity-50 disabled:cursor-not-allowed`}
+          aria-label="Italic"
+        >
+          <Italic className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors border border-gray-300 ${
+            editorState.isUnderline
+              ? "bg-brand-primary text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+          aria-label="Underline"
+        >
+          <UnderlineIcon className="w-4 h-4" />
+        </button>
+
+        <button
+          type="button"
+          onClick={() =>
             editor.chain().focus().toggleHeading({ level: 2 }).run()
           }
-          className={
-            editor.isActive("heading", { level: 2 }) ? "bg-brand-primary" : ""
-          }
+          className={`px-3 h-8 rounded-md text-sm font-medium transition-colors border border-gray-300 ${
+            editorState.isHeading
+              ? "bg-brand-primary text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
         >
           Mellomtittel
-        </Button>
+        </button>
         <div
-          className={`items-center flex text-xs text-brand-black/60 gap-2 ml-4 ${editor && editor.storage.characterCount.characters() === maxCharacters ? "character-count--warning" : ""}`}
+          className={`items-center flex text-xs text-brand-black/60 gap-2 ml-4 ${editorState && editorState.characterCount === maxCharacters ? "character-count--warning" : ""}`}
         >
           <svg height="20" width="20" viewBox="0 0 20 20">
             <circle r="10" cx="10" cy="10" fill="#C8DD80" />
@@ -152,13 +230,12 @@ const MenuBar = ({
               fill="transparent"
               stroke="#005600"
               strokeWidth="10"
-              strokeDasharray={`calc(${percentage} * 31.4 / 100) 31.4`}
+              strokeDasharray={`calc(${calculatedPercentage} * 31.4 / 100) 31.4`}
               transform="rotate(-90) translate(-20)"
             />
             <circle r="6" cx="10" cy="10" fill="white" />
           </svg>
-          {editor && editor.storage.characterCount.characters()} /{" "}
-          {maxCharacters} tegn
+          {editorState?.characterCount ?? 0} / {maxCharacters} tegn
         </div>
       </div>
     </div>

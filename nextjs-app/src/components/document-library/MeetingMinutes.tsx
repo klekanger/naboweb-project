@@ -1,21 +1,21 @@
 "use client";
 
+import Pagination from "@/components/common/Pagination";
 import {
-  DocumentIcon,
   ExcelIcon,
   PdfIcon,
   PowerPointIcon,
   WordIcon,
 } from "@/components/icons";
-import Pagination from "@/components/common/Pagination";
 import { formatDate } from "@/lib/format-date";
 import { MeetingMinutesQueryResult } from "@/types/sanity.types";
-import { Button, Input, Tooltip } from "@heroui/react";
+import { Tooltip } from "@heroui/react";
 import { ArrowBigLeft, FolderOpen } from "lucide-react";
-import CustomSearchInput from "../CustomSearchInput";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import BackButton from "../BackButton";
+import CustomButton from "../CustomButton";
+import CustomSearchInput from "../CustomSearchInput";
 
 type Props = {
   documents: Array<
@@ -68,9 +68,10 @@ export default function MeetingMinutes({
     return (
       <>
         <p className="pb-4">Ingen dokumenter</p>
-        <Button as={Link} href="/information/1" startContent={<ArrowBigLeft />}>
+        <CustomButton href="/information/1">
+          <ArrowBigLeft className="h-5 w-5 mt-1.5" />
           Gå tilbake
-        </Button>
+        </CustomButton>
       </>
     );
   }
@@ -119,7 +120,7 @@ export default function MeetingMinutes({
             placeholder="Søk i dokumentnavn eller beskrivelse"
           />
         </div>
-        <div className="pl-2 pt-4">
+        <div className="pl-2 py-4">
           <span className="font-semibold">Antall dokumenter: </span>
           {filteredItems.length.toString()}
         </div>
@@ -137,7 +138,7 @@ export default function MeetingMinutes({
             aria-label="Tabell med oversikt over dokumenter"
           >
             <thead>
-              <tr>
+              <tr className="[&>th]:first:rounded-l-lg [&>th]:last:rounded-r-lg text-gray-500">
                 <th className="bg-brand-primary/20 text-sm font-bold md:text-base px-3 py-2 text-left w-[20%]">
                   Møte
                 </th>
@@ -154,9 +155,9 @@ export default function MeetingMinutes({
                 itemsToRender.map((item, index) => (
                   <tr
                     key={item._id}
-                    className={`text-left ${index % 2 === 0 ? "bg-gray-50 dark:bg-gray-900" : ""}`}
+                    className={`text-left [&>td]:first:rounded-l-lg [&>td]:last:rounded-r-lg ${index % 2 === 1 ? "bg-gray-200" : ""}`}
                   >
-                    <td className="px-3 py-2">
+                    <td className="px-3 py-1">
                       <Tooltip delay={1000}>
                         <Tooltip.Trigger>
                           <Link
@@ -165,7 +166,6 @@ export default function MeetingMinutes({
                           >
                             <span className="flex ">
                               <FolderOpen className="mr-2 h-auto" size="1em" />
-
                               {item.title}
                             </span>
                           </Link>
@@ -181,14 +181,19 @@ export default function MeetingMinutes({
                       </Tooltip>
                     </td>
 
-                    <td className="px-3 py-2">
+                    <td className="px-3 py-1">
                       <Tooltip delay={1000}>
                         <Tooltip.Trigger>
-                          <span>
-                            {item?.description && item.description.length > 75
-                              ? item.description.substring(0, 75) + "..."
-                              : item.description}
-                          </span>
+                          <Link
+                            href={`/information/referater/${item._id}`}
+                            className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80 "
+                          >
+                            <span>
+                              {item?.description && item.description.length > 75
+                                ? item.description.substring(0, 75) + "..."
+                                : item.description}
+                            </span>
+                          </Link>
                         </Tooltip.Trigger>
                         <Tooltip.Content
                           placement="top start"
@@ -242,12 +247,15 @@ export default function MeetingMinutes({
                         </Tooltip.Content>
                       </Tooltip>
                     </td>
-                    <td className="px-3 py-2">{formatDate(item._createdAt)}</td>
+                    <td className="px-3 py-1">{formatDate(item._createdAt)}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={3} className="p-4 text-center text-gray-500">
+                  <td
+                    colSpan={3}
+                    className="px-3 py-1 text-center text-gray-500"
+                  >
                     Ingen elementer å vise
                   </td>
                 </tr>

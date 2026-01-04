@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Link } from "@heroui/react";
+import CustomButton from "@/components/CustomButton";
 
 export default function NotFound() {
   return (
@@ -10,15 +10,14 @@ export default function NotFound() {
         <h2 className="text-6xl md:text-8xl text-brand-secondary2 pb-0">404</h2>
         <h3 className="pt-0 pb-16 ">Her var det tomt!</h3>
 
-        <Button
-          as={Link}
+        <CustomButton
           size="lg"
-          color="success"
-          className="rounded-full border-2 w-24 text-xs hover:!no-underline"
+          variant="primary"
+          className="rounded-full border-2 w-24 text-xs hover:no-underline!"
           href="/"
         >
           Til forsiden
-        </Button>
+        </CustomButton>
       </section>
       <p className="text-xs ">
         Lekanger tekst og kode &#169; {new Date().getFullYear()}

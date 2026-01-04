@@ -10,7 +10,8 @@ import { formatDate } from "@/lib/format-date";
 import { urlForImage } from "@/sanity/lib/utils";
 import { MessagePageProps } from "@/types/types";
 import { useUser } from "@clerk/nextjs";
-import { Button, Card, Modal } from "@heroui/react";
+import { Card, Modal } from "@heroui/react";
+import CustomButton from "@/components/CustomButton";
 import { htmlToBlocks } from "@portabletext/block-tools";
 import { Schema } from "@sanity/schema";
 import {
@@ -22,11 +23,10 @@ import {
 } from "lucide-react";
 import { PortableTextBlock } from "next-sanity";
 import Image from "next/image";
-import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 import type { Image as SanityImage } from "sanity";
-import MessageComments from "./Messagecomments";
+import MessageComments from "./MessageComments";
 
 const IMAGE_WIDTH = 800;
 const IMAGE_HEIGHT = 600;
@@ -385,46 +385,49 @@ export default function MessagePage(props: MessagePageProps) {
                 </p>
 
                 <div className="flex gap-4">
-                  <Button
-                    color="danger"
+                  <CustomButton
+                    variant="danger"
                     onPress={() => setIsEditingMessage(false)}
                     className="no-underline"
                   >
                     Avbryt
-                  </Button>
-                  <Button
-                    color="primary"
+                  </CustomButton>
+                  <CustomButton
+                    variant="primary"
                     onPress={handleSubmit}
-                    isLoading={isSubmittingMessage}
                     className="w-32"
+                    isPending={isSubmittingMessage || isUploadingImage}
+                    isDisabled={isSubmittingMessage || isUploadingImage}
                   >
                     Send inn
-                  </Button>
+                  </CustomButton>
                 </div>
               </div>
             ) : (
               <>
-                <Button
-                  color="primary"
-                  variant="bordered"
-                  as={Link}
+                <CustomButton
+                  variant="primary"
                   href="/messageboard"
-                  startContent={<ArrowLeftIcon />}
+                  className="no-underline"
                 >
+                  <ArrowLeftIcon className="mr-2" />
                   Tilbake
-                </Button>
+                </CustomButton>
 
                 {userIsMessageAuthor || isAdmin ? (
                   <>
-                    <Button
-                      color="primary"
+                    <CustomButton
+                      variant="primary"
                       onPress={() => setIsEditingMessage(true)}
                     >
                       Rediger {!userIsMessageAuthor ? "(admin)" : ""}
-                    </Button>
-                    <Button color="danger" onPress={handleDeleteMessage}>
+                    </CustomButton>
+                    <CustomButton
+                      variant="danger"
+                      onPress={handleDeleteMessage}
+                    >
                       Slett {!userIsMessageAuthor ? "(admin)" : ""}
-                    </Button>
+                    </CustomButton>
                   </>
                 ) : null}
               </>
@@ -442,45 +445,50 @@ export default function MessagePage(props: MessagePageProps) {
       {/*
         Modal for errors and messages
       */}
-      <Modal
+      <Modal.Backdrop
         isOpen={modalForMessages.isOpen}
         onOpenChange={modalForMessages.onOpenChange}
+        variant="blur"
       >
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
-          <div className="flex flex-col gap-1 mb-4 font-semibold text-lg">
-            {modalTitle}
-          </div>
-          <div className="mb-4">{modalBody}</div>
-          <div className="flex justify-end gap-2">
-            <Button
-              color="danger"
-              variant="light"
-              className={`${modalCancelDisabled ? "hidden" : ""}`}
-              isDisabled={modalCancelDisabled}
-              onPress={() => {
-                resetModal();
-                modalForMessages.onClose();
-              }}
-            >
-              {modalCancelText}
-            </Button>
-            <Button
-              color="primary"
-              onPress={() => {
-                if (modalTitle === "Bekreft sletting") {
-                  deleteMessageAfterConfirmation();
-                } else {
-                  resetModal();
-                  modalForMessages.onClose();
-                  router.push(modalOkUrl);
-                }
-              }}
-            >
-              {modalOkText}
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        <Modal.Container>
+          <Modal.Dialog className="sm:max-w-md">
+            <Modal.CloseTrigger />
+            <Modal.Header>
+              <Modal.Heading>{modalTitle}</Modal.Heading>
+            </Modal.Header>
+            <Modal.Body>{modalBody}</Modal.Body>
+            <Modal.Footer>
+              <div className="flex justify-end gap-2 w-full">
+                {!modalCancelDisabled && (
+                  <CustomButton
+                    variant="danger"
+                    onPress={() => {
+                      resetModal();
+                      modalForMessages.onClose();
+                    }}
+                  >
+                    {modalCancelText}
+                  </CustomButton>
+                )}
+                <CustomButton
+                  variant="primary"
+                  onPress={() => {
+                    if (modalTitle === "Bekreft sletting") {
+                      deleteMessageAfterConfirmation();
+                    } else {
+                      resetModal();
+                      modalForMessages.onClose();
+                      router.push(modalOkUrl);
+                    }
+                  }}
+                >
+                  {modalOkText}
+                </CustomButton>
+              </div>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </>
   );
 }
