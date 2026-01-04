@@ -1,4 +1,4 @@
-import { TwitterTweetEmbed } from "react-twitter-embed";
+import { Tweet } from "react-tweet";
 import type { PreviewProps } from "sanity";
 
 export function TwitterPreview(props: PreviewProps & { tweetId: string }) {
@@ -16,7 +16,7 @@ export function TwitterPreview(props: PreviewProps & { tweetId: string }) {
 	return (
 		<div>
 			{renderDefault({ ...props, title: "Twitter Embed" })}
-			<TwitterTweetEmbed tweetId={tweetId} />
+			<Tweet id={tweetId} />
 		</div>
 	);
 }
