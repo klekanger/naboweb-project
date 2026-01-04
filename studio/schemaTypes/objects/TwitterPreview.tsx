@@ -1,22 +1,38 @@
-import { Tweet } from "react-tweet";
-import type { PreviewProps } from "sanity";
+'use client'
 
-export function TwitterPreview(props: PreviewProps & { tweetId: string }) {
-	const { tweetId, renderDefault } = props || {};
+import type {PreviewProps} from 'sanity'
+import {useEffect, useState, type ComponentType} from 'react'
 
-	if (!tweetId) {
-		return (
-			<div>
-				{renderDefault({ ...props, title: "Twitter Embed" })}
-				Tweet-ID mangler
-			</div>
-		);
-	}
+export function TwitterPreview(props: PreviewProps & {tweetId: string}) {
+  const {tweetId, renderDefault} = props || {}
+  const [TweetComponent, setTweetComponent] = useState<ComponentType<{id: string}> | null>(null)
 
-	return (
-		<div>
-			{renderDefault({ ...props, title: "Twitter Embed" })}
-			<Tweet id={tweetId} />
-		</div>
-	);
+  useEffect(() => {
+    // Dynamically import react-tweet only in the browser
+    if (typeof window !== 'undefined') {
+      import('react-tweet')
+        .then((module) => {
+          setTweetComponent(() => module.Tweet)
+        })
+        .catch((err) => {
+          console.error('Failed to load react-tweet:', err)
+        })
+    }
+  }, [])
+
+  if (!tweetId) {
+    return (
+      <div>
+        {renderDefault({...props, title: 'Twitter Embed'})}
+        Tweet-ID mangler
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      {renderDefault({...props, title: 'Twitter Embed'})}
+      {TweetComponent ? <TweetComponent id={tweetId} /> : <div>Loading tweet...</div>}
+    </div>
+  )
 }
