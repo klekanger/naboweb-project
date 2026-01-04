@@ -7,6 +7,7 @@ import { Authors } from "@/types/sanity.types";
 import { Metadata, ResolvingMetadata } from "next";
 import { toPlainText } from "next-sanity";
 import type { Image as SanityImage } from "sanity";
+import { cacheLife, cacheTag } from "next/cache";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -51,6 +52,11 @@ export async function generateMetadata(
 // Generate all possible routes
 //
 export async function generateStaticParams() {
+  "use cache";
+  // Cache static params generation
+  cacheLife("days");
+  cacheTag("blogPost");
+
   const { data } = await sanityFetch({
     query: blogSlugs,
     perspective: "published",
@@ -63,7 +69,13 @@ export async function generateStaticParams() {
 // Generate the blog page
 //
 export default async function BlogRoute(props: Props) {
+  "use cache";
+  // Cache blog posts with long lifetime, revalidated via tags when content changes
+  cacheLife("days");
+
   const params = await props.params;
+  cacheTag("blogPost");
+  cacheTag(`blogPost:${params.slug}`);
 
   const { data } = await sanityFetch({
     query: blogBySlugQuery,

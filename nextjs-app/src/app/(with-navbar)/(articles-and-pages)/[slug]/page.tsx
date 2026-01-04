@@ -5,6 +5,7 @@ import { urlForOpenGraphImage } from "@/sanity/lib/utils";
 import { Metadata, ResolvingMetadata } from "next";
 import { toPlainText } from "next-sanity";
 import type { Image as SanityImage } from "sanity";
+import { cacheLife, cacheTag } from "next/cache";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -44,6 +45,11 @@ export async function generateMetadata(
 }
 
 export async function generateStaticParams() {
+  "use cache";
+  // Cache static params generation
+  cacheLife("days");
+  cacheTag("page");
+
   const { data } = await sanityFetch({
     query: pageSlugs,
     // Use the published perspective in generateStaticParams
@@ -54,7 +60,14 @@ export async function generateStaticParams() {
 }
 
 export default async function PageSlugRoute(props: Props) {
+  "use cache";
+  // Cache pages with long lifetime, revalidated via tags when content changes
+  cacheLife("days");
+
   const params = await props.params;
+  cacheTag("page");
+  cacheTag(`page:${params.slug}`);
+
   const { data } = await sanityFetch({
     query: pageBySlugQuery,
     params: { slug: params.slug },
