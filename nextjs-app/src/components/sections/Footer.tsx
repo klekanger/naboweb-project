@@ -2,8 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear();
-
   return (
     <footer className="footer">
       <div>
@@ -45,7 +43,7 @@ export default function Footer() {
           Webdesign og utvikling:
           <br />
           <a href="https://www.lekanger.no">
-            Lekanger tekst og kode &copy; {currentYear}{" "}
+            Lekanger tekst og kode &copy; 2026
           </a>
         </p>
       </div>
