@@ -1,0 +1,262 @@
+@import "tailwindcss";
+@import "@heroui/styles";
+@config "../../tailwind.config.js";
+
+@plugin "@tailwindcss/typography";
+@source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  /* Brand colors */
+  --color-brand-black: #090A24;
+  --color-brand-white: #F6F7FD;
+  --color-brand-background: #F6F7FD;
+  --color-brand-default: #C8DD80;
+  --color-brand-primary: #78AD96;
+  --color-brand-secondary: #005600;
+  --color-brand-success: #7FA1F6;
+  --color-brand-warning: #F8BD5F;
+  --color-brand-danger: #FF7E7E;
+}
+
+/* HeroUI v3 Semantic Color Variables - Light Theme */
+:root,
+[data-theme="light"] {
+  /* Background and foreground */
+  --background: #F6F7FD;
+  --foreground: #090A24;
+
+  /* Primary colors (using accent as primary semantic color) */
+  --accent: rgb(56, 102, 65);
+  --accent-foreground: #F6F7FD;
+  --primary: rgb(56, 102, 65);
+  --primary-foreground: #F6F7FD;
+
+  /* Secondary colors */
+  --secondary: #78AD96;
+  --secondary-foreground: #090A24;
+
+  /* Status colors */
+  --success: #A7C957;
+  --success-foreground: #090A24;
+  --warning: #EDC62A;
+  --warning-foreground: #090A24;
+  --danger: #BC4749;
+  --danger-foreground: #F6F7FD;
+
+  /* Default color */
+  --default: #6c757d;
+  --default-foreground: #F6F7FD;
+}
+
+
+/* Map HeroUI semantic colors to Tailwind */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+
+  --color-default: var(--default);
+  --color-default-foreground: var(--default-foreground);
+}
+
+
+* {
+  @apply box-border;
+}
+
+html {
+  font-size: 100%;
+}
+
+body {
+  font-family: var(--font-open-sans);
+  font-weight: 400;
+  line-height: 1.75;
+  @apply bg-background text-foreground;
+}
+
+
+
+
+.rich-image {
+  @apply mt-8 border border-slate-300 md:mt-16 rounded-xl !mb-0;
+}
+
+.rich-image-caption {
+  @apply rounded-b-xl bg-slate-200 mx-4 px-4 py-2 text-left text-sm text-brand-black md:mb-4 !mt-0;
+}
+
+
+
+
+.footer {
+  @apply mt-16 flex w-full flex-col flex-wrap items-center justify-between wrap-break-word bg-[#012d00] px-10 py-16 text-center text-xs font-extralight text-slate-300 md:flex-row md:items-start lg:text-sm;
+}
+
+.footer p {
+  @apply text-xs lg:text-sm;
+}
+
+.footer a {
+  @apply cursor-pointer text-xs duration-200 transition-all hover:text-brand-primary lg:text-sm;
+}
+
+.img-zoom {
+  animation: 30s ease-in-out 0s infinite alternate zoom;
+}
+
+@keyframes zoom {
+  0% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(1.5);
+  }
+}
+
+.hide-on-scroll {
+  @apply transition-transform;
+  @apply duration-500;
+  @apply ease-in-out;
+  @apply -translate-y-40;
+}
+
+.tiptap {
+  @apply bg-default/10 pt-0 mt-0 overflow-auto;
+}
+
+.tiptap :first-child {
+  @apply mt-0;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.tiptap h2 {
+  @apply text-xl md:text-3xl font-semibold pt-8;
+}
+
+.tiptap p {
+  @apply pt-4;
+}
+
+.tiptap>* {
+  @apply prose-sm lg:prose;
+}
+
+/* width */
+.tiptap::-webkit-scrollbar {
+  @apply w-[12px];
+}
+
+/* Track */
+.tiptap::-webkit-scrollbar-track {
+  @apply bg-slate-100;
+}
+
+/* Handle */
+.tiptap::-webkit-scrollbar-thumb {
+  @apply bg-brand-secondary/50 rounded-md;
+}
+
+/* Handle on hover */
+.tiptap::-webkit-scrollbar-thumb:hover {
+  @apply bg-brand-secondary/70 cursor-pointer;
+
+}
+
+
+.tiptap ul,
+.tiptap ol {
+  @apply list-outside pl-6;
+}
+
+.tiptap ul {
+  @apply list-disc;
+}
+
+.tiptap ol {
+  @apply list-decimal;
+}
+
+.tiptap li {
+  @apply relative mb-1;
+}
+
+.tiptap li p {
+  @apply pb-0 mb-0 leading-normal;
+}
+
+
+@layer components {
+  .checkbox__control {
+    @apply size-5 border border-gray-200;
+
+    box-shadow: none !important;
+  }
+
+  .input-group {
+    @apply bg-default/10 h-10;
+
+    @media (hover: hover) {
+
+      &:hover:not(:focus-within),
+      &[data-hovered="true"]:not([data-focus-within="true"]) {
+        @apply bg-default/20;
+      }
+    }
+  }
+
+  .input {
+    @apply bg-default/10 h-10;
+
+    @media (hover: hover) {
+
+      &:hover:not(:focus):not(:focus-visible),
+      &[data-hovered="true"]:not([data-focused="true"]):not([data-focus-visible="true"]) {
+        @apply bg-default/20;
+      }
+    }
+  }
+
+  /* Override secondary button to use warning colors (yellow background, black text) */
+  .button--secondary {
+    @apply bg-warning text-warning-foreground;
+
+    &:active,
+    &[data-pressed="true"] {
+      @apply bg-warning-hover;
+    }
+
+    @media (hover: hover) {
+
+      &:hover,
+      &[data-hovered="true"] {
+        @apply bg-warning-hover;
+      }
+    }
+  }
+}
