@@ -386,7 +386,7 @@ export default function MessageComments({
                       required
                     />
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 mt-4">
                     <CustomButton
                       type="submit"
                       isPending={isSubmitting}
