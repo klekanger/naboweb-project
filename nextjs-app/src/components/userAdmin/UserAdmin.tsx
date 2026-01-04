@@ -9,6 +9,7 @@ import {
 import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 import type { UserAdminProps } from "@/types/types";
 import {
+  Button,
   Checkbox,
   CheckboxGroup,
   Description,
@@ -106,29 +107,40 @@ export default function UserAdmin({
 
   return (
     <>
-      <div className="grid w-full grid-rows-[auto_1fr] rounded-xl bg-content1 shadow-small lg:grid-cols-[280px_1fr] lg:grid-rows-none border border-gray-200 shadow-2xl">
+      <div className="grid w-full grid-rows-[auto_1fr] rounded-b-xl lg:rounded-xl bg-content1 shadow-small lg:grid-cols-[280px_1fr] lg:grid-rows-none border border-gray-200 shadow-2xl">
         <div className="bg-gray-100 lg:border-r rounded-l-xl">
           <nav className="grid grid-cols-2 lg:grid-cols-1 lg:px-4 lg:gap-4 lg:py-8">
-            {menuElements.map((element) => (
-              <CustomButton
-                key={`menu-${element.id}`}
-                variant="ghost"
-                onPress={() => {
-                  setSelectedUser(null);
-                  setSelectedMenu(element.id);
-                }}
-                className={`h-24 lg:py-2 lg:justify-start lg:h-10 flex flex-col lg:flex-row rounded-none text-sm text-brand-black hover:bg-brand-black/10 lg:border-none w-full ${
-                  element.id !== 0 && "border-l border-black/10"
-                }`}
-              >
-                <element.menuIcon className="w-6 h-6" />
-                {element.id === selectedMenu ? (
-                  <strong>{element.name}</strong>
-                ) : (
-                  <span>{element.name}</span>
-                )}
-              </CustomButton>
-            ))}
+            {menuElements.map((element, index) => {
+              const isRightColumn = index % 2 === 1; // Right column in 2-column grid
+              const isLeftColumn = index % 2 === 0; // Left column in 2-column grid
+              // Last row: if odd number of buttons, last button; if even, last 2 buttons
+              const isLastRow =
+                index >=
+                menuElements.length - (menuElements.length % 2 === 0 ? 2 : 1);
+
+              return (
+                <Button
+                  key={`menu-${element.id}`}
+                  variant="ghost"
+                  onPress={() => {
+                    setSelectedUser(null);
+                    setSelectedMenu(element.id);
+                  }}
+                  className={`h-24 lg:py-2 lg:justify-start lg:h-10 flex flex-col lg:flex-row rounded-none text-sm text-brand-black hover:bg-brand-black/10 lg:border-none w-full ${
+                    isLeftColumn && !isRightColumn
+                      ? "border-r border-black/10"
+                      : ""
+                  } ${!isLastRow ? "border-b border-black/10" : ""}`}
+                >
+                  <element.menuIcon className="w-6 h-6" />
+                  {element.id === selectedMenu ? (
+                    <strong>{element.name}</strong>
+                  ) : (
+                    <span>{element.name}</span>
+                  )}
+                </Button>
+              );
+            })}
           </nav>
         </div>
         <section className="flex flex-col overflow-auto">
@@ -145,7 +157,7 @@ export default function UserAdmin({
               users={users}
               pagination={pagination}
               isSearchResult={isSearchResult}
-              className="lg:px-4 pt-4 bg-white"
+              className="px-4 pt-4 bg-white"
             />
           )}
 
@@ -155,7 +167,7 @@ export default function UserAdmin({
             screenToDisplay === CreateUserScreenType.FORM && (
               <form
                 ref={formRef}
-                className="px-4 py-4 text-left lg:px-4 pt-4 bg-white"
+                className="px-4 py-4 text-left pt-4 bg-white"
                 onSubmit={handleSubmit}
               >
                 <div className="mb-5 flex flex-col gap-5 lg:flex-row">
@@ -362,14 +374,14 @@ export default function UserAdmin({
           {selectedMenu === 1 && <InviteUser />}
 
           {/* EDIT EXISTING USER */}
-          {selectedMenu === 3 && <EditUser className="lg:px-4 pt-4 bg-white" />}
+          {selectedMenu === 3 && <EditUser className="px-4 pt-4 bg-white" />}
 
           {/* SHOW USERS WITH ADMIN OR OTHER SUPER USER ROLES */}
           {selectedMenu === 4 && (
             <AssignRolesTable
               users={users}
               pagination={pagination}
-              className="lg:px-4 pt-4 bg-white"
+              className="px-4 pt-4 bg-white"
             />
           )}
         </section>

@@ -9,6 +9,7 @@ import {
 import { redirect } from "next/navigation";
 import { currentUser } from "@clerk/nextjs/server";
 import { Suspense } from "react";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
 
 const POSTS_PER_PAGE = 5;
 
@@ -121,7 +122,7 @@ async function BlogCollectionContent(props: BlogCollectionParams) {
 
 export default async function BlogCollectionRoute(props: BlogCollectionParams) {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<LoadingSpinner />}>
       <BlogCollectionContent {...props} />
     </Suspense>
   );

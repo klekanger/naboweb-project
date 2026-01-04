@@ -74,6 +74,7 @@ export default function Navbar() {
               <CustomButton
                 variant="ghost"
                 className="p-0 bg-transparent text-base hover:text-brand-secondary duration-200 transition text-brand-black dark:text-brand-white"
+                href="/information"
               >
                 For beboere
                 <ChevronDown className="h-[1.2rem] w-[1.2rem] mt-1 ml-1" />

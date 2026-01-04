@@ -8,6 +8,7 @@ import { sanityFetch } from "@/sanity/lib/live";
 import PaginationControls from "@/components/common/PaginationControls";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
 
 async function MessageBoardContent({
   searchParams,
@@ -59,7 +60,7 @@ export default async function MessageBoardRoute({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<LoadingSpinner />}>
       <MessageBoardContent searchParams={searchParams} />
     </Suspense>
   );
