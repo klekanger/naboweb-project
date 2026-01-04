@@ -1,6 +1,4 @@
 {
-  "installCommand": "cd .. && pnpm install",
-  "buildCommand": "cd .. && pnpm run build",
   "crons": [{
     "schedule": "0 6 * * *",
     "path": "/api/send-email-alerts"
