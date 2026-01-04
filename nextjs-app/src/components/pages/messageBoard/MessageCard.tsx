@@ -85,20 +85,23 @@ export default function MessageCard({
             {formatDate(createdAt)}
           </div>
           {commentCount > 0 && (
-            <Tooltip
-              content={commentPreviews.map((comment, index) => (
-                <div key={comment.key}>
-                  <div className="py-2">
-                    <strong>{comment.author}</strong>: {comment.title}...
-                  </div>
-                  {index !== commentPreviews.length - 1 && <hr />}
+            <Tooltip delay={1000}>
+              <Tooltip.Trigger>
+                <div className="flex">
+                  <MessagesSquare className="h-auto mr-1" />
+                  {commentCount}
                 </div>
-              ))}
-            >
-              <div className="flex">
-                <MessagesSquare className="h-auto mr-1" />
-                {commentCount}
-              </div>
+              </Tooltip.Trigger>
+              <Tooltip.Content>
+                {commentPreviews.map((comment, index) => (
+                  <div key={comment.key}>
+                    <div className="py-2">
+                      <strong>{comment.author}</strong>: {comment.title}...
+                    </div>
+                    {index !== commentPreviews.length - 1 && <hr />}
+                  </div>
+                ))}
+              </Tooltip.Content>
             </Tooltip>
           )}
         </div>

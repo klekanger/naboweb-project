@@ -99,8 +99,11 @@ export default function Services({
             <h2 className="text-xl font-semibold md:hidden pl-4">
               {title.toUpperCase()}
               {locked && (
-                <Tooltip content="Krever innlogging">
-                  <span className="pl-[0.5em]">🔐</span>
+                <Tooltip delay={1000}>
+                  <Tooltip.Trigger>
+                    <span className="pl-[0.5em]">🔐</span>
+                  </Tooltip.Trigger>
+                  <Tooltip.Content>Krever innlogging</Tooltip.Content>
                 </Tooltip>
               )}
             </h2>
@@ -110,8 +113,11 @@ export default function Services({
             <h2 className="hidden md:block text-xl font-semibold">
               {title.toUpperCase()}{" "}
               {locked && (
-                <Tooltip content="Krever innlogging">
-                  <span className="pl-[0.5em]">🔐</span>
+                <Tooltip delay={1000}>
+                  <Tooltip.Trigger>
+                    <span className="pl-[0.5em]">🔐</span>
+                  </Tooltip.Trigger>
+                  <Tooltip.Content>Krever innlogging</Tooltip.Content>
                 </Tooltip>
               )}
             </h2>

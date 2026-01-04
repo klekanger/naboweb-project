@@ -57,14 +57,12 @@ export default async function UserOveview({
             <>
               <CustomButton
                 href="/studio"
-                asLink={false}
                 buttonText="Rediger innhold"
                 className="w-40"
               />
 
               <CustomButton
                 href="/studio/structure/fileOtherDocuments"
-                asLink={false}
                 buttonText="Last opp filer"
                 className="w-40"
               />

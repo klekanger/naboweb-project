@@ -10,12 +10,13 @@ import {
 import Pagination from "@/components/common/Pagination";
 import { formatDate } from "@/lib/format-date";
 import { OtherDocumentsQueryResult } from "@/types/sanity.types";
-import { Button, Tooltip } from "@heroui/react";
+import { Tooltip } from "@heroui/react";
 import { ArrowBigLeft } from "lucide-react";
 import CustomSearchInput from "../CustomSearchInput";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import BackButton from "../BackButton";
+import CustomButton from "../CustomButton";
 
 type Props = {
   documents: Array<
@@ -64,9 +65,10 @@ export default function DocumentTable({
     return (
       <>
         <p className="pb-4">Ingen dokumenter</p>
-        <Button as={Link} href="/information/1" startContent={<ArrowBigLeft />}>
+        <CustomButton href="/information/1" className="no-underline">
+          <ArrowBigLeft className="h-5 w-5 mt-1.5" />
           Gå tilbake
-        </Button>
+        </CustomButton>
       </>
     );
   }
