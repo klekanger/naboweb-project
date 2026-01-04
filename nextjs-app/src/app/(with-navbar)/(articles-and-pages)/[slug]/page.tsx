@@ -6,6 +6,7 @@ import { Metadata, ResolvingMetadata } from "next";
 import { toPlainText } from "next-sanity";
 import type { Image as SanityImage } from "sanity";
 import { cacheLife, cacheTag } from "next/cache";
+import { draftMode } from "next/headers";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -64,19 +65,44 @@ export async function generateStaticParams() {
   return data;
 }
 
-export default async function PageSlugRoute(props: Props) {
+// Cached function for fetching page data (only used when not in draft mode)
+async function fetchCachedPage(slug: string) {
   "use cache";
   // Cache pages with long lifetime, revalidated via tags when content changes
   cacheLife("days");
 
-  const params = await props.params;
   cacheTag("page");
-  cacheTag(`page:${params.slug}`);
+  cacheTag(`page:${slug}`);
 
   const { data } = await sanityFetch({
     query: pageBySlugQuery,
-    params: { slug: params.slug },
+    params: { slug },
+    perspective: "published",
   });
+
+  return data;
+}
+
+// Dynamic function for fetching page data (used when in draft mode)
+async function fetchDynamicPage(slug: string) {
+  const { data } = await sanityFetch({
+    query: pageBySlugQuery,
+    params: { slug },
+  });
+
+  return data;
+}
+
+export default async function PageSlugRoute(props: Props) {
+  // Check draft mode outside of cache scope
+  const { isEnabled: isDraftMode } = await draftMode();
+
+  const params = await props.params;
+
+  // Use cached version when not in draft mode, dynamic version when in draft mode
+  const data = isDraftMode
+    ? await fetchDynamicPage(params.slug)
+    : await fetchCachedPage(params.slug);
 
   return (
     <Article

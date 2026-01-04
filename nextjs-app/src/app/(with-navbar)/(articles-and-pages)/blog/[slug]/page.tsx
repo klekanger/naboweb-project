@@ -8,6 +8,7 @@ import { Metadata, ResolvingMetadata } from "next";
 import { toPlainText } from "next-sanity";
 import type { Image as SanityImage } from "sanity";
 import { cacheLife, cacheTag } from "next/cache";
+import { draftMode } from "next/headers";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -73,19 +74,45 @@ export async function generateStaticParams() {
 //
 // Generate the blog page
 //
-export default async function BlogRoute(props: Props) {
+
+// Cached function for fetching blog post data (only used when not in draft mode)
+async function fetchCachedBlogPost(slug: string) {
   "use cache";
   // Cache blog posts with long lifetime, revalidated via tags when content changes
   cacheLife("days");
 
-  const params = await props.params;
   cacheTag("blogPost");
-  cacheTag(`blogPost:${params.slug}`);
+  cacheTag(`blogPost:${slug}`);
 
   const { data } = await sanityFetch({
     query: blogBySlugQuery,
-    params: { slug: params.slug },
+    params: { slug },
+    perspective: "published",
   });
+
+  return data;
+}
+
+// Dynamic function for fetching blog post data (used when in draft mode)
+async function fetchDynamicBlogPost(slug: string) {
+  const { data } = await sanityFetch({
+    query: blogBySlugQuery,
+    params: { slug },
+  });
+
+  return data;
+}
+
+export default async function BlogRoute(props: Props) {
+  // Check draft mode outside of cache scope
+  const { isEnabled: isDraftMode } = await draftMode();
+
+  const params = await props.params;
+
+  // Use cached version when not in draft mode, dynamic version when in draft mode
+  const data = isDraftMode
+    ? await fetchDynamicBlogPost(params.slug)
+    : await fetchCachedBlogPost(params.slug);
 
   return (
     <Article
