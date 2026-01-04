@@ -142,7 +142,7 @@ export default function EditUser({ ...rest }) {
           */}
       {selectedUser && (
         <div className={`${rest?.className ?? ""} pb-8`}>
-          <div className="flex flex-row items-center gap-4 px-4 lg:px-0">
+          <div className="flex flex-row items-center gap-4">
             <Avatar size="lg">
               {selectedUser?.imageUrl && (
                 <Avatar.Image
@@ -171,7 +171,7 @@ export default function EditUser({ ...rest }) {
           <form
             ref={formRef}
             onSubmit={handleUpdateUser}
-            className="py-4 text-left px-4 lg:px-0 pt-4 bg-white"
+            className="py-4 text-left pt-4 bg-white"
           >
             <div className="mb-5 flex flex-col gap-5 lg:flex-row">
               <TextField

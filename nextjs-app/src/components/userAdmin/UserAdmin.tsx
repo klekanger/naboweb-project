@@ -157,7 +157,7 @@ export default function UserAdmin({
               users={users}
               pagination={pagination}
               isSearchResult={isSearchResult}
-              className="lg:px-4 pt-4 bg-white"
+              className="px-4 pt-4 bg-white"
             />
           )}
 
@@ -167,7 +167,7 @@ export default function UserAdmin({
             screenToDisplay === CreateUserScreenType.FORM && (
               <form
                 ref={formRef}
-                className="px-4 py-4 text-left lg:px-4 pt-4 bg-white"
+                className="px-4 py-4 text-left pt-4 bg-white"
                 onSubmit={handleSubmit}
               >
                 <div className="mb-5 flex flex-col gap-5 lg:flex-row">
@@ -374,14 +374,14 @@ export default function UserAdmin({
           {selectedMenu === 1 && <InviteUser />}
 
           {/* EDIT EXISTING USER */}
-          {selectedMenu === 3 && <EditUser className="lg:px-4 pt-4 bg-white" />}
+          {selectedMenu === 3 && <EditUser className="px-4 pt-4 bg-white" />}
 
           {/* SHOW USERS WITH ADMIN OR OTHER SUPER USER ROLES */}
           {selectedMenu === 4 && (
             <AssignRolesTable
               users={users}
               pagination={pagination}
-              className="lg:px-4 pt-4 bg-white"
+              className="px-4 pt-4 bg-white"
             />
           )}
         </section>
