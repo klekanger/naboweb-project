@@ -13,6 +13,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { Info, Pencil, RefreshCw, User } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 type Props = {
   params: Promise<{ page: number | undefined }>;
@@ -35,7 +36,7 @@ export async function generateStaticParams() {
 //
 // Information page for logged in users with file downloads and private blog posts
 //
-export default async function PrivateInfoPage(props: Props) {
+async function PrivateInfoContent(props: Props) {
   const params = await props.params;
   const user = await currentUser();
   const { firstName, lastName } = user ?? {};
@@ -159,6 +160,14 @@ export default async function PrivateInfoPage(props: Props) {
         </p>
       )}
     </>
+  );
+}
+
+export default async function PrivateInfoPage(props: Props) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PrivateInfoContent {...props} />
+    </Suspense>
   );
 }
 

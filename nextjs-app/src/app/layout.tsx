@@ -35,17 +35,36 @@ export const metadata = {
   description: SITE_DESCRIPTION,
 };
 
-async function DraftModeContent() {
+async function ClerkBodyContent({ children }: { children: React.ReactNode }) {
   const { isEnabled: isDraftMode } = await draftMode();
 
-  if (!isDraftMode) return null;
-
   return (
-    <>
-      <DraftModeToast />
-      {/*  Enable Visual Editing, only to be rendered when Draft Mode is enabled */}
-      <VisualEditing />
-    </>
+    <ClerkProvider
+      localization={nbNO}
+      appearance={{
+        variables: {
+          colorPrimary: "#005600",
+        },
+      }}
+    >
+      <body>
+        <Providers>
+          {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}
+          <Toaster />
+          {isDraftMode && (
+            <>
+              <DraftModeToast />
+              {/*  Enable Visual Editing, only to be rendered when Draft Mode is enabled */}
+              <VisualEditing />
+            </>
+          )}
+
+          {/* The <SanityLive> component is responsible for making all sanityFetch calls in your application live, so should always be rendered. */}
+          <SanityLive onError={handleError} />
+        </Providers>
+        {children}
+      </body>
+    </ClerkProvider>
   );
 }
 
@@ -60,28 +79,28 @@ export default async function RootLayout({
       className={`${openSans.variable} ${montserrat.variable}`}
       suppressHydrationWarning
     >
-      <ClerkProvider
-        localization={nbNO}
-        appearance={{
-          variables: {
-            colorPrimary: "#005600",
-          },
-        }}
+      <Suspense
+        fallback={
+          <ClerkProvider
+            localization={nbNO}
+            appearance={{
+              variables: {
+                colorPrimary: "#005600",
+              },
+            }}
+          >
+            <body>
+              <Providers>
+                <Toaster />
+                <SanityLive onError={handleError} />
+              </Providers>
+              {children}
+            </body>
+          </ClerkProvider>
+        }
       >
-        <body>
-          <Providers>
-            {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}
-            <Toaster />
-            <Suspense fallback={null}>
-              <DraftModeContent />
-            </Suspense>
-
-            {/* The <SanityLive> component is responsible for making all sanityFetch calls in your application live, so should always be rendered. */}
-            <SanityLive onError={handleError} />
-          </Providers>
-          {children}
-        </body>
-      </ClerkProvider>
+        <ClerkBodyContent>{children}</ClerkBodyContent>
+      </Suspense>
     </html>
   );
 }

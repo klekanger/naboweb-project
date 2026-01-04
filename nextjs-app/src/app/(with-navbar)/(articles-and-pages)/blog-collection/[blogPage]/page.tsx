@@ -8,6 +8,7 @@ import {
 } from "@/sanity/lib/queries";
 import { redirect } from "next/navigation";
 import { currentUser } from "@clerk/nextjs/server";
+import { Suspense } from "react";
 
 const POSTS_PER_PAGE = 5;
 
@@ -42,7 +43,7 @@ export async function generateStaticParams() {
 //
 // Generate static page for each route with blogposts
 //
-export default async function BlogCollectionRoute(props: BlogCollectionParams) {
+async function BlogCollectionContent(props: BlogCollectionParams) {
   const params = await props.params;
   const pageNumber = Number(params.blogPage);
 
@@ -115,5 +116,13 @@ export default async function BlogCollectionRoute(props: BlogCollectionParams) {
         </p>
       )}
     </section>
+  );
+}
+
+export default async function BlogCollectionRoute(props: BlogCollectionParams) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <BlogCollectionContent {...props} />
+    </Suspense>
   );
 }

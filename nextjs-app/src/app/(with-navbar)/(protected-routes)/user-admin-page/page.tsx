@@ -5,11 +5,10 @@ import type { PaginationData, UserWithEmails } from "@/types/types";
 import { clerkClient } from "@clerk/nextjs/server";
 import type { UserResource } from "@clerk/types";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 const MAX_USERS_PER_PAGE = 30;
 const MAX_USERS_FOR_SEARCH = 50;
-
-const client = await clerkClient();
 
 function calculatePaginationData(
   currentPage: number,
@@ -30,6 +29,7 @@ function calculatePaginationData(
 }
 
 async function fetchUsers(page: number = 1, searchQuery?: string) {
+  const client = await clerkClient();
   try {
     if (searchQuery) {
       // Use global search when search query is provided
@@ -108,7 +108,7 @@ function mapUsersWithEmails(user: UserResource) {
   };
 }
 
-export default async function Page({
+async function UserAdminContent({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -191,5 +191,19 @@ export default async function Page({
         <BackButton buttonLink="/min-side" />
       </div>
     </div>
+  );
+}
+
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  return (
+    <Suspense
+      fallback={<div className="mt-32 flex justify-center">Loading...</div>}
+    >
+      <UserAdminContent searchParams={searchParams} />
+    </Suspense>
   );
 }

@@ -7,8 +7,9 @@ import {
 import { sanityFetch } from "@/sanity/lib/live";
 import PaginationControls from "@/components/common/PaginationControls";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
-export default async function MessageBoardRoute({
+async function MessageBoardContent({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -49,6 +50,18 @@ export default async function MessageBoardRoute({
         baseUrl="/messageboard"
       />
     </div>
+  );
+}
+
+export default async function MessageBoardRoute({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <MessageBoardContent searchParams={searchParams} />
+    </Suspense>
   );
 }
 

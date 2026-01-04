@@ -17,7 +17,12 @@ export async function generateMetadata(
   props: Props,
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
+  "use cache";
+  cacheLife("days");
+
   const params = await props.params;
+  cacheTag("blogPost");
+  cacheTag(`blogPost:${params.slug}`);
 
   const { data } = await sanityFetch({
     query: blogBySlugQuery,

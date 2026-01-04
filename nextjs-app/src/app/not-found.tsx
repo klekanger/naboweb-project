@@ -19,9 +19,7 @@ export default function NotFound() {
           Til forsiden
         </CustomButton>
       </section>
-      <p className="text-xs ">
-        Lekanger tekst og kode &#169; {new Date().getFullYear()}
-      </p>
+      <p className="text-xs ">Lekanger tekst og kode &#169; 2026</p>
     </div>
   );
 }
