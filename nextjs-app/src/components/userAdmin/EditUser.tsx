@@ -175,21 +175,6 @@ export default function EditUser({ ...rest }) {
           >
             <div className="mb-5 flex flex-col gap-5 lg:flex-row">
               <TextField
-                name="email"
-                type="email"
-                isDisabled
-                defaultValue={selectedUser.email ?? ""}
-                className="w-full"
-              >
-                <Label className="text-left">E-post</Label>
-                <Input />
-                <Description>
-                  E-postadressen kan ikke endres. Hvis du vil endre
-                  e-postadressen, må du slette brukeren og opprette en ny.
-                </Description>
-              </TextField>
-
-              <TextField
                 name="firstName"
                 isRequired
                 value={selectedUser.firstName ?? ""}
@@ -202,11 +187,9 @@ export default function EditUser({ ...rest }) {
                 className="w-full"
               >
                 <Label className="text-left">Fornavn</Label>
-                <Input type="text" />
+                <Input type="text" autoComplete="given-name" />
               </TextField>
-            </div>
 
-            <div className="mb-5 flex flex-col gap-5  lg:flex-row">
               <TextField
                 name="lastName"
                 isRequired
@@ -220,8 +203,25 @@ export default function EditUser({ ...rest }) {
                 className="w-full"
               >
                 <Label className="text-left">Etternavn</Label>
-                <Input type="text" />
+                <Input type="text" autoComplete="family-name" />
               </TextField>
+            </div>
+            <div className="mb-5 flex flex-col gap-5 lg:flex-row">
+              <TextField
+                name="email"
+                type="email"
+                isDisabled
+                defaultValue={selectedUser.email ?? ""}
+                className="w-full"
+              >
+                <Label className="text-left">E-post</Label>
+                <Input autoComplete="email" />
+                <Description>
+                  E-postadressen kan ikke endres. Hvis du vil endre
+                  e-postadressen, må du slette brukeren og opprette en ny.
+                </Description>
+              </TextField>
+              <div className="hidden lg:block lg:w-full"></div>
             </div>
 
             <CheckboxGroup
@@ -233,11 +233,13 @@ export default function EditUser({ ...rest }) {
               onChange={(value) => {
                 setSelectedUser({ ...selectedUser, roles: value });
               }}
-              className="flex flex-col gap-4"
+              className="flex flex-col mb-5"
             >
-              <Label className="text-left">Velg roller:</Label>
+              <Label className="text-left text-sm font-normal">
+                Velg roller:
+              </Label>
               <div className="flex flex-row gap-4">
-                <Checkbox value="user" name="role-user" className="mt-0">
+                <Checkbox value="user" name="role-user" className="mt-0 pt-1">
                   <Checkbox.Control>
                     <Checkbox.Indicator />
                   </Checkbox.Control>
@@ -245,7 +247,11 @@ export default function EditUser({ ...rest }) {
                     <Label>Bruker</Label>
                   </Checkbox.Content>
                 </Checkbox>
-                <Checkbox value="editor" name="role-editor" className="mt-0">
+                <Checkbox
+                  value="editor"
+                  name="role-editor"
+                  className="mt-0 pt-1"
+                >
                   <Checkbox.Control>
                     <Checkbox.Indicator />
                   </Checkbox.Control>
@@ -253,7 +259,7 @@ export default function EditUser({ ...rest }) {
                     <Label>Redaktør</Label>
                   </Checkbox.Content>
                 </Checkbox>
-                <Checkbox value="admin" name="role-admin" className="mt-0">
+                <Checkbox value="admin" name="role-admin" className="mt-0 pt-1">
                   <Checkbox.Control>
                     <Checkbox.Indicator />
                   </Checkbox.Control>
@@ -262,12 +268,38 @@ export default function EditUser({ ...rest }) {
                   </Checkbox.Content>
                 </Checkbox>
               </div>
-              <Description>
+              <Description className="mt-4">
                 Alle må ha rollen 'Bruker' for å få tilgang til systemet.
                 Redaktører kan opprette og redigere innhold, mens
                 administratorer har tilgang til alle funksjoner.
               </Description>
             </CheckboxGroup>
+
+            <div className="text-left text-sm font-normal mb-2">
+              Varsle bruker om nye innlegg (anbefalt)
+            </div>
+            <Checkbox
+              id="emailSubscription"
+              value="emailSubscription"
+              name="emailSubscription"
+              className="pt-1"
+              isSelected={selectedUser.emailSubscription ?? true}
+              onChange={(isSelected: boolean) => {
+                setSelectedUser({
+                  ...selectedUser,
+                  emailSubscription: isSelected,
+                });
+              }}
+            >
+              <Checkbox.Control>
+                <Checkbox.Indicator />
+              </Checkbox.Control>
+              <Checkbox.Content>
+                <Label className="text-left" htmlFor="emailSubscription">
+                  Aktiver e-postvarsling
+                </Label>
+              </Checkbox.Content>
+            </Checkbox>
 
             <div className="flex justify-center lg:justify-start gap-4 pb-8">
               <CustomButton

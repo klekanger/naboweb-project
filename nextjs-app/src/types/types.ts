@@ -250,6 +250,7 @@ export type NewUser = {
   lastName: string;
   password: string;
   roles?: string[];
+  emailSubscription?: boolean;
 };
 
 export type UpdateUserType = Omit<NewUser, "password" | "email"> & {

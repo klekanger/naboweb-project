@@ -181,9 +181,10 @@ export default function UserAdmin({
                     }}
                     className="w-full"
                   >
-                    <Label>Fornavn</Label>
-                    <Input type="text" />
+                    <Label className="text-left">Fornavn</Label>
+                    <Input type="text" autoComplete="given-name" />
                   </TextField>
+
                   <TextField
                     name="lastName"
                     isRequired
@@ -193,8 +194,8 @@ export default function UserAdmin({
                     }}
                     className="w-full"
                   >
-                    <Label>Etternavn</Label>
-                    <Input type="text" />
+                    <Label className="text-left">Etternavn</Label>
+                    <Input type="text" autoComplete="family-name" />
                   </TextField>
                 </div>
                 <div className="mb-5 flex flex-col gap-5 lg:flex-row">
@@ -211,7 +212,7 @@ export default function UserAdmin({
                     className="w-full"
                   >
                     <Label>E-post</Label>
-                    <Input />
+                    <Input autoComplete="email" />
                     {isInvalidEmail ? (
                       <FieldError>Tast inn en gyldig e-postadresse</FieldError>
                     ) : (
@@ -220,8 +221,9 @@ export default function UserAdmin({
                       </Description>
                     )}
                   </TextField>
+                  <div className="hidden lg:block lg:w-full"></div>
 
-                  <TextField
+                  {/* <TextField
                     name="password"
                     type="password"
                     isRequired
@@ -238,7 +240,7 @@ export default function UserAdmin({
                       Brukeren kan også velge å logge inn med e-post-lenke uten
                       passord.
                     </Description>
-                  </TextField>
+                  </TextField> */}
                 </div>
 
                 <CheckboxGroup
@@ -247,11 +249,18 @@ export default function UserAdmin({
                   onChange={(value) => {
                     setNewUser({ ...newUser, roles: value });
                   }}
-                  className="flex flex-col"
+                  className="flex flex-col mb-5"
                 >
-                  <Label>Velg roller</Label>
-                  <div className="flex flex-row gap-4">
-                    <Checkbox value="user" name="role-user" isDisabled>
+                  <Label className="text-left text-sm font-normal">
+                    Velg roller
+                  </Label>
+                  <div className="flex flex-row gap-4 ">
+                    <Checkbox
+                      value="user"
+                      name="role-user"
+                      isDisabled
+                      className="mt-0 pt-1"
+                    >
                       <Checkbox.Control>
                         <Checkbox.Indicator />
                       </Checkbox.Control>
@@ -259,7 +268,11 @@ export default function UserAdmin({
                         <Label>Bruker</Label>
                       </Checkbox.Content>
                     </Checkbox>
-                    <Checkbox value="editor" name="role-editor">
+                    <Checkbox
+                      value="editor"
+                      name="role-editor"
+                      className="mt-0 pt-1"
+                    >
                       <Checkbox.Control>
                         <Checkbox.Indicator />
                       </Checkbox.Control>
@@ -267,7 +280,11 @@ export default function UserAdmin({
                         <Label>Redaktør</Label>
                       </Checkbox.Content>
                     </Checkbox>
-                    <Checkbox value="admin" name="role-admin">
+                    <Checkbox
+                      value="admin"
+                      name="role-admin"
+                      className="mt-0 pt-1"
+                    >
                       <Checkbox.Control>
                         <Checkbox.Indicator />
                       </Checkbox.Control>
@@ -282,6 +299,29 @@ export default function UserAdmin({
                     administratorer har tilgang til alle funksjoner.
                   </Description>
                 </CheckboxGroup>
+
+                <div className="text-left text-sm font-normal mb-2">
+                  Varsle bruker om nye innlegg (anbefalt)
+                </div>
+                <Checkbox
+                  id="emailSubscription"
+                  value="emailSubscription"
+                  name="emailSubscription"
+                  className="pt-1"
+                  isSelected={newUser.emailSubscription ?? true}
+                  onChange={(isSelected: boolean) => {
+                    setNewUser({ ...newUser, emailSubscription: isSelected });
+                  }}
+                >
+                  <Checkbox.Control>
+                    <Checkbox.Indicator />
+                  </Checkbox.Control>
+                  <Checkbox.Content>
+                    <Label htmlFor="emailSubscription">
+                      Aktiver e-postvarsling
+                    </Label>
+                  </Checkbox.Content>
+                </Checkbox>
 
                 <div className="flex justify-center lg:justify-start gap-4 pb-8">
                   <CustomButton
@@ -305,6 +345,7 @@ export default function UserAdmin({
                         firstName: "",
                         lastName: "",
                         password: "",
+                        emailSubscription: true,
                       });
                     }}
                   >
@@ -362,6 +403,7 @@ export default function UserAdmin({
                         firstName: "",
                         lastName: "",
                         password: "",
+                        emailSubscription: true,
                       });
                     }}
                   >

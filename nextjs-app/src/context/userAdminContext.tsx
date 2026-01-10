@@ -52,6 +52,7 @@ const userAdminInitialValue = {
     lastName: "",
     password: "",
     roles: ["user"],
+    emailSubscription: true,
   },
   newlyCreatedUser: {
     email: "",
@@ -93,6 +94,7 @@ export default function UserAdminProvider({
     lastName: "",
     password: "",
     roles: ["user"],
+    emailSubscription: true,
   });
 
   const [newlyCreatedUser, setNewlyCreatedUser] = useState<
@@ -120,6 +122,7 @@ export default function UserAdminProvider({
       lastName: "",
       password: "",
       roles: ["user"],
+      emailSubscription: true,
     });
     setNewlyCreatedUser({
       email: "",
