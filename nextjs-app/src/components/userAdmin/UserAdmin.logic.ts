@@ -1,4 +1,4 @@
-import { Crown, UserCheck, UserCog, UserPlus2, Users } from "lucide-react";
+import { Crown, UserCog, UserPlus2, Users } from "lucide-react";
 import type { NewUser } from "@/types/types";
 
 export const menuElements = [
@@ -9,13 +9,13 @@ export const menuElements = [
       "Viser alle brukere som er registrert, sortert etter etternavn og deretter fornavn.<br />Du kan bruke søkefeltet for å finne en bestemt bruker (søker i både e-post og navn).",
     menuIcon: Users,
   },
-  {
+  /* {
     id: 1,
     name: "Inviter bruker",
     description:
       "Inviter en bruker til å opprette en konto. Brukeren vil motta en lenke på e-post for å opprette kontoen sin.",
     menuIcon: UserCheck,
-  },
+  }, */
   {
     id: 2,
     name: "Ny bruker",

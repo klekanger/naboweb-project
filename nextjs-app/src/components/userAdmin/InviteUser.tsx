@@ -164,7 +164,7 @@ export default function InviteUser() {
           className="flex flex-col"
         >
           <Label>Velg roller</Label>
-          <div className="flex flex-row">
+          <div className="flex flex-row gap-4">
             <Checkbox value="user" name="role-user" isDisabled>
               <Checkbox.Control>
                 <Checkbox.Indicator />
