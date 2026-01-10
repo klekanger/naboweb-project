@@ -182,7 +182,7 @@ export default function UserAdmin({
                     className="w-full"
                   >
                     <Label>Fornavn</Label>
-                    <Input type="text" />
+                    <Input type="text" autoComplete="given-name" />
                   </TextField>
                   <TextField
                     name="lastName"
@@ -194,7 +194,7 @@ export default function UserAdmin({
                     className="w-full"
                   >
                     <Label>Etternavn</Label>
-                    <Input type="text" />
+                    <Input type="text" autoComplete="family-name" />
                   </TextField>
                 </div>
                 <div className="mb-5 flex flex-col gap-5 lg:flex-row">
@@ -211,7 +211,7 @@ export default function UserAdmin({
                     className="w-full"
                   >
                     <Label>E-post</Label>
-                    <Input />
+                    <Input autoComplete="email" />
                     {isInvalidEmail ? (
                       <FieldError>Tast inn en gyldig e-postadresse</FieldError>
                     ) : (
@@ -220,8 +220,9 @@ export default function UserAdmin({
                       </Description>
                     )}
                   </TextField>
+                  <div className="hidden lg:block lg:w-full"></div>
 
-                  <TextField
+                  {/* <TextField
                     name="password"
                     type="password"
                     isRequired
@@ -238,7 +239,7 @@ export default function UserAdmin({
                       Brukeren kan også velge å logge inn med e-post-lenke uten
                       passord.
                     </Description>
-                  </TextField>
+                  </TextField> */}
                 </div>
 
                 <CheckboxGroup
