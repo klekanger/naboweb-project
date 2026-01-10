@@ -24,7 +24,6 @@ import { useContext, useRef, useState } from "react";
 import CustomButton from "../CustomButton";
 import { useDisclosure } from "@/hooks/useDisclosure";
 import EditUser from "./EditUser";
-import InviteUser from "./InviteUser";
 import RoleDisplay from "./RoleDisplay";
 import AssignRolesTable from "./ShowRolesTable";
 import { isEmailInvalid, menuElements, validateForm } from "./UserAdmin.logic";
@@ -147,7 +146,9 @@ export default function UserAdmin({
           <header
             className="w-full border-b bg-brand-white rounded-tr-xl px-6 py-8 text-left text-base"
             dangerouslySetInnerHTML={{
-              __html: menuElements[selectedMenu].description,
+              __html:
+                menuElements.find((el) => el.id === selectedMenu)
+                  ?.description || "",
             }}
           />
 
@@ -369,9 +370,8 @@ export default function UserAdmin({
                 </div>
               </section>
             )}
-
           {/* INVITE USER TO CREATE ACCOUNT */}
-          {selectedMenu === 1 && <InviteUser />}
+          {/* {selectedMenu === SidebarMenu.INVITE_USER && <InviteUser />} */}
 
           {/* EDIT EXISTING USER */}
           {selectedMenu === 3 && <EditUser className="px-4 pt-4 bg-white" />}
