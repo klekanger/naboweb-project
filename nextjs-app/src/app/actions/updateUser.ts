@@ -8,7 +8,7 @@ const client = await clerkClient();
 export async function updateUser(
   userToUpdate: UpdateUserType,
 ): Promise<UpdateUserReturnType> {
-  const { id, firstName, lastName, roles } = userToUpdate;
+  const { id, firstName, lastName, roles, emailSubscription } = userToUpdate;
 
   let userWhoWasUpdated;
   const user = await currentUser();
@@ -30,11 +30,23 @@ export async function updateUser(
   }
 
   try {
+    // Fetch existing user to preserve existing publicMetadata
+    const existingUser = await client.users.getUser(id);
+    const existingMetadata =
+      (existingUser.publicMetadata as {
+        roles?: string[];
+        emailSubscription?: boolean;
+      }) ?? {};
+
     userWhoWasUpdated = await client.users.updateUser(id, {
       firstName: firstName ?? "",
       lastName: lastName ?? "",
       publicMetadata: {
-        roles: roles ?? [],
+        roles: roles ?? existingMetadata.roles ?? [],
+        emailSubscription:
+          emailSubscription !== undefined
+            ? emailSubscription
+            : existingMetadata.emailSubscription ?? true,
       },
     });
 
