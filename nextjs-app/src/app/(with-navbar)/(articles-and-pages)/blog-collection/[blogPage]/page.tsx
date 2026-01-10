@@ -99,7 +99,9 @@ async function BlogCollectionContent(props: BlogCollectionParams) {
 
   return (
     <section className="">
-      <h1 className="lg:prose-xl pb-16 font-thin">SISTE BLOGGINNLEGG</h1>
+      <h1 className="lg:prose-xl pb-8 md:pb-16 font-thin">
+        SISTE BLOGGINNLEGG
+      </h1>
       {!isLoggedIn && (
         <p className="mb-8 text-brand-dark-danger italic">
           Logg inn for å også se blogginnlegg beregnet kun for beboere.

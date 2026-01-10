@@ -25,7 +25,7 @@ export default function BlogPostItem({ post }: BlogPostItemProps) {
         <div className="relative order-last overflow-hidden rounded-xl md:col-span-5 lg:col-span-6">
           <Link href={urlToPost} passHref>
             <Image
-              className="aspect-[16/10] rounded-xl object-cover"
+              className="aspect-16/10 rounded-xl object-cover"
               src={
                 urlForImage(featuredImage as SanityImage)
                   ?.width(1600)
@@ -43,7 +43,7 @@ export default function BlogPostItem({ post }: BlogPostItemProps) {
           </Link>
         </div>
 
-        <div className="md:col-span-7 md:pr-8 lg:col-span-6 prose lg:prose-xl">
+        <div className="md:col-span-7 md:pr-8 lg:col-span-6 prose lg:prose-xl pt-4 md:pt-0">
           <Link href={urlToPost} passHref className="no-underline">
             <h2 className="text-2xl mt-0 lg:mt-0 ">
               {title}&nbsp;
