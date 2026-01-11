@@ -6,6 +6,7 @@ import { ShowUserProps } from "@/types/types";
 import { Modal, Spinner } from "@heroui/react";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import CustomButton from "../CustomButton";
 
 export default function DeleteUserModal({
@@ -22,6 +23,7 @@ export default function DeleteUserModal({
   const [errorToShow, setErrorToShow] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const router = useRouter();
 
   // Close modal if userDataToDelete becomes undefined
   useEffect(() => {
@@ -57,6 +59,8 @@ export default function DeleteUserModal({
         setSuccessMessage(
           `Bruker ${userDataToDelete.firstName} ${userDataToDelete.lastName} ble slettet`,
         );
+        // Refresh server-side data to remove the deleted user from the list
+        router.refresh();
       } else {
         setErrorToShow("Ukjent feil");
       }
