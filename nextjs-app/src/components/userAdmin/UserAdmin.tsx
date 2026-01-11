@@ -237,25 +237,6 @@ export default function UserAdmin({
                       )}
                     </TextField>
                     <div className="hidden lg:block lg:w-full"></div>
-
-                    {/* <TextField
-                    name="password"
-                    type="password"
-                    isRequired
-                    value={newUser.password}
-                    onChange={(value) => {
-                      setNewUser({ ...newUser, password: value });
-                    }}
-                    className="w-full"
-                  >
-                    <Label>Passord</Label>
-                    <Input />
-                    <Description>
-                      Midlertidig passord som kan endres av brukeren senere.
-                      Brukeren kan også velge å logge inn med e-post-lenke uten
-                      passord.
-                    </Description>
-                  </TextField> */}
                   </div>
 
                   <CheckboxGroup
