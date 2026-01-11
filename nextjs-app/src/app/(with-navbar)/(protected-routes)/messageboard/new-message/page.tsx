@@ -187,6 +187,8 @@ export default function NewMessage() {
         setModalCancelDisabled(true);
 
         modalForMessages.onOpen();
+        // Refresh server-side data to include the newly created message
+        router.refresh();
       }
 
       if ("error" in data) {
