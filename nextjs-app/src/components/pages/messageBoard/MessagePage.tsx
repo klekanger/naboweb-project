@@ -227,6 +227,8 @@ export default function MessagePage(props: MessagePageProps) {
           throw new Error(`Revalidation failed. Server response: ${error}`);
         }
 
+        // Refresh server-side data before navigating back to messageboard
+        router.refresh();
         modalForMessages.onOpen();
       }
 
@@ -278,12 +280,11 @@ export default function MessagePage(props: MessagePageProps) {
       const data = await response.json();
 
       if ("success" in data) {
-        setModalTitle("Innlegget ble slettet");
-        setModalBody("Du blir nå tatt tilbake til oppslagstavlen.");
-        setModalOkText("OK");
-        setModalOkUrl("/messageboard");
-        setModalCancelDisabled(true);
-        modalForMessages.onOpen();
+        // Navigate immediately to avoid 404 (message no longer exists)
+        // Close any open modals first
+        modalForMessages.onClose();
+        router.refresh();
+        router.push("/messageboard");
       }
 
       if ("error" in data) {
@@ -407,7 +408,10 @@ export default function MessagePage(props: MessagePageProps) {
               <>
                 <CustomButton
                   variant="primary"
-                  href="/messageboard"
+                  onPress={() => {
+                    router.refresh();
+                    router.push("/messageboard");
+                  }}
                   className="no-underline"
                 >
                   <ArrowLeftIcon className="mr-2" />
@@ -478,6 +482,8 @@ export default function MessagePage(props: MessagePageProps) {
                     } else {
                       resetModal();
                       modalForMessages.onClose();
+                      // Refresh before navigating to ensure messageboard is up to date
+                      router.refresh();
                       router.push(modalOkUrl);
                     }
                   }}
@@ -492,5 +498,3 @@ export default function MessagePage(props: MessagePageProps) {
     </>
   );
 }
-
-// TODO Refresh the messageboard after updating a message
