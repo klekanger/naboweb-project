@@ -36,6 +36,7 @@ export default function CustomSearchInput({
       className={className}
       value={value}
       onChange={(newValue) => onChange(newValue || "")}
+      aria-label="Søk"
     >
       <InputGroup>
         <InputGroup.Prefix>
