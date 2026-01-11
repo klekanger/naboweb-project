@@ -29,7 +29,7 @@ import { updateSubscriptionStatus } from "@/app/actions/updateSubscriptionStatus
 const CircleAdmin = () => (
   <Tooltip delay={0}>
     <Tooltip.Trigger>
-      <span className="rounded-full bg-danger/30 w-[1em] h-[1em] justify-center items-center p-2.5 inline-flex text-[1em] mr-1 cursor-help">
+      <span className="rounded-full bg-danger/30 w-[1em] h-[1em] justify-center items-center p-2.5 inline-flex text-[1em] mx-1 cursor-help">
         A
       </span>
     </Tooltip.Trigger>
@@ -42,7 +42,7 @@ const CircleAdmin = () => (
 const CircleEditor = () => (
   <Tooltip delay={0}>
     <Tooltip.Trigger>
-      <span className="rounded-full bg-warning/30 w-[1em] h-[1em] justify-center items-center p-2.5 inline-flex text-[1em] cursor-help">
+      <span className="rounded-full bg-warning/30 w-[1em] h-[1em] justify-center items-center p-2.5 inline-flex text-[1em] mx-1 cursor-help">
         R
       </span>
     </Tooltip.Trigger>
