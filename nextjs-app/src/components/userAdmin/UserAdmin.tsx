@@ -21,6 +21,7 @@ import {
   TextField,
 } from "@heroui/react";
 import { useContext, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import CustomButton from "../CustomButton";
 import { useDisclosure } from "@/hooks/useDisclosure";
 import EditUser from "./EditUser";
@@ -56,6 +57,7 @@ export default function UserAdmin({
   const modalErrorMessage = useDisclosure();
   const [longMessage, setLongMessage] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
+  const router = useRouter();
 
   const isInvalidEmail = isEmailInvalid(emailValue);
 
@@ -99,6 +101,8 @@ export default function UserAdmin({
         roles: response.success?.roles,
       });
       setScreenToDisplay(CreateUserScreenType.SUCCESS);
+      // Refresh server-side data to include the newly created user
+      router.refresh();
     } else {
       setGeneralError("Noe gikk galt");
     }
