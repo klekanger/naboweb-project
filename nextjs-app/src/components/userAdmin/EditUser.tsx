@@ -157,7 +157,7 @@ export default function EditUser({ ...rest }) {
             </Avatar>
 
             <div>
-              <h2 className="m-0 p-0 text-xl">
+              <h2 className="m-0 p-0 text-xl text-left">
                 {selectedUser?.firstName} {selectedUser?.lastName}
               </h2>
               <div className="text-xs">
