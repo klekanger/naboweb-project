@@ -275,7 +275,7 @@ export default function MessageComments({
                       className="w-full max-w-xl mt-4 flex flex-col gap-4"
                       validationBehavior="native"
                     >
-                      <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-2 ">
                         <Label htmlFor="title-edit" isRequired>
                           Tittel
                         </Label>
@@ -365,17 +365,17 @@ export default function MessageComments({
               {isCreatingComment && (
                 <Form
                   onSubmit={handleCreateComment}
-                  className="w-full max-w-xl"
+                  className="w-full max-w-xl mb-5"
                   validationBehavior="native"
                 >
-                  <h3 className="text-lg font-semibold">
+                  <h3 className="text-lg font-semibold mb-5">
                     Opprett ny kommentar
                   </h3>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 mb-5">
                     <Label htmlFor="title-create">Tittel</Label>
                     <Input id="title-create" name="title" required />
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 mb-5">
                     <Label htmlFor="bodyText-create">
                       Skriv kommentaren din her
                     </Label>
