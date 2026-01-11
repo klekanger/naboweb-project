@@ -1,26 +1,18 @@
 "use client";
 
+import CustomButton from "@/components/CustomButton";
 import MessageEditor from "@/components/pages/messageBoard/MessageEditor";
 import { MessageEditorContext } from "@/context/messageEditorContext";
 import { useModalState } from "@/hooks/useModalState";
 import { currentUserRoles } from "@/lib/currentUserRoles";
 import { useUser } from "@clerk/nextjs";
-import { Button, Card, Checkbox, Label, Modal, Spinner } from "@heroui/react";
+import { Card, Checkbox, Label, Modal, Spinner } from "@heroui/react";
 import { htmlToBlocks } from "@portabletext/block-tools";
 import { PortableTextBlock } from "@portabletext/types";
 import { Schema } from "@sanity/schema";
-import { Editor } from "@tiptap/react";
-import {
-  Bold,
-  Italic,
-  MessagesSquare,
-  UnderlineIcon,
-  UploadIcon,
-} from "lucide-react";
-import Link from "next/link";
+import { MessagesSquare, UploadIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
-import CustomButton from "@/components/CustomButton";
 
 const MAX_CHARACTERS = 1000;
 const DEFAULT_REDIRECT_URL = "/messageboard/new-message";
@@ -187,6 +179,8 @@ export default function NewMessage() {
         setModalCancelDisabled(true);
 
         modalForMessages.onOpen();
+        // Refresh server-side data to include the newly created message
+        router.refresh();
       }
 
       if ("error" in data) {
