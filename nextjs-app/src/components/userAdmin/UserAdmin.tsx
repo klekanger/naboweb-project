@@ -344,7 +344,6 @@ export default function UserAdmin({
                         email: "",
                         firstName: "",
                         lastName: "",
-                        password: "",
                         emailSubscription: true,
                       });
                     }}
@@ -402,7 +401,6 @@ export default function UserAdmin({
                         email: "",
                         firstName: "",
                         lastName: "",
-                        password: "",
                         emailSubscription: true,
                       });
                     }}

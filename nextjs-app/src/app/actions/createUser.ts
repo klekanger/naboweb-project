@@ -18,8 +18,7 @@ export async function createNewUser(
     };
   }
 
-  const { email, firstName, lastName, password, roles, emailSubscription } =
-    newUser;
+  const { email, firstName, lastName, roles, emailSubscription } = newUser;
 
   try {
     const { data: users } = await client.users.getUserList({
@@ -44,7 +43,7 @@ export async function createNewUser(
         roles: roles ?? [],
         emailSubscription: emailSubscription ?? true,
       },
-      password: password,
+      skipPasswordRequirement: true,
     });
 
     const userRoles =

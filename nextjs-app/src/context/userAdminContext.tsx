@@ -50,7 +50,6 @@ const userAdminInitialValue = {
     email: "",
     firstName: "",
     lastName: "",
-    password: "",
     roles: ["user"],
     emailSubscription: true,
   },
@@ -92,7 +91,6 @@ export default function UserAdminProvider({
     email: "",
     firstName: "",
     lastName: "",
-    password: "",
     roles: ["user"],
     emailSubscription: true,
   });
@@ -120,7 +118,6 @@ export default function UserAdminProvider({
       email: "",
       firstName: "",
       lastName: "",
-      password: "",
       roles: ["user"],
       emailSubscription: true,
     });
