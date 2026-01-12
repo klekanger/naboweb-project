@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     }
 
     // Allow admins to delete any message, but regular users can only delete their own
-    if (!(isAdmin || user.id !== userId)) {
+    if (!(isAdmin || user.id === userId)) {
       return NextResponse.json({
         error: {
           message: "Unauthorized (user can only delete their own messages)",

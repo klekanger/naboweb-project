@@ -13,7 +13,6 @@
     "predev": "pnpm run typegen --enforce-required-fields",
     "prebuild": "pnpm run typegen --enforce-required-fields",
     "typegen": "sanity schema extract && sanity typegen generate --enforce-required-fields"
-
   },
   "keywords": [
     "sanity"
@@ -22,12 +21,12 @@
     "@sanity/icons": "^3.7.4",
     "@sanity/locale-nb-no": "^1.1.29",
     "@sanity/ui": "^3.1.11",
-    "@sanity/vision": "^5.1.0",
+    "@sanity/vision": "^5.2.0",
     "react": "^19.1",
     "react-dom": "^19.1",
     "react-player": "^2.16.1",
     "react-tweet": "^3.2.1",
-    "sanity": "^5.1.0",
+    "sanity": "^5.2.0",
     "styled-components": "^6.1.18"
   },
   "devDependencies": {

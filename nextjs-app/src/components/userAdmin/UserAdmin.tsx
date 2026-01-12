@@ -100,6 +100,37 @@ export default function UserAdmin({
         lastName: response.success?.lastName,
         roles: response.success?.roles,
       });
+
+      // Create corresponding Sanity user with the same ID
+      if (response.success?.id) {
+        try {
+          const sanityResponse = await fetch("/api/create-sanity-user", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id: response.success.id,
+              firstName: response.success.firstName,
+              lastName: response.success.lastName,
+              email: response.success.email,
+            }),
+          });
+
+          if (!sanityResponse.ok) {
+            const errorData = await sanityResponse.json();
+            console.error(
+              "Failed to create Sanity user:",
+              errorData.error?.message,
+            );
+            // Don't block the success flow, but log the error
+          }
+        } catch (error) {
+          console.error("Error calling create-sanity-user API:", error);
+          // Don't block the success flow, but log the error
+        }
+      }
+
       setScreenToDisplay(CreateUserScreenType.SUCCESS);
       // Refresh server-side data to include the newly created user
       router.refresh();
