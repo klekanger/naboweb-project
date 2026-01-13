@@ -35,19 +35,27 @@ export async function createNewUser(
       };
     }
 
+    // Ensure "user" role is always included
+    const rolesArray =
+      Array.isArray(roles) && roles.length > 0 ? roles : ["user"];
+    const finalRoles = rolesArray.includes("user")
+      ? rolesArray
+      : [...rolesArray, "user"];
+
     const userCreated = await client.users.createUser({
       emailAddress: [email],
       firstName: firstName,
       lastName: lastName,
       publicMetadata: {
-        roles: roles ?? [],
+        roles: finalRoles,
         emailSubscription: emailSubscription ?? true,
       },
       skipPasswordRequirement: true,
     });
 
     const userRoles =
-      (userCreated?.publicMetadata as { roles: string[] }) ?? [];
+      (userCreated?.publicMetadata as { roles?: string[] })?.roles ??
+      finalRoles;
 
     return {
       success: {
@@ -55,7 +63,7 @@ export async function createNewUser(
         email: userCreated?.emailAddresses[0].emailAddress || "",
         firstName: userCreated?.firstName || "",
         lastName: userCreated?.lastName || "",
-        roles: userRoles.roles,
+        roles: userRoles,
         id: userCreated?.id,
       },
       status: 200,

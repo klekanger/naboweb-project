@@ -38,11 +38,22 @@ export async function updateUser(
         emailSubscription?: boolean;
       }) ?? {};
 
+    // Ensure "user" role is always included
+    const rolesArray =
+      Array.isArray(roles) && roles.length > 0
+        ? roles
+        : existingMetadata.roles && existingMetadata.roles.length > 0
+          ? existingMetadata.roles
+          : ["user"];
+    const finalRoles = rolesArray.includes("user")
+      ? rolesArray
+      : [...rolesArray, "user"];
+
     userWhoWasUpdated = await client.users.updateUser(id, {
       firstName: firstName ?? "",
       lastName: lastName ?? "",
       publicMetadata: {
-        roles: roles ?? existingMetadata.roles ?? [],
+        roles: finalRoles,
         emailSubscription:
           emailSubscription !== undefined
             ? emailSubscription
@@ -50,13 +61,17 @@ export async function updateUser(
       },
     });
 
+    const updatedRoles =
+      (userWhoWasUpdated.publicMetadata as { roles?: string[] })?.roles ??
+      finalRoles;
+
     return {
       success: {
         message: "User updated successfully",
         email: userWhoWasUpdated.emailAddresses[0].emailAddress,
         firstName: userWhoWasUpdated.firstName ?? "",
         lastName: userWhoWasUpdated.lastName ?? "",
-        roles: userWhoWasUpdated.publicMetadata.roles as string[],
+        roles: updatedRoles,
         id: userWhoWasUpdated.id,
       },
       status: 200,

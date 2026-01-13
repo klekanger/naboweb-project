@@ -72,7 +72,17 @@ export default function UserAdmin({
 
   const handleCreateNewUser = async () => {
     setIsCreatingUser(true);
-    const response = await createNewUser(newUser);
+    // Ensure "user" role is always included before creating
+    let finalRoles: string[];
+    if (newUser.roles && newUser.roles.length > 0) {
+      finalRoles = newUser.roles.includes("user")
+        ? newUser.roles
+        : [...newUser.roles, "user"];
+    } else {
+      finalRoles = ["user"];
+    }
+    const userToCreate = { ...newUser, roles: finalRoles };
+    const response = await createNewUser(userToCreate);
 
     setIsCreatingUser(false);
 
@@ -278,9 +288,18 @@ export default function UserAdmin({
                   <CheckboxGroup
                     name="roles"
                     defaultValue={["user"]}
+                    value={
+                      newUser.roles && newUser.roles.length > 0
+                        ? newUser.roles
+                        : ["user"]
+                    }
                     isDisabled={isCreatingUser}
                     onChange={(value) => {
-                      setNewUser({ ...newUser, roles: value });
+                      // Ensure "user" role is always included
+                      const finalRoles = value.includes("user")
+                        ? value
+                        : [...value, "user"];
+                      setNewUser({ ...newUser, roles: finalRoles });
                     }}
                     className="flex flex-col mb-5"
                   >

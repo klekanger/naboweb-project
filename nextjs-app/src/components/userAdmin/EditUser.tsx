@@ -26,6 +26,8 @@ import { useContext, useRef, useState } from "react";
 import { useModalState } from "@/hooks/useModalState";
 import { useDisclosure } from "@/hooks/useDisclosure";
 import CustomButton from "../CustomButton";
+import { useRouter } from "next/navigation";
+import { SidebarMenu } from "@/context/userAdminContext";
 
 const MAX_RESULTS = 10;
 
@@ -67,7 +69,9 @@ export default function EditUser({ ...rest }) {
     isCreatingUser,
     setIsCreatingUser,
     setGeneralError,
+    setSelectedMenu,
   } = useContext(UserAdminContext);
+  const router = useRouter();
 
   // Modal state using custom hook
   const {
@@ -80,6 +84,14 @@ export default function EditUser({ ...rest }) {
   });
 
   const modalDeleteUser = useDisclosure();
+
+  const handleModalClose = () => {
+    modalUserUpdated.onClose();
+    // Navigate back to user list and refresh after modal closes
+    setSelectedUser(null);
+    setSelectedMenu(SidebarMenu.USERS);
+    router.refresh();
+  };
 
   // This function is called when the user submits the search form.
   const handleSubmit = async (searchTerm: string) => {
@@ -228,10 +240,17 @@ export default function EditUser({ ...rest }) {
               name="roles"
               defaultValue={["user"]}
               value={
-                Array.isArray(selectedUser.roles) ? selectedUser.roles : []
+                Array.isArray(selectedUser.roles) &&
+                selectedUser.roles.length > 0
+                  ? selectedUser.roles
+                  : ["user"]
               }
               onChange={(value) => {
-                setSelectedUser({ ...selectedUser, roles: value });
+                // Ensure "user" role is always included
+                const finalRoles = value.includes("user")
+                  ? value
+                  : [...value, "user"];
+                setSelectedUser({ ...selectedUser, roles: finalRoles });
               }}
               className="flex flex-col mb-5"
             >
@@ -239,7 +258,12 @@ export default function EditUser({ ...rest }) {
                 Velg roller:
               </Label>
               <div className="flex flex-row gap-4">
-                <Checkbox value="user" name="role-user" className="mt-0 pt-1">
+                <Checkbox
+                  value="user"
+                  name="role-user"
+                  isDisabled
+                  className="mt-0 pt-1"
+                >
                   <Checkbox.Control>
                     <Checkbox.Indicator />
                   </Checkbox.Control>
@@ -474,7 +498,13 @@ export default function EditUser({ ...rest }) {
       />
       <Modal.Backdrop
         isOpen={modalUserUpdated.isOpen}
-        onOpenChange={modalUserUpdated.onOpenChange}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) {
+            handleModalClose();
+          } else {
+            modalUserUpdated.onOpenChange(isOpen);
+          }
+        }}
         variant="blur"
       >
         <Modal.Container>
@@ -485,10 +515,7 @@ export default function EditUser({ ...rest }) {
             </Modal.Header>
             <Modal.Body>{modalBody}</Modal.Body>
             <Modal.Footer>
-              <CustomButton
-                variant="primary"
-                onPress={modalUserUpdated.onClose}
-              >
+              <CustomButton variant="primary" onPress={handleModalClose}>
                 Lukk
               </CustomButton>
             </Modal.Footer>
