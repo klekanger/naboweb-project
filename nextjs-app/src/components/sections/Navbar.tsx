@@ -39,20 +39,9 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 dark:bg-black/80 bg-brand-white/70 backdrop-blur-md border-b border-border w-full">
-      <div className="max-w-7xl px-4 h-18 flex justify-between mx-auto items-center">
+      <div className="max-w-7xl px-2 h-18 flex justify-between mx-auto items-center">
         {/* Mobile menu toggle and logo */}
-        <div className="flex items-center gap-4 flex-1 lg:flex-none">
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-            className="z-50 lg:hidden p-2"
-          >
-            {isMenuOpen ? (
-              <X className="h-6 w-6 text-brand-black dark:text-brand-white" />
-            ) : (
-              <Menu className="h-6 w-6 text-brand-black dark:text-brand-white" />
-            )}
-          </button>
+        <div className="flex justify-between gap-4 flex-1 lg:flex-none">
           <Link
             href="/"
             className="cursor-pointer"
@@ -61,10 +50,21 @@ export default function Navbar() {
             <Image
               src={logoLight}
               alt="Gartnerihagen-logo"
-              className="-mt-3 sm:-ml-12 sm:h-16 lg:ml-0 lg:w-auto"
+              className="-mt-2 sm:-ml-12 sm:h-16 lg:ml-0 lg:w-auto"
               priority
             />
           </Link>
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            className="z-50 lg:hidden p-2"
+          >
+            {isMenuOpen ? (
+              <X className="h-8 w-8 text-brand-black dark:text-brand-white" />
+            ) : (
+              <Menu className="h-8 w-8 text-brand-black dark:text-brand-white" />
+            )}
+          </button>
         </div>
 
         {/* Desktop navigation */}
@@ -201,9 +201,22 @@ export default function Navbar() {
         </div>
       </div>
 
+      {/* Mobile menu backdrop */}
+      <div
+        className={`lg:hidden fixed inset-0 bg-brand-white/80 backdrop-blur-xs transition-opacity duration-300 ease-in-out z-40 ${
+          isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={() => setIsMenuOpen(false)}
+        aria-hidden="true"
+      />
+
       {/* Mobile menu */}
-      {isMenuOpen && (
-        <div className="lg:hidden pt-8 pb-4 px-4 text-center border-t border-border">
+      <div
+        className={`lg:hidden fixed top-[72px] left-0 right-0 bg-brand-white border-b border-brand-black/20 pb-8 transition-opacity duration-300 ease-in-out z-50 ${
+          isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <div className="pt-8 pb-4 px-4 text-center">
           {isClient && isLoaded && user && (
             <>
               <Link
@@ -316,7 +329,7 @@ export default function Navbar() {
             )}
           </div>
         </div>
-      )}
+      </div>
     </nav>
   );
 }
