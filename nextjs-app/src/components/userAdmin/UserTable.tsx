@@ -269,9 +269,11 @@ export default function UserTable({
     <div className={rest?.className ?? ""}>
       <div className="mb-16">
         {topContent}
-        <div className="overflow-x-auto">
+        <div className="relative overflow-x-auto">
           <table
-            className="w-full min-w-[640px] border-collapse text-sm"
+            className={`w-full min-w-[640px] border-collapse text-sm ${
+              isPaginating ? "opacity-60" : ""
+            }`}
             aria-label={
               isSearchResult
                 ? `Tabell med globale søkeresultater`
@@ -301,13 +303,7 @@ export default function UserTable({
               </tr>
             </thead>
             <tbody>
-              {isPaginating ? (
-                <tr>
-                  <td colSpan={6} className="p-8 text-center">
-                    <Spinner size="md" />
-                  </td>
-                </tr>
-              ) : sortedUsers && sortedUsers.length > 0 ? (
+              {sortedUsers && sortedUsers.length > 0 ? (
                 sortedUsers.map((user, index) => {
                   let roles;
 
@@ -439,6 +435,11 @@ export default function UserTable({
               )}
             </tbody>
           </table>
+          {isPaginating && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60">
+              <Spinner size="md" />
+            </div>
+          )}
         </div>
         {!isSearchResult && pagination && pagination.totalPages > 1 && (
           <div className="flex justify-center my-8">
