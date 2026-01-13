@@ -158,6 +158,7 @@ export default function UserAdmin({
                   variant="ghost"
                   onPress={() => {
                     setSelectedUser(null);
+                    setScreenToDisplay(CreateUserScreenType.FORM);
                     setSelectedMenu(element.id);
                   }}
                   className={`h-24 lg:py-2 lg:justify-start lg:h-10 flex flex-col lg:flex-row rounded-none text-sm text-brand-black hover:bg-brand-black/10 lg:border-none w-full ${
