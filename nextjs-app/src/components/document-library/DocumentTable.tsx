@@ -183,16 +183,11 @@ export default function DocumentTable({
                               </span>
                             </a>
                           </Tooltip.Trigger>
-                          <Tooltip.Content placement="top start">
-                            <span className="flex flex-row items-center gap-2 py-2 text-xs md:text-sm md:max-w-md">
-                              <div>
-                                <FileIcon
-                                  fill="#fff"
-                                  height={2}
-                                  width={2}
-                                  className="md:mx-4"
-                                />
-                              </div>
+                          <Tooltip.Content
+                            placement="top"
+                            className="bg-secondary text-brand-white"
+                          >
+                            <div className="flex flex-row items-center gap-2 py-2 text-xs md:text-sm md:max-w-md">
                               <div>
                                 {item.description && (
                                   <>
@@ -205,7 +200,7 @@ export default function DocumentTable({
                                   {item?.document?.asset?.originalFilename}
                                 </span>
                               </div>
-                            </span>
+                            </div>
                           </Tooltip.Content>
                         </Tooltip>
                       </td>
