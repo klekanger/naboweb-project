@@ -38,10 +38,10 @@ export default function Navbar() {
   const isActive = (path: string) => pathname.startsWith(path);
 
   return (
-    <nav className="sticky top-0 z-50 dark:bg-black/80 bg-brand-white/70 backdrop-blur-md border-b border-border w-full">
-      <div className="max-w-7xl px-2 h-18 flex justify-between mx-auto items-center">
+    <nav className="sticky top-0 z-50 px-2 lg:px-0  dark:bg-black/80 bg-brand-white/70 backdrop-blur-md border-b border-border w-full">
+      <div className="max-w-7xl h-18 flex justify-between mx-auto items-center">
         {/* Mobile menu toggle and logo */}
-        <div className="flex justify-between gap-4 flex-1 lg:flex-none">
+        <div className="flex justify-between gap-4 lg:px-5 flex-1 lg:flex-none">
           <Link
             href="/"
             className="cursor-pointer"
@@ -68,7 +68,7 @@ export default function Navbar() {
         </div>
 
         {/* Desktop navigation */}
-        <div className="hidden lg:flex items-center gap-8">
+        <div className="hidden lg:flex items-center gap-8 pr-5">
           {isClient && isLoaded && user && (
             <div className="relative group">
               <CustomButton
