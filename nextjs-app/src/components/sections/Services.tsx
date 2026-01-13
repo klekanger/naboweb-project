@@ -97,29 +97,37 @@ export default function Services({
             {RenderedIcon && <RenderedIcon width={3} height={3} />}
 
             <h2 className="text-xl font-semibold md:hidden pl-4">
-              {title.toUpperCase()}
-              {locked && (
-                <Tooltip delay={1000}>
-                  <Tooltip.Trigger>
-                    <span className="pl-[0.5em]">🔐</span>
-                  </Tooltip.Trigger>
-                  <Tooltip.Content>Krever innlogging</Tooltip.Content>
-                </Tooltip>
-              )}
+              <span className="inline-flex items-center">
+                {title.toUpperCase()}
+                {locked && (
+                  <span className="inline-flex items-center">
+                    <Tooltip delay={1000}>
+                      <Tooltip.Trigger>
+                        <span className="pl-[0.5em] inline-block">🔐</span>
+                      </Tooltip.Trigger>
+                      <Tooltip.Content>Krever innlogging</Tooltip.Content>
+                    </Tooltip>
+                  </span>
+                )}
+              </span>
             </h2>
           </div>
 
           <div className="py-2 md:py-4 prose">
             <h2 className="hidden md:block text-xl font-semibold">
-              {title.toUpperCase()}{" "}
-              {locked && (
-                <Tooltip delay={1000}>
-                  <Tooltip.Trigger>
-                    <span className="pl-[0.5em]">🔐</span>
-                  </Tooltip.Trigger>
-                  <Tooltip.Content>Krever innlogging</Tooltip.Content>
-                </Tooltip>
-              )}
+              <span className="inline-flex items-center">
+                {title.toUpperCase()}{" "}
+                {locked && (
+                  <span className="inline-flex items-center">
+                    <Tooltip delay={1000}>
+                      <Tooltip.Trigger>
+                        <span className="pl-[0.5em] inline-block">🔐</span>
+                      </Tooltip.Trigger>
+                      <Tooltip.Content>Krever innlogging</Tooltip.Content>
+                    </Tooltip>
+                  </span>
+                )}
+              </span>
             </h2>
           </div>
           <p>{description}</p>
