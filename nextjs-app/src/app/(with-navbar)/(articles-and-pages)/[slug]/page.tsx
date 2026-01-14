@@ -7,6 +7,8 @@ import { toPlainText } from "next-sanity";
 import type { Image as SanityImage } from "sanity";
 import { cacheLife, cacheTag } from "next/cache";
 import { draftMode } from "next/headers";
+import { notFound } from "next/navigation";
+import { SITE_NAME, SITE_URL } from "@/lib/constants";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -34,6 +36,18 @@ export async function generateMetadata(
   const description = toPlainText(pageData?.overview ?? []) ?? "";
   let ogImage = "/og_naboweb.webp";
 
+  if (!pageData) {
+    return {
+      title: SITE_NAME,
+      description: "",
+      robots: {
+        index: false,
+        follow: false,
+        googleBot: { index: false, follow: false },
+      },
+    };
+  }
+
   if (pageData && "mainImage" in pageData) {
     ogImage =
       urlForOpenGraphImage(pageData.mainImage as SanityImage) ?? ogImage;
@@ -42,6 +56,9 @@ export async function generateMetadata(
   return {
     title: pageData?.title,
     description,
+    alternates: {
+      canonical: `${SITE_URL}/${params.slug}`,
+    },
     openGraph: {
       title: pageData?.title || "",
       description,
@@ -103,6 +120,8 @@ export default async function PageSlugRoute(props: Props) {
   const data = isDraftMode
     ? await fetchDynamicPage(params.slug)
     : await fetchCachedPage(params.slug);
+
+  if (!data) notFound();
 
   return (
     <Article

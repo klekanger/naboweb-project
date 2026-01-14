@@ -9,6 +9,7 @@ import { toPlainText } from "next-sanity";
 import type { Image as SanityImage } from "sanity";
 import { cacheLife, cacheTag } from "next/cache";
 import { draftMode } from "next/headers";
+import { notFound } from "next/navigation";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -39,9 +40,24 @@ export async function generateMetadata(
   const plainTextExcerpt = toPlainText(excerpt ?? []);
   const ogImage = urlForOpenGraphImage(featuredImage as SanityImage) ?? "";
 
+  if (!data) {
+    return {
+      title: SITE_NAME,
+      description: "",
+      robots: {
+        index: false,
+        follow: false,
+        googleBot: { index: false, follow: false },
+      },
+    };
+  }
+
   return {
     title: title,
     description: plainTextExcerpt,
+    alternates: {
+      canonical: `${SITE_URL}/blog/${params.slug}`,
+    },
     openGraph: {
       images: [ogImage, ...previousImages],
       type: "article",
@@ -113,6 +129,8 @@ export default async function BlogRoute(props: Props) {
   const data = isDraftMode
     ? await fetchDynamicBlogPost(params.slug)
     : await fetchCachedBlogPost(params.slug);
+
+  if (!data) notFound();
 
   return (
     <Article

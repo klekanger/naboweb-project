@@ -10,6 +10,8 @@ import { redirect } from "next/navigation";
 import { currentUser } from "@clerk/nextjs/server";
 import { Suspense } from "react";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import type { Metadata } from "next";
+import { SITE_NAME, SITE_URL } from "@/lib/constants";
 
 const POSTS_PER_PAGE = 5;
 
@@ -17,17 +19,31 @@ type BlogCollectionParams = {
   params: Promise<{ blogPage: number | undefined }>;
 };
 
-export const metadata = {
-  title: "Boligsameiet Gartnerihagen",
-  description: "Siste blogginnlegg",
-  openGraph: {
-    type: "website",
-    title: "Boligsameiet Gartnerihagen",
+export async function generateMetadata(
+  props: BlogCollectionParams,
+): Promise<Metadata> {
+  const params = await props.params;
+  const pageNumber = Number(params.blogPage);
+  const canonicalPath = Number.isFinite(pageNumber)
+    ? `/blog-collection/${pageNumber}`
+    : "/blog-collection/1";
+
+  return {
+    title: SITE_NAME,
     description: "Siste blogginnlegg",
-    locale: "nb_NO",
-    siteName: "Boligsameiet Gartnerihagen",
-  },
-};
+    alternates: {
+      canonical: `${SITE_URL}${canonicalPath}`,
+    },
+    openGraph: {
+      type: "website",
+      title: SITE_NAME,
+      description: "Siste blogginnlegg",
+      locale: "nb_NO",
+      siteName: SITE_NAME,
+      url: `${SITE_URL}${canonicalPath}`,
+    },
+  };
+}
 
 //
 // Generate all possible routes
