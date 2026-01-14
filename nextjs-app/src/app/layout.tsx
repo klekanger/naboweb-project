@@ -14,7 +14,9 @@ import { draftMode } from "next/headers";
 import { Toaster } from "sonner";
 import { VisualEditing } from "next-sanity/visual-editing";
 import DraftModeToast from "@/components/DraftModeToast";
+import PlausibleRouteTracker from "@/components/PlausibleRouteTracker";
 import { Suspense } from "react";
+import Script from "next/script";
 
 const openSans = Open_Sans({
   subsets: ["latin"],
@@ -51,6 +53,8 @@ async function ClerkBodyContent({ children }: { children: React.ReactNode }) {
         <Providers>
           {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}
           <Toaster />
+          {/* Track route changes for Plausible Analytics */}
+          <PlausibleRouteTracker />
           {isDraftMode && (
             <>
               <DraftModeToast />
@@ -79,6 +83,12 @@ export default async function RootLayout({
       className={`${openSans.variable} ${montserrat.variable}`}
       suppressHydrationWarning
     >
+      <Script
+        data-domain="gartnerihagen-askim.no"
+        src="https://plausible.io/js/script.js"
+        strategy="afterInteractive"
+      />
+
       <Suspense
         fallback={
           <ClerkProvider
