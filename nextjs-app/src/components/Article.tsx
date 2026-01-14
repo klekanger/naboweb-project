@@ -1,4 +1,5 @@
 import BackButton from "@/components/BackButton";
+import ShareButtons from "@/components/ShareButtons";
 import { formatDate } from "@/lib/format-date";
 import { urlForImage } from "@/sanity/lib/utils";
 import { CustomPortableText } from "@/lib/CustomPortableText";
@@ -57,9 +58,10 @@ export default function Article({
           paragraphClasses="prose lg:prose-xl"
         />
       </div>
-
+      <ShareButtons title={title ?? ""} />
       <section className="py-8">
         <em className="text-sm">{publishDate}</em>
+
         <br />
         {authors && (
           <em className="text-sm">
