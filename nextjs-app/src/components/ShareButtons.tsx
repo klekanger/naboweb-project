@@ -8,15 +8,21 @@ import EmailIcon from "@/components/icons/Email";
 
 type ShareButtonsProps = {
   title: string;
+  shareText?: string;
+  className?: string;
 };
 
-export default function ShareButtons({ title }: ShareButtonsProps) {
+export default function ShareButtons({
+  title,
+  shareText = "Del dette",
+  className,
+}: ShareButtonsProps) {
   const pathname = usePathname();
   const fullUrl = `${SITE_URL}${pathname}`;
 
   return (
-    <div className="flex items-center gap-4 py-8">
-      <span className="text-gray-600 text-sm">Del dette:</span>
+    <div className={`flex items-center gap-4 py-8 ${className}`}>
+      <span className="text-gray-600 text-sm">{shareText}:</span>
       <div className="flex gap-4">
         {/* Facebook */}
         <a

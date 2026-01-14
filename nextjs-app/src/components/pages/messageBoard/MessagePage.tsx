@@ -14,6 +14,7 @@ import { Card, Modal } from "@heroui/react";
 import CustomButton from "@/components/CustomButton";
 import { htmlToBlocks } from "@portabletext/block-tools";
 import { Schema } from "@sanity/schema";
+import ShareButtons from "@/components/ShareButtons";
 import {
   ArrowLeftIcon,
   CircleUser,
@@ -304,7 +305,7 @@ export default function MessagePage(props: MessagePageProps) {
 
   return (
     <>
-      <Card className="p-2 py-8 mb-16">
+      <Card className="p-2 py-8 mb-8">
         <div className="flex flex-col items-start p-4">
           {isEditingMessage ? (
             <div className="pb-4 pr-4 md:pb-8 flex gap-3 w-full">
@@ -437,6 +438,11 @@ export default function MessagePage(props: MessagePageProps) {
               </>
             )}
           </div>
+          <ShareButtons
+            title={title ?? ""}
+            shareText="Del dette innlegget"
+            className="pt-4 pb-0"
+          />
         </div>
       </Card>
 
