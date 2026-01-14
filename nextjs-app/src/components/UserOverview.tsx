@@ -56,13 +56,13 @@ export default async function UserOveview({
           {isEditor && (
             <>
               <CustomButton
-                href="/studio"
+                href="https://gartnerihagen.sanity.studio/"
                 buttonText="Rediger innhold"
                 className="w-40"
               />
 
               <CustomButton
-                href="/studio/structure/fileOtherDocuments"
+                href="https://gartnerihagen.sanity.studio/structure/fileOtherDocuments"
                 buttonText="Last opp filer"
                 className="w-40"
               />
