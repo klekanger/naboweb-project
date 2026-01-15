@@ -132,15 +132,72 @@ export default async function BlogRoute(props: Props) {
 
   if (!data) notFound();
 
+  const canonicalUrl = `${SITE_URL}/blog/${params.slug}`;
+  const description = toPlainText(data.excerpt ?? []);
+  const imageUrl =
+    urlForOpenGraphImage(data.featuredImage as SanityImage) ?? undefined;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Hjem",
+            item: SITE_URL,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Blogg",
+            item: `${SITE_URL}/blog-collection/1`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: data.title ?? "",
+            item: canonicalUrl,
+          },
+        ],
+      },
+      {
+        "@type": "BlogPosting",
+        headline: data.title ?? "",
+        description,
+        image: imageUrl ? [imageUrl] : undefined,
+        datePublished: data._createdAt,
+        dateModified: data._updatedAt,
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": canonicalUrl,
+        },
+        author: (data.author ?? []).map((author: Authors) => ({
+          "@type": "Person",
+          name: `${author.firstName ?? ""} ${author.lastName ?? ""}`.trim(),
+        })),
+      },
+    ],
+  };
+
   return (
-    <Article
-      title={data?.title ?? ""}
-      bodyText={data?.bodyText}
-      createdAt={data?._createdAt}
-      updatedAt={data?._updatedAt}
-      mainImage={data?.featuredImage as SanityImage & { lqip: string | null }}
-      authors={data?.author as Authors[] | undefined}
-      buttonLink="/blog"
-    />
+    <>
+      <script
+        type="application/ld+json"
+        // JSON-LD is not executed as JS; this is the recommended way to embed it in Next.js.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <Article
+        title={data?.title ?? ""}
+        bodyText={data?.bodyText}
+        createdAt={data?._createdAt}
+        updatedAt={data?._updatedAt}
+        mainImage={data?.featuredImage as SanityImage & { lqip: string | null }}
+        authors={data?.author as Authors[] | undefined}
+        buttonLink="/blog"
+      />
+    </>
   );
 }

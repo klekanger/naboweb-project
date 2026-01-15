@@ -11,9 +11,11 @@ import { currentUser } from "@clerk/nextjs/server";
 import { Suspense } from "react";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import type { Metadata } from "next";
-import { SITE_NAME, SITE_URL } from "@/lib/constants";
-
-const POSTS_PER_PAGE = 5;
+import {
+  BLOG_COLLECTION_POSTS_PER_PAGE,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/constants";
 
 type BlogCollectionParams = {
   params: Promise<{ blogPage: number | undefined }>;
@@ -50,7 +52,9 @@ export async function generateMetadata(
 //
 export async function generateStaticParams() {
   const numberOfBlogPosts = await countBlogPosts({ privatePosts: false });
-  const totalPages = Math.ceil(numberOfBlogPosts / POSTS_PER_PAGE);
+  const totalPages = Math.ceil(
+    numberOfBlogPosts / BLOG_COLLECTION_POSTS_PER_PAGE,
+  );
 
   return Array.from({ length: totalPages }).map((_, i) => ({
     blogPage: `${i + 1}`,
@@ -84,12 +88,12 @@ async function BlogCollectionContent(props: BlogCollectionParams) {
     query: isLoggedIn ? allBlogCollectionQuery : blogCollectionQuery,
     params: isLoggedIn
       ? {
-          start: (pageNumber - 1) * POSTS_PER_PAGE,
-          end: pageNumber * POSTS_PER_PAGE,
+          start: (pageNumber - 1) * BLOG_COLLECTION_POSTS_PER_PAGE,
+          end: pageNumber * BLOG_COLLECTION_POSTS_PER_PAGE,
         }
       : {
-          start: (pageNumber - 1) * POSTS_PER_PAGE,
-          end: pageNumber * POSTS_PER_PAGE,
+          start: (pageNumber - 1) * BLOG_COLLECTION_POSTS_PER_PAGE,
+          end: pageNumber * BLOG_COLLECTION_POSTS_PER_PAGE,
           isPrivate: false,
         },
   });
@@ -97,7 +101,7 @@ async function BlogCollectionContent(props: BlogCollectionParams) {
   const total = await countBlogPosts(
     isLoggedIn ? { allPosts: true } : { privatePosts: false },
   );
-  const totalPages = Math.ceil(total / POSTS_PER_PAGE);
+  const totalPages = Math.ceil(total / BLOG_COLLECTION_POSTS_PER_PAGE);
   const numberOfBlogPosts = data?.length ?? 0;
 
   if (pageNumber > totalPages || pageNumber < 1) {

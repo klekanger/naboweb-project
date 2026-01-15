@@ -123,14 +123,61 @@ export default async function PageSlugRoute(props: Props) {
 
   if (!data) notFound();
 
+  const canonicalUrl = `${SITE_URL}/${params.slug}`;
+  const description = toPlainText(data.overview ?? []);
+  const imageUrl =
+    urlForOpenGraphImage(data.mainImage as SanityImage) ?? undefined;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Hjem",
+            item: SITE_URL,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: data.title ?? "",
+            item: canonicalUrl,
+          },
+        ],
+      },
+      {
+        "@type": "WebPage",
+        name: data.title ?? "",
+        description,
+        url: canonicalUrl,
+        primaryImageOfPage: imageUrl
+          ? {
+              "@type": "ImageObject",
+              url: imageUrl,
+            }
+          : undefined,
+      },
+    ],
+  };
+
   return (
-    <Article
-      title={data?.title ?? ""}
-      bodyText={data?.body}
-      createdAt={data?._createdAt}
-      updatedAt={data?._updatedAt}
-      mainImage={data?.mainImage as SanityImage & { lqip: string | null }}
-      buttonLink="/"
-    />
+    <>
+      <script
+        type="application/ld+json"
+        // JSON-LD is not executed as JS; this is the recommended way to embed it in Next.js.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <Article
+        title={data?.title ?? ""}
+        bodyText={data?.body}
+        createdAt={data?._createdAt}
+        updatedAt={data?._updatedAt}
+        mainImage={data?.mainImage as SanityImage & { lqip: string | null }}
+        buttonLink="/"
+      />
+    </>
   );
 }

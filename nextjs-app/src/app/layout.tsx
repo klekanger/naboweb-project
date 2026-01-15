@@ -35,6 +35,25 @@ export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: SITE_NAME,
   description: SITE_DESCRIPTION,
+  alternates: {
+    canonical: SITE_URL,
+  },
+};
+
+const siteJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
+    {
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
+  ],
 };
 
 async function ClerkBodyContent({ children }: { children: React.ReactNode }) {
@@ -50,6 +69,11 @@ async function ClerkBodyContent({ children }: { children: React.ReactNode }) {
       }}
     >
       <body>
+        <script
+          type="application/ld+json"
+          // JSON-LD is not executed as JS; this is the recommended way to embed it in Next.js.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
+        />
         <Providers>
           {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}
           <Toaster />
@@ -100,6 +124,11 @@ export default async function RootLayout({
             }}
           >
             <body>
+              <script
+                type="application/ld+json"
+                // JSON-LD is not executed as JS; this is the recommended way to embed it in Next.js.
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
+              />
               <Providers>
                 <Toaster />
                 <SanityLive onError={handleError} />
