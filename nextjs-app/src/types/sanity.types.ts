@@ -648,6 +648,22 @@ export type AllSanitySchemaTypes =
 
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
+// Source: ../nextjs-app/src/app/sitemap.ts
+// Variable: pageSitemapEntriesQuery
+// Query: *[_type == "page" && defined(slug.current)]{    "slug": slug.current,    _updatedAt  }
+export type PageSitemapEntriesQueryResult = Array<{
+  slug: string | null;
+  _updatedAt: string;
+}>;
+
+// Source: ../nextjs-app/src/app/sitemap.ts
+// Variable: publicBlogSitemapEntriesQuery
+// Query: *[_type == "blogPost" && defined(slug.current) && privatePost != true]{    "slug": slug.current,    _updatedAt  }
+export type PublicBlogSitemapEntriesQueryResult = Array<{
+  slug: string | null;
+  _updatedAt: string;
+}>;
+
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: userSubscriptionStatusQuery
 // Query: *[_type=="authors" && _id==$id][0] {    emailSubscription  }
@@ -1567,6 +1583,8 @@ export type MeetingMinutesIdsResult = Array<{
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
+    '\n  *[_type == "page" && defined(slug.current)]{\n    "slug": slug.current,\n    _updatedAt\n  }\n': PageSitemapEntriesQueryResult;
+    '\n  *[_type == "blogPost" && defined(slug.current) && privatePost != true]{\n    "slug": slug.current,\n    _updatedAt\n  }\n': PublicBlogSitemapEntriesQueryResult;
     '\n  *[_type=="authors" && _id==$id][0] {\n    emailSubscription\n  }\n': UserSubscriptionStatusQueryResult;
     "\n  *[_type==\"documentMenu\"] {\n    button1Text,\n    button2Text,\n    button3Text,\n    button4Text,\n    'file1': button1File->otherDocument.asset->{url},\n    'file2': button2File->otherDocument.asset->{url},\n    'file3': button3File->otherDocument.asset->{url},\n    'file4': button4File->otherDocument.asset->{url},\n  }[0]\n": DocumentMenuQueryResult;
     "\n  *[_type==\"fileOtherDocuments\"] {\n    title,\n    description,\n    tags,\n    _createdAt,\n    _updatedAt,\n    'document': otherDocument{\n      asset->{url, _id, originalFilename}\n    }\n  }\n": OtherDocumentsQueryResult;

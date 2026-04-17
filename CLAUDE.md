@@ -4,88 +4,87 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-- **Dev server**: `pnpm run dev` (uses turbopack for fast builds)
+All commands run from the monorepo root unless noted otherwise.
+
+- **Dev (all workspaces)**: `pnpm run dev`
+- **Dev (Next.js only)**: `pnpm --filter @naboweb/nextjs-app dev`
+- **Dev (Studio only)**: `pnpm run dev:studio`
 - **Build**: `pnpm run build`
-- **Lint**: `pnpm run lint`
-- **Test**: `pnpm run test` (uses Vitest)
-- **Test single file**: `pnpm run test <path-to-test-file>`
+- **Test**: `pnpm run test`
+- **Test single file**: `pnpm --filter @naboweb/nextjs-app test <path>`
 - **Coverage**: `pnpm run coverage`
-- **Type generation**: `pnpm run typegen` (generates Sanity schema types)
-- **Package manager**: Always use `pnpm`, never npm/yarn
+- **Type generation**: `pnpm run typegen` (runs `sanity schema extract && sanity typegen generate` in the studio workspace — re-run after any schema or GROQ query change)
+- **Lint**: temporarily disabled pending Next.js 16 ESLint migration
+- **Package manager**: Always `pnpm`, never npm/yarn
 
-## Architecture Overview
+## Monorepo Structure
 
-This is a Next.js 15 application using the App Router with TypeScript, serving as a housing cooperative website with authentication, content management, and member features.
-
-### Tech Stack
-- **Frontend**: Next.js 15 (App Router), React 19, TypeScript
-- **Styling**: HeroUI components + Tailwind CSS
-- **CMS**: Sanity (headless CMS with studio at `/studio`)
-- **Auth**: Clerk (Norwegian localization)
-- **Database**: Upstash Redis for caching
-- **Testing**: Vitest + React Testing Library
-
-### Project Structure
 ```
-src/
-├── app/
-│   ├── (with-navbar)/           # Layout group with navigation
-│   │   ├── (articles-and-pages)/ # Public content pages
-│   │   ├── (protected-routes)/   # Member-only pages
-│   │   └── sign-in|sign-up/     # Auth pages
-│   ├── api/                     # Next.js API routes
-│   ├── actions/                 # Server actions
-│   └── layout.tsx              # Root layout with providers
-├── components/
-│   ├── sections/               # Layout components (Navbar, Footer)
-│   ├── pages/                  # Page-specific components
-│   └── shared/                 # Reusable components
-├── sanity/
-│   ├── schemas/                # Sanity schema definitions
-│   └── lib/                    # Sanity client configuration
-└── lib/                        # Utilities and constants
+/ (root)
+├── studio/                  # Sanity Studio (standalone @naboweb/studio)
+│   ├── schemaTypes/        # Schema definitions for the studio
+│   └── sanity.config.ts
+├── nextjs-app/             # Next.js app (@naboweb/nextjs-app)
+│   └── src/
+│       ├── app/            # App Router pages, API routes, server actions
+│       ├── components/     # React components
+│       ├── sanity/         # Sanity client, queries, mirrored schema types
+│       ├── lib/            # Utilities, constants, role validation
+│       ├── hooks/          # Custom React hooks
+│       ├── types/          # TypeScript types (includes generated sanity.types.ts)
+│       └── test-utils/     # Vitest setup + mocks
+└── package.json            # Monorepo scripts
 ```
 
-### Key Features
-- **Protected Routes**: Member-only areas using Clerk authentication
-- **Message Board**: Internal communication system with comments
-- **Document Library**: Meeting minutes and official documents
-- **Content Management**: Pages and blog posts via Sanity CMS
-- **User Roles**: Admin controls for user management
-- **Draft Mode**: Content preview functionality
+## Key Architectural Patterns
 
-### Sanity Integration
-- Studio accessible at `/studio` route
-- Schema uses `defineType`, `defineField`, `defineArrayMember` helpers
-- Norwegian localization enabled
-- Live preview with Visual Editing
-- Separate read/write clients for different access levels
+### Sanity Dual Schema Setup
+Schemas exist in both `studio/schemaTypes/` (authoritative) and `nextjs-app/src/sanity/schemas/` (mirrored). Changes must be synchronized manually. After any schema change, run `pnpm run typegen` to regenerate `src/types/sanity.types.ts`.
 
-### Authentication & Authorization
-- Clerk handles authentication with Norwegian localization
-- Role-based access control for admin features
-- User subscription status tracking
-- Server actions for user management
+### Clerk Auth Middleware
+The middleware file is `nextjs-app/src/proxy.ts` (not `middleware.ts`). It protects `/min-side`, `/information`, `/user-admin-page`, and `/messageboard`. Layout-level checks in `(protected-routes)` enforce role-based access beyond basic auth.
 
-## Code Style Guidelines
+### Role-Based Access Control
+Roles (`"user"`, `"editor"`, `"admin"`) are stored in Clerk's `publicMetadata.roles` as an array. All new users must have at least the `"user"` role. Role validation lives in `src/lib/validateUserRoles.ts`. Auth checks are done inside server actions, not middleware.
 
-- **Language**: TypeScript everywhere, prefer `type` over `interface`
-- **Components**: Functional components, prefer React Server Components
-- **Naming**: PascalCase for components/types, camelCase for variables/functions
-- **Imports**: Use `@/` alias for absolute imports
-- **Styling**: Mobile-first responsive design with HeroUI + Tailwind
-- **Error Handling**: Try/catch for async operations, proper error boundaries
-- **Testing**: Vitest + React Testing Library (never Jest)
+### Sanity Clients
+Two clients in `src/sanity/lib/client.ts`:
+- `client`: read-only, stega enabled for Visual Editing overlays
+- `clientWithWriteAccess`: write token for mutations via API routes
 
-## Sanity Specific Rules
+### Caching Strategy
+The app uses the experimental Next.js `"use cache"` directive with `cacheLife()` and `cacheTag()` for long-lived caching. Draft mode disables cache and falls back to dynamic fetching. Revalidation is triggered by Sanity webhooks at `/api/revalidate` using `revalidateTag()` with `type:slug` patterns (not `revalidatePath`).
 
-- No single reference fields (always use arrays)
-- Use SCREAMING_SNAKE_CASE for GROQ query variables
-- Follow existing schema patterns in `/src/sanity/schemas/`
+### Server Actions Pattern
+All Clerk user operations live in `src/app/actions/`. They return discriminated union types: `{ success, status }` | `{ error, status }`. Auth and role checks happen inside each action.
 
-## Development Notes
+### GROQ Queries
+All queries live in `src/sanity/lib/queries.ts`. Use `defineQuery` from `groq` or `next-sanity` to wrap strings. Always use SCREAMING_SNAKE_CASE for query variable names. Each filter segment and projected attribute goes on its own line. Never interpolate dynamic values — use query parameters.
 
-- Norwegian UI text preferred where applicable
-- Follow existing patterns when adding new features
-- Use context7 MCP server for documentation when available
-- Always wrap client components in Suspense for better performance
+### Email Alerts + Cron
+`/api/send-email-alerts` detects `vercel-cron` user-agent for auth bypass. Sends batch emails via AWS SES (nodemailer). Upstash Redis tracks last run time and is also kept alive by `/api/ping-upstash` to prevent free-tier deletion.
+
+### Testing
+Vitest + React Testing Library. `src/test-utils/setup.ts` pre-mocks HeroUI components, Sanity image URLs, Next.js routing, server actions, and browser APIs. No real Next.js server or browser needed.
+
+## Code Style
+
+- TypeScript everywhere; prefer `type` over `interface`, avoid `enum` (use maps)
+- Functional components; minimize `"use client"`, `useEffect`, `useState` — favor RSCs
+- Directory names: lowercase with dashes (e.g. `components/auth-wizard`)
+- Named exports for components
+- Avoid classes; use functional and declarative patterns
+- Wrap client components in `Suspense` with a fallback
+- Norwegian UI text
+
+## Sanity Schema Conventions
+
+- Always use `defineType`, `defineField`, `defineArrayMember` helpers
+- Every `document`/`object` needs an `icon` from `@sanity/icons` and a customized `preview`
+- `string` fields with `options.list` of fewer than 5 items must use `options.layout: "radio"`
+- Every `image` field must have `options.hotspot: true`
+- No `boolean` fields — use a `string` field with `options.list` instead
+- Never use single `reference` fields — always wrap in an `array` of references
+- Use `groups` for schema types with many fields; use `fieldsets` with `options: {columns: 2}` for visually related pairs
+- Add `description` and `rule.warning()` / `rule.required().error()` where intent is non-obvious
+- Schema type with a custom input component: colocate it as `[typeName]/index.ts`
