@@ -18,6 +18,9 @@ export default async function EditBlogPostPage({ params }: Props) {
 
   if (!post) notFound();
 
+  type FeaturedImage = { asset?: { _ref?: string }; caption?: string; alt?: string };
+  const featuredImg = post.featuredImage as FeaturedImage | undefined;
+
   const initialData = {
     _id: post._id,
     title: post.title ?? "",
@@ -25,11 +28,11 @@ export default async function EditBlogPostPage({ params }: Props) {
     privatePost: post.privatePost ?? false,
     excerpt: post.excerpt ?? [],
     bodyText: post.bodyText ?? [],
-    featuredImage: post.featuredImage
+    featuredImage: featuredImg
       ? {
-          asset: { _ref: (post.featuredImage as { asset?: { _ref?: string } }).asset?._ref ?? "" },
-          caption: (post.featuredImage as { caption?: string }).caption,
-          alt: (post.featuredImage as { alt?: string }).alt,
+          asset: { _ref: featuredImg.asset?._ref ?? "" },
+          caption: featuredImg.caption,
+          alt: featuredImg.alt,
         }
       : undefined,
     author: (post.author ?? []).map((a: { _id?: string }) => ({

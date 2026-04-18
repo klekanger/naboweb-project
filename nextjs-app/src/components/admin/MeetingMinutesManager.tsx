@@ -12,6 +12,7 @@ import {
   X,
   XCircle,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { formatDate } from "@/lib/format-date";
 
@@ -55,6 +56,7 @@ const emptyForm: FormState = {
 };
 
 export default function MeetingMinutesManager({ initialMinutes }: Props) {
+  const router = useRouter();
   const [minutes, setMinutes] = useState<MinutesDoc[]>(initialMinutes);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -67,28 +69,24 @@ export default function MeetingMinutesManager({ initialMinutes }: Props) {
 
   const handleFileUpload = async (files: FileList) => {
     setIsUploading(true);
-    const uploaded: UploadedFile[] = [];
 
-    for (const file of Array.from(files)) {
-      const fd = new FormData();
-      fd.append("file", file);
+    const results = await Promise.all(
+      Array.from(files).map(async (file) => {
+        const fd = new FormData();
+        fd.append("file", file);
+        try {
+          const res = await fetch("/api/upload-file-to-sanity", { method: "POST", body: fd });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error);
+          return { assetId: data.assetId as string, fileName: (data.originalFilename ?? file.name) as string };
+        } catch (err) {
+          console.error("Upload failed for", file.name, err);
+          return null;
+        }
+      }),
+    );
 
-      try {
-        const res = await fetch("/api/upload-file-to-sanity", {
-          method: "POST",
-          body: fd,
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-        uploaded.push({
-          assetId: data.assetId,
-          fileName: data.originalFilename ?? file.name,
-        });
-      } catch (err) {
-        console.error("Upload failed for", file.name, err);
-      }
-    }
-
+    const uploaded = results.filter((r): r is UploadedFile => r !== null);
     setForm((f) => ({ ...f, uploadedFiles: [...f.uploadedFiles, ...uploaded] }));
     setIsUploading(false);
   };
@@ -123,7 +121,8 @@ export default function MeetingMinutesManager({ initialMinutes }: Props) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      window.location.reload();
+      cancelForm();
+      router.refresh();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Noe gikk galt.");
     } finally {

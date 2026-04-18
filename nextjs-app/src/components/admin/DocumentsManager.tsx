@@ -3,6 +3,7 @@
 import CustomButton from "@/components/CustomButton";
 import { Input, Label, TextField } from "@heroui/react";
 import { CheckCircle, FileText, Pencil, Plus, Trash2, Upload, X, XCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
 type Doc = {
@@ -39,6 +40,7 @@ const emptyForm: FormState = {
 };
 
 export default function DocumentsManager({ initialDocuments }: Props) {
+  const router = useRouter();
   const [documents, setDocuments] = useState<Doc[]>(initialDocuments);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -97,8 +99,8 @@ export default function DocumentsManager({ initialDocuments }: Props) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      // Refresh by refetching
-      window.location.reload();
+      cancelForm();
+      router.refresh();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Noe gikk galt.");
     } finally {
