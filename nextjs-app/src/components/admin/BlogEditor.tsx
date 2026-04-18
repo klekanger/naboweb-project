@@ -2,6 +2,7 @@
 
 import CustomButton from "@/components/CustomButton";
 import { urlForImage } from "@/sanity/lib/utils";
+import type { SanityReference } from "@/types/types";
 import { Input, Label, TextField } from "@heroui/react";
 import {
   defineSchema,
@@ -23,6 +24,10 @@ import {
   isActiveStyle,
 } from "@portabletext/editor/selectors";
 import {
+  getImageDimensions,
+  type SanityImageSource,
+} from "@sanity/asset-utils";
+import {
   AlignJustify,
   Bold,
   CheckCircle,
@@ -41,6 +46,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Image } from "sanity";
+import ImageBox from "../shared/ImageBox";
 
 type Author = {
   _id: string;
@@ -79,11 +85,7 @@ type ImageModalState = {
 
 // Schema for the body text editor
 const blogBodySchema = defineSchema({
-  decorators: [
-    { name: "strong" },
-    { name: "em" },
-    { name: "underline" },
-  ],
+  decorators: [{ name: "strong" }, { name: "em" }, { name: "underline" }],
   styles: [
     { name: "normal" },
     { name: "h2" },
@@ -100,25 +102,15 @@ const blogBodySchema = defineSchema({
 const renderStyle: RenderStyleFunction = (props) => {
   switch (props.schemaType.value) {
     case "h2":
-      return (
-        <h2 className="text-2xl font-bold mt-4 mb-2">{props.children}</h2>
-      );
+      return <h2>{props.children}</h2>;
     case "h3":
-      return (
-        <h3 className="text-xl font-semibold mt-3 mb-1">{props.children}</h3>
-      );
+      return <h3>{props.children}</h3>;
     case "h4":
-      return (
-        <h4 className="text-lg font-semibold mt-2 mb-1">{props.children}</h4>
-      );
+      return <h4>{props.children}</h4>;
     case "blockquote":
-      return (
-        <blockquote className="pl-4 border-l-4 border-gray-300 italic my-2 text-foreground/70">
-          {props.children}
-        </blockquote>
-      );
+      return <blockquote>{props.children}</blockquote>;
     default:
-      return <p className="my-1">{props.children}</p>;
+      return <p>{props.children}</p>;
   }
 };
 
@@ -135,9 +127,7 @@ const renderDecorator: RenderDecoratorFunction = (props) => {
   }
 };
 
-const renderListItem: RenderListItemFunction = (props) => (
-  <>{props.children}</>
-);
+const renderListItem: RenderListItemFunction = (props) => <>{props.children}</>;
 
 function slugify(text: string) {
   return text
@@ -350,7 +340,9 @@ export default function BlogEditor({ mode, initialData, authors }: Props) {
           className="w-full border border-border rounded-xl p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-brand-secondary/40 bg-background"
           placeholder="Kort beskrivelse av innlegget (vises i listevisning)…"
         />
-        <p className="text-xs text-foreground/50 mt-1">{excerpt.length} / 300 tegn</p>
+        <p className="text-xs text-foreground/50 mt-1">
+          {excerpt.length} / 300 tegn
+        </p>
       </div>
 
       {/* Featured image */}
@@ -392,7 +384,7 @@ export default function BlogEditor({ mode, initialData, authors }: Props) {
                   .url() ?? ""
               }
               alt="Toppbilde forhåndsvisning"
-              className="max-w-sm w-full rounded-lg border border-border"
+              className="w-full rounded-lg border border-border"
             />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <TextField
@@ -402,7 +394,10 @@ export default function BlogEditor({ mode, initialData, authors }: Props) {
                 <Label>Bildetekst</Label>
                 <Input type="text" placeholder="Valgfri bildetekst" />
               </TextField>
-              <TextField value={featuredImageAlt} onChange={setFeaturedImageAlt}>
+              <TextField
+                value={featuredImageAlt}
+                onChange={setFeaturedImageAlt}
+              >
                 <Label>Alt-tekst</Label>
                 <Input
                   type="text"
@@ -434,9 +429,7 @@ export default function BlogEditor({ mode, initialData, authors }: Props) {
       {/* Authors */}
       {authors.length > 0 && (
         <div>
-          <label className="text-sm font-medium block mb-2">
-            Forfatter(e)
-          </label>
+          <label className="text-sm font-medium block mb-2">Forfatter(e)</label>
           <div className="flex flex-wrap gap-2">
             {authors.map((a) => {
               const name = `${a.firstName ?? ""} ${a.lastName ?? ""}`.trim();
@@ -510,7 +503,7 @@ export default function BlogEditor({ mode, initialData, authors }: Props) {
               Ja, slett
             </CustomButton>
             <CustomButton
-              variant="ghost"
+              variant="secondary"
               onPress={() => setShowDeleteConfirm(false)}
             >
               Avbryt
@@ -526,7 +519,7 @@ export default function BlogEditor({ mode, initialData, authors }: Props) {
 function EditorInner({
   bodyValueRef,
 }: {
-  bodyValueRef: React.MutableRefObject<PortableTextBlock[]>;
+  bodyValueRef: React.RefObject<PortableTextBlock[]>;
 }) {
   const editor = useEditor();
   const [imageModal, setImageModal] = useState<ImageModalState | null>(null);
@@ -539,27 +532,25 @@ function EditorInner({
           alt?: string;
           caption?: string;
         };
-        const url = v.asset?._ref
-          ? urlForImage({ asset: v.asset } as Image)?.width(600).fit("max").url()
-          : null;
         const path = props.path as [{ _key: string }];
+        const hasImage = !!v.asset?._ref;
+        const dimensions = hasImage
+          ? getImageDimensions(v as SanityImageSource)
+          : null;
         return (
-          <figure
-            className={`my-4 relative rounded-lg ${
-              props.selected ? "ring-2 ring-brand-secondary" : ""
-            }`}
-          >
-            {url ? (
-              <img src={url} alt={v.alt ?? ""} className="max-w-full rounded-lg" />
+          <figure className="relative not-prose my-4">
+            {hasImage && dimensions ? (
+              <ImageBox
+                image={v as { asset?: SanityReference }}
+                alt={v.alt ?? ""}
+                caption={v.caption}
+                width={dimensions.width}
+                height={dimensions.height}
+              />
             ) : (
               <div className="p-3 bg-gray-100 text-xs text-gray-500 rounded">
                 [Bilde]
               </div>
-            )}
-            {v.caption && (
-              <figcaption className="text-xs text-foreground/60 mt-1 text-center">
-                {v.caption}
-              </figcaption>
             )}
             {props.selected && (
               <div className="absolute top-2 right-2 flex gap-1">
@@ -597,18 +588,21 @@ function EditorInner({
                 </button>
               </div>
             )}
-            {props.children}
           </figure>
         );
       }
-      return <div>{props.children}</div>;
+      return <>{props.children}</>;
     },
     // editor and setImageModal are stable references
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
-  const handleImageConfirm = (assetRef: string, alt: string, caption: string) => {
+  const handleImageConfirm = (
+    assetRef: string,
+    alt: string,
+    caption: string,
+  ) => {
     if (!imageModal) return;
 
     if (imageModal.mode === "insert") {
@@ -650,13 +644,15 @@ function EditorInner({
           setImageModal({ mode: "insert", assetRef: "", alt: "", caption: "" })
         }
       />
-      <PortableTextEditable
-        className="min-h-[320px] p-4 focus:outline-none"
-        renderStyle={renderStyle}
-        renderDecorator={renderDecorator}
-        renderBlock={renderBlock}
-        renderListItem={renderListItem}
-      />
+      <div className="prose lg:prose-xl max-w-none">
+        <PortableTextEditable
+          className="min-h-80 p-4 focus:outline-none"
+          renderStyle={renderStyle}
+          renderDecorator={renderDecorator}
+          renderBlock={renderBlock}
+          renderListItem={renderListItem}
+        />
+      </div>
       {imageModal && (
         <ImageModal
           mode={imageModal.mode}
@@ -742,17 +738,13 @@ function BlogBodyToolbar({ onInsertImage }: { onInsertImage: () => void }) {
       <ToolbarBtn
         label="Punktliste"
         isActive={isBullet}
-        onClick={() =>
-          send({ type: "list item.toggle", listItem: "bullet" })
-        }
+        onClick={() => send({ type: "list item.toggle", listItem: "bullet" })}
         icon={<List className="w-4 h-4" />}
       />
       <ToolbarBtn
         label="Nummerert liste"
         isActive={isNumber}
-        onClick={() =>
-          send({ type: "list item.toggle", listItem: "number" })
-        }
+        onClick={() => send({ type: "list item.toggle", listItem: "number" })}
         icon={<ListOrdered className="w-4 h-4" />}
       />
       <ToolbarBtn
@@ -836,7 +828,8 @@ function ImageModal({
     }
   };
 
-  const canConfirm = mode === "insert" ? !!assetRef && !isUploading : !isUploading;
+  const canConfirm =
+    mode === "insert" ? !!assetRef && !isUploading : !isUploading;
 
   const previewUrl = assetRef
     ? urlForImage({ asset: { _ref: assetRef } } as Image)
@@ -859,7 +852,7 @@ function ImageModal({
             <img
               src={previewUrl}
               alt="Forhåndsvisning"
-              className="max-w-full rounded-lg border border-border max-h-48 object-contain"
+              className="w-full rounded-lg border border-border max-h-48 object-contain"
             />
           )}
           <input
@@ -903,13 +896,9 @@ function ImageModal({
           >
             {mode === "insert" ? "Sett inn" : "Lagre"}
           </CustomButton>
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-foreground/70 border border-border rounded-xl hover:bg-default/10 transition-colors"
-          >
+          <CustomButton variant="secondary" onPress={onClose}>
             Avbryt
-          </button>
+          </CustomButton>
         </div>
       </div>
     </div>
