@@ -131,7 +131,17 @@ export default function DeleteUserModal({
               )}
             </section>
           </Modal.Body>
-          <Modal.Footer>
+          <Modal.Footer className="flex flex-wrap justify-end gap-2">
+            <CustomButton
+              variant="secondary"
+              onPress={() => {
+                setErrorToShow("");
+                setSuccessMessage("");
+                onClose();
+              }}
+            >
+              Avbryt
+            </CustomButton>
             {!errorToShow && !successMessage && (
               <CustomButton
                 variant="danger"
@@ -142,17 +152,6 @@ export default function DeleteUserModal({
                 Slett
               </CustomButton>
             )}
-
-            <CustomButton
-              variant="primary"
-              onPress={() => {
-                setErrorToShow("");
-                setSuccessMessage("");
-                onClose();
-              }}
-            >
-              Tilbake
-            </CustomButton>
           </Modal.Footer>
         </Modal.Dialog>
       </Modal.Container>

@@ -388,7 +388,7 @@ export default function MessagePage(props: MessagePageProps) {
 
                 <div className="flex gap-4">
                   <CustomButton
-                    variant="danger"
+                    variant="secondary"
                     onPress={() => setIsEditingMessage(false)}
                     className="no-underline"
                   >
@@ -471,7 +471,7 @@ export default function MessagePage(props: MessagePageProps) {
               <div className="flex justify-end gap-2 w-full">
                 {!modalCancelDisabled && (
                   <CustomButton
-                    variant="danger"
+                    variant="secondary"
                     onPress={() => {
                       resetModal();
                       modalForMessages.onClose();
@@ -481,10 +481,15 @@ export default function MessagePage(props: MessagePageProps) {
                   </CustomButton>
                 )}
                 <CustomButton
-                  variant="primary"
+                  variant={
+                    modalTitle === "Bekreft sletting" ? "danger" : "primary"
+                  }
+                  isPending={
+                    modalTitle === "Bekreft sletting" && isDeletingMessage
+                  }
                   onPress={() => {
                     if (modalTitle === "Bekreft sletting") {
-                      deleteMessageAfterConfirmation();
+                      void deleteMessageAfterConfirmation();
                     } else {
                       resetModal();
                       modalForMessages.onClose();

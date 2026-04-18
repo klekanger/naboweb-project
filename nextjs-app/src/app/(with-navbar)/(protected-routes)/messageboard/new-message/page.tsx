@@ -232,7 +232,7 @@ export default function NewMessage() {
             </p>
             <div className="flex gap-4 flex-col md:flex-row">
               <CustomButton
-                variant="danger"
+                variant="secondary"
                 href="/messageboard"
                 className="no-underline"
               >
@@ -294,7 +294,7 @@ export default function NewMessage() {
               <div className="flex justify-end gap-2 w-full">
                 {!modalCancelDisabled && (
                   <CustomButton
-                    variant="danger"
+                    variant="secondary"
                     onPress={() => {
                       resetModal();
                       modalForMessages.onClose();

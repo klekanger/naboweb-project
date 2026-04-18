@@ -228,7 +228,10 @@ export default function InviteUser() {
               <Modal.Heading>{inviteTitle}</Modal.Heading>
             </Modal.Header>
             <Modal.Body>{inviteBody}</Modal.Body>
-            <Modal.Footer>
+            <Modal.Footer className="flex flex-wrap justify-end gap-2">
+              <CustomButton variant="secondary" onPress={modalInviteUser.onClose}>
+                {inviteCancelText}
+              </CustomButton>
               <CustomButton
                 variant="primary"
                 onPress={() => {
@@ -237,9 +240,6 @@ export default function InviteUser() {
                 }}
               >
                 {inviteOkText}
-              </CustomButton>
-              <CustomButton variant="danger" onPress={modalInviteUser.onClose}>
-                {inviteCancelText}
               </CustomButton>
             </Modal.Footer>
           </Modal.Dialog>

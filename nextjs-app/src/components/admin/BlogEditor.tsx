@@ -3,7 +3,15 @@
 import CustomButton from "@/components/CustomButton";
 import { urlForImage } from "@/sanity/lib/utils";
 import type { SanityReference } from "@/types/types";
-import { Avatar, Input, Label, TextField, TextArea } from "@heroui/react";
+import {
+  Avatar,
+  Input,
+  Label,
+  Modal,
+  Spinner,
+  TextField,
+  TextArea,
+} from "@heroui/react";
 import {
   defineSchema,
   EditorProvider,
@@ -201,6 +209,32 @@ function textToBlocks(text: string): PortableTextBlock[] {
   return [block];
 }
 
+function getInitialExcerptPlainText(data: BlogPostData | undefined): string {
+  const first = data?.excerpt?.[0] as
+    | { children?: Array<{ text?: string }> }
+    | undefined;
+  return first?.children?.[0]?.text ?? "";
+}
+
+type EditFormSnapshotFields = {
+  title: string;
+  slug: string;
+  privatePost: boolean;
+  excerpt: string;
+  featuredImageId: string;
+  featuredImageCaption: string;
+  featuredImageAlt: string;
+  authorIds: string[];
+  bodyJson: string;
+};
+
+function serializeEditFormSnapshot(s: EditFormSnapshotFields): string {
+  return JSON.stringify({
+    ...s,
+    authorIds: [...s.authorIds].sort(),
+  });
+}
+
 function uploadErrorMessage(data: unknown): string {
   if (data && typeof data === "object" && "error" in data) {
     const err = (data as { error: unknown }).error;
@@ -326,12 +360,75 @@ export default function BlogEditor({
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteModalError, setDeleteModalError] = useState("");
+  const [showSaveConfirm, setShowSaveConfirm] = useState(false);
+  const [bodyChangeGeneration, setBodyChangeGeneration] = useState(0);
   const [result, setResult] = useState<"success" | "error" | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const imageInputRef = useRef<HTMLInputElement>(null);
   const bodyValueRef = useRef<PortableTextBlock[]>(
     (initialData?.bodyText as PortableTextBlock[]) ?? [],
   );
+
+  const initialEditSnapshotString = useMemo(() => {
+    if (mode !== "edit" || !initialData) return "";
+    return serializeEditFormSnapshot({
+      title: initialData.title ?? "",
+      slug: initialData.slug ?? "",
+      privatePost: initialData.privatePost ?? false,
+      excerpt: getInitialExcerptPlainText(initialData),
+      featuredImageId: initialData.featuredImage?.asset?._ref ?? "",
+      featuredImageCaption: initialData.featuredImage?.caption ?? "",
+      featuredImageAlt: initialData.featuredImage?.alt ?? "",
+      authorIds:
+        initialData.author
+          ?.map((a) => a._id)
+          .filter((id): id is string => Boolean(id)) ?? [],
+      bodyJson: JSON.stringify(
+        (initialData.bodyText as PortableTextBlock[]) ?? [],
+      ),
+    });
+  }, [mode, initialData]);
+
+  const [postSaveEditSnapshot, setPostSaveEditSnapshot] = useState<
+    string | null
+  >(null);
+
+  useEffect(() => {
+    setPostSaveEditSnapshot(null);
+  }, [initialEditSnapshotString]);
+
+  const editBaselineSnapshot =
+    mode === "edit" ? postSaveEditSnapshot ?? initialEditSnapshotString : "";
+
+  const currentEditSnapshotString = useMemo(() => {
+    if (mode !== "edit") return "";
+    return serializeEditFormSnapshot({
+      title,
+      slug,
+      privatePost,
+      excerpt,
+      featuredImageId,
+      featuredImageCaption,
+      featuredImageAlt,
+      authorIds: selectedAuthorIds,
+      bodyJson: JSON.stringify(bodyValueRef.current),
+    });
+  }, [
+    mode,
+    title,
+    slug,
+    privatePost,
+    excerpt,
+    featuredImageId,
+    featuredImageCaption,
+    featuredImageAlt,
+    selectedAuthorIds,
+    bodyChangeGeneration,
+  ]);
+
+  const isEditDirty =
+    mode === "edit" && currentEditSnapshotString !== editBaselineSnapshot;
 
   const handleFeaturedImageUpload = async (file: File) => {
     setIsUploading(true);
@@ -393,6 +490,21 @@ export default function BlogEditor({
       if (!res.ok) throw new Error(data.error);
 
       setResult("success");
+      if (mode === "edit") {
+        setPostSaveEditSnapshot(
+          serializeEditFormSnapshot({
+            title,
+            slug,
+            privatePost,
+            excerpt,
+            featuredImageId,
+            featuredImageCaption,
+            featuredImageAlt,
+            authorIds: selectedAuthorIds,
+            bodyJson: JSON.stringify(bodyValueRef.current),
+          }),
+        );
+      }
       // setTimeout(() => router.push("/admin/blog"), 1200);
     } catch (err: unknown) {
       setErrorMessage(
@@ -407,6 +519,7 @@ export default function BlogEditor({
   const handleDelete = async () => {
     if (!initialData?._id) return;
     setIsDeleting(true);
+    setDeleteModalError("");
 
     try {
       const res = await fetch("/api/sanity/blog", {
@@ -417,12 +530,26 @@ export default function BlogEditor({
       if (!res.ok) throw new Error((await res.json()).error);
       router.push("/admin/blog");
     } catch (err: unknown) {
-      setErrorMessage(
+      setDeleteModalError(
         err instanceof Error ? err.message : "Noe gikk galt ved sletting.",
       );
       setIsDeleting(false);
-      setShowDeleteConfirm(false);
     }
+  };
+
+  const closeDeleteModal = () => {
+    setShowDeleteConfirm(false);
+    setDeleteModalError("");
+  };
+
+  const requestSave = () => {
+    if (mode === "edit" && !isEditDirty) return;
+    setShowSaveConfirm(true);
+  };
+
+  const confirmSave = () => {
+    setShowSaveConfirm(false);
+    void handleSave();
   };
 
   return (
@@ -557,7 +684,14 @@ export default function BlogEditor({
               initialValue: bodyValueRef.current,
             }}
           >
-            <EditorInner bodyValueRef={bodyValueRef} />
+            <EditorInner
+              bodyValueRef={bodyValueRef}
+              onBodyChange={
+                mode === "edit"
+                  ? () => setBodyChangeGeneration((n) => n + 1)
+                  : undefined
+              }
+            />
           </EditorProvider>
         </div>
       </div>
@@ -655,7 +789,11 @@ export default function BlogEditor({
 
       {/* Actions */}
       <div className="flex items-center gap-4 pt-2 flex-wrap">
-        <CustomButton onPress={handleSave} isPending={isSaving}>
+        <CustomButton
+          onPress={requestSave}
+          isPending={isSaving}
+          isDisabled={mode === "edit" && !isEditDirty}
+        >
           {mode === "create" ? "Publiser innlegg" : "Lagre endringer"}
         </CustomButton>
 
@@ -666,37 +804,124 @@ export default function BlogEditor({
           </span>
         )}
 
-        {mode === "edit" && !showDeleteConfirm && (
+        {mode === "edit" && (
           <CustomButton
             variant="danger"
-            onPress={() => setShowDeleteConfirm(true)}
+            onPress={() => {
+              setDeleteModalError("");
+              setShowDeleteConfirm(true);
+            }}
           >
             <Trash2 className="h-4 w-4 mr-1" />
             Slett innlegg
           </CustomButton>
         )}
-
-        {showDeleteConfirm && (
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-red-600">
-              Er du sikker?
-            </span>
-            <CustomButton
-              variant="danger"
-              isPending={isDeleting}
-              onPress={handleDelete}
-            >
-              Ja, slett
-            </CustomButton>
-            <CustomButton
-              variant="secondary"
-              onPress={() => setShowDeleteConfirm(false)}
-            >
-              Avbryt
-            </CustomButton>
-          </div>
-        )}
       </div>
+
+      {mode === "edit" && (
+        <Modal.Backdrop
+          isOpen={showDeleteConfirm}
+          onOpenChange={(open) => {
+            if (!open) closeDeleteModal();
+          }}
+          variant="blur"
+        >
+          <Modal.Container>
+            <Modal.Dialog className="sm:max-w-md">
+              <Modal.CloseTrigger />
+              <Modal.Header>
+                <Modal.Heading className="text-brand-danger">
+                  Slett innlegg
+                </Modal.Heading>
+              </Modal.Header>
+              <Modal.Body>
+                <section>
+                  {deleteModalError && (
+                    <div
+                      className="bg-brand-danger text-white p-4 rounded-xl mb-4"
+                      role="alert"
+                    >
+                      {deleteModalError}
+                    </div>
+                  )}
+
+                  {isDeleting && (
+                    <Spinner className="absolute ml-8 w-4 h-4" size="md" />
+                  )}
+
+                  {!deleteModalError && !isDeleting && (
+                    <div className="flex flex-col gap-4">
+                      <div>
+                        <div>
+                          <strong>Tittel: </strong>
+                          {title.trim() || "—"}
+                        </div>
+                        <div>
+                          <strong>Slug: </strong> {slug.trim() || "—"}
+                        </div>
+                      </div>
+
+                      <p>
+                        Er du helt sikker på at du vil slette{" "}
+                        {title.trim() || slug.trim() ? (
+                          <>
+                            innlegget <em>{title.trim() || slug.trim()}</em>
+                          </>
+                        ) : (
+                          <em>dette innlegget</em>
+                        )}
+                        ? Denne operasjonen kan ikke angres!
+                      </p>
+                    </div>
+                  )}
+                </section>
+              </Modal.Body>
+              <Modal.Footer className="flex flex-wrap justify-end gap-2">
+                <CustomButton variant="secondary" onPress={closeDeleteModal}>
+                  Avbryt
+                </CustomButton>
+                {!deleteModalError && (
+                  <CustomButton
+                    variant="danger"
+                    isPending={isDeleting}
+                    onPress={() => void handleDelete()}
+                  >
+                    Slett
+                  </CustomButton>
+                )}
+              </Modal.Footer>
+            </Modal.Dialog>
+          </Modal.Container>
+        </Modal.Backdrop>
+      )}
+
+      <Modal.Backdrop
+        isOpen={showSaveConfirm}
+        onOpenChange={(open) => {
+          if (!open) setShowSaveConfirm(false);
+        }}
+        variant="blur"
+      >
+        <Modal.Container>
+          <Modal.Dialog className="sm:max-w-md">
+            <Modal.CloseTrigger />
+            <Modal.Header>
+              <Modal.Heading>Er du sikker?</Modal.Heading>
+            </Modal.Header>
+            <Modal.Footer className="flex flex-wrap justify-end gap-2">
+              <CustomButton
+                variant="secondary"
+                onPress={() => setShowSaveConfirm(false)}
+              >
+                Avbryt
+              </CustomButton>
+              <CustomButton onPress={confirmSave} isPending={isSaving}>
+                Bekreft
+              </CustomButton>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </div>
   );
 }
@@ -704,8 +929,10 @@ export default function BlogEditor({
 // Must live inside EditorProvider to access useEditor()
 function EditorInner({
   bodyValueRef,
+  onBodyChange,
 }: {
   bodyValueRef: React.RefObject<PortableTextBlock[]>;
+  onBodyChange?: () => void;
 }) {
   const editor = useEditor();
   const [imageModal, setImageModal] = useState<ImageModalState | null>(null);
@@ -864,6 +1091,7 @@ function EditorInner({
         on={(event) => {
           if (event.type === "mutation" && event.value) {
             bodyValueRef.current = event.value;
+            onBodyChange?.();
           }
         }}
       />
