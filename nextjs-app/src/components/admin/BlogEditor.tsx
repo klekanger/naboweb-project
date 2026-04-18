@@ -655,27 +655,28 @@ function EditorInner({
       // block objects before fields are applied; block.set is authoritative).
       queueMicrotask(() => {
         const snap = editor.getSnapshot();
-        const needsPatch = (node: PortableTextBlock) => {
+        /** Only patch placeholders or the row for this upload (same ref, alt/caption drift). */
+        const isPatchTarget = (node: PortableTextBlock) => {
           if (node._type !== "image") return false;
           const n = node as {
             asset?: { _ref?: string };
             alt?: string;
             caption?: string;
           };
-          return (
-            n.asset?._ref !== assetRef ||
-            n.alt !== alt ||
-            n.caption !== caption
-          );
+          const ref = n.asset?._ref ?? "";
+          if (ref && ref !== assetRef) return false;
+          if (!ref) return true;
+          return n.alt !== alt || n.caption !== caption;
         };
 
         const focused = getFocusBlockObject(snap);
         let path: [{ _key: string }] | undefined;
-        if (focused && needsPatch(focused.node)) path = focused.path;
+        if (focused && isPatchTarget(focused.node)) path = focused.path;
         if (!path) {
           for (let i = snap.context.value.length - 1; i >= 0; i--) {
             const b = snap.context.value[i];
-            if (b._type === "image" && needsPatch(b)) {
+            if (b._type !== "image") continue;
+            if (isPatchTarget(b)) {
               path = [{ _key: b._key }];
               break;
             }
