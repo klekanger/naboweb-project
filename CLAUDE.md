@@ -67,6 +67,10 @@ All queries live in `src/sanity/lib/queries.ts`. Use `defineQuery` from `groq` o
 ### Testing
 Vitest + React Testing Library. `src/test-utils/setup.ts` pre-mocks HeroUI components, Sanity image URLs, Next.js routing, server actions, and browser APIs. No real Next.js server or browser needed.
 
+## UI Components
+
+Use HeroUI (`@heroui/react`) for all form controls and UI elements where a matching component exists — `Input`, `TextArea`, `Label`, `TextField`, `Checkbox`, `Button`, `Card`, `Modal`, etc. Prefer HeroUI over plain HTML elements or custom styling for these primitives.
+
 ## Code Style
 
 - TypeScript everywhere; prefer `type` over `interface`, avoid `enum` (use maps)
