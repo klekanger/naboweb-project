@@ -242,6 +242,18 @@ body {
     }
   }
 
+  .textarea {
+    @apply bg-default/10;
+
+    @media (hover: hover) {
+
+      &:hover:not(:focus):not(:focus-visible),
+      &[data-hovered="true"]:not([data-focused="true"]):not([data-focus-visible="true"]) {
+        @apply bg-default/20;
+      }
+    }
+  }
+
   /* Override secondary button to use warning colors (yellow background, black text) */
   .button--secondary {
     @apply bg-warning text-warning-foreground;

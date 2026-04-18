@@ -3,7 +3,7 @@
 import CustomButton from "@/components/CustomButton";
 import { urlForImage } from "@/sanity/lib/utils";
 import type { SanityReference } from "@/types/types";
-import { Input, Label, TextField } from "@heroui/react";
+import { Input, Label, TextField, TextArea } from "@heroui/react";
 import {
   defineSchema,
   EditorProvider,
@@ -331,15 +331,14 @@ export default function BlogEditor({ mode, initialData, authors }: Props) {
 
       {/* Excerpt */}
       <div>
-        <label className="text-sm font-medium block mb-1">Sammendrag</label>
-        <textarea
-          value={excerpt}
-          onChange={(e) => setExcerpt(e.target.value)}
-          maxLength={300}
-          rows={3}
-          className="w-full border border-border rounded-xl p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-brand-secondary/40 bg-background"
-          placeholder="Kort beskrivelse av innlegget (vises i listevisning)…"
-        />
+        <TextField value={excerpt} onChange={setExcerpt}>
+          <Label>Sammendrag</Label>
+          <TextArea
+            maxLength={300}
+            rows={3}
+            placeholder="Kort beskrivelse av innlegget (vises i listevisning)…"
+          />
+        </TextField>
         <p className="text-xs text-foreground/50 mt-1">
           {excerpt.length} / 300 tegn
         </p>
