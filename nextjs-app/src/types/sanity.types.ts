@@ -1579,6 +1579,147 @@ export type MeetingMinutesIdsResult = Array<{
   _id: string;
 }>;
 
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
+// Variable: documentMenuAdminQuery
+// Query: *[_type=="documentMenu"][0] {    _id,    button1Text,    button2Text,    button3Text,    button4Text,    "file1": button1File->{_id, title, "url": otherDocument.asset->url},    "file2": button2File->{_id, title, "url": otherDocument.asset->url},    "file3": button3File->{_id, title, "url": otherDocument.asset->url},    "file4": button4File->{_id, title, "url": otherDocument.asset->url},  }
+export type DocumentMenuAdminQueryResult = {
+  _id: string;
+  button1Text: string | null;
+  button2Text: string | null;
+  button3Text: string | null;
+  button4Text: string | null;
+  file1: {
+    _id: string;
+    title: string | null;
+    url: string | null;
+  } | null;
+  file2: {
+    _id: string;
+    title: string | null;
+    url: string | null;
+  } | null;
+  file3: {
+    _id: string;
+    title: string | null;
+    url: string | null;
+  } | null;
+  file4: {
+    _id: string;
+    title: string | null;
+    url: string | null;
+  } | null;
+} | null;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
+// Variable: allFileDocumentsQuery
+// Query: *[_type=="fileOtherDocuments"] | order(title asc) {    _id,    title,    "url": otherDocument.asset->url  }
+export type AllFileDocumentsQueryResult = Array<{
+  _id: string;
+  title: string | null;
+  url: string | null;
+}>;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
+// Variable: allAuthorsQuery
+// Query: *[_type=="authors"] | order(firstName asc) {    _id,    firstName,    lastName  }
+export type AllAuthorsQueryResult = Array<{
+  _id: string;
+  firstName: string | null;
+  lastName: string | null;
+}>;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
+// Variable: allBlogPostsAdminQuery
+// Query: *[_type=="blogPost"] | order(_createdAt desc) {    _id,    _createdAt,    _updatedAt,    title,    "slug": slug.current,    privatePost,    excerpt  }
+export type AllBlogPostsAdminQueryResult = Array<{
+  _id: string;
+  _createdAt: string;
+  _updatedAt: string;
+  title: string | null;
+  slug: string | null;
+  privatePost: boolean | null;
+  excerpt: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: "span";
+          _key: string;
+        }>;
+        style?:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
+        listItem?: "bullet" | "number";
+        markDefs?: Array<{
+          href?: string;
+          _type: "link";
+          _key: string;
+        }>;
+        level?: number;
+        _type: "block";
+        _key: string;
+      }
+    | {
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        _type: "image";
+        _key: string;
+      }
+  > | null;
+}>;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
+// Variable: allOtherDocumentsAdminQuery
+// Query: *[_type=="fileOtherDocuments"] | order(_createdAt desc) {    _id,    _createdAt,    _updatedAt,    title,    description,    tags,    "document": otherDocument{      asset->{url, _id, originalFilename, extension, size}    }  }
+export type AllOtherDocumentsAdminQueryResult = Array<{
+  _id: string;
+  _createdAt: string;
+  _updatedAt: string;
+  title: string | null;
+  description: string | null;
+  tags: Array<string> | null;
+  document: {
+    asset: {
+      url: string | null;
+      _id: string;
+      originalFilename: string | null;
+      extension: string | null;
+      size: number | null;
+    } | null;
+  } | null;
+}>;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
+// Variable: allMeetingMinutesAdminQuery
+// Query: *[_type=="fileMeetingMinutes"] | order(_createdAt desc) | order(meetingDate desc) {    _id,    _createdAt,    _updatedAt,    title,    description,    meetingDate,    meetingPlace,    tags,    meetingDocuments[]{asset->{url, _id, originalFilename, extension, size}}  }
+export type AllMeetingMinutesAdminQueryResult = Array<{
+  _id: string;
+  _createdAt: string;
+  _updatedAt: string;
+  title: string | null;
+  description: string | null;
+  meetingDate: string | null;
+  meetingPlace: string | null;
+  tags: Array<string> | null;
+  meetingDocuments: Array<{
+    asset: {
+      url: string | null;
+      _id: string;
+      originalFilename: string | null;
+      extension: string | null;
+      size: number | null;
+    } | null;
+  }> | null;
+}>;
+
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
@@ -1612,5 +1753,11 @@ declare module "@sanity/client" {
     '\n  *[_type == "blogPost" && defined(slug.current) && privatePost == true]\n  {"slug": slug.current}\n': PrivateBlogSlugsResult;
     '\n  *[_type == "message" && defined(slug.current)]\n  {"slug": slug.current}\n': MessageSlugsResult;
     '\n  *[_type == "fileMeetingMinutes"]{_id}\n': MeetingMinutesIdsResult;
+    '\n  *[_type=="documentMenu"][0] {\n    _id,\n    button1Text,\n    button2Text,\n    button3Text,\n    button4Text,\n    "file1": button1File->{_id, title, "url": otherDocument.asset->url},\n    "file2": button2File->{_id, title, "url": otherDocument.asset->url},\n    "file3": button3File->{_id, title, "url": otherDocument.asset->url},\n    "file4": button4File->{_id, title, "url": otherDocument.asset->url},\n  }\n': DocumentMenuAdminQueryResult;
+    '\n  *[_type=="fileOtherDocuments"] | order(title asc) {\n    _id,\n    title,\n    "url": otherDocument.asset->url\n  }\n': AllFileDocumentsQueryResult;
+    '\n  *[_type=="authors"] | order(firstName asc) {\n    _id,\n    firstName,\n    lastName\n  }\n': AllAuthorsQueryResult;
+    '\n  *[_type=="blogPost"] | order(_createdAt desc) {\n    _id,\n    _createdAt,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    privatePost,\n    excerpt\n  }\n': AllBlogPostsAdminQueryResult;
+    '\n  *[_type=="fileOtherDocuments"] | order(_createdAt desc) {\n    _id,\n    _createdAt,\n    _updatedAt,\n    title,\n    description,\n    tags,\n    "document": otherDocument{\n      asset->{url, _id, originalFilename, extension, size}\n    }\n  }\n': AllOtherDocumentsAdminQueryResult;
+    '\n  *[_type=="fileMeetingMinutes"] | order(_createdAt desc) | order(meetingDate desc) {\n    _id,\n    _createdAt,\n    _updatedAt,\n    title,\n    description,\n    meetingDate,\n    meetingPlace,\n    tags,\n    meetingDocuments[]{asset->{url, _id, originalFilename, extension, size}}\n  }\n': AllMeetingMinutesAdminQueryResult;
   }
 }

@@ -1,5 +1,5 @@
 import { currentUser } from "@clerk/nextjs/server";
-import { clientWithWriteAccess } from "@/sanity/lib/client";
+import { client, clientWithWriteAccess } from "@/sanity/lib/client";
 import { type NextRequest, NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import type { PortableTextBlock } from "@portabletext/types";
@@ -17,6 +17,15 @@ type BlogPostBody = {
   authorIds?: string[];
 };
 
+function authorRefsFromIds(ids: string[]) {
+  const unique = [...new Set(ids)];
+  return unique.map((id) => ({
+    _type: "reference" as const,
+    _ref: id,
+    _key: id,
+  }));
+}
+
 function revalidateBlog(slug: string) {
   revalidateTag("blogPost", "max");
   if (slug) revalidateTag(`blogPost:${slug}`, "max");
@@ -30,20 +39,29 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
+  if (!user?.id) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+
+  const clerkUserId = user.id;
+  const isAdmin = roles.includes("admin");
   const body: BlogPostBody = await request.json();
-  const { title, slug, privatePost, excerpt, bodyText, featuredImageId, featuredImageCaption, featuredImageAlt, authorIds } = body;
+  const { title, slug, privatePost, excerpt, bodyText, featuredImageId, featuredImageCaption, featuredImageAlt } = body;
 
   if (!title || !slug || !bodyText) {
     return NextResponse.json({ error: "title, slug and bodyText are required" }, { status: 400 });
   }
 
+  const privatePostToSet = isAdmin ? (privatePost ?? false) : false;
+
   const doc: Record<string, unknown> = {
     _type: "blogPost",
     title,
     slug: { _type: "slug", current: slug },
-    privatePost: privatePost ?? false,
+    privatePost: privatePostToSet,
     excerpt: excerpt ?? [],
     bodyText,
+    author: authorRefsFromIds([clerkUserId]),
   };
 
   if (featuredImageId) {
@@ -53,14 +71,6 @@ export async function POST(request: NextRequest) {
       ...(featuredImageCaption ? { caption: featuredImageCaption } : {}),
       ...(featuredImageAlt ? { alt: featuredImageAlt } : {}),
     };
-  }
-
-  if (authorIds && authorIds.length > 0) {
-    doc.author = authorIds.map((id) => ({
-      _type: "reference",
-      _ref: id,
-      _key: id,
-    }));
   }
 
   try {
@@ -81,19 +91,67 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
+  if (!user?.id) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+
+  const clerkUserId = user.id;
+  const isAdmin = roles.includes("admin");
   const body: BlogPostBody = await request.json();
-  const { _id, title, slug, privatePost, excerpt, bodyText, featuredImageId, featuredImageCaption, featuredImageAlt, authorIds } = body;
+  const {
+    _id,
+    title,
+    slug,
+    privatePost,
+    excerpt,
+    bodyText,
+    featuredImageId,
+    featuredImageCaption,
+    featuredImageAlt,
+    authorIds,
+  } = body;
 
   if (!_id) {
     return NextResponse.json({ error: "_id is required for update" }, { status: 400 });
   }
 
+  let privatePostToSet: boolean;
+  if (isAdmin) {
+    privatePostToSet = privatePost ?? false;
+  } else {
+    const existingPrivate = await client.fetch<boolean | null>(
+      `*[_type == "blogPost" && _id == $_id][0].privatePost`,
+      { _id },
+    );
+    privatePostToSet = Boolean(existingPrivate);
+  }
+
+  const existingAuthorRefs =
+    (await client.fetch<string[]>(
+      `coalesce(*[_type == "blogPost" && _id == $_id][0].author[]._ref, [])`,
+      { _id },
+    )) ?? [];
+
+  if (!authorIds || authorIds.length === 0) {
+    return NextResponse.json(
+      { error: "Minst én forfatter er påkrevd" },
+      { status: 400 },
+    );
+  }
+
+  const uniqueAuthorIds = [...new Set(authorIds)];
+  const allowedAuthorIds = new Set([...existingAuthorRefs, clerkUserId]);
+  if (!uniqueAuthorIds.every((id) => allowedAuthorIds.has(id))) {
+    return NextResponse.json({ error: "Ugyldig forfattervalg" }, { status: 400 });
+  }
+
   const patch: Record<string, unknown> = {
     title,
     slug: { _type: "slug", current: slug },
-    privatePost: privatePost ?? false,
+    privatePost: privatePostToSet,
     excerpt: excerpt ?? [],
     bodyText,
+    author: authorRefsFromIds(uniqueAuthorIds),
   };
 
   if (featuredImageId) {
@@ -103,14 +161,6 @@ export async function PATCH(request: NextRequest) {
       ...(featuredImageCaption ? { caption: featuredImageCaption } : {}),
       ...(featuredImageAlt ? { alt: featuredImageAlt } : {}),
     };
-  }
-
-  if (authorIds !== undefined) {
-    patch.author = authorIds.map((id) => ({
-      _type: "reference",
-      _ref: id,
-      _key: id,
-    }));
   }
 
   try {

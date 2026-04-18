@@ -3,7 +3,7 @@
 import CustomButton from "@/components/CustomButton";
 import { urlForImage } from "@/sanity/lib/utils";
 import type { SanityReference } from "@/types/types";
-import { Input, Label, TextField, TextArea } from "@heroui/react";
+import { Avatar, Input, Label, TextField, TextArea } from "@heroui/react";
 import {
   defineSchema,
   EditorProvider,
@@ -42,18 +42,13 @@ import {
   Pencil,
   Trash2,
   UnderlineIcon,
+  User,
   XCircle,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Image } from "sanity";
 import ImageBox from "../shared/ImageBox";
-
-type Author = {
-  _id: string;
-  firstName: string | null;
-  lastName: string | null;
-};
 
 export type BlogPostData = {
   _id?: string;
@@ -67,13 +62,23 @@ export type BlogPostData = {
     caption?: string;
     alt?: string;
   };
-  author?: Array<{ _id: string }>;
+  author?: Array<{
+    _id: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    email?: string | null;
+    portraitUrl?: string | null;
+  }>;
 };
 
 type Props = {
   mode: "create" | "edit";
   initialData?: BlogPostData;
-  authors: Author[];
+  currentAuthorId: string;
+  authorDisplayName: string;
+  currentUserEmail?: string;
+  currentAuthorPortraitUrl?: string | null;
+  isAdmin: boolean;
 };
 
 type ImageModalState = {
@@ -155,6 +160,29 @@ function slugify(text: string) {
     .trim();
 }
 
+function normalizeComparableName(value: string) {
+  return value.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function AuthorAvatarInline({
+  portraitUrl,
+  displayName,
+}: {
+  portraitUrl?: string | null;
+  displayName: string;
+}) {
+  return (
+    <Avatar size="md" className="shrink-0 bg-brand-primary text-brand-white">
+      {portraitUrl ? (
+        <Avatar.Image src={portraitUrl} alt={displayName} />
+      ) : null}
+      <Avatar.Fallback className="bg-brand-primary text-brand-white">
+        <User className="size-6 text-foreground/60" aria-hidden />
+      </Avatar.Fallback>
+    </Avatar>
+  );
+}
+
 function textToBlocks(text: string): PortableTextBlock[] {
   if (!text.trim()) return [];
   const span: PortableTextSpan = {
@@ -203,9 +231,76 @@ async function uploadImageToSanity(file: File): Promise<string> {
   return imageId;
 }
 
-export default function BlogEditor({ mode, initialData, authors }: Props) {
+export default function BlogEditor({
+  mode,
+  initialData,
+  currentAuthorId,
+  authorDisplayName,
+  currentUserEmail = "",
+  currentAuthorPortraitUrl = null,
+  isAdmin,
+}: Props) {
   const router = useRouter();
-  const initialAuthorIds = initialData?.author?.map((a) => a._id) ?? [];
+
+  const [selectedAuthorIds, setSelectedAuthorIds] = useState<string[]>(() => {
+    if (mode !== "edit") return [];
+    return (
+      initialData?.author
+        ?.map((a) => a._id)
+        .filter((id): id is string => Boolean(id)) ?? []
+    );
+  });
+
+  const authorNameById = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const a of initialData?.author ?? []) {
+      if (!a._id) continue;
+      const n = [a.firstName, a.lastName].filter(Boolean).join(" ").trim();
+      m.set(a._id, n || a._id);
+    }
+    if (currentAuthorId) m.set(currentAuthorId, authorDisplayName);
+    return m;
+  }, [initialData?.author, currentAuthorId, authorDisplayName]);
+
+  const authorPortraitById = useMemo(() => {
+    const m = new Map<string, string | null | undefined>();
+    for (const a of initialData?.author ?? []) {
+      if (a._id) m.set(a._id, a.portraitUrl ?? null);
+    }
+    if (currentAuthorId && currentAuthorPortraitUrl) {
+      m.set(currentAuthorId, currentAuthorPortraitUrl);
+    }
+    return m;
+  }, [initialData?.author, currentAuthorId, currentAuthorPortraitUrl]);
+
+  const isCurrentUserAmongAuthors = useMemo(() => {
+    const emailNorm = currentUserEmail.trim().toLowerCase();
+    const clerkNameNorm = normalizeComparableName(authorDisplayName);
+
+    for (const id of selectedAuthorIds) {
+      if (currentAuthorId && id === currentAuthorId) return true;
+
+      const row = initialData?.author?.find((a) => a._id === id);
+      if (!row) continue;
+
+      const rowEmail = row.email?.trim().toLowerCase();
+      if (emailNorm && rowEmail && rowEmail === emailNorm) return true;
+
+      const sanityNameNorm = normalizeComparableName(
+        [row.firstName, row.lastName].filter(Boolean).join(" "),
+      );
+      if (sanityNameNorm && clerkNameNorm && sanityNameNorm === clerkNameNorm) {
+        return true;
+      }
+    }
+    return false;
+  }, [
+    selectedAuthorIds,
+    currentAuthorId,
+    currentUserEmail,
+    authorDisplayName,
+    initialData?.author,
+  ]);
 
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [slug, setSlug] = useState(initialData?.slug ?? "");
@@ -218,8 +313,6 @@ export default function BlogEditor({ mode, initialData, authors }: Props) {
       | undefined;
     return first?.children?.[0]?.text ?? "";
   });
-  const [selectedAuthorIds, setSelectedAuthorIds] =
-    useState<string[]>(initialAuthorIds);
   const [featuredImageId, setFeaturedImageId] = useState(
     initialData?.featuredImage?.asset?._ref ?? "",
   );
@@ -266,6 +359,10 @@ export default function BlogEditor({ mode, initialData, authors }: Props) {
       setErrorMessage("Brødtekst er påkrevd.");
       return;
     }
+    if (mode === "edit" && selectedAuthorIds.length === 0) {
+      setErrorMessage("Minst én forfatter er påkrevd.");
+      return;
+    }
 
     setIsSaving(true);
     setResult(null);
@@ -275,13 +372,15 @@ export default function BlogEditor({ mode, initialData, authors }: Props) {
       _id: initialData?._id,
       title,
       slug,
-      privatePost,
+      privatePost: isAdmin ? privatePost : initialData?.privatePost ?? false,
       excerpt: textToBlocks(excerpt),
       bodyText: bodyValueRef.current,
       featuredImageId: featuredImageId || undefined,
       featuredImageCaption: featuredImageCaption || undefined,
       featuredImageAlt: featuredImageAlt || undefined,
-      authorIds: selectedAuthorIds,
+      ...(mode === "edit"
+        ? { authorIds: [...new Set(selectedAuthorIds)] }
+        : {}),
     };
 
     try {
@@ -294,7 +393,7 @@ export default function BlogEditor({ mode, initialData, authors }: Props) {
       if (!res.ok) throw new Error(data.error);
 
       setResult("success");
-      setTimeout(() => router.push("/admin/blog"), 1200);
+      // setTimeout(() => router.push("/admin/blog"), 1200);
     } catch (err: unknown) {
       setErrorMessage(
         err instanceof Error ? err.message : "Noe gikk galt ved lagring.",
@@ -347,18 +446,25 @@ export default function BlogEditor({ mode, initialData, authors }: Props) {
         <Input type="text" placeholder="slug-til-innlegget" />
       </TextField>
 
-      {/* Private toggle */}
-      <label className="flex items-center gap-3 cursor-pointer">
-        <input
-          type="checkbox"
-          checked={privatePost}
-          onChange={(e) => setPrivatePost(e.target.checked)}
-          className="w-4 h-4 rounded"
-        />
-        <span className="text-sm font-medium">
-          Privat innlegg (kun for innloggede brukere)
-        </span>
-      </label>
+      {/* Privat for beboere — kun administrator */}
+      {isAdmin && (
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={privatePost}
+            onChange={(e) => setPrivatePost(e.target.checked)}
+            className="w-4 h-4 rounded mt-0.5"
+          />
+          <span>
+            <span className="text-sm font-medium block">
+              Privat for beboere
+            </span>
+            <span className="text-sm text-foreground/60 block mt-0.5">
+              Synlig kun for innloggede brukere, ikke på den offentlige bloggen.
+            </span>
+          </span>
+        </label>
+      )}
 
       {/* Excerpt */}
       <div>
@@ -456,36 +562,86 @@ export default function BlogEditor({ mode, initialData, authors }: Props) {
         </div>
       </div>
 
-      {/* Authors */}
-      {authors.length > 0 && (
-        <div>
-          <label className="text-sm font-medium block mb-2">Forfatter(e)</label>
-          <div className="flex flex-wrap gap-2">
-            {authors.map((a) => {
-              const name = `${a.firstName ?? ""} ${a.lastName ?? ""}`.trim();
-              const isSelected = selectedAuthorIds.includes(a._id);
-              return (
-                <button
-                  key={a._id}
-                  type="button"
-                  onClick={() =>
+      {mode === "create" ? (
+        <div className="flex items-center gap-3">
+          <AuthorAvatarInline
+            portraitUrl={currentAuthorPortraitUrl}
+            displayName={authorDisplayName}
+          />
+          <p className="text-sm">
+            <span className="font-medium">Forfatter:</span>{" "}
+            <span className="text-foreground/80">{authorDisplayName}</span>
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <p className="text-sm font-medium">
+            {selectedAuthorIds.length <= 1 ? "Forfatter:" : "Forfattere:"}
+          </p>
+          {selectedAuthorIds.length === 0 ? (
+            <p className="text-sm text-foreground/60">
+              Ingen registrert. Bruk knappene under.
+            </p>
+          ) : selectedAuthorIds.length === 1 ? (
+            <div className="flex items-center gap-3">
+              <AuthorAvatarInline
+                portraitUrl={authorPortraitById.get(selectedAuthorIds[0]!)}
+                displayName={
+                  authorNameById.get(selectedAuthorIds[0]!) ??
+                  selectedAuthorIds[0]!
+                }
+              />
+              <span className="text-sm text-foreground/80">
+                {authorNameById.get(selectedAuthorIds[0]!) ??
+                  selectedAuthorIds[0]!}
+              </span>
+            </div>
+          ) : (
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+              {selectedAuthorIds.map((id) => {
+                const label = authorNameById.get(id) ?? id;
+                return (
+                  <div key={id} className="flex items-center gap-2">
+                    <AuthorAvatarInline
+                      portraitUrl={authorPortraitById.get(id)}
+                      displayName={label}
+                    />
+                    <span className="text-sm text-foreground/80">{label}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          {currentAuthorId && !isCurrentUserAmongAuthors && (
+            <>
+              <div className="flex flex-wrap gap-2">
+                <CustomButton
+                  variant="secondary"
+                  size="sm"
+                  onPress={() =>
                     setSelectedAuthorIds((prev) =>
-                      isSelected
-                        ? prev.filter((id) => id !== a._id)
-                        : [...prev, a._id],
+                      prev.includes(currentAuthorId)
+                        ? prev
+                        : [...prev, currentAuthorId],
                     )
                   }
-                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
-                    isSelected
-                      ? "bg-brand-secondary text-white border-brand-secondary"
-                      : "border-border hover:border-brand-secondary"
-                  }`}
                 >
-                  {name || a._id}
-                </button>
-              );
-            })}
-          </div>
+                  Legg meg til som forfatter
+                </CustomButton>
+                <CustomButton
+                  variant="secondary"
+                  size="sm"
+                  onPress={() => setSelectedAuthorIds([currentAuthorId])}
+                >
+                  Bytt forfatter til meg
+                </CustomButton>
+              </div>
+              <p className="text-xs text-foreground/55">
+                Eksisterende forfattere beholdes til du lagrer. Du kan legge deg
+                til som medforfatter eller erstatte listen med deg selv.
+              </p>
+            </>
+          )}
         </div>
       )}
 

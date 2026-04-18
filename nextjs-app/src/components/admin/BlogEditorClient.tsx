@@ -5,16 +5,14 @@ import type { BlogPostData } from "./BlogEditor";
 
 const BlogEditor = dynamic(() => import("./BlogEditor"), { ssr: false });
 
-type Author = {
-  _id: string;
-  firstName: string | null;
-  lastName: string | null;
-};
-
 type Props = {
   mode: "create" | "edit";
   initialData?: BlogPostData;
-  authors: Author[];
+  currentAuthorId: string;
+  authorDisplayName: string;
+  currentUserEmail?: string;
+  currentAuthorPortraitUrl?: string | null;
+  isAdmin: boolean;
 };
 
 export default function BlogEditorClient(props: Props) {
