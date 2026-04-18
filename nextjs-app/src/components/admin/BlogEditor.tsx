@@ -29,15 +29,17 @@ import {
   Heading2,
   Heading3,
   Heading4,
+  ImageIcon,
   Italic,
   List,
   ListOrdered,
+  Pencil,
   Trash2,
   UnderlineIcon,
   XCircle,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Image } from "sanity";
 
 type Author = {
@@ -65,6 +67,14 @@ type Props = {
   mode: "create" | "edit";
   initialData?: BlogPostData;
   authors: Author[];
+};
+
+type ImageModalState = {
+  mode: "insert" | "edit";
+  assetRef: string;
+  alt: string;
+  caption: string;
+  path?: [{ _key: string }];
 };
 
 // Schema for the body text editor
@@ -125,26 +135,6 @@ const renderDecorator: RenderDecoratorFunction = (props) => {
   }
 };
 
-const renderBlock: RenderBlockFunction = (props) => {
-  if (props.schemaType.name === "image") {
-    const v = props.value as { asset?: { _ref?: string }; alt?: string };
-    const url = v.asset?._ref
-      ? urlForImage({ asset: v.asset } as Image)?.width(600).fit("max").url()
-      : null;
-    return (
-      <figure className="my-4">
-        {url ? (
-          <img src={url} alt={v.alt ?? ""} className="max-w-full rounded-lg" />
-        ) : (
-          <div className="p-3 bg-gray-100 text-xs text-gray-500 rounded">[Bilde]</div>
-        )}
-        {props.children}
-      </figure>
-    );
-  }
-  return <div>{props.children}</div>;
-};
-
 const renderListItem: RenderListItemFunction = (props) => (
   <>{props.children}</>
 );
@@ -177,6 +167,19 @@ function textToBlocks(text: string): PortableTextBlock[] {
     markDefs: [],
   };
   return [block];
+}
+
+async function uploadImageToSanity(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("messageImage", file);
+  formData.append("title", file.name);
+  const res = await fetch("/api/upload-image-to-sanity", {
+    method: "POST",
+    body: formData,
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error);
+  return data.success.imageId as string;
 }
 
 export default function BlogEditor({ mode, initialData, authors }: Props) {
@@ -216,20 +219,11 @@ export default function BlogEditor({ mode, initialData, authors }: Props) {
     (initialData?.bodyText as PortableTextBlock[]) ?? [],
   );
 
-  const handleImageUpload = async (file: File) => {
+  const handleFeaturedImageUpload = async (file: File) => {
     setIsUploading(true);
-    const formData = new FormData();
-    formData.append("messageImage", file);
-    formData.append("title", file.name);
-
     try {
-      const res = await fetch("/api/upload-image-to-sanity", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setFeaturedImageId(data.success.imageId);
+      const imageId = await uploadImageToSanity(file);
+      setFeaturedImageId(imageId);
     } catch (err) {
       console.error("Image upload failed:", err);
       alert("Bildeoppasting feilet.");
@@ -370,7 +364,7 @@ export default function BlogEditor({ mode, initialData, authors }: Props) {
             accept="image/*"
             onChange={(e) => {
               const file = e.target.files?.[0];
-              if (file) handleImageUpload(file);
+              if (file) handleFeaturedImageUpload(file);
             }}
           />
           <CustomButton
@@ -432,21 +426,7 @@ export default function BlogEditor({ mode, initialData, authors }: Props) {
               initialValue: bodyValueRef.current,
             }}
           >
-            <EventListenerPlugin
-              on={(event) => {
-                if (event.type === "mutation" && event.value) {
-                  bodyValueRef.current = event.value;
-                }
-              }}
-            />
-            <BlogBodyToolbar />
-            <PortableTextEditable
-              className="min-h-[320px] p-4 focus:outline-none"
-              renderStyle={renderStyle}
-              renderDecorator={renderDecorator}
-              renderBlock={renderBlock}
-              renderListItem={renderListItem}
-            />
+            <EditorInner bodyValueRef={bodyValueRef} />
           </EditorProvider>
         </div>
       </div>
@@ -542,8 +522,157 @@ export default function BlogEditor({ mode, initialData, authors }: Props) {
   );
 }
 
+// Must live inside EditorProvider to access useEditor()
+function EditorInner({
+  bodyValueRef,
+}: {
+  bodyValueRef: React.MutableRefObject<PortableTextBlock[]>;
+}) {
+  const editor = useEditor();
+  const [imageModal, setImageModal] = useState<ImageModalState | null>(null);
+
+  const renderBlock = useCallback<RenderBlockFunction>(
+    (props) => {
+      if (props.schemaType.name === "image") {
+        const v = props.value as {
+          asset?: { _ref?: string };
+          alt?: string;
+          caption?: string;
+        };
+        const url = v.asset?._ref
+          ? urlForImage({ asset: v.asset } as Image)?.width(600).fit("max").url()
+          : null;
+        const path = props.path as [{ _key: string }];
+        return (
+          <figure
+            className={`my-4 relative rounded-lg ${
+              props.selected ? "ring-2 ring-brand-secondary" : ""
+            }`}
+          >
+            {url ? (
+              <img src={url} alt={v.alt ?? ""} className="max-w-full rounded-lg" />
+            ) : (
+              <div className="p-3 bg-gray-100 text-xs text-gray-500 rounded">
+                [Bilde]
+              </div>
+            )}
+            {v.caption && (
+              <figcaption className="text-xs text-foreground/60 mt-1 text-center">
+                {v.caption}
+              </figcaption>
+            )}
+            {props.selected && (
+              <div className="absolute top-2 right-2 flex gap-1">
+                <button
+                  type="button"
+                  title="Rediger bilde"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setImageModal({
+                      mode: "edit",
+                      assetRef: v.asset?._ref ?? "",
+                      alt: v.alt ?? "",
+                      caption: v.caption ?? "",
+                      path,
+                    });
+                  }}
+                  className="flex items-center gap-1 px-2 py-1 rounded-md bg-white text-gray-700 border border-gray-300 text-xs font-medium shadow-sm hover:bg-gray-50"
+                >
+                  <Pencil className="w-3 h-3" />
+                  Rediger
+                </button>
+                <button
+                  type="button"
+                  title="Fjern bilde"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    editor.send({ type: "delete.block", at: path });
+                  }}
+                  className="flex items-center gap-1 px-2 py-1 rounded-md bg-white text-red-600 border border-red-200 text-xs font-medium shadow-sm hover:bg-red-50"
+                >
+                  <Trash2 className="w-3 h-3" />
+                  Fjern
+                </button>
+              </div>
+            )}
+            {props.children}
+          </figure>
+        );
+      }
+      return <div>{props.children}</div>;
+    },
+    // editor and setImageModal are stable references
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
+  const handleImageConfirm = (assetRef: string, alt: string, caption: string) => {
+    if (!imageModal) return;
+
+    if (imageModal.mode === "insert") {
+      if (!assetRef) return;
+      editor.send({
+        type: "insert.block",
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        block: {
+          _type: "image",
+          asset: { _ref: assetRef, _type: "reference" },
+          alt,
+          caption,
+        } as any,
+        placement: "auto",
+      });
+    } else if (imageModal.path) {
+      const props: Record<string, unknown> = { alt, caption };
+      if (assetRef) {
+        props.asset = { _ref: assetRef, _type: "reference" };
+      }
+      editor.send({ type: "block.set", at: imageModal.path, props });
+    }
+
+    setImageModal(null);
+    editor.send({ type: "focus" });
+  };
+
+  return (
+    <>
+      <EventListenerPlugin
+        on={(event) => {
+          if (event.type === "mutation" && event.value) {
+            bodyValueRef.current = event.value;
+          }
+        }}
+      />
+      <BlogBodyToolbar
+        onInsertImage={() =>
+          setImageModal({ mode: "insert", assetRef: "", alt: "", caption: "" })
+        }
+      />
+      <PortableTextEditable
+        className="min-h-[320px] p-4 focus:outline-none"
+        renderStyle={renderStyle}
+        renderDecorator={renderDecorator}
+        renderBlock={renderBlock}
+        renderListItem={renderListItem}
+      />
+      {imageModal && (
+        <ImageModal
+          mode={imageModal.mode}
+          initialAssetRef={imageModal.assetRef}
+          initialAlt={imageModal.alt}
+          initialCaption={imageModal.caption}
+          onConfirm={handleImageConfirm}
+          onClose={() => setImageModal(null)}
+        />
+      )}
+    </>
+  );
+}
+
 // Toolbar — must be inside EditorProvider
-function BlogBodyToolbar() {
+function BlogBodyToolbar({ onInsertImage }: { onInsertImage: () => void }) {
   const editor = useEditor();
   const isBold = useEditorSelector(editor, isActiveDecorator("strong"));
   const isItalic = useEditorSelector(editor, isActiveDecorator("em"));
@@ -632,6 +761,13 @@ function BlogBodyToolbar() {
         onClick={() => send({ type: "style.toggle", style: "blockquote" })}
         icon={<AlignJustify className="w-4 h-4" />}
       />
+      <div className="w-px bg-gray-300 mx-1 self-stretch" />
+      <ToolbarBtn
+        label="Sett inn bilde"
+        isActive={false}
+        onClick={onInsertImage}
+        icon={<ImageIcon className="w-4 h-4" />}
+      />
     </div>
   );
 }
@@ -663,5 +799,119 @@ function ToolbarBtn({
     >
       {icon}
     </button>
+  );
+}
+
+function ImageModal({
+  mode,
+  initialAssetRef,
+  initialAlt,
+  initialCaption,
+  onConfirm,
+  onClose,
+}: {
+  mode: "insert" | "edit";
+  initialAssetRef: string;
+  initialAlt: string;
+  initialCaption: string;
+  onConfirm: (assetRef: string, alt: string, caption: string) => void;
+  onClose: () => void;
+}) {
+  const [assetRef, setAssetRef] = useState(initialAssetRef);
+  const [alt, setAlt] = useState(initialAlt);
+  const [caption, setCaption] = useState(initialCaption);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleUpload = async (file: File) => {
+    setIsUploading(true);
+    try {
+      const id = await uploadImageToSanity(file);
+      setAssetRef(id);
+    } catch (err) {
+      console.error("Upload failed:", err);
+      alert("Bildeoppasting feilet.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const canConfirm = mode === "insert" ? !!assetRef && !isUploading : !isUploading;
+
+  const previewUrl = assetRef
+    ? urlForImage({ asset: { _ref: assetRef } } as Image)
+        ?.width(400)
+        .fit("max")
+        .url() ?? null
+    : null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/40" onMouseDown={onClose} />
+      <div className="relative bg-background rounded-xl p-6 w-full max-w-md space-y-4 shadow-xl border border-border mx-4">
+        <h2 className="text-lg font-semibold">
+          {mode === "insert" ? "Sett inn bilde" : "Rediger bilde"}
+        </h2>
+
+        {/* Preview + upload */}
+        <div className="space-y-2">
+          {previewUrl && (
+            <img
+              src={previewUrl}
+              alt="Forhåndsvisning"
+              className="max-w-full rounded-lg border border-border max-h-48 object-contain"
+            />
+          )}
+          <input
+            type="file"
+            ref={fileRef}
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleUpload(file);
+              e.target.value = "";
+            }}
+          />
+          <CustomButton
+            variant="secondary"
+            size="sm"
+            onPress={() => fileRef.current?.click()}
+            isPending={isUploading}
+          >
+            {assetRef ? "Bytt bilde" : "Last opp bilde"}
+          </CustomButton>
+        </div>
+
+        {/* Alt text */}
+        <TextField value={alt} onChange={setAlt}>
+          <Label>Alt-tekst</Label>
+          <Input type="text" placeholder="Beskrivelse for tilgjengelighet" />
+        </TextField>
+
+        {/* Caption */}
+        <TextField value={caption} onChange={setCaption}>
+          <Label>Bildetekst</Label>
+          <Input type="text" placeholder="Valgfri bildetekst" />
+        </TextField>
+
+        {/* Actions */}
+        <div className="flex gap-3 pt-2">
+          <CustomButton
+            onPress={() => onConfirm(assetRef, alt, caption)}
+            isDisabled={!canConfirm}
+          >
+            {mode === "insert" ? "Sett inn" : "Lagre"}
+          </CustomButton>
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 text-sm font-medium text-foreground/70 border border-border rounded-xl hover:bg-default/10 transition-colors"
+          >
+            Avbryt
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
