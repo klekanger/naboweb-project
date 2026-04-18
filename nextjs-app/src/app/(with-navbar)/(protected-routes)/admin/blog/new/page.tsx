@@ -1,4 +1,4 @@
-import BlogEditor from "@/components/admin/BlogEditor";
+import BlogEditor from "@/components/admin/BlogEditorClient";
 import BackButton from "@/components/BackButton";
 import { client } from "@/sanity/lib/client";
 import { allAuthorsQuery } from "@/sanity/lib/queries";

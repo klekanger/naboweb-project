@@ -37,7 +37,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Image } from "sanity";
 
 type Author = {
@@ -560,10 +560,10 @@ function BlogBodyToolbar() {
     editor.send({ type: "focus" });
   };
 
-  const isMac =
-    typeof navigator !== "undefined" &&
-    /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
-  const mod = isMac ? "⌘" : "Ctrl";
+  const [mod, setMod] = useState("Ctrl");
+  useEffect(() => {
+    if (/Mac|iPod|iPhone|iPad/.test(navigator.userAgent)) setMod("⌘");
+  }, []);
 
   return (
     <div
