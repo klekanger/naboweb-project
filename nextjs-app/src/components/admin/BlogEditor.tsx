@@ -10,6 +10,7 @@ import {
   useEditor,
   useEditorSelector,
   type PortableTextBlock,
+  type PortableTextSpan,
   type RenderBlockFunction,
   type RenderDecoratorFunction,
   type RenderListItemFunction,
@@ -162,22 +163,20 @@ function slugify(text: string) {
 
 function textToBlocks(text: string): PortableTextBlock[] {
   if (!text.trim()) return [];
-  return [
-    {
-      _type: "block",
-      _key: Math.random().toString(36).slice(2),
-      style: "normal",
-      children: [
-        {
-          _type: "span",
-          _key: Math.random().toString(36).slice(2),
-          text,
-          marks: [],
-        },
-      ],
-      markDefs: [],
-    } as unknown as PortableTextBlock,
-  ];
+  const span: PortableTextSpan = {
+    _type: "span",
+    _key: Math.random().toString(36).slice(2),
+    text,
+    marks: [],
+  };
+  const block: PortableTextBlock = {
+    _type: "block",
+    _key: Math.random().toString(36).slice(2),
+    style: "normal",
+    children: [span],
+    markDefs: [],
+  };
+  return [block];
 }
 
 export default function BlogEditor({ mode, initialData, authors }: Props) {
@@ -561,25 +560,30 @@ function BlogBodyToolbar() {
     editor.send({ type: "focus" });
   };
 
+  const isMac =
+    typeof navigator !== "undefined" &&
+    /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
+  const mod = isMac ? "⌘" : "Ctrl";
+
   return (
     <div
       role="toolbar"
       className="flex flex-wrap gap-1 p-2 border-b border-border bg-default/10"
     >
       <ToolbarBtn
-        label="Bold"
+        label={`Fet (${mod}+B)`}
         isActive={isBold}
         onClick={() => send({ type: "decorator.toggle", decorator: "strong" })}
         icon={<Bold className="w-4 h-4" strokeWidth={3} />}
       />
       <ToolbarBtn
-        label="Italic"
+        label={`Kursiv (${mod}+I)`}
         isActive={isItalic}
         onClick={() => send({ type: "decorator.toggle", decorator: "em" })}
         icon={<Italic className="w-4 h-4" />}
       />
       <ToolbarBtn
-        label="Underline"
+        label={`Understreking (${mod}+U)`}
         isActive={isUnderline}
         onClick={() =>
           send({ type: "decorator.toggle", decorator: "underline" })
