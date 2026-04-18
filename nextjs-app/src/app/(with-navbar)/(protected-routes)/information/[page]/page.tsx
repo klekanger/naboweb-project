@@ -126,20 +126,15 @@ async function PrivateInfoContent(props: Props) {
         </div>
         {(isAdmin || isEditor) && (
           <div className="pl-1 font-semibold">
-            <a
-              className="animate duration-100 hover:text-brand-black/70 "
-              href={
-                process.env.NEXT_PUBLIC_SANITY_STUDIO_URL +
-                "/structure/dokumentmeny"
-              }
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              className="animate duration-100 hover:text-brand-black/70"
+              href="/admin/document-menu"
             >
               <span className="flex gap-2">
                 <Pencil className="text-brand-secondary" />
                 Rediger denne dokumentmenyen
               </span>
-            </a>
+            </Link>
           </div>
         )}
         <div className="h-8" />

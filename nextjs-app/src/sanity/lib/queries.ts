@@ -333,3 +333,75 @@ export const messageSlugs = defineQuery(`
 export const meetingMinutesIds = defineQuery(`
   *[_type == "fileMeetingMinutes"]{_id}
 `);
+
+// Admin queries
+
+export const documentMenuAdminQuery = defineQuery(`
+  *[_type=="documentMenu"][0] {
+    _id,
+    button1Text,
+    button2Text,
+    button3Text,
+    button4Text,
+    "file1": button1File->{_id, title, "url": otherDocument.asset->url},
+    "file2": button2File->{_id, title, "url": otherDocument.asset->url},
+    "file3": button3File->{_id, title, "url": otherDocument.asset->url},
+    "file4": button4File->{_id, title, "url": otherDocument.asset->url},
+  }
+`);
+
+export const allFileDocumentsQuery = defineQuery(`
+  *[_type=="fileOtherDocuments"] | order(title asc) {
+    _id,
+    title,
+    "url": otherDocument.asset->url
+  }
+`);
+
+export const allAuthorsQuery = defineQuery(`
+  *[_type=="authors"] | order(firstName asc) {
+    _id,
+    firstName,
+    lastName
+  }
+`);
+
+export const allBlogPostsAdminQuery = defineQuery(`
+  *[_type=="blogPost"] | order(_createdAt desc) {
+    _id,
+    _createdAt,
+    _updatedAt,
+    title,
+    "slug": slug.current,
+    privatePost,
+    excerpt
+  }
+`);
+
+export const allOtherDocumentsAdminQuery = defineQuery(`
+  *[_type=="fileOtherDocuments"] | order(_createdAt desc) {
+    _id,
+    _createdAt,
+    _updatedAt,
+    title,
+    description,
+    tags,
+    "document": otherDocument{
+      asset->{url, _id, originalFilename, extension, size}
+    }
+  }
+`);
+
+export const allMeetingMinutesAdminQuery = defineQuery(`
+  *[_type=="fileMeetingMinutes"] | order(_createdAt desc) | order(meetingDate desc) {
+    _id,
+    _createdAt,
+    _updatedAt,
+    title,
+    description,
+    meetingDate,
+    meetingPlace,
+    tags,
+    meetingDocuments[]{asset->{url, _id, originalFilename, extension, size}}
+  }
+`);

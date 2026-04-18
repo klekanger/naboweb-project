@@ -1,0 +1,296 @@
+"use client";
+
+import CustomButton from "@/components/CustomButton";
+import { Input, Label, TextField } from "@heroui/react";
+import { CheckCircle, FileText, Pencil, Plus, Trash2, Upload, X, XCircle } from "lucide-react";
+import { useRef, useState } from "react";
+
+type Doc = {
+  _id: string;
+  _createdAt: string;
+  title: string | null;
+  description: string | null;
+  tags: string[] | null;
+  document: {
+    asset: {
+      url: string | null;
+      _id: string;
+      originalFilename: string | null;
+    } | null;
+  } | null;
+};
+
+type Props = {
+  initialDocuments: Doc[];
+};
+
+type FormState = {
+  title: string;
+  description: string;
+  assetId: string;
+  fileName: string;
+};
+
+const emptyForm: FormState = {
+  title: "",
+  description: "",
+  assetId: "",
+  fileName: "",
+};
+
+export default function DocumentsManager({ initialDocuments }: Props) {
+  const [documents, setDocuments] = useState<Doc[]>(initialDocuments);
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState<FormState>(emptyForm);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [error, setError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (file: File) => {
+    setIsUploading(true);
+    const fd = new FormData();
+    fd.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload-file-to-sanity", {
+        method: "POST",
+        body: fd,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setForm((f) => ({
+        ...f,
+        assetId: data.assetId,
+        fileName: data.originalFilename ?? file.name,
+        title: f.title || file.name.replace(/\.[^/.]+$/, ""),
+      }));
+    } catch (err) {
+      setError("Opplasting feilet.");
+      console.error(err);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!form.title.trim() || !form.assetId) {
+      setError("Tittel og fil er påkrevd.");
+      return;
+    }
+    setIsSaving(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/sanity/documents", {
+        method: editingId ? "PATCH" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...(editingId ? { _id: editingId } : {}),
+          title: form.title,
+          description: form.description,
+          assetId: form.assetId,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      // Refresh by refetching
+      window.location.reload();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Noe gikk galt.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    setDeletingId(id);
+    try {
+      const res = await fetch("/api/sanity/documents", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ _id: id }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error);
+      setDocuments((prev) => prev.filter((d) => d._id !== id));
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Sletting feilet.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const startEdit = (doc: Doc) => {
+    setEditingId(doc._id);
+    setForm({
+      title: doc.title ?? "",
+      description: doc.description ?? "",
+      assetId: doc.document?.asset?._id ?? "",
+      fileName: doc.document?.asset?.originalFilename ?? "",
+    });
+    setShowForm(true);
+    setError("");
+  };
+
+  const cancelForm = () => {
+    setShowForm(false);
+    setEditingId(null);
+    setForm(emptyForm);
+    setError("");
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Add new button */}
+      {!showForm && (
+        <CustomButton
+          onPress={() => {
+            setShowForm(true);
+            setEditingId(null);
+            setForm(emptyForm);
+            setError("");
+          }}
+        >
+          <Plus className="h-4 w-4 mr-1" />
+          Last opp nytt dokument
+        </CustomButton>
+      )}
+
+      {/* Form */}
+      {showForm && (
+        <div className="p-5 rounded-xl border border-border space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="font-semibold">
+              {editingId ? "Rediger dokument" : "Nytt dokument"}
+            </p>
+            <button
+              type="button"
+              onClick={cancelForm}
+              className="text-foreground/50 hover:text-foreground"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          <TextField
+            value={form.title}
+            onChange={(v) => setForm((f) => ({ ...f, title: v }))}
+            isRequired
+          >
+            <Label>Tittel</Label>
+            <Input type="text" placeholder="F.eks. Vedtekter 2024" />
+          </TextField>
+
+          <TextField
+            value={form.description}
+            onChange={(v) => setForm((f) => ({ ...f, description: v }))}
+          >
+            <Label>Beskrivelse (valgfri)</Label>
+            <Input type="text" placeholder="Kort beskrivelse" />
+          </TextField>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Fil</label>
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleFileUpload(file);
+              }}
+            />
+            <div className="flex items-center gap-3 flex-wrap">
+              <CustomButton
+                variant="secondary"
+                size="sm"
+                onPress={() => fileInputRef.current?.click()}
+                isPending={isUploading}
+              >
+                <Upload className="h-4 w-4 mr-1" />
+                {form.assetId ? "Bytt fil" : "Last opp fil"}
+              </CustomButton>
+              {form.assetId && (
+                <span className="text-xs text-green-600 flex items-center gap-1">
+                  <CheckCircle className="h-3 w-3" />
+                  {form.fileName || "Fil lastet opp"}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {error && (
+            <p className="text-sm text-red-600 flex items-center gap-1">
+              <XCircle className="h-4 w-4" />
+              {error}
+            </p>
+          )}
+
+          <div className="flex gap-3">
+            <CustomButton onPress={handleSave} isPending={isSaving}>
+              {editingId ? "Lagre endringer" : "Opprett dokument"}
+            </CustomButton>
+            <CustomButton variant="ghost" onPress={cancelForm}>
+              Avbryt
+            </CustomButton>
+          </div>
+        </div>
+      )}
+
+      {/* Document list */}
+      {documents.length === 0 ? (
+        <div className="text-center py-10 text-foreground/50">
+          <FileText className="h-10 w-10 mx-auto mb-3 opacity-40" />
+          <p>Ingen dokumenter lastet opp ennå.</p>
+        </div>
+      ) : (
+        <div className="divide-y divide-border">
+          {documents.map((doc) => (
+            <div
+              key={doc._id}
+              className="flex items-center justify-between py-4 gap-4"
+            >
+              <div className="flex items-start gap-3 flex-1 min-w-0">
+                <FileText className="h-5 w-5 text-foreground/40 shrink-0 mt-0.5" />
+                <div className="min-w-0">
+                  <p className="font-medium truncate">{doc.title}</p>
+                  {doc.description && (
+                    <p className="text-sm text-foreground/50 truncate">
+                      {doc.description}
+                    </p>
+                  )}
+                  {doc.document?.asset?.originalFilename && (
+                    <p className="text-xs text-foreground/40 truncate">
+                      {doc.document.asset.originalFilename}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => startEdit(doc)}
+                  className="text-brand-secondary hover:underline text-sm flex items-center gap-1"
+                >
+                  <Pencil className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(doc._id)}
+                  disabled={deletingId === doc._id}
+                  className="text-red-500 hover:text-red-700 disabled:opacity-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

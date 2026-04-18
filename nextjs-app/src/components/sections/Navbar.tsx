@@ -179,6 +179,22 @@ export default function Navbar() {
             </Link>
           )}
 
+          {isClient &&
+            isLoaded &&
+            user &&
+            ((user.publicMetadata?.roles as string[]) || []).some((r) =>
+              ["admin", "editor"].includes(r),
+            ) && (
+              <Link
+                href="/admin"
+                className={`text-brand-black dark:text-brand-white hover:text-brand-secondary duration-200 transition ${
+                  isActive("/admin") ? "text-brand-secondary" : ""
+                }`}
+              >
+                Admin
+              </Link>
+            )}
+
           {isClient && isLoaded && (
             <ButtonGroup>
               {isSignedIn ? (
@@ -310,6 +326,23 @@ export default function Navbar() {
               Min side
             </Link>
           )}
+
+          {isClient &&
+            isLoaded &&
+            user &&
+            ((user.publicMetadata?.roles as string[]) || []).some((r) =>
+              ["admin", "editor"].includes(r),
+            ) && (
+              <Link
+                href="/admin"
+                className={`block py-2 text-brand-black dark:text-brand-white duration-100 transition hover:text-brand-black/60 dark:hover:text-brand-white/60 ${
+                  isActive("/admin") ? "text-brand-secondary" : ""
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Admin
+              </Link>
+            )}
 
           <div className="mt-8 flex justify-center">
             {isClient && isLoaded && user ? (
