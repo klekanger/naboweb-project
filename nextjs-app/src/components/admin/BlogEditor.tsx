@@ -19,12 +19,13 @@ import {
 } from "@portabletext/editor";
 import { EventListenerPlugin } from "@portabletext/editor/plugins";
 import {
+  getFocusBlockObject,
   isActiveDecorator,
   isActiveListItem,
   isActiveStyle,
 } from "@portabletext/editor/selectors";
 import {
-  getImageDimensions,
+  tryGetImageDimensions,
   type SanityImageSource,
 } from "@sanity/asset-utils";
 import {
@@ -96,7 +97,20 @@ const blogBodySchema = defineSchema({
   lists: [{ name: "bullet" }, { name: "number" }],
   annotations: [],
   inlineObjects: [],
-  blockObjects: [{ name: "image" }],
+  // Fields must match what we read/write; an empty fields list causes the editor
+  // to strip asset/alt/caption when parsing blocks (images show as "[Bilde]").
+  blockObjects: [
+    {
+      name: "image",
+      fields: [
+        { name: "asset", type: "object" },
+        { name: "alt", type: "string" },
+        { name: "caption", type: "string" },
+        { name: "hotspot", type: "object" },
+        { name: "crop", type: "object" },
+      ],
+    },
+  ],
 });
 
 const renderStyle: RenderStyleFunction = (props) => {
@@ -159,6 +173,16 @@ function textToBlocks(text: string): PortableTextBlock[] {
   return [block];
 }
 
+function uploadErrorMessage(data: unknown): string {
+  if (data && typeof data === "object" && "error" in data) {
+    const err = (data as { error: unknown }).error;
+    if (typeof err === "string") return err;
+    if (err && typeof err === "object" && "message" in err)
+      return String((err as { message: unknown }).message);
+  }
+  return "Bildeoppasting feilet.";
+}
+
 async function uploadImageToSanity(file: File): Promise<string> {
   const formData = new FormData();
   formData.append("messageImage", file);
@@ -167,9 +191,16 @@ async function uploadImageToSanity(file: File): Promise<string> {
     method: "POST",
     body: formData,
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error);
-  return data.success.imageId as string;
+  const data: unknown = await res.json();
+  const imageId =
+    data &&
+    typeof data === "object" &&
+    "success" in data &&
+    (data as { success?: { imageId?: string } }).success?.imageId;
+  if (!res.ok || typeof imageId !== "string" || !imageId) {
+    throw new Error(uploadErrorMessage(data));
+  }
+  return imageId;
 }
 
 export default function BlogEditor({ mode, initialData, authors }: Props) {
@@ -534,17 +565,19 @@ function EditorInner({
         const path = props.path as [{ _key: string }];
         const hasImage = !!v.asset?._ref;
         const dimensions = hasImage
-          ? getImageDimensions(v as SanityImageSource)
-          : null;
+          ? tryGetImageDimensions(v as SanityImageSource)
+          : undefined;
+        const width = dimensions?.width ?? 800;
+        const height = dimensions?.height ?? 600;
         return (
           <figure className="relative not-prose my-4">
-            {hasImage && dimensions ? (
+            {hasImage ? (
               <ImageBox
                 image={v as { asset?: SanityReference }}
                 alt={v.alt ?? ""}
                 caption={v.caption}
-                width={dimensions.width}
-                height={dimensions.height}
+                width={width}
+                height={height}
               />
             ) : (
               <div className="p-3 bg-gray-100 text-xs text-gray-500 rounded">
@@ -606,16 +639,55 @@ function EditorInner({
 
     if (imageModal.mode === "insert") {
       if (!assetRef) return;
+      const asset = { _ref: assetRef, _type: "reference" as const };
       editor.send({
         type: "insert.block",
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         block: {
           _type: "image",
-          asset: { _ref: assetRef, _type: "reference" },
+          asset,
           alt,
           caption,
         } as any,
         placement: "auto",
+      });
+      // Ensure asset/alt/caption land on the Slate node (some paths normalize
+      // block objects before fields are applied; block.set is authoritative).
+      queueMicrotask(() => {
+        const snap = editor.getSnapshot();
+        const needsPatch = (node: PortableTextBlock) => {
+          if (node._type !== "image") return false;
+          const n = node as {
+            asset?: { _ref?: string };
+            alt?: string;
+            caption?: string;
+          };
+          return (
+            n.asset?._ref !== assetRef ||
+            n.alt !== alt ||
+            n.caption !== caption
+          );
+        };
+
+        const focused = getFocusBlockObject(snap);
+        let path: [{ _key: string }] | undefined;
+        if (focused && needsPatch(focused.node)) path = focused.path;
+        if (!path) {
+          for (let i = snap.context.value.length - 1; i >= 0; i--) {
+            const b = snap.context.value[i];
+            if (b._type === "image" && needsPatch(b)) {
+              path = [{ _key: b._key }];
+              break;
+            }
+          }
+        }
+        if (!path) return;
+
+        editor.send({
+          type: "block.set",
+          at: path,
+          props: { asset, alt, caption },
+        });
       });
     } else if (imageModal.path) {
       const props: Record<string, unknown> = { alt, caption };

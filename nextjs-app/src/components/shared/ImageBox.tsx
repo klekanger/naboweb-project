@@ -35,9 +35,13 @@ export default function ImageBox({
             width={width}
             height={height}
             sizes={size}
-            placeholder="blur"
-            blurDataURL={image?.lqip ?? ""}
             src={imageUrl}
+            {...(typeof image?.lqip === "string" && image.lqip.length > 0
+              ? {
+                  placeholder: "blur" as const,
+                  blurDataURL: image.lqip,
+                }
+              : {})}
           />
           {caption && (
             <div className="rich-image-caption">
