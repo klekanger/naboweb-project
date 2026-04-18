@@ -414,7 +414,7 @@ export default function BlogEditor({ mode, initialData, authors }: Props) {
         <label className="text-sm font-medium block mb-1">
           Brødtekst <span className="text-red-500">*</span>
         </label>
-        <div className="border border-border rounded-xl overflow-hidden">
+        <div className="border border-brand-black/10 rounded-xl">
           <EditorProvider
             initialConfig={{
               schemaDefinition: blogBodySchema,
@@ -644,7 +644,7 @@ function EditorInner({
           setImageModal({ mode: "insert", assetRef: "", alt: "", caption: "" })
         }
       />
-      <div className="prose lg:prose-xl max-w-none">
+      <div className="prose lg:prose-xl max-w-none overflow-y-auto max-h-[60vh]">
         <PortableTextEditable
           className="min-h-80 p-4 focus:outline-none"
           renderStyle={renderStyle}
@@ -693,7 +693,7 @@ function BlogBodyToolbar({ onInsertImage }: { onInsertImage: () => void }) {
   return (
     <div
       role="toolbar"
-      className="flex flex-wrap gap-1 p-2 border-b border-border bg-default/10"
+      className="flex flex-wrap gap-1 p-2 border-b border-border bg-default/10 rounded-t-xl"
     >
       <ToolbarBtn
         label={`Fet (${mod}+B)`}
