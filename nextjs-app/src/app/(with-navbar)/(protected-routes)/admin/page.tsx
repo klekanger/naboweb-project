@@ -1,13 +1,30 @@
-import Link from "next/link";
+import {
+  getSanityStudioFileDocumentsUrl,
+  SANITY_STUDIO_BASE_URL,
+} from "@/lib/sanityStudioUrls";
+import { currentUser } from "@clerk/nextjs/server";
 import {
   BookOpen,
   FileText,
   LayoutGrid,
+  type LucideIcon,
+  PanelsTopLeft,
   PenLine,
+  Upload,
   Users,
 } from "lucide-react";
+import Link from "next/link";
 
-const adminSections = [
+type AdminSection = {
+  title: string;
+  description: string;
+  href: string;
+  icon: LucideIcon;
+  external?: boolean;
+  requiresAdmin?: boolean;
+};
+
+const adminSections: AdminSection[] = [
   {
     title: "Blogginnlegg",
     description: "Opprett, rediger og slett blogginnlegg og nyhetsartikler.",
@@ -33,14 +50,37 @@ const adminSections = [
     icon: BookOpen,
   },
   {
+    title: "Rediger innhold",
+    description: "Åpne Sanity Studio for å redigere alt innhold på nettstedet.",
+    href: SANITY_STUDIO_BASE_URL,
+    icon: PanelsTopLeft,
+    external: true,
+  },
+  {
+    title: "Last opp filer",
+    description: "Gå direkte til opplasting av øvrige dokumenter i Studio.",
+    href: getSanityStudioFileDocumentsUrl(),
+    icon: Upload,
+    external: true,
+  },
+  {
     title: "Brukere",
     description: "Administrer brukere, roller og tilganger.",
     href: "/user-admin-page",
     icon: Users,
+    requiresAdmin: true,
   },
 ];
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  const user = await currentUser();
+  const roles = (user?.publicMetadata?.roles as string[]) || [];
+  const isAdmin = roles.includes("admin");
+
+  const visibleSections = adminSections.filter(
+    (section) => !section.requiresAdmin || isAdmin,
+  );
+
   return (
     <div className="max-w-4xl mx-auto py-12 px-4">
       <h1 className="text-4xl font-semibold mb-2">Administrasjon</h1>
@@ -49,21 +89,46 @@ export default function AdminPage() {
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {adminSections.map(({ title, description, href, icon: Icon }) => (
-          <Link
-            key={href}
-            href={href}
-            className="flex items-start gap-4 p-5 rounded-xl border border-border hover:border-brand-secondary hover:bg-brand-secondary/5 transition-colors group"
-          >
-            <div className="mt-0.5 p-2 rounded-lg bg-brand-secondary/10 text-brand-secondary group-hover:bg-brand-secondary group-hover:text-white transition-colors">
-              <Icon className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="font-semibold">{title}</p>
-              <p className="text-sm text-foreground/60 mt-1">{description}</p>
-            </div>
-          </Link>
-        ))}
+        {visibleSections.map(
+          ({ title, description, href, icon: Icon, external }) => {
+            const className =
+              "flex items-start gap-4 p-5 rounded-xl border border-border hover:border-brand-secondary hover:bg-brand-secondary/5 transition-colors group";
+
+            const inner = (
+              <>
+                <div className="mt-0.5 p-2 rounded-lg bg-brand-secondary/10 text-brand-secondary group-hover:bg-brand-secondary group-hover:text-white transition-colors">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-semibold">{title}</p>
+                  <p className="text-sm text-foreground/60 mt-1">{description}</p>
+                </div>
+              </>
+            );
+
+            const key = `${href}-${title}`;
+
+            if (external) {
+              return (
+                <a
+                  key={key}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={className}
+                >
+                  {inner}
+                </a>
+              );
+            }
+
+            return (
+              <Link key={key} href={href} className={className}>
+                {inner}
+              </Link>
+            );
+          },
+        )}
       </div>
     </div>
   );

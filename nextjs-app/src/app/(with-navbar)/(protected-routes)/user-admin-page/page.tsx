@@ -189,7 +189,7 @@ async function UserAdminContent({
         />
       </div>
       <div className="pt-8 flex justify-start">
-        <BackButton buttonLink="/min-side" />
+        <BackButton buttonLink="/admin" />
       </div>
     </div>
   );

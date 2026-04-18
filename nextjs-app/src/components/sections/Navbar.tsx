@@ -1,14 +1,13 @@
 "use client";
 
-import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
-import { ButtonGroup } from "@heroui/react";
+import { SignInButton, useUser } from "@clerk/nextjs";
 import CustomButton from "@/components/CustomButton";
+import { UserAccountMenu } from "@/components/sections/UserAccountMenu";
 import {
   ChevronDown,
   Files,
   Info,
   LogIn,
-  LogOut,
   Menu,
   X,
   MessagesSquare,
@@ -168,17 +167,6 @@ export default function Navbar() {
             Styret
           </Link>
 
-          {isClient && isLoaded && user && (
-            <Link
-              href="/min-side"
-              className={`text-brand-black dark:text-brand-white hover:text-brand-secondary duration-200 transition ${
-                isActive("/min-side") ? "text-brand-secondary" : ""
-              }`}
-            >
-              Min side
-            </Link>
-          )}
-
           {isClient &&
             isLoaded &&
             user &&
@@ -196,14 +184,9 @@ export default function Navbar() {
             )}
 
           {isClient && isLoaded && (
-            <ButtonGroup>
+            <>
               {isSignedIn ? (
-                <SignOutButton redirectUrl="/">
-                  <CustomButton className="ml-8">
-                    <LogOut className="mr-1" />
-                    Logg ut
-                  </CustomButton>
-                </SignOutButton>
+                <UserAccountMenu className="ml-8" />
               ) : (
                 <SignInButton>
                   <CustomButton className="ml-8">
@@ -212,7 +195,7 @@ export default function Navbar() {
                   </CustomButton>
                 </SignInButton>
               )}
-            </ButtonGroup>
+            </>
           )}
         </div>
       </div>
@@ -315,18 +298,6 @@ export default function Navbar() {
             Styret
           </Link>
 
-          {isClient && isLoaded && user && (
-            <Link
-              href="/min-side"
-              className={`block py-2 text-brand-black dark:text-brand-white duration-100 transition hover:text-brand-black/60 dark:hover:text-brand-white/60 ${
-                isActive("/min-side") ? "text-brand-secondary" : ""
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Min side
-            </Link>
-          )}
-
           {isClient &&
             isLoaded &&
             user &&
@@ -346,12 +317,9 @@ export default function Navbar() {
 
           <div className="mt-8 flex justify-center">
             {isClient && isLoaded && user ? (
-              <SignOutButton redirectUrl="/">
-                <CustomButton variant="primary">
-                  <LogOut className="mr-2" />
-                  Logg ut
-                </CustomButton>
-              </SignOutButton>
+              <UserAccountMenu
+                onAfterNavigate={() => setIsMenuOpen(false)}
+              />
             ) : (
               <SignInButton>
                 <CustomButton variant="primary">

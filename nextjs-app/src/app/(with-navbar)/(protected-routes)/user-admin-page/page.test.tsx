@@ -253,7 +253,7 @@ describe("User Admin Page", () => {
 
       const backButton = container.querySelector('[data-testid="back-button"]');
       expect(backButton).toBeTruthy();
-      expect(backButton?.getAttribute("data-link")).toBe("/min-side");
+      expect(backButton?.getAttribute("data-link")).toBe("/admin");
     });
 
     it("passes correct props to UserAdmin component", async () => {
