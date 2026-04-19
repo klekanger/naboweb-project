@@ -61,15 +61,13 @@ export function UserAccountMenu({
     user.primaryEmailAddress?.emailAddress ?? "",
   ].join("|");
 
-  const userIcon = (
-    <UserRound className="h-5 w-5 text-brand-black" />
-  );
+  const userIcon = <UserRound className="h-5 w-5 text-brand-black" />;
   const initialsOrIcon: ReactNode = initials ?? userIcon;
 
   const initialsMarkup = (
     <span
       key={`${remountKey}|initials`}
-      className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-brand-black"
+      className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-brand-secondary text-brand-white text-lg"
     >
       {initialsOrIcon}
     </span>
@@ -79,17 +77,14 @@ export function UserAccountMenu({
     <div className={className}>
       <Dropdown>
         <Dropdown.Trigger>
-          <span
-            className="inline-flex rounded-full ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary"
-            aria-label="Konto og innlogging"
-          >
+          <span aria-label="Konto og innlogging">
             {showProfileImage ? (
               <Avatar
                 key={`${remountKey}|img`}
-                className="h-10 w-10 cursor-pointer"
+                className="h-10 w-10 cursor-pointer hover:scale-110 transition-all duration-300 bg-transparent border border-gray-200"
               >
                 <Avatar.Image src={imageUrl} alt={avatarAlt} />
-                <Avatar.Fallback className="text-xs font-semibold text-brand-black">
+                <Avatar.Fallback className="text-lg text-brand-white bg-brand-secondary">
                   {initialsOrIcon}
                 </Avatar.Fallback>
               </Avatar>
