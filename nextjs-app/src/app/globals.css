@@ -229,6 +229,17 @@ body {
     }
   }
 
+  /* HeroUI field controls: match CustomButton default height (h-10) */
+  .select__trigger {
+    @apply min-h-10 h-10 items-center;
+  }
+
+  .date-input-group,
+  .number-field__group,
+  .search-field__group {
+    @apply h-10;
+  }
+
   .input {
     @apply bg-default/10 h-10;
 

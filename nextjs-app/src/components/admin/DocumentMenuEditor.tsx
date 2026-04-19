@@ -1,8 +1,15 @@
 "use client";
 
 import CustomButton from "@/components/CustomButton";
-import { Input, Label, TextField } from "@heroui/react";
-import { CheckCircle, Loader2, Upload, XCircle } from "lucide-react";
+import {
+  type Key,
+  Input,
+  Label,
+  ListBox,
+  Select,
+  TextField,
+} from "@heroui/react";
+import { CheckCircle, Upload, XCircle } from "lucide-react";
 import { useRef, useState } from "react";
 
 type FileOption = {
@@ -23,14 +30,17 @@ type Props = {
   fileOptions: FileOption[];
 };
 
+const NO_FILE_KEY = "__no_file__" as const;
+
 export default function DocumentMenuEditor({
   documentMenuId,
   initialButtons,
   fileOptions,
 }: Props) {
-  const [buttons, setButtons] = useState<
-    [ButtonState, ButtonState, ButtonState, ButtonState]
-  >(initialButtons);
+  const [buttons, setButtons] =
+    useState<[ButtonState, ButtonState, ButtonState, ButtonState]>(
+      initialButtons,
+    );
   const [isSaving, setIsSaving] = useState(false);
   const [result, setResult] = useState<"success" | "error" | null>(null);
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
@@ -41,7 +51,11 @@ export default function DocumentMenuEditor({
     useRef<HTMLInputElement>(null),
   ];
 
-  const updateButton = (index: number, field: keyof ButtonState, value: string) => {
+  const updateButton = (
+    index: number,
+    field: keyof ButtonState,
+    value: string,
+  ) => {
     setButtons((prev) => {
       const next = [...prev] as typeof prev;
       next[index] = { ...next[index], [field]: value };
@@ -132,10 +146,7 @@ export default function DocumentMenuEditor({
   return (
     <div className="max-w-2xl mx-auto space-y-8">
       {buttons.map((btn, i) => (
-        <div
-          key={i}
-          className="p-5 rounded-xl border border-border space-y-4"
-        >
+        <div key={i} className="py-5 rounded-xl border border-border space-y-4">
           <p className="font-semibold text-sm text-foreground/60 uppercase tracking-wide">
             Knapp {i + 1}
           </p>
@@ -145,7 +156,7 @@ export default function DocumentMenuEditor({
             onChange={(value) => updateButton(i, "text", value)}
             isRequired
           >
-            <Label>Knapptekst (4–25 tegn)</Label>
+            <Label>Knappetekst (4–25 tegn)</Label>
             <Input
               type="text"
               minLength={4}
@@ -155,32 +166,50 @@ export default function DocumentMenuEditor({
           </TextField>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Fil</label>
-            <div className="flex gap-2 flex-wrap items-center">
-              <select
-                className="flex-1 min-w-0 border border-border rounded-lg px-3 py-2 text-sm bg-background"
-                value={btn.fileId}
-                onChange={(e) => {
-                  const selected = fileOptions.find(
-                    (f) => f._id === e.target.value,
-                  );
-                  updateButton(i, "fileId", e.target.value);
-                  updateButton(
-                    i,
-                    "fileName",
-                    selected?.title ?? e.target.value,
-                  );
+            <div className="flex gap-2 flex-wrap items-end">
+              <Select
+                className="flex-1 min-w-0"
+                fullWidth
+                value={btn.fileId || NO_FILE_KEY}
+                onChange={(next: Key | Key[] | null) => {
+                  const key = Array.isArray(next) ? next[0] ?? null : next;
+                  if (key === null || key === NO_FILE_KEY) {
+                    updateButton(i, "fileId", "");
+                    updateButton(i, "fileName", "");
+                    return;
+                  }
+                  const id = String(key);
+                  const selected = fileOptions.find((f) => f._id === id);
+                  updateButton(i, "fileId", id);
+                  updateButton(i, "fileName", selected?.title ?? id);
                 }}
+                isRequired
               >
-                <option value="">– Velg eksisterende fil –</option>
-                {fileOptions.map((f) => (
-                  <option key={f._id} value={f._id}>
-                    {f.title ?? f._id}
-                  </option>
-                ))}
-              </select>
-
-              <span className="text-sm text-foreground/50">eller</span>
+                <Label className="text-sm font-medium">Fil</Label>
+                <Select.Trigger>
+                  <Select.Value />
+                  <Select.Indicator />
+                </Select.Trigger>
+                <Select.Popover>
+                  <ListBox>
+                    <ListBox.Item
+                      id={NO_FILE_KEY}
+                      textValue="Velg eksisterende fil"
+                    >
+                      – Velg eksisterende fil –
+                    </ListBox.Item>
+                    {fileOptions.map((f) => (
+                      <ListBox.Item
+                        key={f._id}
+                        id={f._id}
+                        textValue={f.title ?? f._id}
+                      >
+                        {f.title ?? f._id}
+                      </ListBox.Item>
+                    ))}
+                  </ListBox>
+                </Select.Popover>
+              </Select>
 
               <input
                 type="file"
@@ -194,7 +223,7 @@ export default function DocumentMenuEditor({
               />
 
               <CustomButton
-                variant="secondary"
+                variant="primary"
                 size="sm"
                 onPress={() => fileInputRefs[i].current?.click()}
                 isPending={uploadingIndex === i}
