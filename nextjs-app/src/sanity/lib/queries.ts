@@ -366,8 +366,8 @@ export const allAuthorsQuery = defineQuery(`
   }
 `);
 
-export const allBlogPostsAdminQuery = defineQuery(`
-  *[_type=="blogPost"] | order(_createdAt desc) {
+export const blogPostsAdminPagedQuery = defineQuery(`
+  *[_type=="blogPost"] | order(_createdAt desc) [$start...$end] {
     _id,
     _createdAt,
     _updatedAt,
