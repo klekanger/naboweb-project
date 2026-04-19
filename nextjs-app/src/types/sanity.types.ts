@@ -12,6 +12,8 @@
  * ---------------------------------------------------------------------------------
  */
 
+export declare const internalGroqTypeReferenceTo: unique symbol;
+
 // Source: schema.json
 export type SanityImageAssetReference = {
   _ref: string;
@@ -115,18 +117,18 @@ export type Settings = {
 
 export type SanityImageCrop = {
   _type: "sanity.imageCrop";
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
 };
 
 export type SanityImageHotspot = {
   _type: "sanity.imageHotspot";
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
+  x: number;
+  y: number;
+  height: number;
+  width: number;
 };
 
 export type FileOtherDocumentsReference = {
@@ -142,14 +144,14 @@ export type DocumentMenu = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  button1Text?: string;
-  button1File?: FileOtherDocumentsReference;
-  button2Text?: string;
-  button2File?: FileOtherDocumentsReference;
-  button3Text?: string;
-  button3File?: FileOtherDocumentsReference;
-  button4Text?: string;
-  button4File?: FileOtherDocumentsReference;
+  button1Text: string;
+  button1File: FileOtherDocumentsReference;
+  button2Text: string;
+  button2File: FileOtherDocumentsReference;
+  button3Text: string;
+  button3File: FileOtherDocumentsReference;
+  button4Text: string;
+  button4File: FileOtherDocumentsReference;
 };
 
 export type SanityFileAssetReference = {
@@ -165,9 +167,9 @@ export type FileOtherDocuments = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  title?: string;
+  title: string;
   description?: string;
-  otherDocument?: {
+  otherDocument: {
     asset?: SanityFileAssetReference;
     media?: unknown;
     _type: "file";
@@ -181,7 +183,7 @@ export type FileMeetingMinutes = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  title?: string;
+  title: string;
   description?: string;
   meetingDocuments?: Array<{
     asset?: SanityFileAssetReference;
@@ -200,21 +202,21 @@ export type FrontpageServices = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  title1?: string;
-  description1?: string;
-  icon1?: MyIcon;
-  private1?: boolean;
-  url1?: string;
-  title2?: string;
-  description2?: string;
-  icon2?: MyIcon;
-  private2?: boolean;
-  url2?: string;
-  title3?: string;
-  description3?: string;
-  icon3?: MyIcon;
-  private3?: boolean;
-  url3?: string;
+  title1: string;
+  description1: string;
+  icon1: MyIcon;
+  private1: boolean;
+  url1: string;
+  title2: string;
+  description2: string;
+  icon2: MyIcon;
+  private2: boolean;
+  url2: string;
+  title3: string;
+  description3: string;
+  icon3: MyIcon;
+  private3: boolean;
+  url3: string;
 };
 
 export type FrontpageNewUserIntro = {
@@ -224,7 +226,7 @@ export type FrontpageNewUserIntro = {
   _updatedAt: string;
   _rev: string;
   enableNewUserIntro?: boolean;
-  title?: string;
+  title: string;
   introText?: Bodytext;
 };
 
@@ -242,7 +244,7 @@ export type FrontpageShowcase = {
   _updatedAt: string;
   _rev: string;
   enableShowcase?: boolean;
-  showcaseTitle?: string;
+  showcaseTitle: string;
   showcaseBlogposts?: Array<
     {
       _key: string;
@@ -256,9 +258,9 @@ export type FrontpageHero = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  title?: string;
+  title: string;
   subtitle?: string;
-  heroImage?: {
+  heroImage: {
     asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
@@ -266,7 +268,7 @@ export type FrontpageHero = {
     alt?: string;
     _type: "image";
   };
-  bodyText?: string;
+  bodyText: string;
   showButton?: boolean;
   buttonText?: string;
   buttonLink?: PageReference;
@@ -285,10 +287,10 @@ export type Message = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  title?: string;
+  title: string;
   author?: AuthorsReference;
   fromAdmin?: boolean;
-  bodyText?: Array<{
+  bodyText: Array<{
     children?: Array<{
       marks?: Array<string>;
       text?: string;
@@ -331,8 +333,8 @@ export type Authors = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  firstName?: string;
-  lastName?: string;
+  firstName: string;
+  lastName: string;
   email?: string;
   emailSubscription?: boolean;
   authorImage?: {
@@ -350,10 +352,10 @@ export type BlogPost = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  privatePost?: boolean;
-  title?: string;
-  slug?: Slug;
-  excerpt?: Array<
+  privatePost: boolean;
+  title: string;
+  slug: Slug;
+  excerpt: Array<
     | {
         children?: Array<{
           marks?: Array<string>;
@@ -398,7 +400,7 @@ export type BlogPost = {
     alt?: string;
     _type: "image";
   };
-  bodyText?: Array<
+  bodyText: Array<
     | {
         children?: Array<{
           marks?: Array<string>;
@@ -443,7 +445,7 @@ export type BlogPost = {
 
 export type Slug = {
   _type: "slug";
-  current?: string;
+  current: string;
   source?: string;
 };
 
@@ -453,9 +455,9 @@ export type Page = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  title?: string;
-  slug?: Slug;
-  overview?: Array<{
+  title: string;
+  slug: Slug;
+  overview: Array<{
     children?: Array<{
       marks?: Array<string>;
       text?: string;
@@ -536,9 +538,9 @@ export type SanityImagePalette = {
 
 export type SanityImageDimensions = {
   _type: "sanity.imageDimensions";
-  height?: number;
-  width?: number;
-  aspectRatio?: number;
+  height: number;
+  width: number;
+  aspectRatio: number;
 };
 
 export type SanityImageMetadata = {
@@ -548,6 +550,7 @@ export type SanityImageMetadata = {
   palette?: SanityImagePalette;
   lqip?: string;
   blurHash?: string;
+  thumbHash?: string;
   hasAlpha?: boolean;
   isOpaque?: boolean;
 };
@@ -563,14 +566,14 @@ export type SanityFileAsset = {
   title?: string;
   description?: string;
   altText?: string;
-  sha1hash?: string;
-  extension?: string;
-  mimeType?: string;
-  size?: number;
-  assetId?: string;
+  sha1hash: string;
+  extension: string;
+  mimeType: string;
+  size: number;
+  assetId: string;
   uploadId?: string;
-  path?: string;
-  url?: string;
+  path: string;
+  url: string;
   source?: SanityAssetSourceData;
 };
 
@@ -592,14 +595,14 @@ export type SanityImageAsset = {
   title?: string;
   description?: string;
   altText?: string;
-  sha1hash?: string;
-  extension?: string;
-  mimeType?: string;
-  size?: number;
-  assetId?: string;
+  sha1hash: string;
+  extension: string;
+  mimeType: string;
+  size: number;
+  assetId: string;
   uploadId?: string;
-  path?: string;
-  url?: string;
+  path: string;
+  url: string;
   metadata?: SanityImageMetadata;
   source?: SanityAssetSourceData;
 };
@@ -646,13 +649,11 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint;
 
-export declare const internalGroqTypeReferenceTo: unique symbol;
-
 // Source: ../nextjs-app/src/app/sitemap.ts
 // Variable: pageSitemapEntriesQuery
 // Query: *[_type == "page" && defined(slug.current)]{    "slug": slug.current,    _updatedAt  }
 export type PageSitemapEntriesQueryResult = Array<{
-  slug: string | null;
+  slug: string;
   _updatedAt: string;
 }>;
 
@@ -660,7 +661,7 @@ export type PageSitemapEntriesQueryResult = Array<{
 // Variable: publicBlogSitemapEntriesQuery
 // Query: *[_type == "blogPost" && defined(slug.current) && privatePost != true]{    "slug": slug.current,    _updatedAt  }
 export type PublicBlogSitemapEntriesQueryResult = Array<{
-  slug: string | null;
+  slug: string;
   _updatedAt: string;
 }>;
 
@@ -675,21 +676,21 @@ export type UserSubscriptionStatusQueryResult = {
 // Variable: documentMenuQuery
 // Query: *[_type=="documentMenu"] {    button1Text,    button2Text,    button3Text,    button4Text,    'file1': button1File->otherDocument.asset->{url},    'file2': button2File->otherDocument.asset->{url},    'file3': button3File->otherDocument.asset->{url},    'file4': button4File->otherDocument.asset->{url},  }[0]
 export type DocumentMenuQueryResult = {
-  button1Text: string | null;
-  button2Text: string | null;
-  button3Text: string | null;
-  button4Text: string | null;
+  button1Text: string;
+  button2Text: string;
+  button3Text: string;
+  button4Text: string;
   file1: {
-    url: string | null;
+    url: string;
   } | null;
   file2: {
-    url: string | null;
+    url: string;
   } | null;
   file3: {
-    url: string | null;
+    url: string;
   } | null;
   file4: {
-    url: string | null;
+    url: string;
   } | null;
 } | null;
 
@@ -697,18 +698,18 @@ export type DocumentMenuQueryResult = {
 // Variable: otherDocumentsQuery
 // Query: *[_type=="fileOtherDocuments"] {    title,    description,    tags,    _createdAt,    _updatedAt,    'document': otherDocument{      asset->{url, _id, originalFilename}    }  }
 export type OtherDocumentsQueryResult = Array<{
-  title: string | null;
+  title: string;
   description: string | null;
   tags: Array<string> | null;
   _createdAt: string;
   _updatedAt: string;
   document: {
     asset: {
-      url: string | null;
+      url: string;
       _id: string;
       originalFilename: string | null;
     } | null;
-  } | null;
+  };
 }>;
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
@@ -716,7 +717,7 @@ export type OtherDocumentsQueryResult = Array<{
 // Query: *[_type=="fileMeetingMinutes"] | order(_createdAt desc) | order(meetingDate desc) {    _id,    title,    description,    meetingDate,    meetingPlace,    tags,    _createdAt,    _updatedAt,    "documentCount": count(meetingDocuments)  }
 export type MeetingMinutesQueryResult = Array<{
   _id: string;
-  title: string | null;
+  title: string;
   description: string | null;
   meetingDate: string | null;
   meetingPlace: string | null;
@@ -731,7 +732,7 @@ export type MeetingMinutesQueryResult = Array<{
 // Query: *[_type=="fileMeetingMinutes" && _id == $meeting][0] {    _id,    title,    description,    meetingDate,    meetingPlace,    tags,    _createdAt,    _updatedAt,    meetingDocuments[]{asset->{      url,       _id,       originalFilename,      extension,      size,      _createdAt,       _updatedAt    }}  }
 export type MeetingMinutesByIdQueryResult = {
   _id: string;
-  title: string | null;
+  title: string;
   description: string | null;
   meetingDate: string | null;
   meetingPlace: string | null;
@@ -740,11 +741,11 @@ export type MeetingMinutesByIdQueryResult = {
   _updatedAt: string;
   meetingDocuments: Array<{
     asset: {
-      url: string | null;
+      url: string;
       _id: string;
       originalFilename: string | null;
-      extension: string | null;
-      size: number | null;
+      extension: string;
+      size: number;
       _createdAt: string;
       _updatedAt: string;
     } | null;
@@ -755,12 +756,12 @@ export type MeetingMinutesByIdQueryResult = {
 // Variable: frontpageHeroQuery
 // Query: *[_type=="frontpage-hero"]{    title,    subtitle,    showButton,    buttonText,    buttonLink->{slug},    heroImage{..., "lqip": asset->metadata.lqip},    bodyText  }[0]
 export type FrontpageHeroQueryResult = {
-  title: string | null;
+  title: string;
   subtitle: string | null;
   showButton: boolean | null;
   buttonText: string | null;
   buttonLink: {
-    slug: Slug | null;
+    slug: Slug;
   } | null;
   heroImage: {
     asset?: SanityImageAssetReference;
@@ -770,29 +771,29 @@ export type FrontpageHeroQueryResult = {
     alt?: string;
     _type: "image";
     lqip: string | null;
-  } | null;
-  bodyText: string | null;
+  };
+  bodyText: string;
 } | null;
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: frontpageServicesQuery
 // Query: *[_type=="frontpage-services"]{    title1,title2,title3,    url1,url2,url3,    description1,description2,description3,    url1,url2,url3,    icon1,icon2,icon3,    private1,private2,private3  }[0]
 export type FrontpageServicesQueryResult = {
-  title1: string | null;
-  title2: string | null;
-  title3: string | null;
-  url1: string | null;
-  url2: string | null;
-  url3: string | null;
-  description1: string | null;
-  description2: string | null;
-  description3: string | null;
-  icon1: MyIcon | null;
-  icon2: MyIcon | null;
-  icon3: MyIcon | null;
-  private1: boolean | null;
-  private2: boolean | null;
-  private3: boolean | null;
+  title1: string;
+  title2: string;
+  title3: string;
+  url1: string;
+  url2: string;
+  url3: string;
+  description1: string;
+  description2: string;
+  description3: string;
+  icon1: MyIcon;
+  icon2: MyIcon;
+  icon3: MyIcon;
+  private1: boolean;
+  private2: boolean;
+  private3: boolean;
 } | null;
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
@@ -802,7 +803,7 @@ export type PageBySlugQueryResult = {
   _id: string;
   _createdAt: string;
   _updatedAt: string;
-  title: string | null;
+  title: string;
   mainImage: {
     asset?: SanityImageAssetReference;
     media?: unknown;
@@ -825,7 +826,7 @@ export type PageBySlugQueryResult = {
     level?: number;
     _type: "block";
     _key: string;
-  }> | null;
+  }>;
   body: Array<
     | {
         children?: Array<{
@@ -868,7 +869,7 @@ export type PageBySlugQueryResult = {
         url?: string;
       }
   > | null;
-  slug: string | null;
+  slug: string;
 } | null;
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
@@ -878,8 +879,8 @@ export type BlogBySlugQueryResult = {
   _id: string;
   _createdAt: string;
   _updatedAt: string;
-  privatePost: boolean | null;
-  title: string | null;
+  privatePost: boolean;
+  title: string;
   excerpt: Array<
     | {
         children?: Array<{
@@ -915,7 +916,7 @@ export type BlogBySlugQueryResult = {
         _type: "image";
         _key: string;
       }
-  > | null;
+  >;
   featuredImage: {
     asset?: SanityImageAssetReference;
     media?: unknown;
@@ -967,16 +968,16 @@ export type BlogBySlugQueryResult = {
         _type: "youtube";
         url?: string;
       }
-  > | null;
-  slug: string | null;
+  >;
+  slug: string;
   author: Array<{
     _id: string;
     _type: "authors";
     _createdAt: string;
     _updatedAt: string;
     _rev: string;
-    firstName?: string;
-    lastName?: string;
+    firstName: string;
+    lastName: string;
     email?: string;
     emailSubscription?: boolean;
     authorImage?: {
@@ -996,8 +997,8 @@ export type AllBlogBySlugQueryResult = {
   _id: string;
   _createdAt: string;
   _updatedAt: string;
-  privatePost: boolean | null;
-  title: string | null;
+  privatePost: boolean;
+  title: string;
   excerpt: Array<
     | {
         children?: Array<{
@@ -1033,7 +1034,7 @@ export type AllBlogBySlugQueryResult = {
         _type: "image";
         _key: string;
       }
-  > | null;
+  >;
   featuredImage: {
     asset?: SanityImageAssetReference;
     media?: unknown;
@@ -1085,16 +1086,16 @@ export type AllBlogBySlugQueryResult = {
         _type: "youtube";
         url?: string;
       }
-  > | null;
-  slug: string | null;
+  >;
+  slug: string;
   author: Array<{
     _id: string;
     _type: "authors";
     _createdAt: string;
     _updatedAt: string;
     _rev: string;
-    firstName?: string;
-    lastName?: string;
+    firstName: string;
+    lastName: string;
     email?: string;
     emailSubscription?: boolean;
     authorImage?: {
@@ -1114,8 +1115,8 @@ export type PrivateBlogBySlugQueryResult = {
   _id: string;
   _createdAt: string;
   _updatedAt: string;
-  privatePost: boolean | null;
-  title: string | null;
+  privatePost: boolean;
+  title: string;
   excerpt: Array<
     | {
         children?: Array<{
@@ -1151,7 +1152,7 @@ export type PrivateBlogBySlugQueryResult = {
         _type: "image";
         _key: string;
       }
-  > | null;
+  >;
   featuredImage: {
     asset?: SanityImageAssetReference;
     media?: unknown;
@@ -1203,16 +1204,16 @@ export type PrivateBlogBySlugQueryResult = {
         _type: "youtube";
         url?: string;
       }
-  > | null;
-  slug: string | null;
+  >;
+  slug: string;
   author: Array<{
     _id: string;
     _type: "authors";
     _createdAt: string;
     _updatedAt: string;
     _rev: string;
-    firstName?: string;
-    lastName?: string;
+    firstName: string;
+    lastName: string;
     email?: string;
     emailSubscription?: boolean;
     authorImage?: {
@@ -1233,10 +1234,10 @@ export type ShowcaseQueryResult = {
   _id: string;
   _createdAt: string;
   _updatedAt: string;
-  showcaseTitle: string | null;
+  showcaseTitle: string;
   showcaseBlogposts: Array<{
     _id: string;
-    title: string | null;
+    title: string;
     excerpt: Array<
       | {
           children?: Array<{
@@ -1272,7 +1273,7 @@ export type ShowcaseQueryResult = {
           _type: "image";
           _key: string;
         }
-    > | null;
+    >;
     featuredImage: {
       asset?: SanityImageAssetReference;
       media?: unknown;
@@ -1283,7 +1284,7 @@ export type ShowcaseQueryResult = {
       _type: "image";
       lqip: string | null;
     } | null;
-    slug: Slug | null;
+    slug: Slug;
   }> | null;
 } | null;
 
@@ -1292,7 +1293,7 @@ export type ShowcaseQueryResult = {
 // Query: *[_type=="frontpage-new-user-intro"][0]{    "enableNewUserIntro": coalesce(enableNewUserIntro, true),    title,    introText  }
 export type NewUserIntroQueryResult = {
   enableNewUserIntro: boolean | true;
-  title: string | null;
+  title: string;
   introText: Bodytext | null;
 } | null;
 
@@ -1318,7 +1319,7 @@ export type MessageboardQueryResult = Array<{
   _id: string;
   _updatedAt: string;
   _createdAt: string;
-  title: string | null;
+  title: string;
   messageImage: {
     asset?: SanityImageAssetReference;
     media?: unknown;
@@ -1344,7 +1345,7 @@ export type MessageboardQueryResult = Array<{
     level?: number;
     _type: "block";
     _key: string;
-  }> | null;
+  }>;
   tags: Array<string> | null;
   comments: Array<{
     _key: string;
@@ -1352,15 +1353,15 @@ export type MessageboardQueryResult = Array<{
     commentTitle: string | null;
     commentAuthor: {
       _id: string;
-      firstName: string | null;
-      lastName: string | null;
+      firstName: string;
+      lastName: string;
     } | null;
   }> | null;
   fromAdmin: boolean | null;
   author: {
     _id: string;
-    firstName: string | null;
-    lastName: string | null;
+    firstName: string;
+    lastName: string;
   } | null;
 }>;
 
@@ -1371,7 +1372,7 @@ export type MessageByIdQueryResult = {
   _id: string;
   _updatedAt: string;
   _createdAt: string;
-  title: string | null;
+  title: string;
   messageImage: {
     asset?: SanityImageAssetReference;
     media?: unknown;
@@ -1397,7 +1398,7 @@ export type MessageByIdQueryResult = {
     level?: number;
     _type: "block";
     _key: string;
-  }> | null;
+  }>;
   tags: Array<string> | null;
   comments: Array<{
     _key: string;
@@ -1405,16 +1406,16 @@ export type MessageByIdQueryResult = {
     commentTitle: string | null;
     commentAuthor: {
       _id: string;
-      firstName: string | null;
-      lastName: string | null;
+      firstName: string;
+      lastName: string;
     } | null;
     published: string | null;
   }> | null;
   fromAdmin: boolean | null;
   author: {
     _id: string;
-    firstName: string | null;
-    lastName: string | null;
+    firstName: string;
+    lastName: string;
   } | null;
 } | null;
 
@@ -1482,10 +1483,10 @@ export type BlogCollectionQueryResult = Array<{
         _type: "image";
         _key: string;
       }
-  > | null;
-  privatePost: boolean | null;
-  title: string | null;
-  slug: string | null;
+  >;
+  privatePost: boolean;
+  title: string;
+  slug: string;
 }>;
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
@@ -1540,31 +1541,31 @@ export type AllBlogCollectionQueryResult = Array<{
         _type: "image";
         _key: string;
       }
-  > | null;
-  privatePost: boolean | null;
-  title: string | null;
-  slug: string | null;
+  >;
+  privatePost: boolean;
+  title: string;
+  slug: string;
 }>;
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: pageSlugs
 // Query: *[_type == "page" && defined(slug.current)]  {"slug": slug.current}
 export type PageSlugsResult = Array<{
-  slug: string | null;
+  slug: string;
 }>;
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: blogSlugs
 // Query: *[_type == "blogPost" && defined(slug.current)]  {"slug": slug.current}
 export type BlogSlugsResult = Array<{
-  slug: string | null;
+  slug: string;
 }>;
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: privateBlogSlugs
 // Query: *[_type == "blogPost" && defined(slug.current) && privatePost == true]  {"slug": slug.current}
 export type PrivateBlogSlugsResult = Array<{
-  slug: string | null;
+  slug: string;
 }>;
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
@@ -1584,30 +1585,30 @@ export type MeetingMinutesIdsResult = Array<{
 // Query: *[_type=="documentMenu"][0] {    _id,    button1Text,    button2Text,    button3Text,    button4Text,    "file1": button1File->{_id, title, "url": otherDocument.asset->url},    "file2": button2File->{_id, title, "url": otherDocument.asset->url},    "file3": button3File->{_id, title, "url": otherDocument.asset->url},    "file4": button4File->{_id, title, "url": otherDocument.asset->url},  }
 export type DocumentMenuAdminQueryResult = {
   _id: string;
-  button1Text: string | null;
-  button2Text: string | null;
-  button3Text: string | null;
-  button4Text: string | null;
+  button1Text: string;
+  button2Text: string;
+  button3Text: string;
+  button4Text: string;
   file1: {
     _id: string;
-    title: string | null;
+    title: string;
     url: string | null;
-  } | null;
+  };
   file2: {
     _id: string;
-    title: string | null;
+    title: string;
     url: string | null;
-  } | null;
+  };
   file3: {
     _id: string;
-    title: string | null;
+    title: string;
     url: string | null;
-  } | null;
+  };
   file4: {
     _id: string;
-    title: string | null;
+    title: string;
     url: string | null;
-  } | null;
+  };
 } | null;
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
@@ -1615,7 +1616,7 @@ export type DocumentMenuAdminQueryResult = {
 // Query: *[_type=="fileOtherDocuments"] | order(title asc) {    _id,    title,    "url": otherDocument.asset->url  }
 export type AllFileDocumentsQueryResult = Array<{
   _id: string;
-  title: string | null;
+  title: string;
   url: string | null;
 }>;
 
@@ -1624,20 +1625,20 @@ export type AllFileDocumentsQueryResult = Array<{
 // Query: *[_type=="authors"] | order(firstName asc) {    _id,    firstName,    lastName  }
 export type AllAuthorsQueryResult = Array<{
   _id: string;
-  firstName: string | null;
-  lastName: string | null;
+  firstName: string;
+  lastName: string;
 }>;
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
-// Variable: allBlogPostsAdminQuery
-// Query: *[_type=="blogPost"] | order(_createdAt desc) {    _id,    _createdAt,    _updatedAt,    title,    "slug": slug.current,    privatePost,    excerpt  }
-export type AllBlogPostsAdminQueryResult = Array<{
+// Variable: blogPostsAdminPagedQuery
+// Query: *[_type=="blogPost"] | order(_createdAt desc) [$start...$end] {    _id,    _createdAt,    _updatedAt,    title,    "slug": slug.current,    privatePost,    excerpt  }
+export type BlogPostsAdminPagedQueryResult = Array<{
   _id: string;
   _createdAt: string;
   _updatedAt: string;
-  title: string | null;
-  slug: string | null;
-  privatePost: boolean | null;
+  title: string;
+  slug: string;
+  privatePost: boolean;
   excerpt: Array<
     | {
         children?: Array<{
@@ -1673,7 +1674,7 @@ export type AllBlogPostsAdminQueryResult = Array<{
         _type: "image";
         _key: string;
       }
-  > | null;
+  >;
 }>;
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
@@ -1683,18 +1684,18 @@ export type AllOtherDocumentsAdminQueryResult = Array<{
   _id: string;
   _createdAt: string;
   _updatedAt: string;
-  title: string | null;
+  title: string;
   description: string | null;
   tags: Array<string> | null;
   document: {
     asset: {
-      url: string | null;
+      url: string;
       _id: string;
       originalFilename: string | null;
-      extension: string | null;
-      size: number | null;
+      extension: string;
+      size: number;
     } | null;
-  } | null;
+  };
 }>;
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
@@ -1704,18 +1705,18 @@ export type AllMeetingMinutesAdminQueryResult = Array<{
   _id: string;
   _createdAt: string;
   _updatedAt: string;
-  title: string | null;
+  title: string;
   description: string | null;
   meetingDate: string | null;
   meetingPlace: string | null;
   tags: Array<string> | null;
   meetingDocuments: Array<{
     asset: {
-      url: string | null;
+      url: string;
       _id: string;
       originalFilename: string | null;
-      extension: string | null;
-      size: number | null;
+      extension: string;
+      size: number;
     } | null;
   }> | null;
 }>;
@@ -1756,7 +1757,7 @@ declare module "@sanity/client" {
     '\n  *[_type=="documentMenu"][0] {\n    _id,\n    button1Text,\n    button2Text,\n    button3Text,\n    button4Text,\n    "file1": button1File->{_id, title, "url": otherDocument.asset->url},\n    "file2": button2File->{_id, title, "url": otherDocument.asset->url},\n    "file3": button3File->{_id, title, "url": otherDocument.asset->url},\n    "file4": button4File->{_id, title, "url": otherDocument.asset->url},\n  }\n': DocumentMenuAdminQueryResult;
     '\n  *[_type=="fileOtherDocuments"] | order(title asc) {\n    _id,\n    title,\n    "url": otherDocument.asset->url\n  }\n': AllFileDocumentsQueryResult;
     '\n  *[_type=="authors"] | order(firstName asc) {\n    _id,\n    firstName,\n    lastName\n  }\n': AllAuthorsQueryResult;
-    '\n  *[_type=="blogPost"] | order(_createdAt desc) {\n    _id,\n    _createdAt,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    privatePost,\n    excerpt\n  }\n': AllBlogPostsAdminQueryResult;
+    '\n  *[_type=="blogPost"] | order(_createdAt desc) [$start...$end] {\n    _id,\n    _createdAt,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    privatePost,\n    excerpt\n  }\n': BlogPostsAdminPagedQueryResult;
     '\n  *[_type=="fileOtherDocuments"] | order(_createdAt desc) {\n    _id,\n    _createdAt,\n    _updatedAt,\n    title,\n    description,\n    tags,\n    "document": otherDocument{\n      asset->{url, _id, originalFilename, extension, size}\n    }\n  }\n': AllOtherDocumentsAdminQueryResult;
     '\n  *[_type=="fileMeetingMinutes"] | order(_createdAt desc) | order(meetingDate desc) {\n    _id,\n    _createdAt,\n    _updatedAt,\n    title,\n    description,\n    meetingDate,\n    meetingPlace,\n    tags,\n    meetingDocuments[]{asset->{url, _id, originalFilename, extension, size}}\n  }\n': AllMeetingMinutesAdminQueryResult;
   }
