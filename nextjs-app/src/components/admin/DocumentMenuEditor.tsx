@@ -326,15 +326,13 @@ export default function DocumentMenuEditor({
           fileInputByRow[i].trim(),
           seedById,
         );
-        const selectedKey = btn.fileId ? btn.fileId : undefined;
+        const selectedId: Key | null = btn.fileId ? btn.fileId : null;
         const resolvedFileLabel = btn.fileId
-          ? (btn.fileName ||
-              seedById.get(btn.fileId)?.title ||
-              btn.fileId)
+          ? btn.fileName || seedById.get(btn.fileId)?.title || btn.fileId
           : "";
 
         return (
-          <div key={i} className="py-5 rounded-xl border border-border space-y-4">
+          <div key={i} className="py-5 rounded-xl space-y-4">
             <p className="font-semibold text-sm text-foreground/60 uppercase tracking-wide">
               Knapp {i + 1}
             </p>
@@ -358,13 +356,12 @@ export default function DocumentMenuEditor({
                 <ComboBox<FileOption>
                   className="flex-1 min-w-0"
                   fullWidth
-                  // @ts-expect-error RAC allowsEmptySelection; HeroUI ComboBoxRootProps omit it
-                  allowsEmptySelection
+                  allowsEmptyCollection
                   defaultFilter={comboIncludeAllFilter}
                   inputValue={fileInputByRow[i]}
                   items={comboItems}
-                  selectedKey={selectedKey}
-                  onSelectionChange={(key: Key | null) => {
+                  value={selectedId}
+                  onChange={(key: Key | null) => {
                     if (key === null) {
                       clearFileForRow(i);
                       return;

@@ -212,7 +212,7 @@ export default function NewMessage() {
       <Card className="p-2 py-8 mb-16">
         <Card.Header className="flex flex-col mb-0 pb-0">
           <div className="pb-4 pr-4 md:pb-8 flex gap-3 w-full">
-            <div className="border-r-1 border-black/20 pr-4">
+            <div className="border-r border-black/20 pr-4">
               <MessagesSquare className="h-full" />
             </div>
             <h1 className="text-xl lg:text-3xl prose lg:prose-lg">

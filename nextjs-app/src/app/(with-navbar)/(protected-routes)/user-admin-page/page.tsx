@@ -77,7 +77,7 @@ async function fetchUsers(page: number = 1, searchQuery?: string) {
   }
 }
 
-async function UserAdminContent({
+export async function UserAdminContent({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

@@ -61,22 +61,12 @@ export default function DocumentTable({
   const [filterValue, setFilterValue] = useState("");
   const hasSearchFilter = Boolean(filterValue);
 
-  if (!documents) {
-    return (
-      <>
-        <p className="pb-4">Ingen dokumenter</p>
-        <CustomButton href="/information" className="no-underline">
-          <ArrowBigLeft className="h-5 w-5 mt-1.5" />
-          Gå tilbake
-        </CustomButton>
-      </>
-    );
-  }
+  const safeDocuments = useMemo(() => documents ?? [], [documents]);
 
-  const pages = Math.ceil(documents.length / rowsPerPage);
+  const pages = Math.ceil(safeDocuments.length / rowsPerPage);
 
   const filteredItems = useMemo(() => {
-    let filteredItems = [...documents];
+    let filteredItems = [...safeDocuments];
 
     if (hasSearchFilter) {
       filteredItems = filteredItems.filter(
@@ -89,7 +79,7 @@ export default function DocumentTable({
     }
 
     return filteredItems;
-  }, [documents, filterValue, hasSearchFilter]);
+  }, [safeDocuments, filterValue, hasSearchFilter]);
 
   const itemsToRender = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -136,6 +126,18 @@ export default function DocumentTable({
       return fileType;
     }
   };
+
+  if (!documents) {
+    return (
+      <>
+        <p className="pb-4">Ingen dokumenter</p>
+        <CustomButton href="/information" className="no-underline">
+          <ArrowBigLeft className="h-5 w-5 mt-1.5" />
+          Gå tilbake
+        </CustomButton>
+      </>
+    );
+  }
 
   return (
     <>

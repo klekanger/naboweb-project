@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { Crown, UserCheck, UserCog, UserPlus2, Users } from "lucide-react";
+import { Crown, UserCog, UserPlus2, Users } from "lucide-react";
 import {
   validateEmail,
   validateForm,
@@ -118,13 +118,13 @@ describe("UserAdmin Logic Tests", () => {
   });
 
   describe("menuElements", () => {
-    it("contains exactly 5 menu items", () => {
-      expect(menuElements).toHaveLength(5);
+    it("contains exactly 4 menu items", () => {
+      expect(menuElements).toHaveLength(4);
     });
 
     it("has correct menu structure with all required properties", () => {
-      menuElements.forEach((element, index) => {
-        expect(element).toHaveProperty("id", index);
+      menuElements.forEach((element) => {
+        expect(element).toHaveProperty("id");
         expect(element).toHaveProperty("name");
         expect(element).toHaveProperty("description");
         expect(element).toHaveProperty("menuIcon");
@@ -138,30 +138,26 @@ describe("UserAdmin Logic Tests", () => {
 
     it("has correct Norwegian text for each menu item", () => {
       expect(menuElements[0].name).toBe("Vis brukere");
-      expect(menuElements[1].name).toBe("Inviter bruker");
-      expect(menuElements[2].name).toBe("Ny bruker");
-      expect(menuElements[3].name).toBe("Endre bruker");
-      expect(menuElements[4].name).toBe("Superbrukere");
+      expect(menuElements[1].name).toBe("Ny bruker");
+      expect(menuElements[2].name).toBe("Endre bruker");
+      expect(menuElements[3].name).toBe("Superbrukere");
     });
 
-    it("has sequential IDs starting from 0", () => {
-      menuElements.forEach((element, index) => {
-        expect(element.id).toBe(index);
-      });
+    it("uses stable sidebar ids for each menu item", () => {
+      expect(menuElements.map((e) => e.id)).toEqual([0, 2, 3, 4]);
     });
 
     it("has correct icon components for each menu item", () => {
       expect(menuElements[0].menuIcon).toBe(Users);
-      expect(menuElements[1].menuIcon).toBe(UserCheck);
-      expect(menuElements[2].menuIcon).toBe(UserPlus2);
-      expect(menuElements[3].menuIcon).toBe(UserCog);
-      expect(menuElements[4].menuIcon).toBe(Crown);
+      expect(menuElements[1].menuIcon).toBe(UserPlus2);
+      expect(menuElements[2].menuIcon).toBe(UserCog);
+      expect(menuElements[3].menuIcon).toBe(Crown);
     });
 
     it("has HTML content in descriptions where appropriate", () => {
       // Some descriptions contain HTML tags for formatting
       expect(menuElements[0].description).toContain("<br />");
-      expect(menuElements[4].description).toContain("<em>");
+      expect(menuElements[3].description).toContain("<em>");
     });
   });
 });

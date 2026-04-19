@@ -346,7 +346,7 @@ export default function UserAdmin({
                       </Checkbox>
                     </div>
                     <Description className="mt-4">
-                      Alle må ha rollen 'Bruker' for å få tilgang til systemet.
+                      Alle må ha rollen &apos;Bruker&apos; for å få tilgang til systemet.
                       Redaktører kan opprette og redigere innhold, mens
                       administratorer har tilgang til alle funksjoner.
                     </Description>

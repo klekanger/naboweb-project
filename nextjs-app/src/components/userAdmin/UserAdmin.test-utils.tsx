@@ -307,13 +307,7 @@ export const accessibilityQueries = {
 
 // Norwegian text content helpers
 export const norwegianTextContent = {
-  menuItems: [
-    "Vis brukere",
-    "Inviter bruker",
-    "Ny bruker",
-    "Endre bruker",
-    "Superbrukere",
-  ],
+  menuItems: ["Vis brukere", "Ny bruker", "Endre bruker", "Superbrukere"],
   formLabels: ["Fornavn", "Etternavn", "E-post", "Passord"],
   buttons: ["Legg til", "Avbryt", "Tilbake", "Opprett"],
   errorMessages: [

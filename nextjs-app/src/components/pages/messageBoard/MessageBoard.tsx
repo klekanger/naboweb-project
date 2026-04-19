@@ -18,11 +18,11 @@ export default function MessageBoard({
   messages: MessageboardQueryResult;
   messageCount: number;
 }) {
-  if (!messages) return null;
-
   const [showOnlyFromAdmin, setShowOnlyFromAdmin] = useState(false);
   const [showOnlyMyMessages, setShowOnlyMyMessages] = useState(false);
   const { user, isLoaded } = useUser();
+
+  if (!messages) return null;
 
   const { firstName, lastName, publicMetadata } = user ?? {};
   const isAdmin = Array.isArray(publicMetadata?.roles)

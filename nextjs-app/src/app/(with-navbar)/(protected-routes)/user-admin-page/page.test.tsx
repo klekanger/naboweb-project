@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
-import { render, cleanup } from "@testing-library/react";
+import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import type { UserAdminProps } from "@/types/types";
 
 // Mock dependencies
@@ -47,16 +47,19 @@ vi.mock("@/components/BackButton", () => ({
 // Mock next/navigation
 const redirectMock = vi.fn();
 vi.mock("next/navigation", () => ({
-  redirect: redirectMock,
+  redirect: (...args: unknown[]) => {
+    redirectMock(...args);
+    throw new Error("NEXT_REDIRECT");
+  },
 }));
 
 describe("User Admin Page", () => {
-  let Page: (props: { searchParams: Promise<any> }) => Promise<any>;
+  let UserAdminContent: typeof import("./page").UserAdminContent;
 
   beforeEach(async () => {
     vi.clearAllMocks();
     redirectMock.mockClear();
-    Page = (await import("./page")).default;
+    ({ UserAdminContent } = await import("./page"));
   });
 
   afterEach(() => {
@@ -67,10 +70,16 @@ describe("User Admin Page", () => {
     it("renders not admin message for non-admin users", async () => {
       validateUserRolesMock.mockResolvedValue(false);
 
-      const result = await Page({ searchParams: Promise.resolve({}) });
-      const { container } = render(result);
+      const result = await UserAdminContent({
+        searchParams: Promise.resolve({}),
+      });
+      await act(async () => {
+        render(result);
+      });
 
-      const noAdminDiv = container.querySelector("#no-admin");
+      const noAdminDiv = await waitFor(() =>
+        document.querySelector("#no-admin"),
+      );
       expect(noAdminDiv).toBeTruthy();
       expect(noAdminDiv?.textContent).toBe("Du er ikke administrator");
     });
@@ -82,7 +91,7 @@ describe("User Admin Page", () => {
         totalCount: 0,
       });
 
-      await Page({ searchParams: Promise.resolve({}) });
+      await UserAdminContent({ searchParams: Promise.resolve({}) });
 
       expect(validateUserRolesMock).toHaveBeenCalledWith({
         requiredRoles: ["admin"],
@@ -123,15 +132,17 @@ describe("User Admin Page", () => {
         totalCount: 2,
       });
 
-      const result = await Page({ searchParams: Promise.resolve({}) });
-      const { container } = render(result);
+      const result = await UserAdminContent({
+        searchParams: Promise.resolve({}),
+      });
+      await act(async () => {
+        render(result);
+      });
 
-      const userAdminElement = container.querySelector(
-        '[data-testid="user-admin-mock"]',
-      );
+      const userAdminElement = await screen.findByTestId("user-admin-mock");
       expect(userAdminElement).toBeTruthy();
 
-      const userCount = container.querySelector('[data-testid="user-count"]');
+      const userCount = await screen.findByTestId("user-count");
       expect(userCount?.textContent).toBe("2");
     });
 
@@ -151,19 +162,19 @@ describe("User Admin Page", () => {
         totalCount: 100,
       });
 
-      const result = await Page({
+      const result = await UserAdminContent({
         searchParams: Promise.resolve({ page: "2" }),
       });
-      const { container } = render(result);
+      await act(async () => {
+        render(result);
+      });
 
       expect(mockGetUserList).toHaveBeenCalledWith({
         limit: 30,
         offset: 30,
       });
 
-      const currentPage = container.querySelector(
-        '[data-testid="current-page"]',
-      );
+      const currentPage = await screen.findByTestId("current-page");
       expect(currentPage?.textContent).toBe("2");
     });
 
@@ -185,7 +196,7 @@ describe("User Admin Page", () => {
         totalCount: 1,
       });
 
-      await Page({
+      await UserAdminContent({
         searchParams: Promise.resolve({ search: "Fredrik" }),
       });
 
@@ -204,17 +215,19 @@ describe("User Admin Page", () => {
     it("handles fetch errors gracefully", async () => {
       mockGetUserList.mockRejectedValue(new Error("API Error"));
 
-      const result = await Page({ searchParams: Promise.resolve({}) });
-      const { container } = render(result);
-
-      const errorMessage = container.querySelector("p");
-      expect(errorMessage?.textContent).toBe("Noe gikk galt");
+      await expect(
+        UserAdminContent({ searchParams: Promise.resolve({}) }),
+      ).rejects.toThrow("Error fetching users");
     });
 
     it("redirects on invalid page numbers", async () => {
-      await Page({
-        searchParams: Promise.resolve({ page: "invalid" }),
-      });
+      try {
+        await UserAdminContent({
+          searchParams: Promise.resolve({ page: "invalid" }),
+        });
+      } catch {
+        // redirect mock throws
+      }
 
       expect(redirectMock).toHaveBeenCalledWith("/user-admin-page?page=1");
     });
@@ -222,12 +235,16 @@ describe("User Admin Page", () => {
     it("redirects when page exceeds total pages", async () => {
       mockGetUserList.mockResolvedValue({
         data: [],
-        totalCount: 30, // Only 1 page with 30 users per page
+        totalCount: 30,
       });
 
-      await Page({
-        searchParams: Promise.resolve({ page: "5" }),
-      });
+      try {
+        await UserAdminContent({
+          searchParams: Promise.resolve({ page: "5" }),
+        });
+      } catch {
+        // redirect mock throws
+      }
 
       expect(redirectMock).toHaveBeenCalledWith("/user-admin-page?page=1");
     });
@@ -245,13 +262,19 @@ describe("User Admin Page", () => {
         totalCount: 0,
       });
 
-      const result = await Page({ searchParams: Promise.resolve({}) });
-      const { container } = render(result);
+      const result = await UserAdminContent({
+        searchParams: Promise.resolve({}),
+      });
+      await act(async () => {
+        render(result);
+      });
 
-      const title = container.querySelector("h1");
+      const title = await screen.findByRole("heading", {
+        name: "Administrer brukere",
+      });
       expect(title?.textContent).toBe("Administrer brukere");
 
-      const backButton = container.querySelector('[data-testid="back-button"]');
+      const backButton = await screen.findByTestId("back-button");
       expect(backButton).toBeTruthy();
       expect(backButton?.getAttribute("data-link")).toBe("/admin");
     });
@@ -274,16 +297,19 @@ describe("User Admin Page", () => {
         totalCount: 1,
       });
 
-      const result = await Page({ searchParams: Promise.resolve({}) });
-      render(result);
+      const result = await UserAdminContent({
+        searchParams: Promise.resolve({}),
+      });
+      await act(async () => {
+        render(result);
+      });
 
-      // Verify UserAdmin was called
-      expect(UserAdminMock).toHaveBeenCalledTimes(1);
+      await waitFor(() => {
+        expect(UserAdminMock).toHaveBeenCalledTimes(1);
+      });
 
-      // Get the actual call arguments
       const callArgs = UserAdminMock.mock.calls[0][0];
 
-      // Verify the structure and key properties
       expect(callArgs).toHaveProperty("users");
       expect(callArgs).toHaveProperty("pagination");
       expect(callArgs).toHaveProperty("isSearchResult");
