@@ -350,8 +350,25 @@ export const documentMenuAdminQuery = defineQuery(`
   }
 `);
 
-export const allFileDocumentsQuery = defineQuery(`
-  *[_type=="fileOtherDocuments"] | order(title asc) {
+/** First chunk of files for combobox before user types a search (bounded). */
+export const fileOtherDocumentsBrowseQuery = defineQuery(`
+  *[
+    _type == "fileOtherDocuments" &&
+    defined(title)
+  ] | order(title asc) [0...$END] {
+    _id,
+    title,
+    "url": otherDocument.asset->url
+  }
+`);
+
+/** Bounded title search for admin document-menu picker (server-backed combobox). */
+export const fileOtherDocumentsSearchQuery = defineQuery(`
+  *[
+    _type == "fileOtherDocuments" &&
+    defined(title) &&
+    lower(title) match $SEARCH_PATTERN
+  ] | order(title asc) [0...$END] {
     _id,
     title,
     "url": otherDocument.asset->url

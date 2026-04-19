@@ -1612,9 +1612,18 @@ export type DocumentMenuAdminQueryResult = {
 } | null;
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
-// Variable: allFileDocumentsQuery
-// Query: *[_type=="fileOtherDocuments"] | order(title asc) {    _id,    title,    "url": otherDocument.asset->url  }
-export type AllFileDocumentsQueryResult = Array<{
+// Variable: fileOtherDocumentsBrowseQuery
+// Query: *[    _type == "fileOtherDocuments" &&    defined(title)  ] | order(title asc) [0...$END] {    _id,    title,    "url": otherDocument.asset->url  }
+export type FileOtherDocumentsBrowseQueryResult = Array<{
+  _id: string;
+  title: string;
+  url: string | null;
+}>;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
+// Variable: fileOtherDocumentsSearchQuery
+// Query: *[    _type == "fileOtherDocuments" &&    defined(title) &&    lower(title) match $SEARCH_PATTERN  ] | order(title asc) [0...$END] {    _id,    title,    "url": otherDocument.asset->url  }
+export type FileOtherDocumentsSearchQueryResult = Array<{
   _id: string;
   title: string;
   url: string | null;
@@ -1755,7 +1764,8 @@ declare module "@sanity/client" {
     '\n  *[_type == "message" && defined(slug.current)]\n  {"slug": slug.current}\n': MessageSlugsResult;
     '\n  *[_type == "fileMeetingMinutes"]{_id}\n': MeetingMinutesIdsResult;
     '\n  *[_type=="documentMenu"][0] {\n    _id,\n    button1Text,\n    button2Text,\n    button3Text,\n    button4Text,\n    "file1": button1File->{_id, title, "url": otherDocument.asset->url},\n    "file2": button2File->{_id, title, "url": otherDocument.asset->url},\n    "file3": button3File->{_id, title, "url": otherDocument.asset->url},\n    "file4": button4File->{_id, title, "url": otherDocument.asset->url},\n  }\n': DocumentMenuAdminQueryResult;
-    '\n  *[_type=="fileOtherDocuments"] | order(title asc) {\n    _id,\n    title,\n    "url": otherDocument.asset->url\n  }\n': AllFileDocumentsQueryResult;
+    '\n  *[\n    _type == "fileOtherDocuments" &&\n    defined(title)\n  ] | order(title asc) [0...$END] {\n    _id,\n    title,\n    "url": otherDocument.asset->url\n  }\n': FileOtherDocumentsBrowseQueryResult;
+    '\n  *[\n    _type == "fileOtherDocuments" &&\n    defined(title) &&\n    lower(title) match $SEARCH_PATTERN\n  ] | order(title asc) [0...$END] {\n    _id,\n    title,\n    "url": otherDocument.asset->url\n  }\n': FileOtherDocumentsSearchQueryResult;
     '\n  *[_type=="authors"] | order(firstName asc) {\n    _id,\n    firstName,\n    lastName\n  }\n': AllAuthorsQueryResult;
     '\n  *[_type=="blogPost"] | order(_createdAt desc) [$start...$end] {\n    _id,\n    _createdAt,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    privatePost,\n    excerpt\n  }\n': BlogPostsAdminPagedQueryResult;
     '\n  *[_type=="fileOtherDocuments"] | order(_createdAt desc) {\n    _id,\n    _createdAt,\n    _updatedAt,\n    title,\n    description,\n    tags,\n    "document": otherDocument{\n      asset->{url, _id, originalFilename, extension, size}\n    }\n  }\n': AllOtherDocumentsAdminQueryResult;

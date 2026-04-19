@@ -1,15 +1,41 @@
 import DocumentMenuEditor from "@/components/admin/DocumentMenuEditor";
 import BackButton from "@/components/BackButton";
+import { DOCUMENT_MENU_BROWSE_FILE_LIMIT } from "@/lib/document-menu-file-picker";
 import { client } from "@/sanity/lib/client";
 import {
-  allFileDocumentsQuery,
   documentMenuAdminQuery,
+  fileOtherDocumentsBrowseQuery,
 } from "@/sanity/lib/queries";
+import type { FileOtherDocumentsBrowseQueryResult } from "@/types/sanity.types";
+
+type MenuFileProjection = {
+  _id: string;
+  title: string | null;
+  url: string | null;
+} | null;
+
+function uniqueSeedFilesFromMenu(menu: {
+  file1: MenuFileProjection;
+  file2: MenuFileProjection;
+  file3: MenuFileProjection;
+  file4: MenuFileProjection;
+}): { _id: string; title: string | null; url: string | null }[] {
+  const map = new Map<
+    string,
+    { _id: string; title: string | null; url: string | null }
+  >();
+  for (const f of [menu.file1, menu.file2, menu.file3, menu.file4]) {
+    if (f?._id) map.set(f._id, { _id: f._id, title: f.title, url: f.url });
+  }
+  return [...map.values()];
+}
 
 export default async function DocumentMenuPage() {
-  const [menuData, fileOptions] = await Promise.all([
+  const [menuData, browseFileOptions] = await Promise.all([
     client.fetch(documentMenuAdminQuery),
-    client.fetch(allFileDocumentsQuery),
+    client.fetch(fileOtherDocumentsBrowseQuery, {
+      END: DOCUMENT_MENU_BROWSE_FILE_LIMIT,
+    }),
   ]);
 
   if (!menuData) {
@@ -48,19 +74,29 @@ export default async function DocumentMenuPage() {
     },
   ];
 
+  const seedFileOptions = uniqueSeedFilesFromMenu({
+    file1: menuData.file1,
+    file2: menuData.file2,
+    file3: menuData.file3,
+    file4: menuData.file4,
+  });
+
   return (
     <div className="max-w-2xl mx-auto py-12 px-4">
       <h1 className="text-3xl font-semibold mb-2">Rediger dokumentmeny</h1>
       <p className="text-foreground/60 mb-8">
         Her kan du endre tekst og tilknyttede filer for de fire første
-        snarveiknappene på Informasjon-siden.
+        snarveiknappene på Informasjon-siden. Listen viser de første{" "}
+        {DOCUMENT_MENU_BROWSE_FILE_LIMIT} filene (alfabetisk); skriv minst to tegn for å
+        søke blant alle filer.
       </p>
 
       <DocumentMenuEditor
         documentMenuId={menuData._id}
         initialButtons={initialButtons}
-        fileOptions={(fileOptions ?? []).map(
-          (f: { _id: string; title: string | null; url: string | null }) => ({
+        seedFileOptions={seedFileOptions}
+        browseFileOptions={(browseFileOptions ?? []).map(
+          (f: FileOtherDocumentsBrowseQueryResult[number]) => ({
             _id: f._id,
             title: f.title,
             url: f.url ?? null,
