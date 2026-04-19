@@ -52,7 +52,7 @@ export default async function DocumentMenuPage() {
     <div className="max-w-2xl mx-auto py-12 px-4">
       <h1 className="text-3xl font-semibold mb-2">Rediger dokumentmeny</h1>
       <p className="text-foreground/60 mb-8">
-        Her kan du endre tekst og tilknyttede filer for de fire
+        Her kan du endre tekst og tilknyttede filer for de fire første
         snarveiknappene på Informasjon-siden.
       </p>
 
