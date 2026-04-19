@@ -86,7 +86,7 @@ export default function Showcase({
       <div className="prose mt-8">
         <Link
           href="/blog-collection"
-          className="text-brand-secondary dark:text-brand-dark-secondary"
+          className="text-brand-secondary"
         >
           <em>Gå til nyhetsarkivet »</em>
         </Link>

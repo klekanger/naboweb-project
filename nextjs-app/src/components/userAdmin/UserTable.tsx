@@ -364,7 +364,7 @@ export default function UserTable({
                         <Dropdown>
                           <Dropdown.Trigger>
                             <div
-                              className="inline-flex items-center justify-center min-w-0 w-auto h-auto p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                              className="inline-flex items-center justify-center min-w-0 w-auto h-auto p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer"
                               aria-label="Meny for brukeroperasjoner"
                             >
                               <MoreVertical className="h-4 w-4 text-gray-400" />

@@ -37,7 +37,7 @@ export default function Navbar() {
   const isActive = (path: string) => pathname.startsWith(path);
 
   return (
-    <nav className="sticky top-0 z-50 px-2 lg:px-0  dark:bg-black/80 bg-brand-white/70 backdrop-blur-md border-b border-border w-full">
+    <nav className="sticky top-0 z-50 px-2 lg:px-0 bg-brand-white/70 backdrop-blur-md border-b border-border w-full">
       <div className="max-w-7xl h-18 flex justify-between mx-auto items-center">
         {/* Mobile menu toggle and logo */}
         <div className="flex justify-between gap-4 lg:px-5 flex-1 lg:flex-none">
@@ -59,9 +59,9 @@ export default function Navbar() {
             className="z-50 lg:hidden p-2"
           >
             {isMenuOpen ? (
-              <X className="h-8 w-8 text-brand-black dark:text-brand-white" />
+              <X className="h-8 w-8 text-brand-black" />
             ) : (
-              <Menu className="h-8 w-8 text-brand-black dark:text-brand-white" />
+              <Menu className="h-8 w-8 text-brand-black" />
             )}
           </button>
         </div>
@@ -72,7 +72,7 @@ export default function Navbar() {
             <div className="relative group">
               <CustomButton
                 variant="ghost"
-                className="p-0 bg-transparent text-base hover:text-brand-secondary duration-200 transition text-brand-black dark:text-brand-white"
+                className="p-0 bg-transparent text-base hover:text-brand-secondary duration-200 transition text-brand-black"
                 href="/information"
               >
                 For beboere
@@ -140,7 +140,7 @@ export default function Navbar() {
 
           <Link
             href="/blog-collection"
-            className={`text-brand-black dark:text-brand-white hover:text-brand-secondary duration-200 transition ${
+            className={`text-brand-black hover:text-brand-secondary duration-200 transition ${
               isActive("/blog-collection") ? "text-brand-secondary" : ""
             }`}
           >
@@ -149,7 +149,7 @@ export default function Navbar() {
 
           <Link
             href="/om-boligsameiet-gartnerihagen"
-            className={`text-brand-black dark:text-brand-white hover:text-brand-secondary duration-200 transition ${
+            className={`text-brand-black hover:text-brand-secondary duration-200 transition ${
               isActive("/om-boligsameiet-gartnerihagen")
                 ? "text-brand-secondary"
                 : ""
@@ -160,7 +160,7 @@ export default function Navbar() {
 
           <Link
             href="/styret"
-            className={`text-brand-black dark:text-brand-white hover:text-brand-secondary duration-200 transition ${
+            className={`text-brand-black hover:text-brand-secondary duration-200 transition ${
               isActive("/styret") ? "text-brand-secondary" : ""
             }`}
           >
@@ -175,7 +175,7 @@ export default function Navbar() {
             ) && (
               <Link
                 href="/admin"
-                className={`text-brand-black dark:text-brand-white hover:text-brand-secondary duration-200 transition ${
+                className={`text-brand-black hover:text-brand-secondary duration-200 transition ${
                   isActive("/admin") ? "text-brand-secondary" : ""
                 }`}
               >
@@ -220,7 +220,7 @@ export default function Navbar() {
             <>
               <Link
                 href="/information"
-                className={`block py-2 text-brand-black dark:text-brand-white duration-100 transition hover:text-brand-black/60 dark:hover:text-brand-white/60 ${
+                className={`block py-2 text-brand-black duration-100 transition hover:text-brand-black/60 ${
                   isActive("/information") ? "text-brand-secondary" : ""
                 }`}
                 onClick={() => setIsMenuOpen(false)}
@@ -230,7 +230,7 @@ export default function Navbar() {
 
               <Link
                 href="/messageboard"
-                className={`block py-2 text-brand-black dark:text-brand-white duration-100 transition hover:text-brand-black/60 dark:hover:text-brand-white/60 ${
+                className={`block py-2 text-brand-black duration-100 transition hover:text-brand-black/60 ${
                   isActive("/messageboard") ? "text-brand-secondary" : ""
                 }`}
                 onClick={() => setIsMenuOpen(false)}
@@ -240,7 +240,7 @@ export default function Navbar() {
 
               <Link
                 href="/information/referater"
-                className={`block py-2 text-brand-black dark:text-brand-white duration-100 transition hover:text-brand-black/60 dark:hover:text-brand-white/60 ${
+                className={`block py-2 text-brand-black duration-100 transition hover:text-brand-black/60 ${
                   isActive("/information/referater")
                     ? "text-brand-secondary"
                     : ""
@@ -252,7 +252,7 @@ export default function Navbar() {
 
               <Link
                 href="/information/dokumenter"
-                className={`block py-2 text-brand-black dark:text-brand-white duration-100 transition hover:text-brand-black/60 dark:hover:text-brand-white/60 ${
+                className={`block py-2 text-brand-black duration-100 transition hover:text-brand-black/60 ${
                   isActive("/information/dokumenter")
                     ? "text-brand-secondary"
                     : ""
@@ -268,7 +268,7 @@ export default function Navbar() {
 
           <Link
             href="/blog-collection"
-            className={`block py-2 text-brand-black dark:text-brand-white duration-100 transition hover:text-brand-black/60 dark:hover:text-brand-white/60 ${
+            className={`block py-2 text-brand-black duration-100 transition hover:text-brand-black/60 ${
               isActive("/blog-collection") ? "text-brand-secondary" : ""
             }`}
             onClick={() => setIsMenuOpen(false)}
@@ -278,7 +278,7 @@ export default function Navbar() {
 
           <Link
             href="/om-boligsameiet-gartnerihagen"
-            className={`block py-2 text-brand-black dark:text-brand-white duration-100 transition hover:text-brand-black/60 dark:hover:text-brand-white/60 ${
+            className={`block py-2 text-brand-black duration-100 transition hover:text-brand-black/60 ${
               isActive("/om-boligsameiet-gartnerihagen")
                 ? "text-brand-secondary"
                 : ""
@@ -290,7 +290,7 @@ export default function Navbar() {
 
           <Link
             href="/styret"
-            className={`block py-2 text-brand-black dark:text-brand-white duration-100 transition hover:text-brand-black/60 dark:hover:text-brand-white/60 ${
+            className={`block py-2 text-brand-black duration-100 transition hover:text-brand-black/60 ${
               isActive("/styret") ? "text-brand-secondary" : ""
             }`}
             onClick={() => setIsMenuOpen(false)}
@@ -306,7 +306,7 @@ export default function Navbar() {
             ) && (
               <Link
                 href="/admin"
-                className={`block py-2 text-brand-black dark:text-brand-white duration-100 transition hover:text-brand-black/60 dark:hover:text-brand-white/60 ${
+                className={`block py-2 text-brand-black duration-100 transition hover:text-brand-black/60 ${
                   isActive("/admin") ? "text-brand-secondary" : ""
                 }`}
                 onClick={() => setIsMenuOpen(false)}

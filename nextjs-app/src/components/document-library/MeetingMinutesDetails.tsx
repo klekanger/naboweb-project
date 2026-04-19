@@ -124,7 +124,7 @@ export default function MeetingMinutesDetails({ data }: Props) {
                       href={item?.asset?.url ?? "#"}
                       target="blank"
                       rel="noopener noreferrer"
-                      className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80"
+                      className="hover:text-brand-secondary/80"
                     >
                       {item.asset?.originalFilename ?? "N/A"}
                     </a>

@@ -162,7 +162,7 @@ export default function MeetingMinutes({
                         <Tooltip.Trigger>
                           <Link
                             href={`/information/referater/${item._id}`}
-                            className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80 "
+                            className="hover:text-brand-secondary/80"
                           >
                             <span className="flex ">
                               <FolderOpen className="mr-2 h-auto" size="1em" />
@@ -186,7 +186,7 @@ export default function MeetingMinutes({
                         <Tooltip.Trigger>
                           <Link
                             href={`/information/referater/${item._id}`}
-                            className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80 "
+                            className="hover:text-brand-secondary/80"
                           >
                             <span>
                               {item?.description && item.description.length > 75

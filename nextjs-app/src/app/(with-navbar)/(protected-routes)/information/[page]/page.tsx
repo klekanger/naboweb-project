@@ -96,7 +96,7 @@ async function PrivateInfoContent(props: Props) {
           icon={<Info />}
         />
       )}
-      <div className="my-16 rounded-xl border border-dashed border-brand-black/60 p-4 pt-8 dark:border-brand-white/60">
+      <div className="my-16 rounded-xl border border-dashed border-brand-black/60 p-4 pt-8">
         <div className="pl-1">
           {user ? (
             <div className="flex gap-4">

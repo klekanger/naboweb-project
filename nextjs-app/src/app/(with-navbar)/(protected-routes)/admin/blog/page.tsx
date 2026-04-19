@@ -51,7 +51,7 @@ export default async function AdminBlogPage() {
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-medium truncate">{post.title}</span>
                   {post.privatePost && (
-                    <span className="flex items-center gap-1 text-xs bg-gray-200 dark:bg-gray-700 text-foreground/60 px-2 py-0.5 rounded-full">
+                    <span className="flex items-center gap-1 text-xs bg-gray-200 text-foreground/60 px-2 py-0.5 rounded-full">
                       <Lock className="h-3 w-3" />
                       Privat
                     </span>

@@ -173,7 +173,7 @@ export default function DocumentTable({
                           <Tooltip.Trigger>
                             <a
                               href={item.document?.asset?.url ?? "#"}
-                              className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80 "
+                              className="hover:text-brand-secondary/80 "
                               target="blank"
                               rel="noopener noreferrer"
                             >
