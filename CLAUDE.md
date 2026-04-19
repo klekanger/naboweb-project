@@ -58,6 +58,9 @@ The app uses the experimental Next.js `"use cache"` directive with `cacheLife()`
 ### Server Actions Pattern
 All Clerk user operations live in `src/app/actions/`. They return discriminated union types: `{ success, status }` | `{ error, status }`. Auth and role checks happen inside each action.
 
+### Path pagination (App Router)
+Public blog list uses `blog-collection/[[...blogPage]]`: page 1 is **`/blog-collection`** (canonical); page 2+ is **`/blog-collection/2`**, etc. Legacy **`/blog-collection/1`** redirects to `/blog-collection`. The same pattern applies to **`/information`** (optional `[[...page]]`). GROQ slices use helpers in `src/lib/pagination.ts` (`groqSliceRange`, `totalPagesFromCount`, `pageNumberFromOptionalCatchAll`). Link-style pagination UI is `@/components/Pagination` (pass `useRootUrlForFirstPage` for those index routes). Admin blog list stays **`/admin/blog/1`** (numeric segment; no optional catch-all next to `new/` and `[slug]/edit`).
+
 ### GROQ Queries
 All queries live in `src/sanity/lib/queries.ts`. Use `defineQuery` from `groq` or `next-sanity` to wrap strings. Always use SCREAMING_SNAKE_CASE for query variable names. Each filter segment and projected attribute goes on its own line. Never interpolate dynamic values — use query parameters.
 

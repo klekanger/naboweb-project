@@ -1,7 +1,9 @@
 import BackButton from "@/components/BackButton";
 import UserAdmin from "@/components/userAdmin/UserAdmin";
+import { calculatePaginationData } from "@/lib/pagination";
+import { mapUsersWithEmails } from "@/lib/userUtils";
 import { validRoles, validateUserRoles } from "@/lib/validateUserRoles";
-import type { PaginationData, UserWithEmails } from "@/types/types";
+import type { UserWithEmails } from "@/types/types";
 import { clerkClient } from "@clerk/nextjs/server";
 import type { UserResource } from "@clerk/types";
 import { redirect } from "next/navigation";
@@ -10,24 +12,6 @@ import LoadingSpinner from "@/components/common/LoadingSpinner";
 
 const MAX_USERS_PER_PAGE = 30;
 const MAX_USERS_FOR_SEARCH = 50;
-
-function calculatePaginationData(
-  currentPage: number,
-  totalCount: number,
-  limit: number,
-): PaginationData {
-  const totalPages = Math.ceil(totalCount / limit);
-  const hasNextPage = currentPage < totalPages;
-  const hasPreviousPage = currentPage > 1;
-
-  return {
-    currentPage,
-    totalPages,
-    totalCount,
-    hasNextPage,
-    hasPreviousPage,
-  };
-}
 
 async function fetchUsers(page: number = 1, searchQuery?: string) {
   const client = await clerkClient();
@@ -85,28 +69,12 @@ async function fetchUsers(page: number = 1, searchQuery?: string) {
     return {
       userData: {
         users: [],
-        pagination: calculatePaginationData(page, 0, 10),
+        pagination: calculatePaginationData(page, 0, MAX_USERS_PER_PAGE),
         hasAccess: false,
         isSearchResult: false,
       },
     };
   }
-}
-
-function mapUsersWithEmails(user: UserResource) {
-  return {
-    id: user.id,
-    createdAt: user.createdAt,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    roles: (user.publicMetadata?.roles as string[]) ?? [],
-    emailSubscription:
-      typeof user.publicMetadata?.emailSubscription === "boolean"
-        ? user.publicMetadata.emailSubscription
-        : undefined,
-    email: user.emailAddresses[0]?.emailAddress ?? "",
-    imageUrl: user.imageUrl ?? "",
-  };
 }
 
 async function UserAdminContent({

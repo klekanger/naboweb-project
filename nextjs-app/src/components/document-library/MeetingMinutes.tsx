@@ -68,7 +68,7 @@ export default function MeetingMinutes({
     return (
       <>
         <p className="pb-4">Ingen dokumenter</p>
-        <CustomButton href="/information/1">
+        <CustomButton href="/information">
           <ArrowBigLeft className="h-5 w-5 mt-1.5" />
           Gå tilbake
         </CustomButton>

@@ -153,7 +153,7 @@ export default async function BlogRoute(props: Props) {
             "@type": "ListItem",
             position: 2,
             name: "Blogg",
-            item: `${SITE_URL}/blog-collection/1`,
+            item: `${SITE_URL}/blog-collection`,
           },
           {
             "@type": "ListItem",

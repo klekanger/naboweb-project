@@ -3,6 +3,12 @@ import DocumentMenu from "@/components/document-library/DocumentMenu";
 import InfoBox from "@/components/InfoBox";
 import Pagination from "@/components/Pagination";
 import RoleDisplay from "@/components/userAdmin/RoleDisplay";
+import { INFORMATION_PRIVATE_BLOG_POSTS_PER_PAGE } from "@/lib/constants";
+import {
+  groqSliceRange,
+  pageNumberFromOptionalCatchAll,
+  totalPagesFromCount,
+} from "@/lib/pagination";
 import { sanityFetch } from "@/sanity/lib/live";
 import {
   blogCollectionQuery,
@@ -17,37 +23,39 @@ import { Suspense } from "react";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 
 type Props = {
-  params: Promise<{ page: number | undefined }>;
+  params: Promise<{ page: string[] | undefined }>;
 };
 
-const POSTS_PER_PAGE = 20;
-
-//
-// Generate all possible routes
-//
 export async function generateStaticParams() {
   const numberOfBlogPosts = await countBlogPosts({ privatePosts: true });
-  const totalPages = Math.ceil(numberOfBlogPosts / POSTS_PER_PAGE);
+  const totalPages = Math.ceil(
+    numberOfBlogPosts / INFORMATION_PRIVATE_BLOG_POSTS_PER_PAGE,
+  );
 
-  return Array.from({ length: totalPages }).map((_, i) => ({
-    page: `${i + 1}`,
-  }));
+  const out: { page: string[] | undefined }[] = [{ page: undefined }];
+  for (let i = 2; i <= totalPages; i++) {
+    out.push({ page: [`${i}`] });
+  }
+  return out;
 }
 
-//
-// Information page for logged in users with file downloads and private blog posts
-//
 async function PrivateInfoContent(props: Props) {
   const params = await props.params;
+  const segments = params.page;
+
+  if (segments?.length === 1 && segments[0] === "1") {
+    redirect("/information");
+  }
+
+  const pageNumber = pageNumberFromOptionalCatchAll(segments);
+
   const user = await currentUser();
   const { firstName, lastName } = user ?? {};
   const roles = (user?.publicMetadata?.roles as string[]) || [];
   const isAdmin = roles.includes("admin") || false;
   const isEditor = roles.includes("editor") || false;
 
-  const pageNumber = Number(params.page);
-
-  if (Number.isNaN(pageNumber)) {
+  if (pageNumber === null) {
     return (
       <>
         <p>Det er ingen sider å vise.</p>
@@ -55,26 +63,29 @@ async function PrivateInfoContent(props: Props) {
     );
   }
 
+  const slice = groqSliceRange(pageNumber, INFORMATION_PRIVATE_BLOG_POSTS_PER_PAGE);
+
   const { data: blogPosts } = await sanityFetch({
     query: blogCollectionQuery,
     params: {
-      start: (pageNumber - 1) * POSTS_PER_PAGE,
-      end: pageNumber * POSTS_PER_PAGE,
+      ...slice,
       isPrivate: true,
     },
   });
 
-  // const documentMenu = (await loadDocumentMenu()) ?? [];
   const { data: documentMenu } = await sanityFetch({
     query: documentMenuQuery,
   });
 
   const total = await countBlogPosts({ privatePosts: true });
-  const totalPages = Math.ceil(total / POSTS_PER_PAGE);
+  const totalPages = totalPagesFromCount(
+    total,
+    INFORMATION_PRIVATE_BLOG_POSTS_PER_PAGE,
+  );
   const numberOfBlogPosts = blogPosts.length;
 
   if (pageNumber > totalPages || pageNumber < 1) {
-    redirect("/information/1");
+    redirect("/information");
   }
 
   if (numberOfBlogPosts === 0) {
@@ -148,7 +159,8 @@ async function PrivateInfoContent(props: Props) {
       <Pagination
         totalPages={totalPages}
         pageNumber={pageNumber}
-        url="/information/"
+        url="information"
+        useRootUrlForFirstPage
       />
       {totalPages > 1 && (
         <p className="pb-4 text-center">

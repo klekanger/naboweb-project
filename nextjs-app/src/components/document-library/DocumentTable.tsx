@@ -65,7 +65,7 @@ export default function DocumentTable({
     return (
       <>
         <p className="pb-4">Ingen dokumenter</p>
-        <CustomButton href="/information/1" className="no-underline">
+        <CustomButton href="/information" className="no-underline">
           <ArrowBigLeft className="h-5 w-5 mt-1.5" />
           Gå tilbake
         </CustomButton>

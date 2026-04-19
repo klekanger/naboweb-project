@@ -57,7 +57,7 @@ export default function MeetingMinutesDetails({ data }: Props) {
     return (
       <>
         <p className="pb-4">Ingen dokumenter</p>
-        <CustomButton href="/information/1">
+        <CustomButton href="/information">
           <ArrowBigLeft className="mr-2" />
           Gå tilbake
         </CustomButton>

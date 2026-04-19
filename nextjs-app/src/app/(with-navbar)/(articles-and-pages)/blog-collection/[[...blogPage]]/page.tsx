@@ -1,34 +1,40 @@
 import BlogPostList from "@/components/BlogPostList";
 import Pagination from "@/components/Pagination";
-import { countBlogPosts } from "@/sanity/lib/queries";
-import { sanityFetch } from "@/sanity/lib/live";
-import {
-  blogCollectionQuery,
-  allBlogCollectionQuery,
-} from "@/sanity/lib/queries";
-import { redirect } from "next/navigation";
-import { currentUser } from "@clerk/nextjs/server";
-import { Suspense } from "react";
-import LoadingSpinner from "@/components/common/LoadingSpinner";
-import type { Metadata } from "next";
 import {
   BLOG_COLLECTION_POSTS_PER_PAGE,
   SITE_NAME,
   SITE_URL,
 } from "@/lib/constants";
+import {
+  groqSliceRange,
+  pageNumberFromOptionalCatchAll,
+  totalPagesFromCount,
+} from "@/lib/pagination";
+import { sanityFetch } from "@/sanity/lib/live";
+import {
+  allBlogCollectionQuery,
+  blogCollectionQuery,
+  countBlogPosts,
+} from "@/sanity/lib/queries";
+import { currentUser } from "@clerk/nextjs/server";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
+import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 type BlogCollectionParams = {
-  params: Promise<{ blogPage: number | undefined }>;
+  params: Promise<{ blogPage: string[] | undefined }>;
 };
 
 export async function generateMetadata(
   props: BlogCollectionParams,
 ): Promise<Metadata> {
   const params = await props.params;
-  const pageNumber = Number(params.blogPage);
-  const canonicalPath = Number.isFinite(pageNumber)
-    ? `/blog-collection/${pageNumber}`
-    : "/blog-collection/1";
+  const pageNumber = pageNumberFromOptionalCatchAll(params.blogPage);
+  const canonicalPath =
+    pageNumber === 1 || pageNumber === null
+      ? "/blog-collection"
+      : `/blog-collection/${pageNumber}`;
 
   return {
     title: SITE_NAME,
@@ -47,35 +53,36 @@ export async function generateMetadata(
   };
 }
 
-//
-// Generate all possible routes
-//
 export async function generateStaticParams() {
   const numberOfBlogPosts = await countBlogPosts({ privatePosts: false });
   const totalPages = Math.ceil(
     numberOfBlogPosts / BLOG_COLLECTION_POSTS_PER_PAGE,
   );
 
-  return Array.from({ length: totalPages }).map((_, i) => ({
-    blogPage: `${i + 1}`,
-  }));
+  const out: { blogPage: string[] | undefined }[] = [{ blogPage: undefined }];
+  for (let i = 2; i <= totalPages; i++) {
+    out.push({ blogPage: [`${i}`] });
+  }
+  return out;
 }
 
-//
-// Generate static page for each route with blogposts
-//
 async function BlogCollectionContent(props: BlogCollectionParams) {
   const params = await props.params;
-  const pageNumber = Number(params.blogPage);
+  const segments = params.blogPage;
+
+  if (segments?.length === 1 && segments[0] === "1") {
+    redirect("/blog-collection");
+  }
+
+  const pageNumber = pageNumberFromOptionalCatchAll(segments);
 
   const user = await currentUser();
-  const { firstName, lastName } = user ?? {};
   const roles = (user?.publicMetadata?.roles as string[]) || [];
   let isLoggedIn = false;
 
   if (roles.includes("user")) isLoggedIn = true;
 
-  if (Number.isNaN(pageNumber)) {
+  if (pageNumber === null) {
     return (
       <>
         <p>Det er ingen blogginnlegg å vise.</p>
@@ -83,17 +90,14 @@ async function BlogCollectionContent(props: BlogCollectionParams) {
     );
   }
 
-  // Use different query based on user authentication status
+  const slice = groqSliceRange(pageNumber, BLOG_COLLECTION_POSTS_PER_PAGE);
+
   const { data } = await sanityFetch({
     query: isLoggedIn ? allBlogCollectionQuery : blogCollectionQuery,
     params: isLoggedIn
-      ? {
-          start: (pageNumber - 1) * BLOG_COLLECTION_POSTS_PER_PAGE,
-          end: pageNumber * BLOG_COLLECTION_POSTS_PER_PAGE,
-        }
+      ? slice
       : {
-          start: (pageNumber - 1) * BLOG_COLLECTION_POSTS_PER_PAGE,
-          end: pageNumber * BLOG_COLLECTION_POSTS_PER_PAGE,
+          ...slice,
           isPrivate: false,
         },
   });
@@ -101,11 +105,11 @@ async function BlogCollectionContent(props: BlogCollectionParams) {
   const total = await countBlogPosts(
     isLoggedIn ? { allPosts: true } : { privatePosts: false },
   );
-  const totalPages = Math.ceil(total / BLOG_COLLECTION_POSTS_PER_PAGE);
+  const totalPages = totalPagesFromCount(total, BLOG_COLLECTION_POSTS_PER_PAGE);
   const numberOfBlogPosts = data?.length ?? 0;
 
   if (pageNumber > totalPages || pageNumber < 1) {
-    redirect("/blog-collection/1");
+    redirect("/blog-collection");
   }
 
   if (numberOfBlogPosts === 0) {
@@ -131,7 +135,8 @@ async function BlogCollectionContent(props: BlogCollectionParams) {
       <Pagination
         totalPages={totalPages}
         pageNumber={pageNumber}
-        url={"blog-collection"}
+        url="blog-collection"
+        useRootUrlForFirstPage
       />
       {totalPages > 1 && (
         <p className="pb-4 text-center">

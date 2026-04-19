@@ -59,8 +59,23 @@ describe("User Utility Functions", () => {
         email: "john@example.com",
         createdAt: testDate,
         roles: ["user"],
+        emailSubscription: undefined,
         imageUrl: "https://example.com/avatar.jpg",
       });
+    });
+
+    it("maps emailSubscription when set on publicMetadata", () => {
+      const clerkUser = {
+        id: "1",
+        firstName: "Jane",
+        lastName: "Doe",
+        emailAddresses: [{ emailAddress: "jane@example.com" }],
+        createdAt: new Date("2022-01-01").getTime(),
+        publicMetadata: { roles: ["user"], emailSubscription: true },
+        imageUrl: "",
+      } as unknown as UserResource;
+
+      expect(mapUsersWithEmails(clerkUser).emailSubscription).toBe(true);
     });
 
     it("handles missing email addresses", () => {

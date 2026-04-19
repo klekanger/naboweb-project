@@ -1,6 +1,7 @@
 import BackButton from "@/components/BackButton";
 import Pagination from "@/components/Pagination";
 import { BLOG_COLLECTION_POSTS_PER_PAGE } from "@/lib/constants";
+import { groqSliceRange, totalPagesFromCount } from "@/lib/pagination";
 import { formatDate } from "@/lib/format-date";
 import { client } from "@/sanity/lib/client";
 import { blogPostsAdminPagedQuery, countBlogPosts } from "@/sanity/lib/queries";
@@ -31,19 +32,16 @@ export default async function AdminBlogPagedPage({ params }: Props) {
 
   const pageNumber = Number(slug);
   const total = await countBlogPosts({ allPosts: true });
-  const totalPages = Math.max(
-    1,
-    Math.ceil(total / BLOG_COLLECTION_POSTS_PER_PAGE),
-  );
+  const totalPages = totalPagesFromCount(total, BLOG_COLLECTION_POSTS_PER_PAGE);
 
   if (pageNumber > totalPages || pageNumber < 1) {
     redirect("/admin/blog/1");
   }
 
-  const posts = (await client.fetch(blogPostsAdminPagedQuery, {
-    start: (pageNumber - 1) * BLOG_COLLECTION_POSTS_PER_PAGE,
-    end: pageNumber * BLOG_COLLECTION_POSTS_PER_PAGE,
-  })) as BlogAdminPost[] | null;
+  const posts = (await client.fetch(
+    blogPostsAdminPagedQuery,
+    groqSliceRange(pageNumber, BLOG_COLLECTION_POSTS_PER_PAGE),
+  )) as BlogAdminPost[] | null;
 
   return (
     <div className="max-w-4xl mx-auto py-12 px-4">

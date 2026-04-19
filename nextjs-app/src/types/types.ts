@@ -120,6 +120,7 @@ export type SearchUserSuccessType = {
       firstName: string | null;
       lastName: string | null;
       roles: string[] | undefined;
+      emailSubscription?: boolean;
       email: string;
       imageUrl: string;
       createdAt: number;

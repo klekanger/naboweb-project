@@ -6,22 +6,9 @@ import type {
   SearchUserSuccessType,
 } from "@/types/types";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
-import type { UserResource } from "@clerk/types";
+import { mapUsersWithEmails } from "@/lib/userUtils";
 
 const client = await clerkClient();
-
-function mapUsersWithEmails(user: any) {
-  const typedUser = user as UserResource;
-  return {
-    id: typedUser.id,
-    firstName: typedUser.firstName,
-    lastName: typedUser.lastName,
-    roles: typedUser?.publicMetadata?.roles ?? [],
-    email: typedUser?.emailAddresses?.[0]?.emailAddress ?? "",
-    imageUrl: typedUser?.imageUrl ?? "",
-    createdAt: typedUser?.createdAt ?? null,
-  };
-}
 
 export async function searchUser({
   searchTerm,
