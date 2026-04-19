@@ -56,7 +56,7 @@ export const createMockUser = (
   lastName: "Doe",
   email: "john.doe@example.com",
   roles: ["user"],
-  createdAt: new Date("2023-01-01"),
+  createdAt: new Date("2023-01-01").getTime(),
   imageUrl: "https://example.com/avatar.jpg",
   ...overrides,
 });

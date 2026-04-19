@@ -27,6 +27,10 @@
 - **Sanity**: Use `defineType`, `defineField`, `defineArrayMember` helpers
 - **Performance**: Optimize Web Vitals, wrap client components in Suspense
 
+## Next.js: ALWAYS read docs before coding
+
+- Before any Next.js work, find and read the relevant doc in `nextjs-app/node_modules/next/dist/docs/`. Your training data is outdated — the docs are the source of truth.
+
 ## Project Rules
 
 - Follow existing patterns in codebase

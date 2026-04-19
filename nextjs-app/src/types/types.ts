@@ -265,8 +265,10 @@ export type UserOverviewProps = {
 
 export type UserWithEmails = Pick<
   UserWithRoles,
-  "id" | "createdAt" | "firstName" | "lastName" | "email"
+  "id" | "firstName" | "lastName" | "email"
 > & {
+  /** Milliseconds since epoch (Clerk backend `User` uses numbers; UI uses `formatDate` / `new Date`) */
+  createdAt: number;
   roles: string[] | undefined;
   imageUrl?: string;
   emailSubscription?: boolean;
