@@ -87,6 +87,8 @@ type Props = {
   currentUserEmail?: string;
   currentAuthorPortraitUrl?: string | null;
   isAdmin: boolean;
+  onEditDirtyChange?: (isDirty: boolean) => void;
+  onRegisterDiscardChanges?: (discardChanges: () => void) => void;
 };
 
 type ImageModalState = {
@@ -273,6 +275,8 @@ export default function BlogEditor({
   currentUserEmail = "",
   currentAuthorPortraitUrl = null,
   isAdmin,
+  onEditDirtyChange,
+  onRegisterDiscardChanges,
 }: Props) {
   const router = useRouter();
 
@@ -363,6 +367,7 @@ export default function BlogEditor({
   const [deleteModalError, setDeleteModalError] = useState("");
   const [showSaveConfirm, setShowSaveConfirm] = useState(false);
   const [bodyChangeGeneration, setBodyChangeGeneration] = useState(0);
+  const [editorResetKey, setEditorResetKey] = useState(0);
   const [result, setResult] = useState<"success" | "error" | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -429,6 +434,53 @@ export default function BlogEditor({
 
   const isEditDirty =
     mode === "edit" && currentEditSnapshotString !== editBaselineSnapshot;
+
+  useEffect(() => {
+    onEditDirtyChange?.(isEditDirty);
+  }, [isEditDirty, onEditDirtyChange]);
+
+  const discardUnsavedEditChanges = useCallback(() => {
+    if (mode !== "edit") return;
+    const baselineSnapshot =
+      postSaveEditSnapshot && postSaveEditSnapshot.length > 0
+        ? postSaveEditSnapshot
+        : initialEditSnapshotString;
+    if (!baselineSnapshot) return;
+
+    let parsed: EditFormSnapshotFields;
+    try {
+      parsed = JSON.parse(baselineSnapshot) as EditFormSnapshotFields;
+    } catch {
+      return;
+    }
+
+    setTitle(parsed.title ?? "");
+    setSlug(parsed.slug ?? "");
+    setPrivatePost(Boolean(parsed.privatePost));
+    setExcerpt(parsed.excerpt ?? "");
+    setFeaturedImageId(parsed.featuredImageId ?? "");
+    setFeaturedImageCaption(parsed.featuredImageCaption ?? "");
+    setFeaturedImageAlt(parsed.featuredImageAlt ?? "");
+    setSelectedAuthorIds(Array.isArray(parsed.authorIds) ? parsed.authorIds : []);
+
+    try {
+      bodyValueRef.current = parsed.bodyJson
+        ? (JSON.parse(parsed.bodyJson) as PortableTextBlock[])
+        : [];
+    } catch {
+      bodyValueRef.current = [];
+    }
+
+    setBodyChangeGeneration((n) => n + 1);
+    setEditorResetKey((n) => n + 1);
+    setShowSaveConfirm(false);
+    setResult(null);
+    setErrorMessage("");
+  }, [mode, postSaveEditSnapshot, initialEditSnapshotString]);
+
+  useEffect(() => {
+    onRegisterDiscardChanges?.(discardUnsavedEditChanges);
+  }, [discardUnsavedEditChanges, onRegisterDiscardChanges]);
 
   const handleFeaturedImageUpload = async (file: File) => {
     setIsUploading(true);
@@ -679,6 +731,7 @@ export default function BlogEditor({
         </label>
         <div className="border border-brand-black/10 rounded-xl">
           <EditorProvider
+            key={editorResetKey}
             initialConfig={{
               schemaDefinition: blogBodySchema,
               initialValue: bodyValueRef.current,

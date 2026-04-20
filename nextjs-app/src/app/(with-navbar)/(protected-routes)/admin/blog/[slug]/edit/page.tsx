@@ -1,5 +1,4 @@
-import BlogEditor from "@/components/admin/BlogEditorClient";
-import BackButton from "@/components/BackButton";
+import BlogEditPageContent from "@/components/admin/BlogEditPageContent";
 import { currentUser } from "@clerk/nextjs/server";
 import { client } from "@/sanity/lib/client";
 import { getAuthorPortraitUrlForClerkUser } from "@/sanity/lib/get-author-portrait-url";
@@ -33,7 +32,11 @@ export default async function EditBlogPostPage({ params }: Props) {
     user?.primaryEmailAddress?.emailAddress ?? "",
   );
 
-  type FeaturedImage = { asset?: { _ref?: string }; caption?: string; alt?: string };
+  type FeaturedImage = {
+    asset?: { _ref?: string };
+    caption?: string;
+    alt?: string;
+  };
   const featuredImg = post.featuredImage as FeaturedImage | undefined;
 
   const initialData = {
@@ -75,23 +78,14 @@ export default async function EditBlogPostPage({ params }: Props) {
   };
 
   return (
-    <div className="max-w-3xl mx-auto py-12 px-4">
-      <h1 className="text-3xl font-semibold mb-2">Rediger innlegg</h1>
-      <p className="text-foreground/60 mb-8 font-mono text-sm">/{post.slug}</p>
-
-      <BlogEditor
-        mode="edit"
-        initialData={initialData}
-        currentAuthorId={user?.id ?? ""}
-        authorDisplayName={authorDisplayName}
-        currentUserEmail={user?.primaryEmailAddress?.emailAddress ?? ""}
-        currentAuthorPortraitUrl={currentAuthorPortraitUrl}
-        isAdmin={roles.includes("admin")}
-      />
-
-      <div className="mt-10">
-        <BackButton buttonLink="/admin/blog" />
-      </div>
-    </div>
+    <BlogEditPageContent
+      postSlug={post.slug ?? ""}
+      initialData={initialData}
+      currentAuthorId={user?.id ?? ""}
+      authorDisplayName={authorDisplayName}
+      currentUserEmail={user?.primaryEmailAddress?.emailAddress ?? ""}
+      currentAuthorPortraitUrl={currentAuthorPortraitUrl}
+      isAdmin={roles.includes("admin")}
+    />
   );
 }
