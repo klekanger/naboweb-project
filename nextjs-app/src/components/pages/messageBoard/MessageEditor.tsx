@@ -148,6 +148,16 @@ const MenuBar = ({
     return null;
   }
 
+  return <MenuBarInner editor={editor} maxCharacters={maxCharacters} />;
+};
+
+function MenuBarInner({
+  editor,
+  maxCharacters,
+}: {
+  editor: Editor;
+  maxCharacters: number;
+}) {
   const editorState = useEditorState({
     editor,
     selector: ({ editor: editorInstance }) => ({
@@ -240,4 +250,4 @@ const MenuBar = ({
       </div>
     </div>
   );
-};
+}

@@ -16,22 +16,24 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { startTransition, useEffect, useState, useSyncExternalStore } from "react";
 import logoLight from "../../../public/logo-light.svg";
 
 export default function Navbar() {
   const { isSignedIn, user, isLoaded } = useUser();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, [pathname]);
+  const isClient = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   // When the user navigates to a new page, always close the hamburger menu
   useEffect(() => {
-    setIsMenuOpen(false);
+    startTransition(() => {
+      setIsMenuOpen(false);
+    });
   }, [pathname]);
 
   const isActive = (path: string) => pathname.startsWith(path);

@@ -1141,10 +1141,12 @@ function BlogBodyToolbar({ onInsertImage }: { onInsertImage: () => void }) {
     editor.send({ type: "focus" });
   };
 
-  const [mod, setMod] = useState("Ctrl");
-  useEffect(() => {
-    if (/Mac|iPod|iPhone|iPad/.test(navigator.userAgent)) setMod("⌘");
-  }, []);
+  const [mod] = useState(() =>
+    typeof navigator !== "undefined" &&
+    /Mac|iPod|iPhone|iPad/.test(navigator.userAgent)
+      ? "⌘"
+      : "Ctrl",
+  );
 
   return (
     <div

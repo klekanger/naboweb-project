@@ -3,7 +3,7 @@ import { urlForImage } from "@/sanity/lib/utils";
 import { cn } from "@heroui/react";
 import { Upload as UploadIcon, XIcon } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import type { Image as SanityImage } from "sanity";
 
 export default function ImageUploader({
@@ -17,14 +17,25 @@ export default function ImageUploader({
   messageImage?: SanityImage;
   editMode?: boolean;
 }) {
-  const [uploadImagePreview, setUploadImage] = useState<string | null>(null);
+  const [userFilePreview, setUserFilePreview] = useState<string | null>(null);
+
+  const sanityPreviewUrl = useMemo(
+    () =>
+      editMode && messageImage
+        ? urlForImage(messageImage)?.width(800).height(600).fit("max").url() ??
+          null
+        : null,
+    [editMode, messageImage],
+  );
+
+  const uploadImagePreview = userFilePreview ?? sanityPreviewUrl;
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const setPreviewImage = (file: File[] | FileList | null) => {
     if (!file) {
       console.error("No file provided");
-      setUploadImage(null);
+      setUserFilePreview(null);
       onImageSelect(null);
       return;
     }
@@ -42,7 +53,7 @@ export default function ImageUploader({
     ) {
       console.error("Unsupportet image type");
       setError("Bildeformatet må være JPG, PNG eller WEBP");
-      setUploadImage(null);
+      setUserFilePreview(null);
       onImageSelect(null);
       return;
     } else {
@@ -57,10 +68,10 @@ export default function ImageUploader({
     const reader = new FileReader();
     reader.onload = (e) => {
       if (e.target?.result && isValidImage(e.target.result as string)) {
-        setUploadImage(e.target.result as string);
+        setUserFilePreview(e.target.result as string);
       } else {
         console.log("Not an image");
-        setUploadImage(null);
+        setUserFilePreview(null);
       }
     };
 
@@ -69,17 +80,6 @@ export default function ImageUploader({
       reader.readAsDataURL(file[0]);
     }
   };
-
-  // Set preview image if in edit mode and message image is provided
-  // We want to show the image already uploaded in the editor
-  useEffect(() => {
-    if (editMode && messageImage) {
-      const imageUrl =
-        urlForImage(messageImage)?.width(800).height(600).fit("max").url() ??
-        null;
-      setUploadImage(imageUrl);
-    }
-  }, [messageImage, editMode]);
 
   const isValidImage = (file: string) => {
     const imageType = /^data:image\/(\w+);base64,/;
@@ -111,7 +111,7 @@ export default function ImageUploader({
               alt={"Bilde for opplasting"}
               width={800}
               height={600}
-              className="object-cover rounded-xl aspect-[4/3]"
+              className="object-cover rounded-xl aspect-4/3"
             />
             <button
               onClick={(event) => {
@@ -152,7 +152,7 @@ export default function ImageUploader({
               {error ? (
                 <div className="text-xs text-red-500">{error}</div>
               ) : (
-                <div className="text-xs h-[1rem]"></div>
+                <div className="text-xs h-4"></div>
               )}
             </div>
             <input

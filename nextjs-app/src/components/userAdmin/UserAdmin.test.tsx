@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { Crown, UserCheck, UserCog, UserPlus2, Users } from "lucide-react";
+import { Crown, UserCog, UserPlus2, Users } from "lucide-react";
 import { menuElements, validateEmail, validateForm } from "./UserAdmin.logic";
 import {
   renderUserAdminWithContext,
@@ -18,20 +18,18 @@ import { errorsToNorwegian } from "@/lib/norwegianErrorMessages";
 describe("UserAdmin Component - Logic Tests", () => {
   describe("Menu Configuration", () => {
     it("has correct menu structure from actual component", () => {
-      expect(menuElements).toHaveLength(5);
+      expect(menuElements).toHaveLength(4);
       expect(menuElements[0].name).toBe("Vis brukere");
-      expect(menuElements[1].name).toBe("Inviter bruker");
-      expect(menuElements[2].name).toBe("Ny bruker");
-      expect(menuElements[3].name).toBe("Endre bruker");
-      expect(menuElements[4].name).toBe("Superbrukere");
+      expect(menuElements[1].name).toBe("Ny bruker");
+      expect(menuElements[2].name).toBe("Endre bruker");
+      expect(menuElements[3].name).toBe("Superbrukere");
     });
 
     it("has correct icon components from actual component", () => {
       expect(menuElements[0].menuIcon).toBe(Users);
-      expect(menuElements[1].menuIcon).toBe(UserCheck);
-      expect(menuElements[2].menuIcon).toBe(UserPlus2);
-      expect(menuElements[3].menuIcon).toBe(UserCog);
-      expect(menuElements[4].menuIcon).toBe(Crown);
+      expect(menuElements[1].menuIcon).toBe(UserPlus2);
+      expect(menuElements[2].menuIcon).toBe(UserCog);
+      expect(menuElements[3].menuIcon).toBe(Crown);
     });
   });
 
@@ -137,7 +135,6 @@ describe("UserAdmin Component - Rendering Tests", () => {
 
       // Test that menu item names display correct Norwegian text
       expect(screen.getByText("Vis brukere")).toBeDefined();
-      expect(screen.getByText("Inviter bruker")).toBeDefined();
       expect(screen.getByText("Ny bruker")).toBeDefined();
       expect(screen.getByText("Endre bruker")).toBeDefined();
       expect(screen.getByText("Superbrukere")).toBeDefined();
@@ -150,14 +147,14 @@ describe("UserAdmin Component - Rendering Tests", () => {
       // Since we can't directly test React components in the DOM, we test that the buttons exist
       const menuButtons = screen.getAllByRole("button");
 
-      // Should have 5 menu buttons (one for each menu item)
+      // Should have 4 menu buttons (one for each menu item)
       const menuItemButtons = menuButtons.filter((button) =>
         norwegianTextContent.menuItems.some((menuText) =>
           button.textContent?.includes(menuText),
         ),
       );
 
-      expect(menuItemButtons).toHaveLength(5);
+      expect(menuItemButtons).toHaveLength(4);
     });
 
     it("renders menu descriptions with correct HTML content", () => {
@@ -179,13 +176,13 @@ describe("UserAdmin Component - Rendering Tests", () => {
     it("renders correct number of menu items", () => {
       renderUserAdminWithContext();
 
-      // Test that exactly 5 menu items are rendered
+      // Test that exactly 4 menu items are rendered
       norwegianTextContent.menuItems.forEach((menuText) => {
         expect(screen.getByText(menuText)).toBeDefined();
       });
 
       // Verify we have exactly the expected number
-      expect(norwegianTextContent.menuItems).toHaveLength(5);
+      expect(norwegianTextContent.menuItems).toHaveLength(4);
     });
 
     it("renders menu items with proper button structure", () => {
@@ -222,12 +219,10 @@ describe("UserAdmin Component - Rendering Tests", () => {
       it("updates selectedMenu in context when clicking menu items", async () => {
         const { mockContextValue, user } = renderUserAdminWithContext();
 
-        // Click on the "Inviter bruker" menu item
-        const inviteUserButton = screen.getByText("Inviter bruker");
-        await user.click(inviteUserButton);
+        const createUserButton = screen.getByText("Ny bruker");
+        await user.click(createUserButton);
 
-        // Test that setSelectedMenu was called with the correct menu ID
-        expect(mockContextValue.setSelectedMenu).toHaveBeenCalledWith(1);
+        expect(mockContextValue.setSelectedMenu).toHaveBeenCalledWith(2);
       });
 
       it("displays selected menu item with bold styling", () => {
@@ -287,16 +282,15 @@ describe("UserAdmin Component - Rendering Tests", () => {
       it("handles menu clicks for all menu items correctly", async () => {
         const { mockContextValue, user } = renderUserAdminWithContext();
 
-        // Test clicking each menu item
-        for (let i = 0; i < menuElements.length; i++) {
-          const menuButton = screen.getByText(menuElements[i].name);
+        for (const item of menuElements) {
+          const menuButton = screen.getByText(item.name);
           await user.click(menuButton);
 
-          // Verify setSelectedMenu was called with correct ID
-          expect(mockContextValue.setSelectedMenu).toHaveBeenCalledWith(i);
+          expect(mockContextValue.setSelectedMenu).toHaveBeenLastCalledWith(
+            item.id,
+          );
         }
 
-        // Should have been called once for each menu item
         expect(mockContextValue.setSelectedMenu).toHaveBeenCalledTimes(
           menuElements.length,
         );
@@ -305,12 +299,10 @@ describe("UserAdmin Component - Rendering Tests", () => {
       it("resets selected user when switching between menus", async () => {
         const { mockContextValue, user } = renderUserAdminWithContext();
 
-        // Click on multiple menu items
-        await user.click(screen.getByText("Inviter bruker"));
         await user.click(screen.getByText("Ny bruker"));
+        await user.click(screen.getByText("Endre bruker"));
         await user.click(screen.getByText("Superbrukere"));
 
-        // setSelectedUser should be called with null for each menu switch
         expect(mockContextValue.setSelectedUser).toHaveBeenCalledWith(null);
         expect(mockContextValue.setSelectedUser).toHaveBeenCalledTimes(3);
       });
@@ -383,20 +375,14 @@ describe("UserAdmin Component - Form Validation Tests", () => {
     });
 
     it("validates password strength requirements", async () => {
-      const { user } = renderUserAdminWithContext({}, { selectedMenu: 2 });
+      renderUserAdminWithContext({}, { selectedMenu: 2 });
 
-      // Find password input by name attribute
-      const passwordFields = screen.getAllByDisplayValue("");
-      const passwordField = passwordFields.find(
-        (field) => field.type === "password",
-      );
-
-      // Test that password field is present
-      expect(passwordField).toBeDefined();
-
-      // The password validation happens on the server side
-      // We can test that the field is present and accepts input
-      expect(passwordField?.type).toBe("password");
+      // Passord settes av brukeren via Clerk etter opprettelse; skjemaet har e-post og roller
+      const emailField = screen
+        .getAllByRole("textbox")
+        .find((el) => el.getAttribute("name") === "email");
+      expect(emailField).toBeDefined();
+      expect(screen.getByText(/Velg roller/)).toBeDefined();
     });
 
     it("shows Norwegian error messages for email validation", async () => {
@@ -446,7 +432,7 @@ describe("UserAdmin Component - Form Validation Tests", () => {
       expect(screen.getByDisplayValue("John")).toBeDefined();
       expect(screen.getByDisplayValue("Doe")).toBeDefined();
       expect(screen.getByDisplayValue("john.doe@example.com")).toBeDefined();
-      expect(screen.getByDisplayValue("SecurePassword123!")).toBeDefined();
+      expect(screen.getByText("Er du sikker?")).toBeDefined();
     });
 
     it("validates email format using actual validation logic", () => {
@@ -543,7 +529,7 @@ describe("UserAdmin Component - Form Validation Tests", () => {
         email: "",
         firstName: "",
         lastName: "",
-        password: "",
+        emailSubscription: true,
       });
 
       // Verify screen was set back to form
@@ -621,7 +607,7 @@ describe("UserAdmin Component - Form Validation Tests", () => {
         email: "",
         firstName: "",
         lastName: "",
-        password: "",
+        emailSubscription: true,
       });
       expect(mockContextValue.setScreenToDisplay).toHaveBeenCalled();
     });
@@ -645,7 +631,10 @@ describe("UserAdmin Component - Form Validation Tests", () => {
       expect(screen.getByDisplayValue("John")).toBeDefined();
       expect(screen.getByDisplayValue("Doe")).toBeDefined();
       expect(screen.getByDisplayValue("test@example.com")).toBeDefined();
-      expect(screen.getByDisplayValue("password123")).toBeDefined();
+      const subscription = screen.getByRole("checkbox", {
+        name: /aktiver e-postvarsling/i,
+      }) as HTMLInputElement;
+      expect(subscription.checked).toBe(true);
     });
   });
 });
@@ -846,7 +835,10 @@ describe("UserAdmin Component - Loading State Tests", () => {
       expect(screen.queryByLabelText("E-post")).toBeNull();
       expect(screen.queryByLabelText("Passord")).toBeNull();
       expect(screen.queryByRole("button", { name: "Legg til" })).toBeNull();
-      expect(screen.queryByRole("button", { name: "Avbryt" })).toBeNull();
+      const cancelWhileLoading = screen.getByRole("button", {
+        name: "Avbryt",
+      });
+      expect(cancelWhileLoading).toBeDisabled();
 
       // Only loading content should be visible
       expect(screen.getByTestId("spinner")).toBeDefined();
@@ -874,12 +866,16 @@ describe("UserAdmin Component - Loading State Tests", () => {
         .getByText(/Oppretter bruker/)
         .closest("div");
       expect(loadingContainer).toBeDefined();
-      expect(loadingContainer?.className).toContain("mt-24");
-      expect(loadingContainer?.className).toContain("flex");
-      expect(loadingContainer?.className).toContain("flex-col");
-      expect(loadingContainer?.className).toContain("items-center");
-      expect(loadingContainer?.className).toContain("justify-center");
-      expect(loadingContainer?.className).toContain("gap-4");
+      const cn = loadingContainer?.className ?? "";
+      expect(cn).toContain("absolute");
+      expect(cn).toContain("inset-0");
+      expect(cn).toContain("z-10");
+      expect(cn).toContain("flex");
+      expect(cn).toContain("flex-col");
+      expect(cn).toContain("items-center");
+      expect(cn).toContain("justify-center");
+      expect(cn).toContain("gap-4");
+      expect(cn).toContain("bg-white/90");
     });
   });
 
@@ -983,7 +979,7 @@ describe("UserAdmin Component - Loading State Tests", () => {
         email: "",
         firstName: "",
         lastName: "",
-        password: "",
+        emailSubscription: true,
       });
     });
 

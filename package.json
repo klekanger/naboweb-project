@@ -15,6 +15,18 @@
     "typegen": "pnpm --filter @naboweb/studio typegen"
   },
   "devDependencies": {
-    "prettier": "3.3.1"
+    "prettier": "^3.8.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.2.14",
+      "@types/react-dom": "19.2.3",
+      "basic-ftp": ">=5.2.0",
+      "fast-xml-parser": ">=5.5.7",
+      "follow-redirects": ">=1.16.0"
+    },
+    "patchedDependencies": {
+      "next-themes@0.4.6": "patches/next-themes@0.4.6.patch"
+    }
   }
 }

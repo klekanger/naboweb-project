@@ -1,3 +1,5 @@
+@AGENTS.md
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
@@ -36,53 +38,58 @@ All commands run from the monorepo root unless noted otherwise.
 └── package.json            # Monorepo scripts
 ```
 
+## Next.js in this repo
+
+The pinned `next` version is in `nextjs-app/package.json`. For App Router behavior and APIs (caching directives, `draftMode`, `revalidateTag`, `revalidatePath`, etc.), read the matching topic under `nextjs-app/node_modules/next/dist/docs/`. The rest of this file describes Naboweb-specific wiring only; `@AGENTS.md` (included above) covers shared conventions and repeats the local-docs rule.
+
 ## Key Architectural Patterns
 
 ### Sanity Dual Schema Setup
+
 Schemas exist in both `studio/schemaTypes/` (authoritative) and `nextjs-app/src/sanity/schemas/` (mirrored). Changes must be synchronized manually. After any schema change, run `pnpm run typegen` to regenerate `src/types/sanity.types.ts`.
 
 ### Clerk Auth Middleware
+
 The middleware file is `nextjs-app/src/proxy.ts` (not `middleware.ts`). It protects `/min-side`, `/information`, `/user-admin-page`, and `/messageboard`. Layout-level checks in `(protected-routes)` enforce role-based access beyond basic auth.
 
 ### Role-Based Access Control
+
 Roles (`"user"`, `"editor"`, `"admin"`) are stored in Clerk's `publicMetadata.roles` as an array. All new users must have at least the `"user"` role. Role validation lives in `src/lib/validateUserRoles.ts`. Auth checks are done inside server actions, not middleware.
 
 ### Sanity Clients
+
 Two clients in `src/sanity/lib/client.ts`:
+
 - `client`: read-only, stega enabled for Visual Editing overlays
 - `clientWithWriteAccess`: write token for mutations via API routes
 
 ### Caching Strategy
-The app uses the experimental Next.js `"use cache"` directive with `cacheLife()` and `cacheTag()` for long-lived caching. Draft mode disables cache and falls back to dynamic fetching. Revalidation is triggered by Sanity webhooks at `/api/revalidate` using `revalidateTag()` with `type:slug` patterns (not `revalidatePath`).
+
+For `"use cache"`, `cacheLife`, `cacheTag`, and cache invalidation APIs, follow the current docs in `nextjs-app/node_modules/next/dist/docs/`.
+
+In this app: layouts and pages read **`draftMode`** and branch fetching accordingly; the Sanity loader uses preview vs published perspective when draft mode is enabled (`src/sanity/lib/store.ts`). The main Sanity webhook handler is `src/app/api/revalidate/route.ts`: it calls `revalidateTag` for the document `_type` and, when the payload includes `slug`, for `` `${_type}:${slug}` ``, and also calls `revalidatePath("/")` so the home route updates. Additional revalidation exists in `src/app/api/sanity/*` and path-based invalidation in `src/app/api/revalidate-messageboard/route.ts`.
 
 ### Server Actions Pattern
+
 All Clerk user operations live in `src/app/actions/`. They return discriminated union types: `{ success, status }` | `{ error, status }`. Auth and role checks happen inside each action.
 
 ### Path pagination (App Router)
+
 Public blog list uses `blog-collection/[[...blogPage]]`: page 1 is **`/blog-collection`** (canonical); page 2+ is **`/blog-collection/2`**, etc. Legacy **`/blog-collection/1`** redirects to `/blog-collection`. The same pattern applies to **`/information`** (optional `[[...page]]`). GROQ slices use helpers in `src/lib/pagination.ts` (`groqSliceRange`, `totalPagesFromCount`, `pageNumberFromOptionalCatchAll`). Link-style pagination UI is `@/components/Pagination` (pass `useRootUrlForFirstPage` for those index routes). Admin blog list stays **`/admin/blog/1`** (numeric segment; no optional catch-all next to `new/` and `[slug]/edit`).
 
 ### GROQ Queries
+
 All queries live in `src/sanity/lib/queries.ts`. Use `defineQuery` from `groq` or `next-sanity` to wrap strings. Always use SCREAMING_SNAKE_CASE for query variable names. Each filter segment and projected attribute goes on its own line. Never interpolate dynamic values — use query parameters.
 
 ### Email Alerts + Cron
+
 `/api/send-email-alerts` detects `vercel-cron` user-agent for auth bypass. Sends batch emails via AWS SES (nodemailer). Upstash Redis tracks last run time and is also kept alive by `/api/ping-upstash` to prevent free-tier deletion.
 
 ### Testing
+
 Vitest + React Testing Library. `src/test-utils/setup.ts` pre-mocks HeroUI components, Sanity image URLs, Next.js routing, server actions, and browser APIs. No real Next.js server or browser needed.
 
-## UI Components
-
-Use HeroUI (`@heroui/react`) for all form controls and UI elements where a matching component exists — `Input`, `TextArea`, `Label`, `TextField`, `Checkbox`, `Button`, `Card`, `Modal`, etc. Prefer HeroUI over plain HTML elements or custom styling for these primitives.
-
-## Code Style
-
-- TypeScript everywhere; prefer `type` over `interface`, avoid `enum` (use maps)
-- Functional components; minimize `"use client"`, `useEffect`, `useState` — favor RSCs
-- Directory names: lowercase with dashes (e.g. `components/auth-wizard`)
-- Named exports for components
-- Avoid classes; use functional and declarative patterns
-- Wrap client components in `Suspense` with a fallback
-- Norwegian UI text
+Code style, HeroUI + Tailwind, and RSC guidance: see `@AGENTS.md` above.
 
 ## Sanity Schema Conventions
 

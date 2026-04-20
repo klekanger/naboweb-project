@@ -56,7 +56,7 @@ export const createMockUser = (
   lastName: "Doe",
   email: "john.doe@example.com",
   roles: ["user"],
-  createdAt: new Date("2023-01-01"),
+  createdAt: new Date("2023-01-01").getTime(),
   imageUrl: "https://example.com/avatar.jpg",
   ...overrides,
 });
@@ -307,13 +307,7 @@ export const accessibilityQueries = {
 
 // Norwegian text content helpers
 export const norwegianTextContent = {
-  menuItems: [
-    "Vis brukere",
-    "Inviter bruker",
-    "Ny bruker",
-    "Endre bruker",
-    "Superbrukere",
-  ],
+  menuItems: ["Vis brukere", "Ny bruker", "Endre bruker", "Superbrukere"],
   formLabels: ["Fornavn", "Etternavn", "E-post", "Passord"],
   buttons: ["Legg til", "Avbryt", "Tilbake", "Opprett"],
   errorMessages: [

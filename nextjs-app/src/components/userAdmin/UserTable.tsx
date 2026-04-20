@@ -18,6 +18,7 @@ import CustomSearchInput from "../CustomSearchInput";
 import { MoreVertical } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, {
+  startTransition,
   useCallback,
   useContext,
   useEffect,
@@ -62,7 +63,9 @@ export default function UserTable({
   const [localUsers, setLocalUsers] = useState(users);
   // Keep localUsers in sync with users prop
   useEffect(() => {
-    setLocalUsers(users);
+    startTransition(() => {
+      setLocalUsers(users);
+    });
   }, [users]);
   const router = useRouter();
   const { setSelectedMenu, setSelectedUser } = useContext(UserAdminContext);
@@ -86,7 +89,9 @@ export default function UserTable({
   const [isPaginating, setIsPaginating] = useState(false);
 
   useEffect(() => {
-    setIsPaginating(false);
+    startTransition(() => {
+      setIsPaginating(false);
+    });
   }, [pagination?.currentPage, users]);
 
   const showUserWithIdModal = async (id: string) => {
@@ -106,12 +111,10 @@ export default function UserTable({
     modalErrorMessage.onOpen();
   };
 
-  if (!localUsers) {
-    return null;
-  }
+  const safeUsers = useMemo(() => localUsers ?? [], [localUsers]);
 
   const sortedUsers = useMemo(() => {
-    let sortedUsers = [...localUsers];
+    let sortedUsers = [...safeUsers];
     // Sort users by last name, then first name
     sortedUsers.sort((a, b) => {
       const nameA = `${a.lastName} ${a.firstName}`.toLowerCase();
@@ -121,7 +124,7 @@ export default function UserTable({
       return 0;
     });
     return sortedUsers;
-  }, [localUsers]);
+  }, [safeUsers]);
 
   const onGlobalSearchChange = useCallback(
     (value?: string) => {
@@ -264,6 +267,10 @@ export default function UserTable({
     sortedUsers.length,
     isSearchResult,
   ]);
+
+  if (!localUsers) {
+    return null;
+  }
 
   return (
     <div className={rest?.className ?? ""}>

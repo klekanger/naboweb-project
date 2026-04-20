@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { calculatePaginationData, mapUsersWithEmails } from "./userUtils";
-import type { UserResource } from "@clerk/types";
+import type { User } from "@clerk/nextjs/server";
 
 describe("User Utility Functions", () => {
   describe("calculatePaginationData", () => {
@@ -49,7 +49,7 @@ describe("User Utility Functions", () => {
         createdAt: testDate,
         publicMetadata: { roles: ["user"] },
         imageUrl: "https://example.com/avatar.jpg",
-      } as unknown as UserResource;
+      } as unknown as User;
 
       const result = mapUsersWithEmails(clerkUser);
       expect(result).toEqual({
@@ -73,7 +73,7 @@ describe("User Utility Functions", () => {
         createdAt: new Date("2022-01-01").getTime(),
         publicMetadata: { roles: ["user"], emailSubscription: true },
         imageUrl: "",
-      } as unknown as UserResource;
+      } as unknown as User;
 
       expect(mapUsersWithEmails(clerkUser).emailSubscription).toBe(true);
     });
@@ -87,7 +87,7 @@ describe("User Utility Functions", () => {
         createdAt: new Date("2022-01-01").getTime(),
         publicMetadata: { roles: ["user"] },
         imageUrl: "",
-      } as unknown as UserResource;
+      } as unknown as User;
 
       const result = mapUsersWithEmails(clerkUser);
       expect(result.email).toBe("");
@@ -102,7 +102,7 @@ describe("User Utility Functions", () => {
         createdAt: new Date("2022-01-01").getTime(),
         publicMetadata: {},
         imageUrl: "",
-      } as unknown as UserResource;
+      } as unknown as User;
 
       const result = mapUsersWithEmails(clerkUser);
       expect(result.roles).toEqual([]);
