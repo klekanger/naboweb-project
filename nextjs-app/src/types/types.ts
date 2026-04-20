@@ -1,5 +1,5 @@
 import { type SanityImageAsset } from "@/types/sanity.types";
-import type { UserResource } from "@clerk/types";
+import type { User } from "@clerk/nextjs/server";
 import { PortableTextBlock } from "@portabletext/types";
 import type { Image as SanityImage } from "sanity";
 import type {
@@ -175,7 +175,7 @@ export type UserAdminProps = {
   pagination?: PaginationData;
 };
 
-export type UserWithRoles = UserResource & {
+export type UserWithRoles = User & {
   email?: string;
   publicMetadata?: {
     roles?: UserRoles[];

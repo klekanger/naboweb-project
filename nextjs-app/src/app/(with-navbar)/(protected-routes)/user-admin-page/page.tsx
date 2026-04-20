@@ -4,8 +4,7 @@ import { calculatePaginationData } from "@/lib/pagination";
 import { mapUsersWithEmails } from "@/lib/userUtils";
 import { validRoles, validateUserRoles } from "@/lib/validateUserRoles";
 import type { UserWithEmails } from "@/types/types";
-import { clerkClient } from "@clerk/nextjs/server";
-import type { UserResource } from "@clerk/types";
+import { clerkClient, type User } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
@@ -140,7 +139,7 @@ export async function UserAdminContent({
 
   const users = userData.users;
   const usersWithEmails: UserWithEmails[] = (
-    users as unknown as UserResource[]
+    users as unknown as User[]
   ).map(mapUsersWithEmails);
 
   return (
