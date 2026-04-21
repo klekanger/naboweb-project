@@ -2,8 +2,17 @@
 
 import CustomButton from "@/components/CustomButton";
 import { useAdminEditExit } from "@/components/admin/AdminEditPageShell";
-import { Input, Label, TextField } from "@heroui/react";
-import { CheckCircle, FileText, Pencil, Plus, Trash2, Upload, X, XCircle } from "lucide-react";
+import { Input, Label, Modal, TextField } from "@heroui/react";
+import {
+  CheckCircle,
+  FileText,
+  Pencil,
+  Plus,
+  Trash2,
+  Upload,
+  X,
+  XCircle,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -60,6 +69,9 @@ export default function DocumentsManager({ initialDocuments }: Props) {
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [pendingDeleteDoc, setPendingDeleteDoc] = useState<Doc | null>(null);
+  const [deleteModalError, setDeleteModalError] = useState("");
   const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isDirty = useMemo(
@@ -131,18 +143,37 @@ export default function DocumentsManager({ initialDocuments }: Props) {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    setDeletingId(id);
+  const openDeleteConfirm = (doc: Doc) => {
+    setPendingDeleteDoc(doc);
+    setDeleteModalError("");
+    setShowDeleteConfirm(true);
+  };
+
+  const closeDeleteModal = () => {
+    if (deletingId) return;
+    setShowDeleteConfirm(false);
+    setPendingDeleteDoc(null);
+    setDeleteModalError("");
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDeleteDoc) return;
+    setDeletingId(pendingDeleteDoc._id);
+    setDeleteModalError("");
     try {
       const res = await fetch("/api/sanity/documents", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ _id: id }),
+        body: JSON.stringify({ _id: pendingDeleteDoc._id }),
       });
       if (!res.ok) throw new Error((await res.json()).error);
-      setDocuments((prev) => prev.filter((d) => d._id !== id));
+      setDocuments((prev) => prev.filter((d) => d._id !== pendingDeleteDoc._id));
+      setShowDeleteConfirm(false);
+      setPendingDeleteDoc(null);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Sletting feilet.");
+      setDeleteModalError(
+        err instanceof Error ? err.message : "Sletting feilet.",
+      );
     } finally {
       setDeletingId(null);
     }
@@ -298,19 +329,19 @@ export default function DocumentsManager({ initialDocuments }: Props) {
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-2 shrink-0 cursor-pointer">
                 <button
                   type="button"
                   onClick={() => startEdit(doc)}
-                  className="text-brand-secondary hover:underline text-sm flex items-center gap-1"
+                  className="text-brand-secondary hover:underline text-sm flex items-center gap-1 cursor-pointer"
                 >
                   <Pencil className="h-4 w-4" />
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleDelete(doc._id)}
+                  onClick={() => openDeleteConfirm(doc)}
                   disabled={deletingId === doc._id}
-                  className="text-red-500 hover:text-red-700 disabled:opacity-50"
+                  className="text-red-500 hover:text-red-700 disabled:opacity-50 cursor-pointer"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -319,6 +350,56 @@ export default function DocumentsManager({ initialDocuments }: Props) {
           ))}
         </div>
       )}
+
+      <Modal.Backdrop
+        isOpen={showDeleteConfirm}
+        onOpenChange={(open) => {
+          if (!open) closeDeleteModal();
+        }}
+        variant="blur"
+      >
+        <Modal.Container>
+          <Modal.Dialog className="sm:max-w-md">
+            <Modal.CloseTrigger />
+            <Modal.Header>
+              <Modal.Heading className="text-brand-danger">
+                Slett dokument
+              </Modal.Heading>
+            </Modal.Header>
+            <Modal.Body>
+              {deleteModalError && (
+                <div
+                  className="bg-brand-danger text-white p-4 rounded-xl mb-4"
+                  role="alert"
+                >
+                  {deleteModalError}
+                </div>
+              )}
+              {!deleteModalError && (
+                <p>
+                  Er du helt sikker på at du vil slette{" "}
+                  <em>{pendingDeleteDoc?.title || "dette dokumentet"}</em>? Denne
+                  operasjonen kan ikke angres.
+                </p>
+              )}
+            </Modal.Body>
+            <Modal.Footer className="flex flex-wrap justify-end gap-2">
+              <CustomButton variant="secondary" onPress={closeDeleteModal}>
+                Avbryt
+              </CustomButton>
+              {!deleteModalError && (
+                <CustomButton
+                  variant="danger"
+                  isPending={deletingId === pendingDeleteDoc?._id}
+                  onPress={() => void confirmDelete()}
+                >
+                  Slett
+                </CustomButton>
+              )}
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </div>
   );
 }
