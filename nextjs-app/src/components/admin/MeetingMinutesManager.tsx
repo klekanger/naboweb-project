@@ -1,6 +1,7 @@
 "use client";
 
 import CustomButton from "@/components/CustomButton";
+import { useAdminEditExit } from "@/components/admin/AdminEditPageShell";
 import { Input, Label, TextField } from "@heroui/react";
 import {
   BookOpen,
@@ -13,7 +14,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { formatDate } from "@/lib/format-date";
 
 type MinutesDoc = {
@@ -55,17 +56,46 @@ const emptyForm: FormState = {
   uploadedFiles: [],
 };
 
+function formFromMinutes(doc: MinutesDoc): FormState {
+  return {
+    title: doc.title ?? "",
+    description: doc.description ?? "",
+    meetingDate: doc.meetingDate ?? "",
+    meetingPlace: doc.meetingPlace ?? "",
+    uploadedFiles:
+      doc.meetingDocuments
+        ?.map((d) => ({
+          assetId: d.asset?._id ?? "",
+          fileName: d.asset?.originalFilename ?? "",
+        }))
+        .filter((f) => f.assetId) ?? [],
+  };
+}
+
 export default function MeetingMinutesManager({ initialMinutes }: Props) {
+  const { reportDirty, registerDiscard } = useAdminEditExit();
   const router = useRouter();
   const [minutes, setMinutes] = useState<MinutesDoc[]>(initialMinutes);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
+  const [formBaseline, setFormBaseline] = useState<FormState | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isDirty = useMemo(
+    () =>
+      showForm &&
+      formBaseline !== null &&
+      JSON.stringify(form) !== JSON.stringify(formBaseline),
+    [showForm, form, formBaseline],
+  );
+
+  useEffect(() => {
+    reportDirty(isDirty);
+  }, [isDirty, reportDirty]);
 
   const handleFileUpload = async (files: FileList) => {
     setIsUploading(true);
@@ -148,30 +178,25 @@ export default function MeetingMinutesManager({ initialMinutes }: Props) {
   };
 
   const startEdit = (doc: MinutesDoc) => {
+    const baseline = formFromMinutes(doc);
     setEditingId(doc._id);
-    setForm({
-      title: doc.title ?? "",
-      description: doc.description ?? "",
-      meetingDate: doc.meetingDate ?? "",
-      meetingPlace: doc.meetingPlace ?? "",
-      uploadedFiles:
-        doc.meetingDocuments
-          ?.map((d) => ({
-            assetId: d.asset?._id ?? "",
-            fileName: d.asset?.originalFilename ?? "",
-          }))
-          .filter((f) => f.assetId) ?? [],
-    });
+    setForm(baseline);
+    setFormBaseline(baseline);
     setShowForm(true);
     setError("");
   };
 
-  const cancelForm = () => {
+  const cancelForm = useCallback(() => {
     setShowForm(false);
     setEditingId(null);
     setForm(emptyForm);
+    setFormBaseline(null);
     setError("");
-  };
+  }, []);
+
+  useEffect(() => {
+    registerDiscard(cancelForm);
+  }, [cancelForm, registerDiscard]);
 
   return (
     <div className="space-y-6">
@@ -181,6 +206,7 @@ export default function MeetingMinutesManager({ initialMinutes }: Props) {
             setShowForm(true);
             setEditingId(null);
             setForm(emptyForm);
+            setFormBaseline(emptyForm);
             setError("");
           }}
         >

@@ -2,6 +2,7 @@
 
 import { searchFileOtherDocuments } from "@/app/actions/searchFileOtherDocuments";
 import CustomButton from "@/components/CustomButton";
+import { useAdminEditExit } from "@/components/admin/AdminEditPageShell";
 import {
   DOCUMENT_MENU_MIN_SEARCH_CHARS,
   DOCUMENT_MENU_SEARCH_DEBOUNCE_MS,
@@ -93,12 +94,19 @@ function buildComboItems(
   return ordered;
 }
 
+function serializeButtons(
+  buttons: [ButtonState, ButtonState, ButtonState, ButtonState],
+): string {
+  return JSON.stringify(buttons);
+}
+
 export default function DocumentMenuEditor({
   documentMenuId,
   initialButtons,
   seedFileOptions,
   browseFileOptions,
 }: Props) {
+  const { reportDirty, registerDiscard } = useAdminEditExit();
   const [buttons, setButtons] =
     useState<[ButtonState, ButtonState, ButtonState, ButtonState]>(
       initialButtons,
@@ -141,6 +149,10 @@ export default function DocumentMenuEditor({
     null,
   ]);
   const searchGeneration = useRef([0, 0, 0, 0]);
+  const initialButtonsSnapshot = useMemo(
+    () => serializeButtons(initialButtons),
+    [initialButtons],
+  );
 
   useEffect(
     () => () => {
@@ -161,6 +173,26 @@ export default function DocumentMenuEditor({
     }
     return m;
   }, [seedFileOptions, searchHitsByRow, uploadedExtras]);
+  const currentButtonsSnapshot = useMemo(() => serializeButtons(buttons), [buttons]);
+  const isDirty =
+    currentButtonsSnapshot !== initialButtonsSnapshot || uploadedExtras.length > 0;
+
+  useEffect(() => {
+    reportDirty(isDirty);
+  }, [isDirty, reportDirty]);
+
+  const discardUnsavedChanges = useCallback(() => {
+    setButtons(initialButtons);
+    setFileInputByRow(initialComboInputFromButtons(initialButtons));
+    setSearchHitsByRow([[], [], [], []]);
+    setSearchLoadingByRow([false, false, false, false]);
+    setUploadedExtras([]);
+    setResult(null);
+  }, [initialButtons]);
+
+  useEffect(() => {
+    registerDiscard(discardUnsavedChanges);
+  }, [discardUnsavedChanges, registerDiscard]);
 
   const updateButton = (
     index: number,
