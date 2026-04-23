@@ -2,7 +2,7 @@
 
 import CustomButton from "@/components/CustomButton";
 import { useAdminEditExit } from "@/components/admin/AdminEditPageShell";
-import { BLOG_COLLECTION_POSTS_PER_PAGE } from "@/lib/constants";
+import { FILE_LIST_POSTS_PER_PAGE } from "@/lib/constants";
 import { totalPagesFromCount } from "@/lib/pagination";
 import { Input, Label, Modal, TextField } from "@heroui/react";
 import {
@@ -207,7 +207,7 @@ export default function DocumentsManager({ initialDocuments }: Props) {
 
   const totalPages = totalPagesFromCount(
     documents.length,
-    BLOG_COLLECTION_POSTS_PER_PAGE,
+    FILE_LIST_POSTS_PER_PAGE,
   );
 
   useEffect(() => {
@@ -217,8 +217,8 @@ export default function DocumentsManager({ initialDocuments }: Props) {
   }, [pageNumber, totalPages]);
 
   const pagedDocuments = useMemo(() => {
-    const start = (pageNumber - 1) * BLOG_COLLECTION_POSTS_PER_PAGE;
-    const end = pageNumber * BLOG_COLLECTION_POSTS_PER_PAGE;
+    const start = (pageNumber - 1) * FILE_LIST_POSTS_PER_PAGE;
+    const end = pageNumber * FILE_LIST_POSTS_PER_PAGE;
 
     return documents.slice(start, end);
   }, [documents, pageNumber]);
