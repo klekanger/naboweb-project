@@ -76,7 +76,7 @@ const adminSections: AdminSection[] = [
   {
     title: "Last opp filer",
     description:
-      "Gå direkte til opplasting av øvrige dokumenter i Sanity Studio. Krever egen innlogging.",
+      "Last opp dokumenter direkte i Sanity Studio. Krever egen innlogging.",
     href: getSanityStudioFileDocumentsUrl(),
     icon: Upload,
     requiresAdmin: true,
