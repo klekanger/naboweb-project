@@ -2,6 +2,8 @@
 
 import CustomButton from "@/components/CustomButton";
 import { useAdminEditExit } from "@/components/admin/AdminEditPageShell";
+import { BLOG_COLLECTION_POSTS_PER_PAGE } from "@/lib/constants";
+import { totalPagesFromCount } from "@/lib/pagination";
 import { Input, Label, Modal, TextField } from "@heroui/react";
 import {
   CheckCircle,
@@ -71,6 +73,7 @@ export default function DocumentsManager({ initialDocuments }: Props) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [pendingDeleteDoc, setPendingDeleteDoc] = useState<Doc | null>(null);
+  const [pageNumber, setPageNumber] = useState(1);
   const [deleteModalError, setDeleteModalError] = useState("");
   const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -202,6 +205,24 @@ export default function DocumentsManager({ initialDocuments }: Props) {
     registerDiscard(cancelForm);
   }, [cancelForm, registerDiscard]);
 
+  const totalPages = totalPagesFromCount(
+    documents.length,
+    BLOG_COLLECTION_POSTS_PER_PAGE,
+  );
+
+  useEffect(() => {
+    if (pageNumber > totalPages) {
+      setPageNumber(totalPages);
+    }
+  }, [pageNumber, totalPages]);
+
+  const pagedDocuments = useMemo(() => {
+    const start = (pageNumber - 1) * BLOG_COLLECTION_POSTS_PER_PAGE;
+    const end = pageNumber * BLOG_COLLECTION_POSTS_PER_PAGE;
+
+    return documents.slice(start, end);
+  }, [documents, pageNumber]);
+
   return (
     <div className="space-y-6">
       {/* Add new button */}
@@ -309,52 +330,88 @@ export default function DocumentsManager({ initialDocuments }: Props) {
           <p>Ingen dokumenter lastet opp ennå.</p>
         </div>
       ) : (
-        <div className="divide-y divide-border">
-          {documents.map((doc) => (
-            <div
-              key={doc._id}
-              className="flex items-center justify-between py-4 gap-4"
-            >
-              <div className="flex items-start gap-3 flex-1 min-w-0">
-                <FileText className="h-5 w-5 text-foreground/40 shrink-0 mt-0.5" />
-                <div className="min-w-0">
-                  <a href={doc.document?.asset?.url ?? ""}>
-                    <p className="font-medium truncate hover:text-brand-secondary/80">
-                      {doc.title}
-                    </p>
-                  </a>
-                  {doc.description && (
-                    <p className="text-sm text-foreground/50 truncate">
-                      {doc.description}
-                    </p>
-                  )}
-                  {doc.document?.asset?.originalFilename && (
-                    <p className="text-xs text-foreground/40 truncate">
-                      {doc.document.asset.originalFilename}
-                    </p>
-                  )}
+        <>
+          <div className="divide-y divide-border">
+            {pagedDocuments.map((doc) => (
+              <div
+                key={doc._id}
+                className="flex items-center justify-between py-4 gap-4"
+              >
+                <div className="flex items-start gap-3 flex-1 min-w-0">
+                  <FileText className="h-5 w-5 text-foreground/40 shrink-0 mt-0.5" />
+                  <div className="min-w-0">
+                    <a href={doc.document?.asset?.url ?? ""}>
+                      <p className="font-medium truncate hover:text-brand-secondary/80">
+                        {doc.title}
+                      </p>
+                    </a>
+                    {doc.description && (
+                      <p className="text-sm text-foreground/50 truncate">
+                        {doc.description}
+                      </p>
+                    )}
+                    {doc.document?.asset?.originalFilename && (
+                      <p className="text-xs text-foreground/40 truncate">
+                        {doc.document.asset.originalFilename}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0 cursor-pointer">
+                  <button
+                    type="button"
+                    onClick={() => startEdit(doc)}
+                    className="text-brand-secondary hover:underline text-sm flex items-center gap-1 cursor-pointer"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => openDeleteConfirm(doc)}
+                    disabled={deletingId === doc._id}
+                    className="text-red-500 hover:text-red-700 disabled:opacity-50 cursor-pointer"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center gap-2 shrink-0 cursor-pointer">
-                <button
-                  type="button"
-                  onClick={() => startEdit(doc)}
-                  className="text-brand-secondary hover:underline text-sm flex items-center gap-1 cursor-pointer"
-                >
-                  <Pencil className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => openDeleteConfirm(doc)}
-                  disabled={deletingId === doc._id}
-                  className="text-red-500 hover:text-red-700 disabled:opacity-50 cursor-pointer"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+          {totalPages > 1 && (
+            <>
+              <nav
+                aria-label="Navigasjon mellom dokumenter"
+                className="m-auto my-8 flex justify-center font-bold text-brand-black"
+              >
+                <ul className="flex justify-between">
+                  {pageNumber > 1 && (
+                    <li className="mr-2 rounded-xl bg-brand-primary px-8 py-2 shadow-md">
+                      <button
+                        type="button"
+                        onClick={() => setPageNumber((current) => current - 1)}
+                      >
+                        ← Forrige side
+                      </button>
+                    </li>
+                  )}
+                  {pageNumber < totalPages && (
+                    <li className="ml-2 rounded-xl bg-brand-primary px-8 py-2 shadow-md">
+                      <button
+                        type="button"
+                        onClick={() => setPageNumber((current) => current + 1)}
+                      >
+                        Neste side →
+                      </button>
+                    </li>
+                  )}
+                </ul>
+              </nav>
+              <p className="pb-4 text-center">
+                side {`${pageNumber} av ${totalPages}`}
+              </p>
+            </>
+          )}
+        </>
       )}
 
       <Modal.Backdrop
