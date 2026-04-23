@@ -167,7 +167,9 @@ export default function DocumentsManager({ initialDocuments }: Props) {
         body: JSON.stringify({ _id: pendingDeleteDoc._id }),
       });
       if (!res.ok) throw new Error((await res.json()).error);
-      setDocuments((prev) => prev.filter((d) => d._id !== pendingDeleteDoc._id));
+      setDocuments((prev) =>
+        prev.filter((d) => d._id !== pendingDeleteDoc._id),
+      );
       setShowDeleteConfirm(false);
       setPendingDeleteDoc(null);
     } catch (err: unknown) {
@@ -316,7 +318,11 @@ export default function DocumentsManager({ initialDocuments }: Props) {
               <div className="flex items-start gap-3 flex-1 min-w-0">
                 <FileText className="h-5 w-5 text-foreground/40 shrink-0 mt-0.5" />
                 <div className="min-w-0">
-                  <p className="font-medium truncate">{doc.title}</p>
+                  <a href={doc.document?.asset?.url ?? ""}>
+                    <p className="font-medium truncate hover:text-brand-secondary/80">
+                      {doc.title}
+                    </p>
+                  </a>
                   {doc.description && (
                     <p className="text-sm text-foreground/50 truncate">
                       {doc.description}
@@ -378,8 +384,8 @@ export default function DocumentsManager({ initialDocuments }: Props) {
               {!deleteModalError && (
                 <p>
                   Er du helt sikker på at du vil slette{" "}
-                  <em>{pendingDeleteDoc?.title || "dette dokumentet"}</em>? Denne
-                  operasjonen kan ikke angres.
+                  <em>{pendingDeleteDoc?.title || "dette dokumentet"}</em>?
+                  Denne operasjonen kan ikke angres.
                 </p>
               )}
             </Modal.Body>
