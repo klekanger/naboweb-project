@@ -465,10 +465,7 @@ export default function MessagePage(props: MessagePageProps) {
 
                 {userIsMessageAuthor || isAdmin ? (
                   <>
-                    <CustomButton
-                      variant="primary"
-                      onPress={startEditing}
-                    >
+                    <CustomButton variant="primary" onPress={startEditing}>
                       Rediger {!userIsMessageAuthor ? "(admin)" : ""}
                     </CustomButton>
                     <CustomButton

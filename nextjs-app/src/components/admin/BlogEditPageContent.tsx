@@ -2,7 +2,7 @@
 
 import BackButton from "@/components/BackButton";
 import CustomButton from "@/components/CustomButton";
-import { Button, Modal } from "@heroui/react";
+import { Modal } from "@heroui/react";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
@@ -59,15 +59,14 @@ export default function BlogEditPageContent({
     <div className="max-w-3xl mx-auto py-12 px-4">
       <div className="relative mb-2">
         <h1 className="text-3xl font-semibold">Rediger innlegg</h1>
-        <Button
-          isIconOnly
-          variant="ghost"
+        <button
+          type="button"
           aria-label="Lukk redigering"
-          className="absolute right-0 -top-1 text-foreground/70 hover:text-foreground"
-          onPress={requestLeave}
+          className="absolute right-0 -top-1 rounded-md border border-brand-black/20 p-2 hover:bg-default/60 transition-colors"
+          onClick={requestLeave}
         >
-          <X className="h-8 w-8" />
-        </Button>
+          <X className="size-4" />
+        </button>
       </div>
       <p className="text-foreground/60 mb-8 font-mono text-sm">/{postSlug}</p>
 
@@ -103,7 +102,9 @@ export default function BlogEditPageContent({
               <Modal.Heading>Ikke lagrede endringer</Modal.Heading>
             </Modal.Header>
             <Modal.Body>
-              <p>Du har endringer som ikke er lagret. Vil du forlate denne siden?</p>
+              <p>
+                Du har endringer som ikke er lagret. Vil du forlate denne siden?
+              </p>
             </Modal.Body>
             <Modal.Footer className="flex flex-wrap justify-end gap-2">
               <CustomButton
