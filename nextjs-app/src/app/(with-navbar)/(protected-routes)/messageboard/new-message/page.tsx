@@ -2,42 +2,21 @@
 
 import CustomButton from "@/components/CustomButton";
 import MessageEditor from "@/components/pages/messageBoard/MessageEditor";
-import { MessageEditorContext } from "@/context/messageEditorContext";
+import {
+  getMessagePortableTextCharacterCount,
+  MessageEditorContext,
+} from "@/context/messageEditorContext";
 import { useModalState } from "@/hooks/useModalState";
 import { currentUserRoles } from "@/lib/currentUserRoles";
 import { useUser } from "@clerk/nextjs";
 import { Card, Checkbox, Label, Modal, Spinner } from "@heroui/react";
-import { htmlToBlocks } from "@portabletext/block-tools";
 import { PortableTextBlock } from "@portabletext/types";
-import { Schema } from "@sanity/schema";
 import { MessagesSquare, UploadIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 
 const MAX_CHARACTERS = 1000;
 const DEFAULT_REDIRECT_URL = "/messageboard/new-message";
-
-const defaultSchema = Schema.compile({
-  name: "myMessage",
-  types: [
-    {
-      type: "object",
-      name: "message",
-      fields: [
-        {
-          title: "Body",
-          name: "bodyText",
-          type: "array",
-          of: [{ type: "block" }],
-        },
-      ],
-    },
-  ],
-});
-
-const blockContentType = defaultSchema
-  .get("message")
-  .fields.find((field: { name: string }) => field.name === "bodyText").type;
 
 // *********************************************************************
 // CREATE NEW MESSAGE
@@ -71,7 +50,7 @@ export default function NewMessage() {
   const router = useRouter();
 
   // We're fetching everything we need for the message editor from the MessageEditorContext
-  const { editor, message, messageImageFile, setMessage, setMessageImageFile } =
+  const { message, messageImageFile, setMessage, setMessageImageFile } =
     useContext(MessageEditorContext);
 
   if (!userData || !id) {
@@ -95,9 +74,10 @@ export default function NewMessage() {
       return;
     }
 
-    if (!editor) return;
-
-    if (editor.storage.characterCount.characters() < 10) {
+    const messageCharacterCount = getMessagePortableTextCharacterCount(
+      message.bodyText,
+    );
+    if (messageCharacterCount < 10) {
       setModalTitle("Feil: For kort tekst");
       setModalBody(
         "Det er alltid fint å fatte seg i korthet, men innlegget ditt må være litt lenger (mer enn 10 tegn).",
@@ -108,9 +88,6 @@ export default function NewMessage() {
       return;
     }
 
-    const bodyText = editor.getHTML();
-
-    const textBlocks = htmlToBlocks(bodyText, blockContentType);
     let imageRef: string | null = null;
 
     // 1: If there is a message image, upload it to Sanity
@@ -159,7 +136,7 @@ export default function NewMessage() {
         },
         body: JSON.stringify({
           title: message.title,
-          bodyText: textBlocks as PortableTextBlock[],
+          bodyText: (message.bodyText ?? []) as PortableTextBlock[],
           author: {
             firstName: firstName ?? "",
             lastName: lastName ?? "",
@@ -200,12 +177,6 @@ export default function NewMessage() {
   const handleImageSelect = (selectedImages: File[] | null) => {
     setMessageImageFile(selectedImages?.[0] ?? null);
   };
-
-  const percentage = editor
-    ? Math.round(
-        (100 / MAX_CHARACTERS) * editor.storage.characterCount.characters(),
-      )
-    : 0;
 
   return (
     <>

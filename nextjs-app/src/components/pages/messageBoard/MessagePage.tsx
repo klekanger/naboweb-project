@@ -1,7 +1,10 @@
 "use client";
 
 import MessageEditor from "@/components/pages/messageBoard/MessageEditor";
-import { MessageEditorContext } from "@/context/messageEditorContext";
+import {
+  getMessagePortableTextCharacterCount,
+  MessageEditorContext,
+} from "@/context/messageEditorContext";
 import { useModalState } from "@/hooks/useModalState";
 import { compareClerkAndSanityUser } from "@/lib/compareClerkAndSanityUser";
 import { currentUserRoles } from "@/lib/currentUserRoles";
@@ -12,8 +15,6 @@ import { MessagePageProps } from "@/types/types";
 import { useUser } from "@clerk/nextjs";
 import { Card, Modal } from "@heroui/react";
 import CustomButton from "@/components/CustomButton";
-import { htmlToBlocks } from "@portabletext/block-tools";
-import { Schema } from "@sanity/schema";
 import ShareButtons from "@/components/ShareButtons";
 import {
   ArrowLeftIcon,
@@ -21,39 +22,18 @@ import {
   MessagesSquare,
   Shield,
   UploadIcon,
+  X,
 } from "lucide-react";
 import { PortableTextBlock } from "next-sanity";
 import Image from "next/image";
 import { notFound, useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import type { Image as SanityImage } from "sanity";
 import MessageComments from "./MessageComments";
 
 const IMAGE_WIDTH = 800;
 const IMAGE_HEIGHT = 600;
 const DEFAULT_REDIRECT_URL = "/messageboard/";
-
-const defaultSchema = Schema.compile({
-  name: "myMessage",
-  types: [
-    {
-      type: "object",
-      name: "message",
-      fields: [
-        {
-          title: "Body",
-          name: "bodyText",
-          type: "array",
-          of: [{ type: "block" }],
-        },
-      ],
-    },
-  ],
-});
-
-const blockContentType = defaultSchema
-  .get("message")
-  .fields.find((field: { name: string }) => field.name === "bodyText").type;
 
 export default function MessagePage(props: MessagePageProps) {
   const { data } = props;
@@ -66,6 +46,7 @@ export default function MessagePage(props: MessagePageProps) {
   const [isSubmittingMessage, setIsSubmittingMessage] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isDeletingMessage, setIsDeletingMessage] = useState(false);
+  const [showAbortEditConfirm, setShowAbortEditConfirm] = useState(false);
   const [modalOkUrl, setModalOkUrl] = useState(DEFAULT_REDIRECT_URL);
 
   // Modal state using custom hook
@@ -86,7 +67,7 @@ export default function MessagePage(props: MessagePageProps) {
 
   const router = useRouter();
 
-  const { editor, message, messageImageFile, setMessage, setMessageImageFile } =
+  const { message, messageImageFile, setMessage, setMessageImageFile } =
     useContext(MessageEditorContext);
 
   const userIsMessageAuthor = compareClerkAndSanityUser({
@@ -118,6 +99,30 @@ export default function MessagePage(props: MessagePageProps) {
 
   const commentCount = comments?.length ?? 0;
 
+  const initialEditSnapshot = useMemo(
+    () =>
+      JSON.stringify({
+        title: title ?? "",
+        bodyText: bodyText ?? [],
+        fromAdmin: fromAdmin ?? false,
+        imageFile: null,
+      }),
+    [title, bodyText, fromAdmin],
+  );
+
+  const currentEditSnapshot = useMemo(
+    () =>
+      JSON.stringify({
+        title: message.title ?? "",
+        bodyText: message.bodyText ?? [],
+        fromAdmin: message.fromAdmin ?? false,
+        imageFile: messageImageFile ? messageImageFile.name : null,
+      }),
+    [message.title, message.bodyText, message.fromAdmin, messageImageFile],
+  );
+
+  const isEditDirty = currentEditSnapshot !== initialEditSnapshot;
+
   // *********************************************************************
   // Submit the message to Sanity
   // *********************************************************************
@@ -130,9 +135,10 @@ export default function MessagePage(props: MessagePageProps) {
       return;
     }
 
-    if (!editor) return;
-
-    if (editor.storage.characterCount.characters() < 10) {
+    const messageCharacterCount = getMessagePortableTextCharacterCount(
+      message.bodyText,
+    );
+    if (messageCharacterCount < 10) {
       setModalTitle("Feil: For kort tekst");
       setModalBody(
         "Det er alltid fint å fatte seg i korthet, men innlegget ditt må være litt lenger (mer enn 10 tegn).",
@@ -142,9 +148,6 @@ export default function MessagePage(props: MessagePageProps) {
       return;
     }
 
-    const bodyText = editor.getHTML();
-
-    const textBlocks = htmlToBlocks(bodyText, blockContentType);
     let imageRef: string | null = null;
 
     // 1: If there is a message image, upload it to Sanity
@@ -194,7 +197,7 @@ export default function MessagePage(props: MessagePageProps) {
         body: JSON.stringify({
           _id: _id,
           title: message.title,
-          bodyText: textBlocks as PortableTextBlock[],
+          bodyText: (message.bodyText ?? []) as PortableTextBlock[],
           author: {
             firstName: author?.firstName ?? "", // If the message has an author, use that. Otherwise, use the current user's first name.
             lastName: author?.lastName ?? "", // If the message has an author, use that. Otherwise, use the current user's last name.
@@ -303,18 +306,59 @@ export default function MessagePage(props: MessagePageProps) {
     }
   };
 
+  const startEditing = () => {
+    setMessage({
+      ...message,
+      title: title ?? "",
+      bodyText: (bodyText ?? []) as any,
+      fromAdmin: fromAdmin ?? false,
+    });
+    setMessageImageFile(null);
+    setIsEditingMessage(true);
+  };
+
+  const requestAbortEditing = () => {
+    if (!isEditDirty) {
+      setIsEditingMessage(false);
+      return;
+    }
+    setShowAbortEditConfirm(true);
+  };
+
+  const confirmAbortEditing = () => {
+    setMessage({
+      ...message,
+      title: title ?? "",
+      bodyText: (bodyText ?? []) as any,
+      fromAdmin: fromAdmin ?? false,
+    });
+    setMessageImageFile(null);
+    setIsEditingMessage(false);
+    setShowAbortEditConfirm(false);
+  };
+
   return (
     <>
       <Card className="p-2 py-8 mb-8">
         <div className="flex flex-col items-start p-4">
           {isEditingMessage ? (
-            <div className="pb-4 pr-4 md:pb-8 flex gap-3 w-full">
+            <div className="pb-4 pr-4 md:pb-8 flex gap-3 w-full justify-between items-start">
               <div className="border-r border-black/20 pr-4">
                 <MessagesSquare className="h-full" />
               </div>
-              <h1 className="text-xl lg:text-3xl prose lg:prose-lg">
-                Rediger innlegg
-              </h1>
+              <div className="flex items-start justify-between w-full">
+                <h1 className="text-xl lg:text-3xl prose lg:prose-lg">
+                  Rediger innlegg
+                </h1>
+                <button
+                  type="button"
+                  aria-label="Avbryt redigering"
+                  onClick={requestAbortEditing}
+                  className="rounded-md border border-brand-black/20 p-2 hover:bg-default/60 transition-colors"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
             </div>
           ) : (
             <div className="font-thin text-base pb-2 flex text-brand-black/60">
@@ -389,7 +433,7 @@ export default function MessagePage(props: MessagePageProps) {
                 <div className="flex gap-4">
                   <CustomButton
                     variant="secondary"
-                    onPress={() => setIsEditingMessage(false)}
+                    onPress={requestAbortEditing}
                     className="no-underline"
                   >
                     Avbryt
@@ -423,7 +467,7 @@ export default function MessagePage(props: MessagePageProps) {
                   <>
                     <CustomButton
                       variant="primary"
-                      onPress={() => setIsEditingMessage(true)}
+                      onPress={startEditing}
                     >
                       Rediger {!userIsMessageAuthor ? "(admin)" : ""}
                     </CustomButton>
@@ -502,6 +546,32 @@ export default function MessagePage(props: MessagePageProps) {
                   {modalOkText}
                 </CustomButton>
               </div>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
+
+      <Modal.Backdrop
+        isOpen={showAbortEditConfirm}
+        onOpenChange={(open) => {
+          if (!open) setShowAbortEditConfirm(false);
+        }}
+        variant="blur"
+      >
+        <Modal.Container>
+          <Modal.Dialog className="sm:max-w-md">
+            <Modal.CloseTrigger />
+            <Modal.Header>
+              <Modal.Heading>Er du sikker?</Modal.Heading>
+            </Modal.Header>
+            <Modal.Footer className="flex flex-wrap justify-end gap-2">
+              <CustomButton
+                variant="secondary"
+                onPress={() => setShowAbortEditConfirm(false)}
+              >
+                Avbryt
+              </CustomButton>
+              <CustomButton onPress={confirmAbortEditing}>Bekreft</CustomButton>
             </Modal.Footer>
           </Modal.Dialog>
         </Modal.Container>

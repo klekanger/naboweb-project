@@ -2,31 +2,54 @@
 
 import type { MessageType } from "@/types/types";
 import { type SanityImageAsset } from "@/types/sanity.types";
-import CharacterCount from "@tiptap/extension-character-count";
-import Placeholder from "@tiptap/extension-placeholder";
-import Underline from "@tiptap/extension-underline";
-import { Editor, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
+import type { PortableTextBlock } from "@portabletext/types";
 import { createContext, useState } from "react";
 
+type MessageContextMessage = Omit<MessageType, "messageImage"> & {
+  messageImage: SanityImageAsset | null;
+};
+
+export function getMessagePortableTextPlainText(
+  bodyText: PortableTextBlock[] | undefined | null,
+) {
+  if (!Array.isArray(bodyText) || bodyText.length === 0) {
+    return "";
+  }
+
+  return bodyText
+    .map((block) => {
+      if (block._type !== "block" || !Array.isArray(block.children)) {
+        return "";
+      }
+
+      return block.children
+        .map((child) =>
+          child._type === "span" && typeof child.text === "string"
+            ? child.text
+            : "",
+        )
+        .join("");
+    })
+    .join("\n")
+    .trim();
+}
+
+export function getMessagePortableTextCharacterCount(
+  bodyText: PortableTextBlock[] | undefined | null,
+) {
+  return getMessagePortableTextPlainText(bodyText).length;
+}
+
 type MessageEditorContextType = {
-  editor: Editor | null;
   isEditingMessage: boolean;
   setIsEditingMessage: (isEditingMessage: boolean) => void;
-  message: Omit<MessageType, "messageImage"> & {
-    messageImage: SanityImageAsset | null;
-  };
-  setMessage: (
-    message: Omit<MessageType, "messageImage"> & {
-      messageImage: SanityImageAsset | null;
-    },
-  ) => void;
+  message: MessageContextMessage;
+  setMessage: (message: MessageContextMessage) => void;
   messageImageFile: File | null;
   setMessageImageFile: (messageImageFile: File | null) => void;
 };
 
 const messageEditorInitialValue: MessageEditorContextType = {
-  editor: null,
   isEditingMessage: false,
   setIsEditingMessage: () => {},
   message: {
@@ -54,31 +77,8 @@ export default function MessageEditorProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Underline,
-      CharacterCount.configure({
-        limit: 2000,
-      }),
-      Placeholder.configure({ placeholder: "Skriv et innlegg..." }),
-    ],
-    content: "",
-    immediatelyRender: false,
-    editorProps: {
-      attributes: {
-        class:
-          "h-64 md:h-96 bg-default-100 px-2 rounded-b-lg focus:outline-none block",
-      },
-    },
-  });
-
   const [isEditingMessage, setIsEditingMessage] = useState(false);
-  const [message, setMessage] = useState<
-    Omit<MessageType, "messageImage"> & {
-      messageImage: SanityImageAsset | null;
-    }
-  >({
+  const [message, setMessage] = useState<MessageContextMessage>({
     title: "",
     bodyText: null,
     author: {
@@ -94,7 +94,6 @@ export default function MessageEditorProvider({
   return (
     <MessageEditorContext.Provider
       value={{
-        editor,
         isEditingMessage,
         setIsEditingMessage,
         message,

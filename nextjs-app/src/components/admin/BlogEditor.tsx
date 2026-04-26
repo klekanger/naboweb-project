@@ -53,6 +53,7 @@ import {
   User,
   XCircle,
 } from "lucide-react";
+import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Image } from "sanity";
@@ -404,33 +405,22 @@ export default function BlogEditor({
   }, [initialEditSnapshotString]);
 
   const editBaselineSnapshot =
-    mode === "edit" ? postSaveEditSnapshot ?? initialEditSnapshotString : "";
+    mode === "edit" ? (postSaveEditSnapshot ?? initialEditSnapshotString) : "";
 
-  const currentEditSnapshotString = useMemo(() => {
-    if (mode !== "edit") return "";
-    return serializeEditFormSnapshot({
-      title,
-      slug,
-      privatePost,
-      excerpt,
-      featuredImageId,
-      featuredImageCaption,
-      featuredImageAlt,
-      authorIds: selectedAuthorIds,
-      bodyJson: JSON.stringify(bodyValueRef.current),
-    });
-  }, [
-    mode,
-    title,
-    slug,
-    privatePost,
-    excerpt,
-    featuredImageId,
-    featuredImageCaption,
-    featuredImageAlt,
-    selectedAuthorIds,
-    bodyChangeGeneration,
-  ]);
+  const currentEditSnapshotString =
+    mode !== "edit"
+      ? ""
+      : serializeEditFormSnapshot({
+          title,
+          slug,
+          privatePost,
+          excerpt,
+          featuredImageId,
+          featuredImageCaption,
+          featuredImageAlt,
+          authorIds: selectedAuthorIds,
+          bodyJson: JSON.stringify(bodyValueRef.current),
+        });
 
   const isEditDirty =
     mode === "edit" && currentEditSnapshotString !== editBaselineSnapshot;
@@ -461,7 +451,9 @@ export default function BlogEditor({
     setFeaturedImageId(parsed.featuredImageId ?? "");
     setFeaturedImageCaption(parsed.featuredImageCaption ?? "");
     setFeaturedImageAlt(parsed.featuredImageAlt ?? "");
-    setSelectedAuthorIds(Array.isArray(parsed.authorIds) ? parsed.authorIds : []);
+    setSelectedAuthorIds(
+      Array.isArray(parsed.authorIds) ? parsed.authorIds : [],
+    );
 
     try {
       bodyValueRef.current = parsed.bodyJson
@@ -521,7 +513,7 @@ export default function BlogEditor({
       _id: initialData?._id,
       title,
       slug,
-      privatePost: isAdmin ? privatePost : initialData?.privatePost ?? false,
+      privatePost: isAdmin ? privatePost : (initialData?.privatePost ?? false),
       excerpt: textToBlocks(excerpt),
       bodyText: bodyValueRef.current,
       featuredImageId: featuredImageId || undefined,
@@ -691,7 +683,7 @@ export default function BlogEditor({
         </div>
         {featuredImageId && (
           <div className="mt-3 space-y-3">
-            <img
+            <NextImage
               src={
                 urlForImage({ asset: { _ref: featuredImageId } } as Image)
                   ?.width(600)
@@ -699,7 +691,10 @@ export default function BlogEditor({
                   .url() ?? ""
               }
               alt="Toppbilde forhåndsvisning"
-              className="w-full rounded-lg border border-border"
+              width={600}
+              height={400}
+              sizes="100vw"
+              className="w-full h-auto rounded-lg border border-border"
             />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <TextField
@@ -1078,7 +1073,7 @@ function EditorInner({
       const asset = { _ref: assetRef, _type: "reference" as const };
       editor.send({
         type: "insert.block",
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         block: {
           _type: "image",
           asset,
@@ -1343,10 +1338,10 @@ function ImageModal({
     mode === "insert" ? !!assetRef && !isUploading : !isUploading;
 
   const previewUrl = assetRef
-    ? urlForImage({ asset: { _ref: assetRef } } as Image)
+    ? (urlForImage({ asset: { _ref: assetRef } } as Image)
         ?.width(400)
         .fit("max")
-        .url() ?? null
+        .url() ?? null)
     : null;
 
   return (
@@ -1360,10 +1355,13 @@ function ImageModal({
         {/* Preview + upload */}
         <div className="space-y-2">
           {previewUrl && (
-            <img
+            <NextImage
               src={previewUrl}
               alt="Forhåndsvisning"
-              className="w-full rounded-lg border border-border max-h-48 object-contain"
+              width={400}
+              height={300}
+              sizes="(max-width: 768px) 100vw, 400px"
+              className="w-full rounded-lg border border-border max-h-48 object-contain h-auto"
             />
           )}
           <input
