@@ -395,6 +395,24 @@ export const blogPostsAdminPagedQuery = defineQuery(`
   }
 `);
 
+export const countOtherDocumentsAdminQuery = defineQuery(`
+  count(*[_type=="fileOtherDocuments"])
+`);
+
+export const otherDocumentsAdminPagedQuery = defineQuery(`
+  *[_type=="fileOtherDocuments"] | order(_createdAt desc) [$start...$end] {
+    _id,
+    _createdAt,
+    _updatedAt,
+    title,
+    description,
+    tags,
+    "document": otherDocument{
+      asset->{url, _id, originalFilename, extension, size}
+    }
+  }
+`);
+
 export const allOtherDocumentsAdminQuery = defineQuery(`
   *[_type=="fileOtherDocuments"] | order(_createdAt desc) {
     _id,
@@ -411,6 +429,24 @@ export const allOtherDocumentsAdminQuery = defineQuery(`
 
 export const allMeetingMinutesAdminQuery = defineQuery(`
   *[_type=="fileMeetingMinutes"] | order(_createdAt desc) | order(meetingDate desc) {
+    _id,
+    _createdAt,
+    _updatedAt,
+    title,
+    description,
+    meetingDate,
+    meetingPlace,
+    tags,
+    meetingDocuments[]{asset->{url, _id, originalFilename, extension, size}}
+  }
+`);
+
+export const countMeetingMinutesAdminQuery = defineQuery(`
+  count(*[_type=="fileMeetingMinutes"])
+`);
+
+export const meetingMinutesAdminPagedQuery = defineQuery(`
+  *[_type=="fileMeetingMinutes"] | order(_createdAt desc) | order(meetingDate desc) [$start...$end] {
     _id,
     _createdAt,
     _updatedAt,

@@ -2,8 +2,7 @@
 
 import CustomButton from "@/components/CustomButton";
 import { useAdminEditExit } from "@/components/admin/AdminEditPageShell";
-import { FILE_LIST_POSTS_PER_PAGE } from "@/lib/constants";
-import { totalPagesFromCount } from "@/lib/pagination";
+import Link from "next/link";
 import { Input, Label, Modal, TextField } from "@heroui/react";
 import {
   CheckCircle,
@@ -35,6 +34,8 @@ type Doc = {
 
 type Props = {
   initialDocuments: Doc[];
+  pageNumber: number;
+  totalPages: number;
 };
 
 type FormState = {
@@ -60,7 +61,22 @@ function formFromDocument(doc: Doc): FormState {
   };
 }
 
-export default function DocumentsManager({ initialDocuments }: Props) {
+type NavigatorWithConnection = Navigator & {
+  connection?: {
+    saveData?: boolean;
+  };
+};
+
+function adminDocumentsPageHref(page: number) {
+  if (page <= 1) return "/admin/documents";
+  return `/admin/documents?page=${page}`;
+}
+
+export default function DocumentsManager({
+  initialDocuments,
+  pageNumber,
+  totalPages,
+}: Props) {
   const { reportDirty, registerDiscard } = useAdminEditExit();
   const router = useRouter();
   const [documents, setDocuments] = useState<Doc[]>(initialDocuments);
@@ -73,7 +89,6 @@ export default function DocumentsManager({ initialDocuments }: Props) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [pendingDeleteDoc, setPendingDeleteDoc] = useState<Doc | null>(null);
-  const [pageNumber, setPageNumber] = useState(1);
   const [deleteModalError, setDeleteModalError] = useState("");
   const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -88,6 +103,24 @@ export default function DocumentsManager({ initialDocuments }: Props) {
   useEffect(() => {
     reportDirty(isDirty);
   }, [isDirty, reportDirty]);
+
+  useEffect(() => {
+    setDocuments(initialDocuments);
+  }, [initialDocuments]);
+
+  useEffect(() => {
+    if (pageNumber >= totalPages) return;
+
+    const connection = (navigator as NavigatorWithConnection).connection;
+    if (connection?.saveData) return;
+
+    const nextPageHref = adminDocumentsPageHref(pageNumber + 1);
+    const timeoutId = window.setTimeout(() => {
+      router.prefetch(nextPageHref);
+    }, 250);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [pageNumber, router, totalPages]);
 
   const handleFileUpload = async (file: File) => {
     setIsUploading(true);
@@ -170,11 +203,17 @@ export default function DocumentsManager({ initialDocuments }: Props) {
         body: JSON.stringify({ _id: pendingDeleteDoc._id }),
       });
       if (!res.ok) throw new Error((await res.json()).error);
-      setDocuments((prev) =>
-        prev.filter((d) => d._id !== pendingDeleteDoc._id),
-      );
+      const nextDocuments = documents.filter((d) => d._id !== pendingDeleteDoc._id);
+      setDocuments(nextDocuments);
       setShowDeleteConfirm(false);
       setPendingDeleteDoc(null);
+
+      if (nextDocuments.length === 0 && pageNumber > 1) {
+        router.push(adminDocumentsPageHref(pageNumber - 1));
+        return;
+      }
+
+      router.refresh();
     } catch (err: unknown) {
       setDeleteModalError(
         err instanceof Error ? err.message : "Sletting feilet.",
@@ -204,24 +243,6 @@ export default function DocumentsManager({ initialDocuments }: Props) {
   useEffect(() => {
     registerDiscard(cancelForm);
   }, [cancelForm, registerDiscard]);
-
-  const totalPages = totalPagesFromCount(
-    documents.length,
-    FILE_LIST_POSTS_PER_PAGE,
-  );
-
-  useEffect(() => {
-    if (pageNumber > totalPages) {
-      setPageNumber(totalPages);
-    }
-  }, [pageNumber, totalPages]);
-
-  const pagedDocuments = useMemo(() => {
-    const start = (pageNumber - 1) * FILE_LIST_POSTS_PER_PAGE;
-    const end = pageNumber * FILE_LIST_POSTS_PER_PAGE;
-
-    return documents.slice(start, end);
-  }, [documents, pageNumber]);
 
   return (
     <div className="space-y-6">
@@ -332,7 +353,7 @@ export default function DocumentsManager({ initialDocuments }: Props) {
       ) : (
         <>
           <div className="divide-y divide-border">
-            {pagedDocuments.map((doc) => (
+            {documents.map((doc) => (
               <div
                 key={doc._id}
                 className="flex items-center justify-between py-4 gap-4"
@@ -386,22 +407,16 @@ export default function DocumentsManager({ initialDocuments }: Props) {
                 <ul className="flex justify-between">
                   {pageNumber > 1 && (
                     <li className="mr-2 rounded-xl bg-brand-primary px-8 py-2 shadow-md">
-                      <button
-                        type="button"
-                        onClick={() => setPageNumber((current) => current - 1)}
-                      >
+                      <Link href={adminDocumentsPageHref(pageNumber - 1)}>
                         ← Forrige side
-                      </button>
+                      </Link>
                     </li>
                   )}
                   {pageNumber < totalPages && (
                     <li className="ml-2 rounded-xl bg-brand-primary px-8 py-2 shadow-md">
-                      <button
-                        type="button"
-                        onClick={() => setPageNumber((current) => current + 1)}
-                      >
+                      <Link href={adminDocumentsPageHref(pageNumber + 1)}>
                         Neste side →
-                      </button>
+                      </Link>
                     </li>
                   )}
                 </ul>
