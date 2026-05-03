@@ -1,4 +1,5 @@
 import { getMessagePortableTextCharacterCount } from "@/context/messageEditorContext";
+import { prepareImageUploadFile } from "@/lib/prepareImageUploadFile";
 import type { PortableTextBlock } from "@portabletext/types";
 
 export function getMessageValidationError(
@@ -25,8 +26,10 @@ export async function uploadMessageImage(
     return null;
   }
 
+  const ready = await prepareImageUploadFile(messageImageFile);
+
   const fileData = new FormData();
-  fileData.set("messageImage", messageImageFile);
+  fileData.set("messageImage", ready);
   fileData.set("title", title);
 
   const fileUploadResponse = await fetch("/api/upload-image-to-sanity", {

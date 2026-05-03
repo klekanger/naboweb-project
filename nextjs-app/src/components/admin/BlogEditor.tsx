@@ -1,6 +1,7 @@
 "use client";
 
 import CustomButton from "@/components/CustomButton";
+import { prepareImageUploadFile } from "@/lib/prepareImageUploadFile";
 import { urlForImage } from "@/sanity/lib/utils";
 import type { SanityReference } from "@/types/types";
 import {
@@ -249,9 +250,10 @@ function uploadErrorMessage(data: unknown): string {
 }
 
 async function uploadImageToSanity(file: File): Promise<string> {
+  const ready = await prepareImageUploadFile(file);
   const formData = new FormData();
-  formData.append("messageImage", file);
-  formData.append("title", file.name);
+  formData.append("messageImage", ready);
+  formData.append("title", ready.name);
   const res = await fetch("/api/upload-image-to-sanity", {
     method: "POST",
     body: formData,
@@ -657,7 +659,7 @@ export default function BlogEditor({
             type="file"
             ref={imageInputRef}
             className="hidden"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
             onChange={(e) => {
               const file = e.target.files?.[0];
               if (file) handleFeaturedImageUpload(file);
@@ -1364,7 +1366,7 @@ function ImageModal({
           <input
             type="file"
             ref={fileRef}
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
             className="hidden"
             onChange={(e) => {
               const file = e.target.files?.[0];
