@@ -1,26 +1,22 @@
 import { clientWithWriteAccess } from "@/sanity/lib/client";
-import { currentUser } from "@clerk/nextjs/server";
+import {
+  badRequestResponse,
+  getCurrentUserWithRoles,
+  serverErrorResponse,
+  unauthorizedResponse,
+} from "@/app/api/_utils/routeUtils";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-  const user = await currentUser();
-  const userRoles = (user?.publicMetadata as { roles: string[] }) ?? [];
+  const { user, userRoles } = await getCurrentUserWithRoles();
 
-  if (!user || !userRoles.roles.includes("user")) {
-    return NextResponse.json({
-      error: { message: "Unauthorized" },
-      status: 401,
-    });
+  if (!user || !userRoles.isUser) {
+    return unauthorizedResponse();
   }
 
   const res = await request.json();
   if (!res) {
-    return NextResponse.json(
-      {
-        error: { message: "Missing data" },
-      },
-      { status: 400 },
-    );
+    return badRequestResponse("Missing data");
   }
 
   const { title, bodyText, userId, image, fromAdmin } = res;
@@ -66,14 +62,6 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error("Error: ", error);
-    return NextResponse.json(
-      {
-        error: {
-          message: "Error: Message could not be created",
-          longMessage: error,
-        },
-      },
-      { status: 500 },
-    );
+    return serverErrorResponse("Error: Message could not be created", error);
   }
 }

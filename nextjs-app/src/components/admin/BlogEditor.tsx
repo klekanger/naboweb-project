@@ -346,12 +346,9 @@ export default function BlogEditor({
   const [privatePost, setPrivatePost] = useState(
     initialData?.privatePost ?? false,
   );
-  const [excerpt, setExcerpt] = useState(() => {
-    const first = initialData?.excerpt?.[0] as
-      | { children?: Array<{ text?: string }> }
-      | undefined;
-    return first?.children?.[0]?.text ?? "";
-  });
+  const [excerpt, setExcerpt] = useState(() =>
+    getInitialExcerptPlainText(initialData),
+  );
   const [featuredImageId, setFeaturedImageId] = useState(
     initialData?.featuredImage?.asset?._ref ?? "",
   );

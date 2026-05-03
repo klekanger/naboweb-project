@@ -11,6 +11,11 @@
       "sourceType": "github",
       "computedHash": "9f0c62274cf8ccf41dd32fc2f2629f4c9a8e5a920826f30c2eb226d7e796b031"
     },
+    "fallow": {
+      "source": "fallow-rs/fallow-skills",
+      "sourceType": "github",
+      "computedHash": "1f7df88d1c2ab84692a6055fa0829b6cbbfe338f6106f04368bd12b0e1b20c5a"
+    },
     "heroui-react": {
       "source": "heroui-inc/heroui",
       "sourceType": "github",

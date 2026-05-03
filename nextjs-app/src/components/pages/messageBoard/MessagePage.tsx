@@ -2,7 +2,6 @@
 
 import MessageEditor from "@/components/pages/messageBoard/MessageEditor";
 import {
-  getMessagePortableTextCharacterCount,
   MessageEditorContext,
 } from "@/context/messageEditorContext";
 import { useModalState } from "@/hooks/useModalState";
@@ -30,6 +29,10 @@ import { notFound, useRouter } from "next/navigation";
 import { useContext, useMemo, useState } from "react";
 import type { Image as SanityImage } from "sanity";
 import MessageComments from "./MessageComments";
+import {
+  getMessageValidationError,
+  uploadMessageImage,
+} from "./messageSubmitUtils";
 
 const IMAGE_WIDTH = 800;
 const IMAGE_HEIGHT = 600;
@@ -88,15 +91,6 @@ export default function MessagePage(props: MessagePageProps) {
     comments = [],
   } = data ?? {};
 
-  if (!data) {
-    notFound();
-  }
-
-  if (!userData) {
-    console.error("No user data found");
-    return null;
-  }
-
   const commentCount = comments?.length ?? 0;
 
   const initialEditSnapshot = useMemo(
@@ -123,26 +117,30 @@ export default function MessagePage(props: MessagePageProps) {
 
   const isEditDirty = currentEditSnapshot !== initialEditSnapshot;
 
+  if (!userData) {
+    console.error("No user data found");
+    return null;
+  }
+
+  if (!data) {
+    notFound();
+  }
+
   // *********************************************************************
   // Submit the message to Sanity
   // *********************************************************************
   const handleSubmit = async () => {
-    if (message.title === "") {
-      setModalTitle("Feil: Ugyldig tittel");
-      setModalBody("Meldingen din trenger en tittel.");
-      setModalCancelDisabled(true);
-      modalForMessages.onOpen();
-      return;
-    }
-
-    const messageCharacterCount = getMessagePortableTextCharacterCount(
-      message.bodyText,
+    const validationError = getMessageValidationError(
+      message.title,
+      message.bodyText as PortableTextBlock[] | null | undefined,
     );
-    if (messageCharacterCount < 10) {
-      setModalTitle("Feil: For kort tekst");
-      setModalBody(
-        "Det er alltid fint å fatte seg i korthet, men innlegget ditt må være litt lenger (mer enn 10 tegn).",
+    if (validationError) {
+      setModalTitle(
+        validationError.includes("tittel")
+          ? "Feil: Ugyldig tittel"
+          : "Feil: For kort tekst",
       );
+      setModalBody(validationError);
       setModalCancelDisabled(true);
       modalForMessages.onOpen();
       return;
@@ -150,30 +148,11 @@ export default function MessagePage(props: MessagePageProps) {
 
     let imageRef: string | null = null;
 
-    // 1: If there is a message image, upload it to Sanity
     if (messageImageFile !== null) {
-      const fileData = new FormData();
-
-      fileData.set("messageImage", messageImageFile as File);
-      fileData.set("title", message.title);
-
       setIsUploadingImage(true);
 
       try {
-        const fileUploadResponse = await fetch("/api/upload-image-to-sanity", {
-          method: "POST",
-          body: fileData,
-        });
-
-        const fileUploadData = await fileUploadResponse.json();
-
-        if ("success" in fileUploadData) {
-          imageRef = fileUploadData.success?.imageId;
-        }
-
-        if ("error" in fileUploadData) {
-          throw new Error(fileUploadData.error?.message ?? "Noe gikk galt");
-        }
+        imageRef = await uploadMessageImage(messageImageFile, message.title);
       } catch (error: any) {
         console.error("Image upload failed. Server response:  ", error);
 

@@ -1,0 +1,3211 @@
+{
+  "schema_version": 4,
+  "version": "2.52.0",
+  "elapsed_ms": 157,
+  "total_issues": 147,
+  "entry_points": {
+    "total": 78,
+    "sources": {
+      "plugin": 77,
+      "package.json": 1
+    }
+  },
+  "summary": {
+    "total_issues": 147,
+    "unused_files": 29,
+    "unused_exports": 29,
+    "unused_types": 82,
+    "unused_dependencies": 4,
+    "unused_enum_members": 2,
+    "unused_class_members": 0,
+    "unresolved_imports": 0,
+    "unlisted_dependencies": 0,
+    "duplicate_exports": 0,
+    "type_only_dependencies": 0,
+    "test_only_dependencies": 0,
+    "circular_dependencies": 1,
+    "boundary_violations": 0,
+    "stale_suppressions": 0
+  },
+  "unused_files": [
+    {
+      "path": "nextjs-app/src/app/actions/getUserSubscriptionStatus.ts",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/app/actions/inviteUser.ts",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/components/userAdmin/InviteUser.tsx",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/components/userAdmin/UserAdmin.test-config.ts",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/lib/PreviewPortableText.tsx",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/lib/is-hotkey.js",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/lib/is-url.ts",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/lib/getAuthorsByIds.ts",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/lib/store.ts",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/plugins/settings.tsx",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/documents/authors.ts",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/documents/blog.ts",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/documents/fileMeetingMinutes.ts",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/documents/fileOtherDocuments.ts",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/documents/message.ts",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/documents/page.tsx",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/objects/IconRadioInput.tsx",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/objects/TwitterPreview.tsx",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/objects/YouTubePreview.tsx",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/objects/bodyText.ts",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/objects/icons.ts",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/objects/twitter.jsx",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/objects/youtube.jsx",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/singletons/documentMenu.ts",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/singletons/frontpage-hero.ts",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/singletons/newUserIntro.ts",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/singletons/services.ts",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/singletons/settings.ts",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/singletons/showcase.ts",
+      "actions": [
+        {
+          "type": "delete-file",
+          "auto_fixable": false,
+          "description": "Delete this file",
+          "note": "File deletion may remove runtime functionality not visible to static analysis"
+        },
+        {
+          "type": "suppress-file",
+          "auto_fixable": false,
+          "description": "Suppress with a file-level comment at the top of the file",
+          "comment": "// fallow-ignore-file unused-file"
+        }
+      ]
+    }
+  ],
+  "unused_exports": [
+    {
+      "path": "nextjs-app/src/app/(with-navbar)/(protected-routes)/user-admin-page/page.tsx",
+      "export_name": "UserAdminContent",
+      "is_type_only": false,
+      "line": 79,
+      "col": 22,
+      "span_start": 2204,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/app/actions/inviteUser.ts",
+      "export_name": "inviteUser",
+      "is_type_only": false,
+      "line": 7,
+      "col": 22,
+      "span_start": 140,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/components/icons/index.tsx",
+      "export_name": "EmailIcon",
+      "is_type_only": false,
+      "line": 17,
+      "col": 2,
+      "span_start": 492,
+      "is_re_export": true,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration",
+          "note": "This finding originates from a re-export; verify it is not part of your public API before removing"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/components/icons/index.tsx",
+      "export_name": "FacebookIcon",
+      "is_type_only": false,
+      "line": 19,
+      "col": 2,
+      "span_start": 518,
+      "is_re_export": true,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration",
+          "note": "This finding originates from a re-export; verify it is not part of your public API before removing"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/components/icons/index.tsx",
+      "export_name": "LinkedInIcon",
+      "is_type_only": false,
+      "line": 21,
+      "col": 2,
+      "span_start": 547,
+      "is_re_export": true,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration",
+          "note": "This finding originates from a re-export; verify it is not part of your public API before removing"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/components/userAdmin/UserAdmin.test-utils.tsx",
+      "export_name": "createMockUser",
+      "is_type_only": false,
+      "line": 51,
+      "col": 13,
+      "span_start": 1223,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/components/userAdmin/UserAdmin.test-utils.tsx",
+      "export_name": "createMockNewUser",
+      "is_type_only": false,
+      "line": 88,
+      "col": 13,
+      "span_start": 2155,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/components/userAdmin/UserAdmin.test-utils.tsx",
+      "export_name": "createTestScenarios",
+      "is_type_only": false,
+      "line": 126,
+      "col": 13,
+      "span_start": 3091,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/components/userAdmin/UserAdmin.test-utils.tsx",
+      "export_name": "mockServerActions",
+      "is_type_only": false,
+      "line": 213,
+      "col": 13,
+      "span_start": 5521,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/components/userAdmin/UserAdmin.test-utils.tsx",
+      "export_name": "mockNorwegianErrors",
+      "is_type_only": false,
+      "line": 222,
+      "col": 13,
+      "span_start": 5711,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/components/userAdmin/UserAdmin.test-utils.tsx",
+      "export_name": "createMockSuccessResponse",
+      "is_type_only": false,
+      "line": 270,
+      "col": 13,
+      "span_start": 6812,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/components/userAdmin/UserAdmin.test-utils.tsx",
+      "export_name": "createMockErrorResponse",
+      "is_type_only": false,
+      "line": 284,
+      "col": 13,
+      "span_start": 7144,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/components/userAdmin/UserAdmin.test-utils.tsx",
+      "export_name": "accessibilityQueries",
+      "is_type_only": false,
+      "line": 295,
+      "col": 13,
+      "span_start": 7441,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/context/messageEditorContext.tsx",
+      "export_name": "getMessagePortableTextPlainText",
+      "is_type_only": false,
+      "line": 12,
+      "col": 16,
+      "span_start": 367,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/lib/sanityStudioUrls.ts",
+      "export_name": "SANITY_STUDIO_FILE_DOCUMENTS_PATH",
+      "is_type_only": false,
+      "line": 3,
+      "col": 13,
+      "span_start": 151,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/lib/queries.ts",
+      "export_name": "countPublicBlogPostsQuery",
+      "is_type_only": false,
+      "line": 202,
+      "col": 13,
+      "span_start": 4201,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/lib/queries.ts",
+      "export_name": "countPrivateBlogPostsQuery",
+      "is_type_only": false,
+      "line": 206,
+      "col": 13,
+      "span_start": 4313,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/lib/queries.ts",
+      "export_name": "countAllBlogPostsQuery",
+      "is_type_only": false,
+      "line": 210,
+      "col": 13,
+      "span_start": 4425,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/lib/queries.ts",
+      "export_name": "messageSlugs",
+      "is_type_only": false,
+      "line": 328,
+      "col": 13,
+      "span_start": 6919,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/lib/queries.ts",
+      "export_name": "allAuthorsQuery",
+      "is_type_only": false,
+      "line": 378,
+      "col": 13,
+      "span_start": 8260,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/lib/queries.ts",
+      "export_name": "allOtherDocumentsAdminQuery",
+      "is_type_only": false,
+      "line": 416,
+      "col": 13,
+      "span_start": 9057,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/lib/queries.ts",
+      "export_name": "allMeetingMinutesAdminQuery",
+      "is_type_only": false,
+      "line": 430,
+      "col": 13,
+      "span_start": 9358,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/lib/utils.ts",
+      "export_name": "resolveHref",
+      "is_type_only": false,
+      "line": 24,
+      "col": 16,
+      "span_start": 657,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/lib/utils.ts",
+      "export_name": "toPreviewText",
+      "is_type_only": false,
+      "line": 41,
+      "col": 16,
+      "span_start": 1044,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/objects/IconRadioInput.tsx",
+      "export_name": "default",
+      "is_type_only": false,
+      "line": 15,
+      "col": 0,
+      "span_start": 467,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/objects/TwitterPreview.tsx",
+      "export_name": "TwitterPreview",
+      "is_type_only": false,
+      "line": 4,
+      "col": 16,
+      "span_start": 98,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/objects/YouTubePreview.tsx",
+      "export_name": "YouTubePreview",
+      "is_type_only": false,
+      "line": 10,
+      "col": 16,
+      "span_start": 298,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/objects/icons.ts",
+      "export_name": "ICONS",
+      "is_type_only": false,
+      "line": 4,
+      "col": 13,
+      "span_start": 98,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/sanity/schemas/objects/icons.ts",
+      "export_name": "iconType",
+      "is_type_only": false,
+      "line": 11,
+      "col": 13,
+      "span_start": 291,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` keyword from the declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-export"
+        }
+      ]
+    }
+  ],
+  "unused_types": [
+    {
+      "path": "nextjs-app/src/app/actions/searchFileOtherDocuments.ts",
+      "export_name": "SearchFileOtherDocumentsResult",
+      "is_type_only": true,
+      "line": 24,
+      "col": 12,
+      "span_start": 619,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/app/api/send-email-alerts/email-template.ts",
+      "export_name": "Content",
+      "is_type_only": true,
+      "line": 23,
+      "col": 17,
+      "span_start": 735,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/components/BlogPostItem.tsx",
+      "export_name": "BlogPostItemProps",
+      "is_type_only": true,
+      "line": 8,
+      "col": 12,
+      "span_start": 282,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "internalGroqTypeReferenceTo",
+      "is_type_only": true,
+      "line": 15,
+      "col": 21,
+      "span_start": 666,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "SanityImageAssetReference",
+      "is_type_only": true,
+      "line": 18,
+      "col": 12,
+      "span_start": 746,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "Bodytext",
+      "is_type_only": true,
+      "line": 25,
+      "col": 12,
+      "span_start": 904,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "MyIcon",
+      "is_type_only": true,
+      "line": 65,
+      "col": 12,
+      "span_start": 1770,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "Twitter",
+      "is_type_only": true,
+      "line": 67,
+      "col": 12,
+      "span_start": 1846,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "Youtube",
+      "is_type_only": true,
+      "line": 73,
+      "col": 12,
+      "span_start": 1939,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "PageReference",
+      "is_type_only": true,
+      "line": 78,
+      "col": 12,
+      "span_start": 2003,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "Settings",
+      "is_type_only": true,
+      "line": 85,
+      "col": 12,
+      "span_start": 2136,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "SanityImageCrop",
+      "is_type_only": true,
+      "line": 118,
+      "col": 12,
+      "span_start": 2815,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "SanityImageHotspot",
+      "is_type_only": true,
+      "line": 126,
+      "col": 12,
+      "span_start": 2946,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "FileOtherDocumentsReference",
+      "is_type_only": true,
+      "line": 134,
+      "col": 12,
+      "span_start": 3078,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "DocumentMenu",
+      "is_type_only": true,
+      "line": 141,
+      "col": 12,
+      "span_start": 3239,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "SanityFileAssetReference",
+      "is_type_only": true,
+      "line": 157,
+      "col": 12,
+      "span_start": 3640,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "FileOtherDocuments",
+      "is_type_only": true,
+      "line": 164,
+      "col": 12,
+      "span_start": 3796,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "FileMeetingMinutes",
+      "is_type_only": true,
+      "line": 180,
+      "col": 12,
+      "span_start": 4108,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "FrontpageServices",
+      "is_type_only": true,
+      "line": 199,
+      "col": 12,
+      "span_start": 4498,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "FrontpageNewUserIntro",
+      "is_type_only": true,
+      "line": 222,
+      "col": 12,
+      "span_start": 4930,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "BlogPostReference",
+      "is_type_only": true,
+      "line": 233,
+      "col": 12,
+      "span_start": 5157,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "FrontpageShowcase",
+      "is_type_only": true,
+      "line": 240,
+      "col": 12,
+      "span_start": 5298,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "FrontpageHero",
+      "is_type_only": true,
+      "line": 255,
+      "col": 12,
+      "span_start": 5581,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "AuthorsReference",
+      "is_type_only": true,
+      "line": 277,
+      "col": 12,
+      "span_start": 6032,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "Message",
+      "is_type_only": true,
+      "line": 284,
+      "col": 12,
+      "span_start": 6171,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "Slug",
+      "is_type_only": true,
+      "line": 446,
+      "col": 12,
+      "span_start": 9548,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "SanityImagePaletteSwatch",
+      "is_type_only": true,
+      "line": 520,
+      "col": 12,
+      "span_start": 11044,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "SanityImagePalette",
+      "is_type_only": true,
+      "line": 528,
+      "col": 12,
+      "span_start": 11214,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "SanityImageDimensions",
+      "is_type_only": true,
+      "line": 539,
+      "col": 12,
+      "span_start": 11564,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "SanityImageMetadata",
+      "is_type_only": true,
+      "line": 546,
+      "col": 12,
+      "span_start": 11699,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "SanityFileAsset",
+      "is_type_only": true,
+      "line": 558,
+      "col": 12,
+      "span_start": 11969,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "SanityAssetSourceData",
+      "is_type_only": true,
+      "line": 580,
+      "col": 12,
+      "span_start": 12400,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "Geopoint",
+      "is_type_only": true,
+      "line": 610,
+      "col": 12,
+      "span_start": 12992,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "AllSanitySchemaTypes",
+      "is_type_only": true,
+      "line": 617,
+      "col": 12,
+      "span_start": 13090,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "PageSitemapEntriesQueryResult",
+      "is_type_only": true,
+      "line": 655,
+      "col": 12,
+      "span_start": 13949,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "PublicBlogSitemapEntriesQueryResult",
+      "is_type_only": true,
+      "line": 663,
+      "col": 12,
+      "span_start": 14255,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "UserSubscriptionStatusQueryResult",
+      "is_type_only": true,
+      "line": 671,
+      "col": 12,
+      "span_start": 14519,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "MeetingMinutesByIdQueryResult",
+      "is_type_only": true,
+      "line": 733,
+      "col": 12,
+      "span_start": 16907,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "PageBySlugQueryResult",
+      "is_type_only": true,
+      "line": 802,
+      "col": 12,
+      "span_start": 19110,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "AllBlogBySlugQueryResult",
+      "is_type_only": true,
+      "line": 996,
+      "col": 12,
+      "span_start": 24122,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "PrivateBlogBySlugQueryResult",
+      "is_type_only": true,
+      "line": 1114,
+      "col": 12,
+      "span_start": 27129,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "CountPublicBlogPostsQueryResult",
+      "is_type_only": true,
+      "line": 1303,
+      "col": 12,
+      "span_start": 31920,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "CountPrivateBlogPostsQueryResult",
+      "is_type_only": true,
+      "line": 1308,
+      "col": 12,
+      "span_start": 32125,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "CountAllBlogPostsQueryResult",
+      "is_type_only": true,
+      "line": 1313,
+      "col": 12,
+      "span_start": 32306,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "AllMessageIdsQueryResult",
+      "is_type_only": true,
+      "line": 1425,
+      "col": 12,
+      "span_start": 35420,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "CountMessagesQueryResult",
+      "is_type_only": true,
+      "line": 1432,
+      "col": 12,
+      "span_start": 35607,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "BlogCollectionQueryResult",
+      "is_type_only": true,
+      "line": 1437,
+      "col": 12,
+      "span_start": 35999,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "AllBlogCollectionQueryResult",
+      "is_type_only": true,
+      "line": 1495,
+      "col": 12,
+      "span_start": 37497,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "PageSlugsResult",
+      "is_type_only": true,
+      "line": 1553,
+      "col": 12,
+      "span_start": 38832,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "BlogSlugsResult",
+      "is_type_only": true,
+      "line": 1560,
+      "col": 12,
+      "span_start": 39047,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "PrivateBlogSlugsResult",
+      "is_type_only": true,
+      "line": 1567,
+      "col": 12,
+      "span_start": 39292,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "MessageSlugsResult",
+      "is_type_only": true,
+      "line": 1574,
+      "col": 12,
+      "span_start": 39516,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "MeetingMinutesIdsResult",
+      "is_type_only": true,
+      "line": 1579,
+      "col": 12,
+      "span_start": 39694,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "DocumentMenuAdminQueryResult",
+      "is_type_only": true,
+      "line": 1586,
+      "col": 12,
+      "span_start": 40250,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "FileOtherDocumentsSearchQueryResult",
+      "is_type_only": true,
+      "line": 1626,
+      "col": 12,
+      "span_start": 41379,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "AllAuthorsQueryResult",
+      "is_type_only": true,
+      "line": 1635,
+      "col": 12,
+      "span_start": 41668,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "BlogPostsAdminPagedQueryResult",
+      "is_type_only": true,
+      "line": 1644,
+      "col": 12,
+      "span_start": 42039,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "CountOtherDocumentsAdminQueryResult",
+      "is_type_only": true,
+      "line": 1692,
+      "col": 12,
+      "span_start": 43128,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "OtherDocumentsAdminPagedQueryResult",
+      "is_type_only": true,
+      "line": 1697,
+      "col": 12,
+      "span_start": 43534,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "AllOtherDocumentsAdminQueryResult",
+      "is_type_only": true,
+      "line": 1718,
+      "col": 12,
+      "span_start": 44230,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "AllMeetingMinutesAdminQueryResult",
+      "is_type_only": true,
+      "line": 1739,
+      "col": 12,
+      "span_start": 44966,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "CountMeetingMinutesAdminQueryResult",
+      "is_type_only": true,
+      "line": 1762,
+      "col": 12,
+      "span_start": 45556,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/sanity.types.ts",
+      "export_name": "MeetingMinutesAdminPagedQueryResult",
+      "is_type_only": true,
+      "line": 1767,
+      "col": 12,
+      "span_start": 46004,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/types.ts",
+      "export_name": "UserRoles",
+      "is_type_only": true,
+      "line": 15,
+      "col": 12,
+      "span_start": 413,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/types.ts",
+      "export_name": "DeleteUserSuccessType",
+      "is_type_only": true,
+      "line": 17,
+      "col": 12,
+      "span_start": 467,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/types.ts",
+      "export_name": "DeleteUserErrorType",
+      "is_type_only": true,
+      "line": 27,
+      "col": 12,
+      "span_start": 670,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/types.ts",
+      "export_name": "UpdateUserSuccessType",
+      "is_type_only": true,
+      "line": 33,
+      "col": 12,
+      "span_start": 764,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/types.ts",
+      "export_name": "UpdateUserErrorType",
+      "is_type_only": true,
+      "line": 45,
+      "col": 12,
+      "span_start": 964,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/types.ts",
+      "export_name": "CreateNewUserSuccessType",
+      "is_type_only": true,
+      "line": 58,
+      "col": 12,
+      "span_start": 1289,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/types.ts",
+      "export_name": "CreateNewUserErrorType",
+      "is_type_only": true,
+      "line": 70,
+      "col": 12,
+      "span_start": 1492,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/types.ts",
+      "export_name": "GetUserSuccessType",
+      "is_type_only": true,
+      "line": 84,
+      "col": 12,
+      "span_start": 1755,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/types.ts",
+      "export_name": "GetUserErrorType",
+      "is_type_only": true,
+      "line": 103,
+      "col": 12,
+      "span_start": 2146,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/types.ts",
+      "export_name": "SearchUserErrorType",
+      "is_type_only": true,
+      "line": 132,
+      "col": 12,
+      "span_start": 2723,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/types.ts",
+      "export_name": "ReturnTypeForUserSuccess",
+      "is_type_only": true,
+      "line": 208,
+      "col": 12,
+      "span_start": 4138,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/types.ts",
+      "export_name": "ReturnTypeForUserError",
+      "is_type_only": true,
+      "line": 228,
+      "col": 12,
+      "span_start": 4508,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/types.ts",
+      "export_name": "HeroProps",
+      "is_type_only": true,
+      "line": 281,
+      "col": 12,
+      "span_start": 5529,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/types.ts",
+      "export_name": "ServicesProps",
+      "is_type_only": true,
+      "line": 285,
+      "col": 12,
+      "span_start": 5593,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/types.ts",
+      "export_name": "ShowcaseProps",
+      "is_type_only": true,
+      "line": 289,
+      "col": 12,
+      "span_start": 5665,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/types.ts",
+      "export_name": "HomePagePayload",
+      "is_type_only": true,
+      "line": 293,
+      "col": 12,
+      "span_start": 5728,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/types.ts",
+      "export_name": "HomePageProps",
+      "is_type_only": true,
+      "line": 299,
+      "col": 12,
+      "span_start": 5951,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/types.ts",
+      "export_name": "PageProps",
+      "is_type_only": true,
+      "line": 308,
+      "col": 12,
+      "span_start": 6080,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/types/types.ts",
+      "export_name": "BlogPageProps",
+      "is_type_only": true,
+      "line": 312,
+      "col": 12,
+      "span_start": 6125,
+      "is_re_export": false,
+      "actions": [
+        {
+          "type": "remove-export",
+          "auto_fixable": true,
+          "description": "Remove the `export` (or `export type`) keyword from the type declaration"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-type"
+        }
+      ]
+    }
+  ],
+  "unused_dependencies": [
+    {
+      "package_name": "@portabletext/block-tools",
+      "location": "dependencies",
+      "path": "nextjs-app/package.json",
+      "line": 27,
+      "actions": [
+        {
+          "type": "remove-dependency",
+          "auto_fixable": true,
+          "description": "Remove from dependencies in package.json"
+        },
+        {
+          "type": "add-to-config",
+          "auto_fixable": false,
+          "description": "Add \"@portabletext/block-tools\" to ignoreDependencies in fallow config",
+          "config_key": "ignoreDependencies",
+          "value": "@portabletext/block-tools"
+        }
+      ]
+    },
+    {
+      "package_name": "@portabletext/to-html",
+      "location": "dependencies",
+      "path": "nextjs-app/package.json",
+      "line": 30,
+      "actions": [
+        {
+          "type": "remove-dependency",
+          "auto_fixable": true,
+          "description": "Remove from dependencies in package.json"
+        },
+        {
+          "type": "add-to-config",
+          "auto_fixable": false,
+          "description": "Add \"@portabletext/to-html\" to ignoreDependencies in fallow config",
+          "config_key": "ignoreDependencies",
+          "value": "@portabletext/to-html"
+        }
+      ]
+    },
+    {
+      "package_name": "@sanity/schema",
+      "location": "dependencies",
+      "path": "nextjs-app/package.json",
+      "line": 37,
+      "actions": [
+        {
+          "type": "remove-dependency",
+          "auto_fixable": true,
+          "description": "Remove from dependencies in package.json"
+        },
+        {
+          "type": "add-to-config",
+          "auto_fixable": false,
+          "description": "Add \"@sanity/schema\" to ignoreDependencies in fallow config",
+          "config_key": "ignoreDependencies",
+          "value": "@sanity/schema"
+        }
+      ]
+    }
+  ],
+  "unused_dev_dependencies": [
+    {
+      "package_name": "autoprefixer",
+      "location": "devDependencies",
+      "path": "nextjs-app/package.json",
+      "line": 66,
+      "actions": [
+        {
+          "type": "remove-dependency",
+          "auto_fixable": true,
+          "description": "Remove from devDependencies in package.json"
+        },
+        {
+          "type": "add-to-config",
+          "auto_fixable": false,
+          "description": "Add \"autoprefixer\" to ignoreDependencies in fallow config",
+          "config_key": "ignoreDependencies",
+          "value": "autoprefixer"
+        }
+      ]
+    }
+  ],
+  "unused_optional_dependencies": [],
+  "unused_enum_members": [
+    {
+      "path": "nextjs-app/src/context/userAdminContext.tsx",
+      "parent_name": "CreateUserScreenType",
+      "member_name": "EDIT",
+      "kind": "enum_member",
+      "line": 17,
+      "col": 2,
+      "actions": [
+        {
+          "type": "remove-enum-member",
+          "auto_fixable": true,
+          "description": "Remove this enum member"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-enum-member"
+        }
+      ]
+    },
+    {
+      "path": "nextjs-app/src/lib/validateUserRoles.ts",
+      "parent_name": "validRoles",
+      "member_name": "EDITOR",
+      "kind": "enum_member",
+      "line": 7,
+      "col": 2,
+      "actions": [
+        {
+          "type": "remove-enum-member",
+          "auto_fixable": true,
+          "description": "Remove this enum member"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line unused-enum-member"
+        }
+      ]
+    }
+  ],
+  "unused_class_members": [],
+  "unresolved_imports": [],
+  "unlisted_dependencies": [],
+  "duplicate_exports": [],
+  "type_only_dependencies": [],
+  "test_only_dependencies": [],
+  "circular_dependencies": [
+    {
+      "files": [
+        "nextjs-app/src/sanity/schemas/objects/IconRadioInput.tsx",
+        "nextjs-app/src/sanity/schemas/objects/icons.ts"
+      ],
+      "length": 2,
+      "line": 4,
+      "col": 9,
+      "actions": [
+        {
+          "type": "refactor-cycle",
+          "auto_fixable": false,
+          "description": "Extract shared logic into a separate module to break the cycle",
+          "note": "Circular imports can cause initialization issues and make code harder to reason about"
+        },
+        {
+          "type": "suppress-line",
+          "auto_fixable": false,
+          "description": "Suppress with an inline comment above the line",
+          "comment": "// fallow-ignore-next-line circular-dependency"
+        }
+      ]
+    }
+  ],
+  "boundary_violations": [],
+  "stale_suppressions": [],
+  "_meta": {
+    "docs": "https://docs.fallow.tools/cli/dead-code",
+    "rules": {
+      "unused-file": {
+        "name": "Unused Files",
+        "description": "Source files that are not imported by any other module and are not entry points (scripts, tests, configs). These files can safely be deleted. Detection uses graph reachability from configured entry points.",
+        "docs": "https://docs.fallow.tools/explanations/dead-code#unused-files"
+      },
+      "unused-export": {
+        "name": "Unused Exports",
+        "description": "Named exports that are never imported by any other module in the project. Includes both direct exports and re-exports through barrel files. The export may still be used locally within the same file.",
+        "docs": "https://docs.fallow.tools/explanations/dead-code#unused-exports"
+      },
+      "unused-type": {
+        "name": "Unused Type Exports",
+        "description": "Type-only exports (interfaces, type aliases, enums used only as types) that are never imported. These do not generate runtime code but add maintenance burden.",
+        "docs": "https://docs.fallow.tools/explanations/dead-code#unused-types"
+      },
+      "unused-dependency": {
+        "name": "Unused Dependencies",
+        "description": "Packages listed in dependencies that are never imported or required by any source file. Framework plugins and CLI tools may be false positives — use the ignore_dependencies config to suppress.",
+        "docs": "https://docs.fallow.tools/explanations/dead-code#unused-dependencies"
+      },
+      "unused-dev-dependency": {
+        "name": "Unused Dev Dependencies",
+        "description": "Packages listed in devDependencies that are never imported by test files, config files, or scripts. Build tools and jest presets that are referenced only in config may appear as false positives.",
+        "docs": "https://docs.fallow.tools/explanations/dead-code#unused-devdependencies"
+      },
+      "unused-optional-dependency": {
+        "name": "Unused Optional Dependencies",
+        "description": "Packages listed in optionalDependencies that are never imported. Optional dependencies are typically platform-specific — verify they are not needed on any supported platform before removing.",
+        "docs": "https://docs.fallow.tools/explanations/dead-code#unused-optionaldependencies"
+      },
+      "type-only-dependency": {
+        "name": "Type-only Dependencies",
+        "description": "Production dependencies that are only imported via `import type` statements. These can be moved to devDependencies since they generate no runtime code and are stripped during compilation.",
+        "docs": "https://docs.fallow.tools/explanations/dead-code#type-only-dependencies"
+      },
+      "unused-enum-member": {
+        "name": "Unused Enum Members",
+        "description": "Enum members that are never referenced in the codebase. Uses scope-aware binding analysis to track all references including computed access patterns.",
+        "docs": "https://docs.fallow.tools/explanations/dead-code#unused-enum-members"
+      },
+      "unused-class-member": {
+        "name": "Unused Class Members",
+        "description": "Class methods and properties that are never referenced outside the class. Private members are checked within the class scope; public members are checked project-wide.",
+        "docs": "https://docs.fallow.tools/explanations/dead-code#unused-class-members"
+      },
+      "unresolved-import": {
+        "name": "Unresolved Imports",
+        "description": "Import specifiers that could not be resolved to a file on disk. Common causes: deleted files, typos in paths, missing path aliases in tsconfig, or uninstalled packages.",
+        "docs": "https://docs.fallow.tools/explanations/dead-code#unresolved-imports"
+      },
+      "unlisted-dependency": {
+        "name": "Unlisted Dependencies",
+        "description": "Packages that are imported in source code but not listed in package.json. These work by accident (hoisted from another workspace package or transitive dep) and will break in strict package managers.",
+        "docs": "https://docs.fallow.tools/explanations/dead-code#unlisted-dependencies"
+      },
+      "duplicate-export": {
+        "name": "Duplicate Exports",
+        "description": "The same export name is defined in multiple modules. Consumers may import from the wrong module, leading to subtle bugs. Consider renaming or consolidating.",
+        "docs": "https://docs.fallow.tools/explanations/dead-code#duplicate-exports"
+      },
+      "circular-dependency": {
+        "name": "Circular Dependencies",
+        "description": "A cycle in the module import graph. Circular dependencies cause undefined behavior with CommonJS (partial modules) and initialization ordering issues with ESM. Break cycles by extracting shared code.",
+        "docs": "https://docs.fallow.tools/explanations/dead-code#circular-dependencies"
+      },
+      "stale-suppression": {
+        "name": "Stale Suppressions",
+        "description": "A fallow-ignore-next-line, fallow-ignore-file, or @expected-unused suppression that no longer matches any active issue. The underlying problem was fixed but the suppression was left behind. Remove it to keep the codebase clean.",
+        "docs": "https://docs.fallow.tools/explanations/dead-code#stale-suppressions"
+      }
+    }
+  }
+}

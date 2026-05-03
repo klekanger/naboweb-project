@@ -9,7 +9,15 @@
     "start": "next start",
     "lint": "eslint .",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "fallow:dead-code": "pnpm dlx fallow dead-code --root .. --workspace nextjs-app --format json --quiet --explain",
+    "fallow:dead-code:unused": "pnpm dlx fallow dead-code --root .. --workspace nextjs-app --format json --quiet --explain --unused-files --unused-exports --unused-types --unused-class-members --unused-enum-members",
+    "fallow:dead-code:deps": "pnpm dlx fallow dead-code --root .. --workspace nextjs-app --format json --quiet --explain --unused-deps --unlisted-deps --unresolved-imports",
+    "fallow:dead-code:cycles": "pnpm dlx fallow dead-code --root .. --workspace nextjs-app --format json --quiet --explain --circular-deps",
+    "fallow:dead-code:boundaries": "pnpm dlx fallow dead-code --root .. --workspace nextjs-app --format json --quiet --explain --boundary-violations",
+    "fallow:dupes": "pnpm dlx fallow dupes --root .. --workspace nextjs-app --format json --quiet --explain",
+    "fallow:health": "pnpm dlx fallow health --root .. --workspace nextjs-app --format json --quiet --explain --score --hotspots --targets",
+    "fallow:audit": "pnpm dlx fallow audit --root .. --workspace nextjs-app --format json --quiet --explain"
   },
   "dependencies": {
     "@clerk/localizations": "^4.5.2",

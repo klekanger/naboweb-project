@@ -263,7 +263,6 @@ export default function UserTable({
     onGlobalSearchChange,
     handleGlobalSearch,
     handleGlobalSearchKeyPress,
-    onGlobalSearchClear,
     sortedUsers.length,
     isSearchResult,
   ]);

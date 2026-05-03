@@ -1,7 +1,7 @@
 import { Box, Card, Flex } from "@sanity/ui";
 import React from "react";
 import { set } from "sanity";
-import { ICONS } from "./icons";
+import { ICON_OPTIONS } from "./iconOptions";
 
 import { BookIcon, HouseIcon, NewsIcon, PencilIcon } from "@/components/icons";
 
@@ -17,7 +17,7 @@ export default function IconRadioInput(props: any) {
 
   return (
     <Flex direction="row" gap={3}>
-      {ICONS.map((icon) => (
+      {ICON_OPTIONS.map((icon) => (
         <Card
           key={icon.value}
           padding={2}
