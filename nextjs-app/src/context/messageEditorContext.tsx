@@ -3,7 +3,8 @@
 import type { MessageType } from "@/types/types";
 import { type SanityImageAsset } from "@/types/sanity.types";
 import type { PortableTextBlock } from "@portabletext/types";
-import { createContext, useState } from "react";
+import { usePathname } from "next/navigation";
+import { createContext, useLayoutEffect, useRef, useState } from "react";
 
 type MessageContextMessage = Omit<MessageType, "messageImage"> & {
   messageImage: SanityImageAsset | null;
@@ -40,6 +41,8 @@ export function getMessagePortableTextCharacterCount(
   return getMessagePortableTextPlainText(bodyText).length;
 }
 
+const NEW_MESSAGE_PATH = "/messageboard/new-message";
+
 type MessageEditorContextType = {
   isEditingMessage: boolean;
   setIsEditingMessage: (isEditingMessage: boolean) => void;
@@ -47,6 +50,8 @@ type MessageEditorContextType = {
   setMessage: (message: MessageContextMessage) => void;
   messageImageFile: File | null;
   setMessageImageFile: (messageImageFile: File | null) => void;
+  /** Increments when the app navigates into the new-message route from elsewhere (provider stays mounted). */
+  newMessageEditorMountKey: number;
 };
 
 const messageEditorInitialValue: MessageEditorContextType = {
@@ -66,6 +71,7 @@ const messageEditorInitialValue: MessageEditorContextType = {
   setMessage: () => {},
   messageImageFile: null,
   setMessageImageFile: () => {},
+  newMessageEditorMountKey: 1,
 };
 
 export const MessageEditorContext = createContext<MessageEditorContextType>(
@@ -77,6 +83,22 @@ export default function MessageEditorProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const prevPathnameRef = useRef<string | null>(null);
+  const [newMessageEditorMountKey, setNewMessageEditorMountKey] = useState(1);
+
+  useLayoutEffect(() => {
+    const prev = prevPathnameRef.current;
+    prevPathnameRef.current = pathname;
+    if (
+      pathname === NEW_MESSAGE_PATH &&
+      prev !== null &&
+      prev !== NEW_MESSAGE_PATH
+    ) {
+      setNewMessageEditorMountKey((k) => k + 1);
+    }
+  }, [pathname]);
+
   const [isEditingMessage, setIsEditingMessage] = useState(false);
   const [message, setMessage] = useState<MessageContextMessage>({
     title: "",
@@ -100,6 +122,7 @@ export default function MessageEditorProvider({
         setMessage,
         messageImageFile,
         setMessageImageFile,
+        newMessageEditorMountKey,
       }}
     >
       {children}

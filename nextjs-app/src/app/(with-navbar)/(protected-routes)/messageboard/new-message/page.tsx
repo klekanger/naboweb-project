@@ -16,7 +16,7 @@ import { Card, Checkbox, Label, Modal, Spinner } from "@heroui/react";
 import { PortableTextBlock } from "@portabletext/types";
 import { MessagesSquare, UploadIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import { useCallback, useContext, useLayoutEffect, useRef, useState } from "react";
 
 const MAX_CHARACTERS = 1000;
 const DEFAULT_REDIRECT_URL = "/messageboard/new-message";
@@ -33,7 +33,6 @@ export default function NewMessage() {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isSubmittingMessage, setIsSubmittingMessage] = useState(false);
   const [modalOkUrl, setModalOkUrl] = useState(DEFAULT_REDIRECT_URL);
-
   // Modal state using custom hook
   const {
     modal: modalForMessages,
@@ -53,8 +52,33 @@ export default function NewMessage() {
   const router = useRouter();
 
   // We're fetching everything we need for the message editor from the MessageEditorContext
-  const { message, messageImageFile, setMessage, setMessageImageFile } =
+  const { message, messageImageFile, setMessage, setMessageImageFile, newMessageEditorMountKey } =
     useContext(MessageEditorContext);
+
+  const clerkNameRef = useRef({ firstName, lastName });
+  clerkNameRef.current = { firstName, lastName };
+
+  const resetMessageEditorContext = useCallback(() => {
+    if (!id) return;
+    const { firstName: fn, lastName: ln } = clerkNameRef.current;
+    setMessage({
+      title: "",
+      bodyText: [],
+      author: {
+        firstName: fn ?? "",
+        lastName: ln ?? "",
+      },
+      userId: id,
+      fromAdmin: false,
+      messageImage: null,
+    });
+    setMessageImageFile(null);
+  }, [id, setMessage, setMessageImageFile]);
+
+  // Provider wraps the whole messageboard layout, so context survives route changes; reset before paint.
+  useLayoutEffect(() => {
+    resetMessageEditorContext();
+  }, [resetMessageEditorContext]);
 
   if (!userData || !id) {
     return (
@@ -126,6 +150,7 @@ export default function NewMessage() {
       const data = await response.json();
 
       if ("success" in data) {
+        resetMessageEditorContext();
         setModalTitle("Innlegget ble opprettet");
         setModalBody("Du blir nå tatt tilbake til oppslagstavlen.");
         setModalOkUrl(`/messageboard`);
@@ -150,10 +175,6 @@ export default function NewMessage() {
     }
   };
 
-  const handleImageSelect = (selectedImages: File[] | null) => {
-    setMessageImageFile(selectedImages?.[0] ?? null);
-  };
-
   return (
     <>
       <Card className="p-2 py-8 mb-16">
@@ -168,7 +189,10 @@ export default function NewMessage() {
           </div>
         </Card.Header>
         <Card.Content className="pt-0 grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <MessageEditor />
+          <MessageEditor
+            key={newMessageEditorMountKey}
+            editorContent={[]}
+          />
         </Card.Content>
 
         <Card.Footer>

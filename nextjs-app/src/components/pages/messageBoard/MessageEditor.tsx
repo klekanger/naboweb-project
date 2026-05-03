@@ -63,7 +63,7 @@ export default function MessageEditor({
   title,
   maxCharacters = 1000,
 }: {
-  editorContent?: PortableTextBlock[];
+  editorContent: PortableTextBlock[];
   messageImage?: SanityImage;
   title?: string;
   maxCharacters?: number;
@@ -71,24 +71,17 @@ export default function MessageEditor({
   const { message, setMessage, setMessageImageFile } =
     useContext(MessageEditorContext);
   const messageRef = useRef(message);
+  const initialBody = editorContent;
   const [characterCount, setCharacterCount] = useState(
-    getMessagePortableTextCharacterCount(message.bodyText),
+    getMessagePortableTextCharacterCount(initialBody),
   );
-  const previousValidBodyRef = useRef<PortableTextBlock[]>(
-    Array.isArray(message.bodyText) ? message.bodyText : [],
-  );
+  const previousValidBodyRef = useRef<PortableTextBlock[]>(initialBody);
 
   const handleImageSelect = (selectedImages: File[] | null) => {
     setMessageImageFile(selectedImages?.[0] ?? null);
   };
 
-  const initialBodyValueRef = useRef<PortableTextBlock[]>(
-    Array.isArray(editorContent) && editorContent.length > 0
-      ? (editorContent as PortableTextBlock[])
-      : Array.isArray(message.bodyText) && message.bodyText.length > 0
-        ? message.bodyText
-        : [],
-  );
+  const initialBodyValueRef = useRef<PortableTextBlock[]>(initialBody);
 
   useEffect(() => {
     messageRef.current = message;
