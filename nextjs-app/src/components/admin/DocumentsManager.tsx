@@ -1,10 +1,21 @@
 "use client";
 
 import CustomButton from "@/components/CustomButton";
-import { Input, Label, TextField } from "@heroui/react";
-import { CheckCircle, FileText, Pencil, Plus, Trash2, Upload, X, XCircle } from "lucide-react";
+import { useAdminEditExit } from "@/components/admin/AdminEditPageShell";
+import Link from "next/link";
+import { Input, Label, Modal, TextField } from "@heroui/react";
+import {
+  CheckCircle,
+  FileText,
+  Pencil,
+  Plus,
+  Trash2,
+  Upload,
+  X,
+  XCircle,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type Doc = {
   _id: string;
@@ -23,6 +34,8 @@ type Doc = {
 
 type Props = {
   initialDocuments: Doc[];
+  pageNumber: number;
+  totalPages: number;
 };
 
 type FormState = {
@@ -39,17 +52,75 @@ const emptyForm: FormState = {
   fileName: "",
 };
 
-export default function DocumentsManager({ initialDocuments }: Props) {
+function formFromDocument(doc: Doc): FormState {
+  return {
+    title: doc.title ?? "",
+    description: doc.description ?? "",
+    assetId: doc.document?.asset?._id ?? "",
+    fileName: doc.document?.asset?.originalFilename ?? "",
+  };
+}
+
+type NavigatorWithConnection = Navigator & {
+  connection?: {
+    saveData?: boolean;
+  };
+};
+
+function adminDocumentsPageHref(page: number) {
+  if (page <= 1) return "/admin/documents";
+  return `/admin/documents?page=${page}`;
+}
+
+export default function DocumentsManager({
+  initialDocuments,
+  pageNumber,
+  totalPages,
+}: Props) {
+  const { reportDirty, registerDiscard } = useAdminEditExit();
   const router = useRouter();
   const [documents, setDocuments] = useState<Doc[]>(initialDocuments);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
+  const [formBaseline, setFormBaseline] = useState<FormState | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [pendingDeleteDoc, setPendingDeleteDoc] = useState<Doc | null>(null);
+  const [deleteModalError, setDeleteModalError] = useState("");
   const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isDirty = useMemo(
+    () =>
+      showForm &&
+      formBaseline !== null &&
+      JSON.stringify(form) !== JSON.stringify(formBaseline),
+    [showForm, form, formBaseline],
+  );
+
+  useEffect(() => {
+    reportDirty(isDirty);
+  }, [isDirty, reportDirty]);
+
+  useEffect(() => {
+    setDocuments(initialDocuments);
+  }, [initialDocuments]);
+
+  useEffect(() => {
+    if (pageNumber >= totalPages) return;
+
+    const connection = (navigator as NavigatorWithConnection).connection;
+    if (connection?.saveData) return;
+
+    const nextPageHref = adminDocumentsPageHref(pageNumber + 1);
+    const timeoutId = window.setTimeout(() => {
+      router.prefetch(nextPageHref);
+    }, 250);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [pageNumber, router, totalPages]);
 
   const handleFileUpload = async (file: File) => {
     setIsUploading(true);
@@ -108,41 +179,70 @@ export default function DocumentsManager({ initialDocuments }: Props) {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    setDeletingId(id);
+  const openDeleteConfirm = (doc: Doc) => {
+    setPendingDeleteDoc(doc);
+    setDeleteModalError("");
+    setShowDeleteConfirm(true);
+  };
+
+  const closeDeleteModal = () => {
+    if (deletingId) return;
+    setShowDeleteConfirm(false);
+    setPendingDeleteDoc(null);
+    setDeleteModalError("");
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDeleteDoc) return;
+    setDeletingId(pendingDeleteDoc._id);
+    setDeleteModalError("");
     try {
       const res = await fetch("/api/sanity/documents", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ _id: id }),
+        body: JSON.stringify({ _id: pendingDeleteDoc._id }),
       });
       if (!res.ok) throw new Error((await res.json()).error);
-      setDocuments((prev) => prev.filter((d) => d._id !== id));
+      const nextDocuments = documents.filter((d) => d._id !== pendingDeleteDoc._id);
+      setDocuments(nextDocuments);
+      setShowDeleteConfirm(false);
+      setPendingDeleteDoc(null);
+
+      if (nextDocuments.length === 0 && pageNumber > 1) {
+        router.push(adminDocumentsPageHref(pageNumber - 1));
+        return;
+      }
+
+      router.refresh();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Sletting feilet.");
+      setDeleteModalError(
+        err instanceof Error ? err.message : "Sletting feilet.",
+      );
     } finally {
       setDeletingId(null);
     }
   };
 
   const startEdit = (doc: Doc) => {
+    const baseline = formFromDocument(doc);
     setEditingId(doc._id);
-    setForm({
-      title: doc.title ?? "",
-      description: doc.description ?? "",
-      assetId: doc.document?.asset?._id ?? "",
-      fileName: doc.document?.asset?.originalFilename ?? "",
-    });
+    setForm(baseline);
+    setFormBaseline(baseline);
     setShowForm(true);
     setError("");
   };
 
-  const cancelForm = () => {
+  const cancelForm = useCallback(() => {
     setShowForm(false);
     setEditingId(null);
     setForm(emptyForm);
+    setFormBaseline(null);
     setError("");
-  };
+  }, []);
+
+  useEffect(() => {
+    registerDiscard(cancelForm);
+  }, [cancelForm, registerDiscard]);
 
   return (
     <div className="space-y-6">
@@ -153,6 +253,7 @@ export default function DocumentsManager({ initialDocuments }: Props) {
             setShowForm(true);
             setEditingId(null);
             setForm(emptyForm);
+            setFormBaseline(emptyForm);
             setError("");
           }}
         >
@@ -250,49 +351,133 @@ export default function DocumentsManager({ initialDocuments }: Props) {
           <p>Ingen dokumenter lastet opp ennå.</p>
         </div>
       ) : (
-        <div className="divide-y divide-border">
-          {documents.map((doc) => (
-            <div
-              key={doc._id}
-              className="flex items-center justify-between py-4 gap-4"
-            >
-              <div className="flex items-start gap-3 flex-1 min-w-0">
-                <FileText className="h-5 w-5 text-foreground/40 shrink-0 mt-0.5" />
-                <div className="min-w-0">
-                  <p className="font-medium truncate">{doc.title}</p>
-                  {doc.description && (
-                    <p className="text-sm text-foreground/50 truncate">
-                      {doc.description}
-                    </p>
-                  )}
-                  {doc.document?.asset?.originalFilename && (
-                    <p className="text-xs text-foreground/40 truncate">
-                      {doc.document.asset.originalFilename}
-                    </p>
-                  )}
+        <>
+          <div className="divide-y divide-border">
+            {documents.map((doc) => (
+              <div
+                key={doc._id}
+                className="flex items-center justify-between py-4 gap-4"
+              >
+                <div className="flex items-start gap-3 flex-1 min-w-0">
+                  <FileText className="h-5 w-5 text-foreground/40 shrink-0 mt-0.5" />
+                  <div className="min-w-0">
+                    <a href={doc.document?.asset?.url ?? ""}>
+                      <p className="font-medium truncate hover:text-brand-secondary/80">
+                        {doc.title}
+                      </p>
+                    </a>
+                    {doc.description && (
+                      <p className="text-sm text-foreground/50 truncate">
+                        {doc.description}
+                      </p>
+                    )}
+                    {doc.document?.asset?.originalFilename && (
+                      <p className="text-xs text-foreground/40 truncate">
+                        {doc.document.asset.originalFilename}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0 cursor-pointer">
+                  <button
+                    type="button"
+                    onClick={() => startEdit(doc)}
+                    className="text-brand-secondary hover:underline text-sm flex items-center gap-1 cursor-pointer"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => openDeleteConfirm(doc)}
+                    disabled={deletingId === doc._id}
+                    className="text-red-500 hover:text-red-700 disabled:opacity-50 cursor-pointer"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => startEdit(doc)}
-                  className="text-brand-secondary hover:underline text-sm flex items-center gap-1"
-                >
-                  <Pencil className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDelete(doc._id)}
-                  disabled={deletingId === doc._id}
-                  className="text-red-500 hover:text-red-700 disabled:opacity-50"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+          {totalPages > 1 && (
+            <>
+              <nav
+                aria-label="Navigasjon mellom dokumenter"
+                className="m-auto my-8 flex justify-center font-bold text-brand-black"
+              >
+                <ul className="flex justify-between">
+                  {pageNumber > 1 && (
+                    <li className="mr-2 rounded-xl bg-brand-primary px-8 py-2 shadow-md">
+                      <Link href={adminDocumentsPageHref(pageNumber - 1)}>
+                        ← Forrige side
+                      </Link>
+                    </li>
+                  )}
+                  {pageNumber < totalPages && (
+                    <li className="ml-2 rounded-xl bg-brand-primary px-8 py-2 shadow-md">
+                      <Link href={adminDocumentsPageHref(pageNumber + 1)}>
+                        Neste side →
+                      </Link>
+                    </li>
+                  )}
+                </ul>
+              </nav>
+              <p className="pb-4 text-center">
+                side {`${pageNumber} av ${totalPages}`}
+              </p>
+            </>
+          )}
+        </>
       )}
+
+      <Modal.Backdrop
+        isOpen={showDeleteConfirm}
+        onOpenChange={(open) => {
+          if (!open) closeDeleteModal();
+        }}
+        variant="blur"
+      >
+        <Modal.Container>
+          <Modal.Dialog className="sm:max-w-md">
+            <Modal.CloseTrigger />
+            <Modal.Header>
+              <Modal.Heading className="text-brand-danger">
+                Slett dokument
+              </Modal.Heading>
+            </Modal.Header>
+            <Modal.Body>
+              {deleteModalError && (
+                <div
+                  className="bg-brand-danger text-white p-4 rounded-xl mb-4"
+                  role="alert"
+                >
+                  {deleteModalError}
+                </div>
+              )}
+              {!deleteModalError && (
+                <p>
+                  Er du helt sikker på at du vil slette{" "}
+                  <em>{pendingDeleteDoc?.title || "dette dokumentet"}</em>?
+                  Denne operasjonen kan ikke angres.
+                </p>
+              )}
+            </Modal.Body>
+            <Modal.Footer className="flex flex-wrap justify-end gap-2">
+              <CustomButton variant="secondary" onPress={closeDeleteModal}>
+                Avbryt
+              </CustomButton>
+              {!deleteModalError && (
+                <CustomButton
+                  variant="danger"
+                  isPending={deletingId === pendingDeleteDoc?._id}
+                  onPress={() => void confirmDelete()}
+                >
+                  Slett
+                </CustomButton>
+              )}
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </div>
   );
 }

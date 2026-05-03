@@ -1687,6 +1687,32 @@ export type BlogPostsAdminPagedQueryResult = Array<{
 }>;
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
+// Variable: countOtherDocumentsAdminQuery
+// Query: count(*[_type=="fileOtherDocuments"])
+export type CountOtherDocumentsAdminQueryResult = number;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
+// Variable: otherDocumentsAdminPagedQuery
+// Query: *[_type=="fileOtherDocuments"] | order(_createdAt desc) [$start...$end] {    _id,    _createdAt,    _updatedAt,    title,    description,    tags,    "document": otherDocument{      asset->{url, _id, originalFilename, extension, size}    }  }
+export type OtherDocumentsAdminPagedQueryResult = Array<{
+  _id: string;
+  _createdAt: string;
+  _updatedAt: string;
+  title: string;
+  description: string | null;
+  tags: Array<string> | null;
+  document: {
+    asset: {
+      url: string;
+      _id: string;
+      originalFilename: string | null;
+      extension: string;
+      size: number;
+    } | null;
+  };
+}>;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: allOtherDocumentsAdminQuery
 // Query: *[_type=="fileOtherDocuments"] | order(_createdAt desc) {    _id,    _createdAt,    _updatedAt,    title,    description,    tags,    "document": otherDocument{      asset->{url, _id, originalFilename, extension, size}    }  }
 export type AllOtherDocumentsAdminQueryResult = Array<{
@@ -1711,6 +1737,34 @@ export type AllOtherDocumentsAdminQueryResult = Array<{
 // Variable: allMeetingMinutesAdminQuery
 // Query: *[_type=="fileMeetingMinutes"] | order(_createdAt desc) | order(meetingDate desc) {    _id,    _createdAt,    _updatedAt,    title,    description,    meetingDate,    meetingPlace,    tags,    meetingDocuments[]{asset->{url, _id, originalFilename, extension, size}}  }
 export type AllMeetingMinutesAdminQueryResult = Array<{
+  _id: string;
+  _createdAt: string;
+  _updatedAt: string;
+  title: string;
+  description: string | null;
+  meetingDate: string | null;
+  meetingPlace: string | null;
+  tags: Array<string> | null;
+  meetingDocuments: Array<{
+    asset: {
+      url: string;
+      _id: string;
+      originalFilename: string | null;
+      extension: string;
+      size: number;
+    } | null;
+  }> | null;
+}>;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
+// Variable: countMeetingMinutesAdminQuery
+// Query: count(*[_type=="fileMeetingMinutes"])
+export type CountMeetingMinutesAdminQueryResult = number;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
+// Variable: meetingMinutesAdminPagedQuery
+// Query: *[_type=="fileMeetingMinutes"] | order(_createdAt desc) | order(meetingDate desc) [$start...$end] {    _id,    _createdAt,    _updatedAt,    title,    description,    meetingDate,    meetingPlace,    tags,    meetingDocuments[]{asset->{url, _id, originalFilename, extension, size}}  }
+export type MeetingMinutesAdminPagedQueryResult = Array<{
   _id: string;
   _createdAt: string;
   _updatedAt: string;
@@ -1768,7 +1822,11 @@ declare module "@sanity/client" {
     '\n  *[\n    _type == "fileOtherDocuments" &&\n    defined(title) &&\n    lower(title) match $SEARCH_PATTERN\n  ] | order(title asc) [0...$END] {\n    _id,\n    title,\n    "url": otherDocument.asset->url\n  }\n': FileOtherDocumentsSearchQueryResult;
     '\n  *[_type=="authors"] | order(firstName asc) {\n    _id,\n    firstName,\n    lastName\n  }\n': AllAuthorsQueryResult;
     '\n  *[_type=="blogPost"] | order(_createdAt desc) [$start...$end] {\n    _id,\n    _createdAt,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    privatePost,\n    excerpt\n  }\n': BlogPostsAdminPagedQueryResult;
+    '\n  count(*[_type=="fileOtherDocuments"])\n': CountOtherDocumentsAdminQueryResult;
+    '\n  *[_type=="fileOtherDocuments"] | order(_createdAt desc) [$start...$end] {\n    _id,\n    _createdAt,\n    _updatedAt,\n    title,\n    description,\n    tags,\n    "document": otherDocument{\n      asset->{url, _id, originalFilename, extension, size}\n    }\n  }\n': OtherDocumentsAdminPagedQueryResult;
     '\n  *[_type=="fileOtherDocuments"] | order(_createdAt desc) {\n    _id,\n    _createdAt,\n    _updatedAt,\n    title,\n    description,\n    tags,\n    "document": otherDocument{\n      asset->{url, _id, originalFilename, extension, size}\n    }\n  }\n': AllOtherDocumentsAdminQueryResult;
     '\n  *[_type=="fileMeetingMinutes"] | order(_createdAt desc) | order(meetingDate desc) {\n    _id,\n    _createdAt,\n    _updatedAt,\n    title,\n    description,\n    meetingDate,\n    meetingPlace,\n    tags,\n    meetingDocuments[]{asset->{url, _id, originalFilename, extension, size}}\n  }\n': AllMeetingMinutesAdminQueryResult;
+    '\n  count(*[_type=="fileMeetingMinutes"])\n': CountMeetingMinutesAdminQueryResult;
+    '\n  *[_type=="fileMeetingMinutes"] | order(_createdAt desc) | order(meetingDate desc) [$start...$end] {\n    _id,\n    _createdAt,\n    _updatedAt,\n    title,\n    description,\n    meetingDate,\n    meetingPlace,\n    tags,\n    meetingDocuments[]{asset->{url, _id, originalFilename, extension, size}}\n  }\n': MeetingMinutesAdminPagedQueryResult;
   }
 }

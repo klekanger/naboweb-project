@@ -13,6 +13,8 @@ type Props = {
   currentUserEmail?: string;
   currentAuthorPortraitUrl?: string | null;
   isAdmin: boolean;
+  onEditDirtyChange?: (isDirty: boolean) => void;
+  onRegisterDiscardChanges?: (discardChanges: () => void) => void;
 };
 
 export default function BlogEditorClient(props: Props) {

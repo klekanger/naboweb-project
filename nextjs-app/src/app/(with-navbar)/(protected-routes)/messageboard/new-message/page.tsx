@@ -2,42 +2,24 @@
 
 import CustomButton from "@/components/CustomButton";
 import MessageEditor from "@/components/pages/messageBoard/MessageEditor";
-import { MessageEditorContext } from "@/context/messageEditorContext";
+import {
+  MessageEditorContext,
+} from "@/context/messageEditorContext";
 import { useModalState } from "@/hooks/useModalState";
 import { currentUserRoles } from "@/lib/currentUserRoles";
+import {
+  getMessageValidationError,
+  uploadMessageImage,
+} from "@/components/pages/messageBoard/messageSubmitUtils";
 import { useUser } from "@clerk/nextjs";
 import { Card, Checkbox, Label, Modal, Spinner } from "@heroui/react";
-import { htmlToBlocks } from "@portabletext/block-tools";
 import { PortableTextBlock } from "@portabletext/types";
-import { Schema } from "@sanity/schema";
 import { MessagesSquare, UploadIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import { useCallback, useContext, useLayoutEffect, useRef, useState } from "react";
 
 const MAX_CHARACTERS = 1000;
 const DEFAULT_REDIRECT_URL = "/messageboard/new-message";
-
-const defaultSchema = Schema.compile({
-  name: "myMessage",
-  types: [
-    {
-      type: "object",
-      name: "message",
-      fields: [
-        {
-          title: "Body",
-          name: "bodyText",
-          type: "array",
-          of: [{ type: "block" }],
-        },
-      ],
-    },
-  ],
-});
-
-const blockContentType = defaultSchema
-  .get("message")
-  .fields.find((field: { name: string }) => field.name === "bodyText").type;
 
 // *********************************************************************
 // CREATE NEW MESSAGE
@@ -51,7 +33,6 @@ export default function NewMessage() {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isSubmittingMessage, setIsSubmittingMessage] = useState(false);
   const [modalOkUrl, setModalOkUrl] = useState(DEFAULT_REDIRECT_URL);
-
   // Modal state using custom hook
   const {
     modal: modalForMessages,
@@ -71,8 +52,33 @@ export default function NewMessage() {
   const router = useRouter();
 
   // We're fetching everything we need for the message editor from the MessageEditorContext
-  const { editor, message, messageImageFile, setMessage, setMessageImageFile } =
+  const { message, messageImageFile, setMessage, setMessageImageFile, newMessageEditorMountKey } =
     useContext(MessageEditorContext);
+
+  const clerkNameRef = useRef({ firstName, lastName });
+  clerkNameRef.current = { firstName, lastName };
+
+  const resetMessageEditorContext = useCallback(() => {
+    if (!id) return;
+    const { firstName: fn, lastName: ln } = clerkNameRef.current;
+    setMessage({
+      title: "",
+      bodyText: [],
+      author: {
+        firstName: fn ?? "",
+        lastName: ln ?? "",
+      },
+      userId: id,
+      fromAdmin: false,
+      messageImage: null,
+    });
+    setMessageImageFile(null);
+  }, [id, setMessage, setMessageImageFile]);
+
+  // Provider wraps the whole messageboard layout, so context survives route changes; reset before paint.
+  useLayoutEffect(() => {
+    resetMessageEditorContext();
+  }, [resetMessageEditorContext]);
 
   if (!userData || !id) {
     return (
@@ -86,57 +92,28 @@ export default function NewMessage() {
   // Submit the message to Sanity
   // *********************************************************************
   const handleSubmit = async () => {
-    if (message.title === "") {
-      setModalTitle("Feil: Ugyldig tittel");
-      setModalBody("Meldingen din trenger en tittel.");
+    const validationError = getMessageValidationError(
+      message.title,
+      message.bodyText as PortableTextBlock[] | null | undefined,
+    );
+    if (validationError) {
+      if (validationError.includes("tittel")) {
+        setModalTitle("Feil: Ugyldig tittel");
+      } else {
+        setModalTitle("Feil: For kort tekst");
+      }
+      setModalBody(validationError);
       setModalCancelDisabled(true);
-
       modalForMessages.onOpen();
       return;
     }
 
-    if (!editor) return;
-
-    if (editor.storage.characterCount.characters() < 10) {
-      setModalTitle("Feil: For kort tekst");
-      setModalBody(
-        "Det er alltid fint å fatte seg i korthet, men innlegget ditt må være litt lenger (mer enn 10 tegn).",
-      );
-      setModalCancelDisabled(true);
-
-      modalForMessages.onOpen();
-      return;
-    }
-
-    const bodyText = editor.getHTML();
-
-    const textBlocks = htmlToBlocks(bodyText, blockContentType);
     let imageRef: string | null = null;
 
-    // 1: If there is a message image, upload it to Sanity
     if (messageImageFile !== null) {
-      const fileData = new FormData();
-
-      fileData.set("messageImage", messageImageFile as File);
-      fileData.set("title", message.title);
-
       setIsUploadingImage(true);
-
       try {
-        const fileUploadResponse = await fetch("/api/upload-image-to-sanity", {
-          method: "POST",
-          body: fileData,
-        });
-
-        const fileUploadData = await fileUploadResponse.json();
-
-        if ("success" in fileUploadData) {
-          imageRef = fileUploadData.success?.imageId;
-        }
-
-        if ("error" in fileUploadData) {
-          throw new Error(fileUploadData.error?.message ?? "Noe gikk galt");
-        }
+        imageRef = await uploadMessageImage(messageImageFile, message.title);
       } catch (error: any) {
         console.error("Image upload failed. Server response:  ", error);
 
@@ -159,7 +136,7 @@ export default function NewMessage() {
         },
         body: JSON.stringify({
           title: message.title,
-          bodyText: textBlocks as PortableTextBlock[],
+          bodyText: (message.bodyText ?? []) as PortableTextBlock[],
           author: {
             firstName: firstName ?? "",
             lastName: lastName ?? "",
@@ -173,6 +150,7 @@ export default function NewMessage() {
       const data = await response.json();
 
       if ("success" in data) {
+        resetMessageEditorContext();
         setModalTitle("Innlegget ble opprettet");
         setModalBody("Du blir nå tatt tilbake til oppslagstavlen.");
         setModalOkUrl(`/messageboard`);
@@ -197,16 +175,6 @@ export default function NewMessage() {
     }
   };
 
-  const handleImageSelect = (selectedImages: File[] | null) => {
-    setMessageImageFile(selectedImages?.[0] ?? null);
-  };
-
-  const percentage = editor
-    ? Math.round(
-        (100 / MAX_CHARACTERS) * editor.storage.characterCount.characters(),
-      )
-    : 0;
-
   return (
     <>
       <Card className="p-2 py-8 mb-16">
@@ -221,7 +189,10 @@ export default function NewMessage() {
           </div>
         </Card.Header>
         <Card.Content className="pt-0 grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <MessageEditor />
+          <MessageEditor
+            key={newMessageEditorMountKey}
+            editorContent={[]}
+          />
         </Card.Content>
 
         <Card.Footer>

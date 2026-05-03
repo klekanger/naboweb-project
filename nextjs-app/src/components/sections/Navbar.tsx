@@ -16,7 +16,12 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { startTransition, useEffect, useState, useSyncExternalStore } from "react";
+import {
+  startTransition,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import logoLight from "../../../public/logo-light.svg";
 
 export default function Navbar() {
@@ -319,9 +324,7 @@ export default function Navbar() {
 
           <div className="mt-8 flex justify-center">
             {isClient && isLoaded && user ? (
-              <UserAccountMenu
-                onAfterNavigate={() => setIsMenuOpen(false)}
-              />
+              <UserAccountMenu onAfterNavigate={() => setIsMenuOpen(false)} />
             ) : (
               <SignInButton>
                 <CustomButton variant="primary">

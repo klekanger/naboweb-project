@@ -1,5 +1,10 @@
 import { clientWithWriteAccess } from "@/sanity/lib/client";
-import { currentUser } from "@clerk/nextjs/server";
+import {
+  badRequestResponse,
+  getCurrentUserWithRoles,
+  serverErrorResponse,
+  unauthorizedResponse,
+} from "@/app/api/_utils/routeUtils";
 import { type NextRequest, NextResponse } from "next/server";
 
 type EditCommentRequest = {
@@ -11,52 +16,34 @@ type EditCommentRequest = {
 };
 
 export async function POST(request: NextRequest) {
-  const user = await currentUser();
-  const userRoles = (user?.publicMetadata as { roles: string[] }) ?? [];
+  const { user, userRoles } = await getCurrentUserWithRoles();
 
-  if (!user || !userRoles.roles.includes("user")) {
-    return NextResponse.json({
-      error: { message: "Unauthorized" },
-      status: 401,
-    });
+  if (!user || !userRoles.isUser) {
+    return unauthorizedResponse();
   }
 
   const res = (await request.json()) as EditCommentRequest;
 
   if (!res) {
-    return NextResponse.json({
-      error: { message: "Missing data" },
-      status: 400,
-    });
+    return badRequestResponse("Missing data");
   }
 
   const { messageId, commentKey, title, bodyText, userId } = res;
 
   if (user.id !== userId) {
-    return NextResponse.json({
-      error: {
-        message: "Unauthorized (user can only edit their own comments)",
-      },
-      status: 401,
-    });
+    return unauthorizedResponse("Unauthorized (user can only edit their own comments)");
   }
 
   if (!messageId || messageId === "") {
-    return NextResponse.json({
-      error: {
-        message: "Missing messageId. Required for updating comment in Sanity.",
-      },
-      status: 401,
-    });
+    return badRequestResponse(
+      "Missing messageId. Required for updating comment in Sanity.",
+    );
   }
 
   if (!commentKey || commentKey === "") {
-    return NextResponse.json({
-      error: {
-        message: "Missing commentKey. Required for updating comment in Sanity.",
-      },
-      status: 401,
-    });
+    return badRequestResponse(
+      "Missing commentKey. Required for updating comment in Sanity.",
+    );
   }
 
   try {
@@ -78,12 +65,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error: ", error);
-    return NextResponse.json({
-      error: {
-        message: "Error: Comment could not be updated",
-        longMessage: error,
-      },
-      status: 500,
-    });
+    return serverErrorResponse("Error: Comment could not be updated", error);
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import CustomButton from "@/components/CustomButton";
+import { prepareImageUploadFile } from "@/lib/prepareImageUploadFile";
 import { urlForImage } from "@/sanity/lib/utils";
 import type { SanityReference } from "@/types/types";
 import {
@@ -53,6 +54,7 @@ import {
   User,
   XCircle,
 } from "lucide-react";
+import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Image } from "sanity";
@@ -87,6 +89,8 @@ type Props = {
   currentUserEmail?: string;
   currentAuthorPortraitUrl?: string | null;
   isAdmin: boolean;
+  onEditDirtyChange?: (isDirty: boolean) => void;
+  onRegisterDiscardChanges?: (discardChanges: () => void) => void;
 };
 
 type ImageModalState = {
@@ -246,9 +250,10 @@ function uploadErrorMessage(data: unknown): string {
 }
 
 async function uploadImageToSanity(file: File): Promise<string> {
+  const ready = await prepareImageUploadFile(file);
   const formData = new FormData();
-  formData.append("messageImage", file);
-  formData.append("title", file.name);
+  formData.append("messageImage", ready);
+  formData.append("title", ready.name);
   const res = await fetch("/api/upload-image-to-sanity", {
     method: "POST",
     body: formData,
@@ -273,6 +278,8 @@ export default function BlogEditor({
   currentUserEmail = "",
   currentAuthorPortraitUrl = null,
   isAdmin,
+  onEditDirtyChange,
+  onRegisterDiscardChanges,
 }: Props) {
   const router = useRouter();
 
@@ -341,12 +348,9 @@ export default function BlogEditor({
   const [privatePost, setPrivatePost] = useState(
     initialData?.privatePost ?? false,
   );
-  const [excerpt, setExcerpt] = useState(() => {
-    const first = initialData?.excerpt?.[0] as
-      | { children?: Array<{ text?: string }> }
-      | undefined;
-    return first?.children?.[0]?.text ?? "";
-  });
+  const [excerpt, setExcerpt] = useState(() =>
+    getInitialExcerptPlainText(initialData),
+  );
   const [featuredImageId, setFeaturedImageId] = useState(
     initialData?.featuredImage?.asset?._ref ?? "",
   );
@@ -363,6 +367,7 @@ export default function BlogEditor({
   const [deleteModalError, setDeleteModalError] = useState("");
   const [showSaveConfirm, setShowSaveConfirm] = useState(false);
   const [bodyChangeGeneration, setBodyChangeGeneration] = useState(0);
+  const [editorResetKey, setEditorResetKey] = useState(0);
   const [result, setResult] = useState<"success" | "error" | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -399,36 +404,74 @@ export default function BlogEditor({
   }, [initialEditSnapshotString]);
 
   const editBaselineSnapshot =
-    mode === "edit" ? postSaveEditSnapshot ?? initialEditSnapshotString : "";
+    mode === "edit" ? (postSaveEditSnapshot ?? initialEditSnapshotString) : "";
 
-  const currentEditSnapshotString = useMemo(() => {
-    if (mode !== "edit") return "";
-    return serializeEditFormSnapshot({
-      title,
-      slug,
-      privatePost,
-      excerpt,
-      featuredImageId,
-      featuredImageCaption,
-      featuredImageAlt,
-      authorIds: selectedAuthorIds,
-      bodyJson: JSON.stringify(bodyValueRef.current),
-    });
-  }, [
-    mode,
-    title,
-    slug,
-    privatePost,
-    excerpt,
-    featuredImageId,
-    featuredImageCaption,
-    featuredImageAlt,
-    selectedAuthorIds,
-    bodyChangeGeneration,
-  ]);
+  const currentEditSnapshotString =
+    mode !== "edit"
+      ? ""
+      : serializeEditFormSnapshot({
+          title,
+          slug,
+          privatePost,
+          excerpt,
+          featuredImageId,
+          featuredImageCaption,
+          featuredImageAlt,
+          authorIds: selectedAuthorIds,
+          bodyJson: JSON.stringify(bodyValueRef.current),
+        });
 
   const isEditDirty =
     mode === "edit" && currentEditSnapshotString !== editBaselineSnapshot;
+
+  useEffect(() => {
+    onEditDirtyChange?.(isEditDirty);
+  }, [isEditDirty, onEditDirtyChange]);
+
+  const discardUnsavedEditChanges = useCallback(() => {
+    if (mode !== "edit") return;
+    const baselineSnapshot =
+      postSaveEditSnapshot && postSaveEditSnapshot.length > 0
+        ? postSaveEditSnapshot
+        : initialEditSnapshotString;
+    if (!baselineSnapshot) return;
+
+    let parsed: EditFormSnapshotFields;
+    try {
+      parsed = JSON.parse(baselineSnapshot) as EditFormSnapshotFields;
+    } catch {
+      return;
+    }
+
+    setTitle(parsed.title ?? "");
+    setSlug(parsed.slug ?? "");
+    setPrivatePost(Boolean(parsed.privatePost));
+    setExcerpt(parsed.excerpt ?? "");
+    setFeaturedImageId(parsed.featuredImageId ?? "");
+    setFeaturedImageCaption(parsed.featuredImageCaption ?? "");
+    setFeaturedImageAlt(parsed.featuredImageAlt ?? "");
+    setSelectedAuthorIds(
+      Array.isArray(parsed.authorIds) ? parsed.authorIds : [],
+    );
+
+    try {
+      bodyValueRef.current = parsed.bodyJson
+        ? (JSON.parse(parsed.bodyJson) as PortableTextBlock[])
+        : [];
+    } catch {
+      bodyValueRef.current = [];
+    }
+
+    setBodyChangeGeneration((n) => n + 1);
+    setEditorResetKey((n) => n + 1);
+    setShowSaveConfirm(false);
+    setResult(null);
+    setErrorMessage("");
+  }, [mode, postSaveEditSnapshot, initialEditSnapshotString]);
+
+  useEffect(() => {
+    onRegisterDiscardChanges?.(discardUnsavedEditChanges);
+  }, [discardUnsavedEditChanges, onRegisterDiscardChanges]);
 
   const handleFeaturedImageUpload = async (file: File) => {
     setIsUploading(true);
@@ -469,7 +512,7 @@ export default function BlogEditor({
       _id: initialData?._id,
       title,
       slug,
-      privatePost: isAdmin ? privatePost : initialData?.privatePost ?? false,
+      privatePost: isAdmin ? privatePost : (initialData?.privatePost ?? false),
       excerpt: textToBlocks(excerpt),
       bodyText: bodyValueRef.current,
       featuredImageId: featuredImageId || undefined,
@@ -616,7 +659,7 @@ export default function BlogEditor({
             type="file"
             ref={imageInputRef}
             className="hidden"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
             onChange={(e) => {
               const file = e.target.files?.[0];
               if (file) handleFeaturedImageUpload(file);
@@ -639,7 +682,7 @@ export default function BlogEditor({
         </div>
         {featuredImageId && (
           <div className="mt-3 space-y-3">
-            <img
+            <NextImage
               src={
                 urlForImage({ asset: { _ref: featuredImageId } } as Image)
                   ?.width(600)
@@ -647,7 +690,10 @@ export default function BlogEditor({
                   .url() ?? ""
               }
               alt="Toppbilde forhåndsvisning"
-              className="w-full rounded-lg border border-border"
+              width={600}
+              height={400}
+              sizes="100vw"
+              className="w-full h-auto rounded-lg border border-border"
             />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <TextField
@@ -679,6 +725,7 @@ export default function BlogEditor({
         </label>
         <div className="border border-brand-black/10 rounded-xl">
           <EditorProvider
+            key={editorResetKey}
             initialConfig={{
               schemaDefinition: blogBodySchema,
               initialValue: bodyValueRef.current,
@@ -1025,7 +1072,7 @@ function EditorInner({
       const asset = { _ref: assetRef, _type: "reference" as const };
       editor.send({
         type: "insert.block",
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         block: {
           _type: "image",
           asset,
@@ -1290,10 +1337,10 @@ function ImageModal({
     mode === "insert" ? !!assetRef && !isUploading : !isUploading;
 
   const previewUrl = assetRef
-    ? urlForImage({ asset: { _ref: assetRef } } as Image)
+    ? (urlForImage({ asset: { _ref: assetRef } } as Image)
         ?.width(400)
         .fit("max")
-        .url() ?? null
+        .url() ?? null)
     : null;
 
   return (
@@ -1307,16 +1354,19 @@ function ImageModal({
         {/* Preview + upload */}
         <div className="space-y-2">
           {previewUrl && (
-            <img
+            <NextImage
               src={previewUrl}
               alt="Forhåndsvisning"
-              className="w-full rounded-lg border border-border max-h-48 object-contain"
+              width={400}
+              height={300}
+              sizes="(max-width: 768px) 100vw, 400px"
+              className="w-full rounded-lg border border-border max-h-48 object-contain h-auto"
             />
           )}
           <input
             type="file"
             ref={fileRef}
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
             className="hidden"
             onChange={(e) => {
               const file = e.target.files?.[0];

@@ -25,7 +25,6 @@ export async function POST(request: NextRequest) {
   const bytes = await messageImage.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
-  // prevent image from being too large
   const MAX_FILE_SIZE = 20 * 1024 * 1024;
   if (buffer.byteLength > MAX_FILE_SIZE) {
     return NextResponse.json(
@@ -38,7 +37,20 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Upload the file to Sanity via the asset API
+  // Raw HEIC must not reach Sanity (422 on unsupported codecs). The app converts
+  // in the browser first; reject only when the client still sends image/heic|heif.
+  if (/^image\/(heic|heif)$/i.test(messageImage.type)) {
+    return NextResponse.json(
+      {
+        error: {
+          message:
+            "HEIC kan ikke lastes opp direkte. Oppdater siden og prøv igjen, eller velg JPG/WEBP.",
+        },
+      },
+      { status: 400 },
+    );
+  }
+
   try {
     const result = await clientWithWriteAccess.assets.upload("image", buffer, {
       filename: messageImage.name,
@@ -52,12 +64,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const id = result._id;
-
     return NextResponse.json({
       success: {
         message: "Image uploaded",
-        imageId: id,
+        imageId: result._id,
       },
     });
   } catch (error) {

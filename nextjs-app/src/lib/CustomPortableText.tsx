@@ -1,13 +1,8 @@
 import ImageBox from "@/components/shared/ImageBox";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
-import {
-  type SanityImageSource,
-  getImageDimensions,
-  SanityImageAsset,
-} from "@sanity/asset-utils";
+import { getImageDimensions, SanityImageAsset } from "@sanity/asset-utils";
 
 import { Tweet } from "react-tweet";
-import type { Image } from "sanity";
 
 import YouTubePlayer from "./YouTubePlayer";
 

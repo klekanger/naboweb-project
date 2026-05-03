@@ -1,5 +1,5 @@
 import DocumentMenuEditor from "@/components/admin/DocumentMenuEditor";
-import BackButton from "@/components/BackButton";
+import AdminEditPageShell from "@/components/admin/AdminEditPageShell";
 import { DOCUMENT_MENU_BROWSE_FILE_LIMIT } from "@/lib/document-menu-file-picker";
 import { client } from "@/sanity/lib/client";
 import {
@@ -82,15 +82,19 @@ export default async function DocumentMenuPage() {
   });
 
   return (
-    <div className="max-w-2xl mx-auto py-12 px-4">
-      <h1 className="text-3xl font-semibold mb-2">Rediger dokumentmeny</h1>
-      <p className="text-foreground/60 mb-8">
-        Her kan du endre tekst og tilknyttede filer for de fire første
-        snarveiknappene på Informasjon-siden. Listen viser de første{" "}
-        {DOCUMENT_MENU_BROWSE_FILE_LIMIT} filene (alfabetisk); skriv minst to tegn for å
-        søke blant alle filer.
-      </p>
-
+    <AdminEditPageShell
+      title="Rediger dokumentmeny"
+      backHref="/admin"
+      containerClassName="max-w-2xl"
+      description={
+        <>
+          Her kan du endre tekst og tilknyttede filer for de fire første
+          snarveiknappene på Informasjon-siden. Listen viser de første{" "}
+          {DOCUMENT_MENU_BROWSE_FILE_LIMIT} filene (alfabetisk); skriv minst to
+          tegn for å søke blant alle filer.
+        </>
+      }
+    >
       <DocumentMenuEditor
         documentMenuId={menuData._id}
         initialButtons={initialButtons}
@@ -103,10 +107,6 @@ export default async function DocumentMenuPage() {
           }),
         )}
       />
-
-      <div className="mt-10">
-        <BackButton buttonLink="/admin" />
-      </div>
-    </div>
+    </AdminEditPageShell>
   );
 }

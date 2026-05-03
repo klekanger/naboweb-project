@@ -54,3 +54,4 @@ email-content.html
 .vscode/settings.json
 .env*.local
 .vscode/settings.json
+.fallow/
