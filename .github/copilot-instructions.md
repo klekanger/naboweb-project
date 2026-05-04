@@ -7,7 +7,7 @@ applyTo: "**"
 
 - **Framework**: Next.js 15 (App Router), React 19, TypeScript
 - **Styling**: HeroUI + Tailwind CSS (mobile-first, responsive)
-- **CMS**: Sanity (schemas in `src/sanity/schemas/`, studio at `/studio`)
+- **CMS**: Sanity (schemas in `studio/schemaTypes/`, Studio workspace at `studio/`)
 - **Auth**: Clerk (Norwegian localization, role-based access)
 - **Data**: Upstash Redis for caching
 - **Testing**: Vitest + React Testing Library (never Jest)
@@ -15,7 +15,7 @@ applyTo: "**"
 ### Key Directories
 - `src/app/`: App Router structure, layouts, API routes, server actions
 - `src/components/`: Page, section, shared, and user admin components
-- `src/sanity/`: Sanity schemas, client config, plugins
+- `src/sanity/`: Sanity client, queries, loaders (no schema definitions; those live under `studio/schemaTypes/`)
 - `src/lib/`: Utilities, constants, helpers
 
 ## Developer Workflows
@@ -56,7 +56,7 @@ applyTo: "**"
 
 ## Example Patterns
 
-- **Sanity schema**: See `src/sanity/schemas/` for `defineType` usage
+- **Sanity schema**: See `studio/schemaTypes/` for `defineType` usage
 - **Server actions**: See `src/app/actions/` for user management
 - **Role checks**: See `src/lib/currentUserRoles.ts`
 - **Reusable components**: See `src/components/shared/`
