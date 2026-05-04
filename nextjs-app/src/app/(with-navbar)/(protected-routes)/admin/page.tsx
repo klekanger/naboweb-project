@@ -7,10 +7,10 @@ import {
   BookOpen,
   FileText,
   LayoutGrid,
-  PenLine,
-  Users,
-  Upload,
   PanelsTopLeft,
+  PenLine,
+  Upload,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import type { ComponentType, SVGProps } from "react";
@@ -118,18 +118,7 @@ export default async function AdminPage() {
                   <Icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="font-semibold">
-                    {title}
-
-                    {advanced ? (
-                      <span className="text-xs text-red-700 dark:text-red-300 font-thin mt-2">
-                        {" "}
-                        AVANSERT
-                      </span>
-                    ) : (
-                      ""
-                    )}
-                  </p>
+                  <p className="font-semibold">{title}</p>
                   <p className="text-sm text-foreground/60 mt-1">
                     {description}
                   </p>

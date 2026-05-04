@@ -30,7 +30,7 @@ All commands run from the monorepo root unless noted otherwise.
 │   └── src/
 │       ├── app/            # App Router pages, API routes, server actions
 │       ├── components/     # React components
-│       ├── sanity/         # Sanity client, queries, mirrored schema types
+│       ├── sanity/         # Sanity client, queries, loaders (schemas live in studio/)
 │       ├── lib/            # Utilities, constants, role validation
 │       ├── hooks/          # Custom React hooks
 │       ├── types/          # TypeScript types (includes generated sanity.types.ts)
@@ -44,9 +44,9 @@ The pinned `next` version is in `nextjs-app/package.json`. For App Router behavi
 
 ## Key Architectural Patterns
 
-### Sanity Dual Schema Setup
+### Sanity schema location
 
-Schemas exist in both `studio/schemaTypes/` (authoritative) and `nextjs-app/src/sanity/schemas/` (mirrored). Changes must be synchronized manually. After any schema change, run `pnpm run typegen` to regenerate `src/types/sanity.types.ts`.
+Content schema types are defined only in `studio/schemaTypes/` and registered in `studio/sanity.config.ts`. After any schema or GROQ query change, run `pnpm run typegen` to regenerate `nextjs-app/src/types/sanity.types.ts`.
 
 ### Clerk Auth Middleware
 
