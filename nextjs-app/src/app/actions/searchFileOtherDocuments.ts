@@ -2,6 +2,7 @@
 
 import { currentUser } from "@clerk/nextjs/server";
 import { DOCUMENT_MENU_MIN_SEARCH_CHARS } from "@/lib/document-menu-file-picker";
+import { buildTitleSearchPattern } from "@/lib/groq-title-search-pattern";
 import { client } from "@/sanity/lib/client";
 import { fileOtherDocumentsSearchQuery } from "@/sanity/lib/queries";
 
@@ -12,14 +13,6 @@ type FileHit = {
   title: string | null;
   url: string | null;
 };
-
-function escapeGlobToken(term: string): string {
-  return term.replace(/\\/g, "\\\\").replace(/[*?\[\]]/g, "\\$&");
-}
-
-function buildTitleSearchPattern(trimmedLower: string): string {
-  return `*${escapeGlobToken(trimmedLower)}*`;
-}
 
 export type SearchFileOtherDocumentsResult =
   | { success: { files: FileHit[] }; status: 200 }

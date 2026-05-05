@@ -3,6 +3,7 @@
 import { searchFileOtherDocuments } from "@/app/actions/searchFileOtherDocuments";
 import CustomButton from "@/components/CustomButton";
 import { useAdminEditExit } from "@/components/admin/AdminEditPageShell";
+import { comboIncludeAllFilter } from "@/lib/admin-combo-filter";
 import {
   DOCUMENT_MENU_MIN_SEARCH_CHARS,
   DOCUMENT_MENU_SEARCH_DEBOUNCE_MS,
@@ -46,10 +47,6 @@ function withRow4<T>(prev: Row4<T>, rowIndex: number, value: T): Row4<T> {
   const next = [...prev] as Row4<T>;
   next[rowIndex] = value;
   return next;
-}
-
-function comboIncludeAllFilter(_textValue: string, _inputValue: string) {
-  return true;
 }
 
 function initialComboInputFromButtons(

@@ -1630,6 +1630,59 @@ export type FileOtherDocumentsSearchQueryResult = Array<{
 }>;
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
+// Variable: settingsAdminQuery
+// Query: *[    _type == "settings" &&    _id == "settings"  ][0] {    _id,    companyName,    addressLine1,    addressLine2,    companyDescription,    phone,    email,    organisationNumber,    metaTitle,    metaDescription,    metaKeywords,    "metaOgImageAssetId": metaOgImage.asset->_id,    "metaOgImageUrl": metaOgImage.asset->url,    menuItem1{      title,      "menuLink": menuLink->{        _id,        title,        "slug": slug.current      }    },    menuItem2{      title,      "menuLink": menuLink->{        _id,        title,        "slug": slug.current      }    }  }
+export type SettingsAdminQueryResult = {
+  _id: "settings";
+  companyName: string | null;
+  addressLine1: string | null;
+  addressLine2: string | null;
+  companyDescription: string | null;
+  phone: string | null;
+  email: string | null;
+  organisationNumber: string | null;
+  metaTitle: string | null;
+  metaDescription: string | null;
+  metaKeywords: string | null;
+  metaOgImageAssetId: string | null;
+  metaOgImageUrl: string | null;
+  menuItem1: {
+    title: string | null;
+    menuLink: {
+      _id: string;
+      title: string;
+      slug: string;
+    } | null;
+  } | null;
+  menuItem2: {
+    title: string | null;
+    menuLink: {
+      _id: string;
+      title: string;
+      slug: string;
+    } | null;
+  } | null;
+} | null;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
+// Variable: pagesBrowseQuery
+// Query: *[    _type == "page" &&    defined(title)  ] | order(title asc) [0...$END] {    _id,    title,    "slug": slug.current  }
+export type PagesBrowseQueryResult = Array<{
+  _id: string;
+  title: string;
+  slug: string;
+}>;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
+// Variable: pagesSearchQuery
+// Query: *[    _type == "page" &&    defined(title) &&    lower(title) match $SEARCH_PATTERN  ] | order(title asc) [0...$END] {    _id,    title,    "slug": slug.current  }
+export type PagesSearchQueryResult = Array<{
+  _id: string;
+  title: string;
+  slug: string;
+}>;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: allAuthorsQuery
 // Query: *[_type=="authors"] | order(firstName asc) {    _id,    firstName,    lastName  }
 export type AllAuthorsQueryResult = Array<{
@@ -1820,6 +1873,9 @@ declare module "@sanity/client" {
     '\n  *[_type=="documentMenu"][0] {\n    _id,\n    button1Text,\n    button2Text,\n    button3Text,\n    button4Text,\n    "file1": button1File->{_id, title, "url": otherDocument.asset->url},\n    "file2": button2File->{_id, title, "url": otherDocument.asset->url},\n    "file3": button3File->{_id, title, "url": otherDocument.asset->url},\n    "file4": button4File->{_id, title, "url": otherDocument.asset->url},\n  }\n': DocumentMenuAdminQueryResult;
     '\n  *[\n    _type == "fileOtherDocuments" &&\n    defined(title)\n  ] | order(title asc) [0...$END] {\n    _id,\n    title,\n    "url": otherDocument.asset->url\n  }\n': FileOtherDocumentsBrowseQueryResult;
     '\n  *[\n    _type == "fileOtherDocuments" &&\n    defined(title) &&\n    lower(title) match $SEARCH_PATTERN\n  ] | order(title asc) [0...$END] {\n    _id,\n    title,\n    "url": otherDocument.asset->url\n  }\n': FileOtherDocumentsSearchQueryResult;
+    '\n  *[\n    _type == "settings" &&\n    _id == "settings"\n  ][0] {\n    _id,\n    companyName,\n    addressLine1,\n    addressLine2,\n    companyDescription,\n    phone,\n    email,\n    organisationNumber,\n    metaTitle,\n    metaDescription,\n    metaKeywords,\n    "metaOgImageAssetId": metaOgImage.asset->_id,\n    "metaOgImageUrl": metaOgImage.asset->url,\n    menuItem1{\n      title,\n      "menuLink": menuLink->{\n        _id,\n        title,\n        "slug": slug.current\n      }\n    },\n    menuItem2{\n      title,\n      "menuLink": menuLink->{\n        _id,\n        title,\n        "slug": slug.current\n      }\n    }\n  }\n': SettingsAdminQueryResult;
+    '\n  *[\n    _type == "page" &&\n    defined(title)\n  ] | order(title asc) [0...$END] {\n    _id,\n    title,\n    "slug": slug.current\n  }\n': PagesBrowseQueryResult;
+    '\n  *[\n    _type == "page" &&\n    defined(title) &&\n    lower(title) match $SEARCH_PATTERN\n  ] | order(title asc) [0...$END] {\n    _id,\n    title,\n    "slug": slug.current\n  }\n': PagesSearchQueryResult;
     '\n  *[_type=="authors"] | order(firstName asc) {\n    _id,\n    firstName,\n    lastName\n  }\n': AllAuthorsQueryResult;
     '\n  *[_type=="blogPost"] | order(_createdAt desc) [$start...$end] {\n    _id,\n    _createdAt,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    privatePost,\n    excerpt\n  }\n': BlogPostsAdminPagedQueryResult;
     '\n  count(*[_type=="fileOtherDocuments"])\n': CountOtherDocumentsAdminQueryResult;

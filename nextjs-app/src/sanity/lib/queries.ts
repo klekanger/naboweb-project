@@ -375,6 +375,66 @@ export const fileOtherDocumentsSearchQuery = defineQuery(`
   }
 `);
 
+export const settingsAdminQuery = defineQuery(`
+  *[
+    _type == "settings" &&
+    _id == "settings"
+  ][0] {
+    _id,
+    companyName,
+    addressLine1,
+    addressLine2,
+    companyDescription,
+    phone,
+    email,
+    organisationNumber,
+    metaTitle,
+    metaDescription,
+    metaKeywords,
+    "metaOgImageAssetId": metaOgImage.asset->_id,
+    "metaOgImageUrl": metaOgImage.asset->url,
+    menuItem1{
+      title,
+      "menuLink": menuLink->{
+        _id,
+        title,
+        "slug": slug.current
+      }
+    },
+    menuItem2{
+      title,
+      "menuLink": menuLink->{
+        _id,
+        title,
+        "slug": slug.current
+      }
+    }
+  }
+`);
+
+export const pagesBrowseQuery = defineQuery(`
+  *[
+    _type == "page" &&
+    defined(title)
+  ] | order(title asc) [0...$END] {
+    _id,
+    title,
+    "slug": slug.current
+  }
+`);
+
+export const pagesSearchQuery = defineQuery(`
+  *[
+    _type == "page" &&
+    defined(title) &&
+    lower(title) match $SEARCH_PATTERN
+  ] | order(title asc) [0...$END] {
+    _id,
+    title,
+    "slug": slug.current
+  }
+`);
+
 export const allAuthorsQuery = defineQuery(`
   *[_type=="authors"] | order(firstName asc) {
     _id,

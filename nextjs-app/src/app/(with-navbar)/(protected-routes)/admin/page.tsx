@@ -1,15 +1,12 @@
-import {
-  getSanityStudioFileDocumentsUrl,
-  SANITY_STUDIO_BASE_URL,
-} from "@/lib/sanityStudioUrls";
+import { SANITY_STUDIO_BASE_URL } from "@/lib/sanityStudioUrls";
 import { currentUser } from "@clerk/nextjs/server";
 import {
   BookOpen,
+  Cog,
   FileText,
   LayoutGrid,
   PanelsTopLeft,
   PenLine,
-  Upload,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -28,6 +25,13 @@ type AdminSection = {
 };
 
 const adminSections: AdminSection[] = [
+  {
+    title: "Nettstedinnstillinger",
+    description:
+      "Oppdater kontaktinformasjon, SEO-felter og redigerbare menyvalg.",
+    href: "/admin/website-settings",
+    icon: Cog,
+  },
   {
     title: "Blogginnlegg",
     description: "Opprett, rediger og slett blogginnlegg og nyhetsartikler.",
@@ -64,21 +68,11 @@ const adminSections: AdminSection[] = [
     requiresAdmin: true,
   },
   {
-    title: "Rediger innhold",
+    title: "Åpne Sanity Studio",
     description:
-      "Åpne Sanity Studio for å redigere alt innhold på nettstedet. Krever egen innlogging.",
+      "Åpne Sanity Studio for å redigere alt innhold og alle innstillinger for nettstedet. ",
     href: SANITY_STUDIO_BASE_URL,
     icon: PanelsTopLeft,
-    requiresAdmin: true,
-    external: true,
-    advanced: true,
-  },
-  {
-    title: "Last opp filer",
-    description:
-      "Last opp dokumenter direkte i Sanity Studio. Krever egen innlogging.",
-    href: getSanityStudioFileDocumentsUrl(),
-    icon: Upload,
     requiresAdmin: true,
     external: true,
     advanced: true,
@@ -124,7 +118,7 @@ export default async function AdminPage() {
                   </p>
                   {advanced ? (
                     <p className="text-xs text-red-700 dark:text-red-300 mt-2">
-                      Ekstern lenke: krever separat innlogging i Sanity Studio.
+                      Ekstern lenke: Krever separat innlogging.
                     </p>
                   ) : null}
                 </div>
