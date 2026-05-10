@@ -199,15 +199,15 @@ export const newUserIntroQuery = defineQuery(`
   }
 `);
 
-const countPublicBlogPostsQuery = defineQuery(`
+export const countPublicBlogPostsQuery = defineQuery(`
   count(*[_type=="blogPost" && privatePost==false])
 `);
 
-const countPrivateBlogPostsQuery = defineQuery(`
+export const countPrivateBlogPostsQuery = defineQuery(`
   count(*[_type=="blogPost" && privatePost==true])
 `);
 
-const countAllBlogPostsQuery = defineQuery(`
+export const countAllBlogPostsQuery = defineQuery(`
   count(*[_type=="blogPost"])
 `);
 
@@ -325,7 +325,7 @@ export const privateBlogSlugs = defineQuery(`
   {"slug": slug.current}
 `);
 
-const messageSlugs = defineQuery(`
+export const messageSlugs = defineQuery(`
   *[_type == "message" && defined(slug.current)]
   {"slug": slug.current}
 `);
@@ -435,7 +435,7 @@ export const pagesSearchQuery = defineQuery(`
   }
 `);
 
-const allAuthorsQuery = defineQuery(`
+export const allAuthorsQuery = defineQuery(`
   *[_type=="authors"] | order(firstName asc) {
     _id,
     firstName,
@@ -473,7 +473,7 @@ export const otherDocumentsAdminPagedQuery = defineQuery(`
   }
 `);
 
-const allOtherDocumentsAdminQuery = defineQuery(`
+export const allOtherDocumentsAdminQuery = defineQuery(`
   *[_type=="fileOtherDocuments"] | order(_createdAt desc) {
     _id,
     _createdAt,
@@ -487,7 +487,7 @@ const allOtherDocumentsAdminQuery = defineQuery(`
   }
 `);
 
-const allMeetingMinutesAdminQuery = defineQuery(`
+export const allMeetingMinutesAdminQuery = defineQuery(`
   *[_type=="fileMeetingMinutes"] | order(_createdAt desc) | order(meetingDate desc) {
     _id,
     _createdAt,
