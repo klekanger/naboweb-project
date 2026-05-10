@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 type UserRoles = {
   isUser: boolean;
   isAdmin: boolean;
+  isEditor: boolean;
 };
 
 export async function getCurrentUserWithRoles() {
@@ -14,6 +15,7 @@ export async function getCurrentUserWithRoles() {
   const userRoles: UserRoles = {
     isUser: roles.includes("user"),
     isAdmin: roles.includes("admin"),
+    isEditor: roles.includes("editor"),
   };
 
   return { user, userRoles };
@@ -36,4 +38,30 @@ export function serverErrorResponse(
     { error: { message, ...(longMessage ? { longMessage } : {}) } },
     { status },
   );
+}
+
+export async function getSanityAdminEditorAuth() {
+  const user = await currentUser();
+  const roles = (user?.publicMetadata?.roles as string[]) || [];
+
+  if (!user?.id || (!roles.includes("admin") && !roles.includes("editor"))) {
+    return {
+      errorResponse: simpleErrorResponse("unauthorized", 401),
+    };
+  }
+
+  return {
+    clerkUserId: user.id,
+    isAdmin: roles.includes("admin"),
+    roles,
+    user,
+  };
+}
+
+export function simpleErrorResponse(message: string, status: number) {
+  return NextResponse.json({ error: message }, { status });
+}
+
+export function simpleSuccessResponse(data: Record<string, unknown> = {}) {
+  return NextResponse.json({ success: true, ...data });
 }

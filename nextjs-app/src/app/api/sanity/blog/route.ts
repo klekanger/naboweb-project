@@ -1,6 +1,10 @@
-import { currentUser } from "@clerk/nextjs/server";
+import {
+  getSanityAdminEditorAuth,
+  simpleErrorResponse,
+  simpleSuccessResponse,
+} from "@/app/api/_utils/routeUtils";
 import { client, clientWithWriteAccess } from "@/sanity/lib/client";
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextRequest } from "next/server";
 import { revalidateTag } from "next/cache";
 import type { PortableTextBlock } from "@portabletext/types";
 
@@ -32,24 +36,15 @@ function revalidateBlog(slug: string) {
 }
 
 export async function POST(request: NextRequest) {
-  const user = await currentUser();
-  const roles = (user?.publicMetadata?.roles as string[]) || [];
+  const auth = await getSanityAdminEditorAuth();
+  if ("errorResponse" in auth) return auth.errorResponse;
 
-  if (!roles.includes("admin") && !roles.includes("editor")) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
-
-  if (!user?.id) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
-
-  const clerkUserId = user.id;
-  const isAdmin = roles.includes("admin");
+  const { clerkUserId, isAdmin } = auth;
   const body: BlogPostBody = await request.json();
   const { title, slug, privatePost, excerpt, bodyText, featuredImageId, featuredImageCaption, featuredImageAlt } = body;
 
   if (!title || !slug || !bodyText) {
-    return NextResponse.json({ error: "title, slug and bodyText are required" }, { status: 400 });
+    return simpleErrorResponse("title, slug and bodyText are required", 400);
   }
 
   const privatePostToSet = isAdmin ? (privatePost ?? false) : false;
@@ -76,27 +71,18 @@ export async function POST(request: NextRequest) {
   try {
     const result = await clientWithWriteAccess.create(doc as Parameters<typeof clientWithWriteAccess.create>[0]);
     revalidateBlog(slug);
-    return NextResponse.json({ success: true, _id: result._id, slug });
+    return simpleSuccessResponse({ _id: result._id, slug });
   } catch (error) {
     console.error("Blog post creation failed:", error);
-    return NextResponse.json({ error: "Noe gikk galt ved lagring av blogginnlegget." }, { status: 500 });
+    return simpleErrorResponse("Noe gikk galt ved lagring av blogginnlegget.", 500);
   }
 }
 
 export async function PATCH(request: NextRequest) {
-  const user = await currentUser();
-  const roles = (user?.publicMetadata?.roles as string[]) || [];
+  const auth = await getSanityAdminEditorAuth();
+  if ("errorResponse" in auth) return auth.errorResponse;
 
-  if (!roles.includes("admin") && !roles.includes("editor")) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
-
-  if (!user?.id) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
-
-  const clerkUserId = user.id;
-  const isAdmin = roles.includes("admin");
+  const { clerkUserId, isAdmin } = auth;
   const body: BlogPostBody = await request.json();
   const {
     _id,
@@ -112,7 +98,7 @@ export async function PATCH(request: NextRequest) {
   } = body;
 
   if (!_id) {
-    return NextResponse.json({ error: "_id is required for update" }, { status: 400 });
+    return simpleErrorResponse("_id is required for update", 400);
   }
 
   let privatePostToSet: boolean;
@@ -133,16 +119,13 @@ export async function PATCH(request: NextRequest) {
     )) ?? [];
 
   if (!authorIds || authorIds.length === 0) {
-    return NextResponse.json(
-      { error: "Minst én forfatter er påkrevd" },
-      { status: 400 },
-    );
+    return simpleErrorResponse("Minst én forfatter er påkrevd", 400);
   }
 
   const uniqueAuthorIds = [...new Set(authorIds)];
   const allowedAuthorIds = new Set([...existingAuthorRefs, clerkUserId]);
   if (!uniqueAuthorIds.every((id) => allowedAuthorIds.has(id))) {
-    return NextResponse.json({ error: "Ugyldig forfattervalg" }, { status: 400 });
+    return simpleErrorResponse("Ugyldig forfattervalg", 400);
   }
 
   const patch: Record<string, unknown> = {
@@ -166,33 +149,29 @@ export async function PATCH(request: NextRequest) {
   try {
     await clientWithWriteAccess.patch(_id).set(patch).commit();
     revalidateBlog(slug ?? "");
-    return NextResponse.json({ success: true });
+    return simpleSuccessResponse();
   } catch (error) {
     console.error("Blog post update failed:", error);
-    return NextResponse.json({ error: "Noe gikk galt ved oppdatering av blogginnlegget." }, { status: 500 });
+    return simpleErrorResponse("Noe gikk galt ved oppdatering av blogginnlegget.", 500);
   }
 }
 
 export async function DELETE(request: NextRequest) {
-  const user = await currentUser();
-  const roles = (user?.publicMetadata?.roles as string[]) || [];
-
-  if (!roles.includes("admin") && !roles.includes("editor")) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
+  const auth = await getSanityAdminEditorAuth();
+  if ("errorResponse" in auth) return auth.errorResponse;
 
   const { _id, slug } = await request.json();
 
   if (!_id) {
-    return NextResponse.json({ error: "_id is required" }, { status: 400 });
+    return simpleErrorResponse("_id is required", 400);
   }
 
   try {
     await clientWithWriteAccess.delete(_id);
     revalidateBlog(slug ?? "");
-    return NextResponse.json({ success: true });
+    return simpleSuccessResponse();
   } catch (error) {
     console.error("Blog post deletion failed:", error);
-    return NextResponse.json({ error: "Noe gikk galt ved sletting av blogginnlegget." }, { status: 500 });
+    return simpleErrorResponse("Noe gikk galt ved sletting av blogginnlegget.", 500);
   }
 }

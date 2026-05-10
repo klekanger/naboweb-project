@@ -2,7 +2,7 @@ import { compareClerkAndSanityUser } from "@/lib/compareClerkAndSanityUser";
 import { formatDate } from "@/lib/format-date";
 import { MessageByIdQueryResult } from "@/types/sanity.types";
 import { useUser } from "@clerk/nextjs";
-import { Card, Form, Input, Label, Modal, TextArea } from "@heroui/react";
+import { Card, Form, Input, Label, TextArea } from "@heroui/react";
 import CustomButton from "@/components/CustomButton";
 import { MessageSquare, User } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -12,6 +12,7 @@ import {
   readMessageApiResponse,
   showMessageErrorModal,
 } from "./messageSubmitUtils";
+import { MessageActionModal } from "./MessageActionModal";
 
 interface CommentFormData {
   title: string;
@@ -408,51 +409,31 @@ export default function MessageComments({
       </Card>
 
       {isClient && (
-        <Modal.Backdrop
+        <MessageActionModal
           isOpen={modalForComments.isOpen}
           onOpenChange={modalForComments.onOpenChange}
-          variant="blur"
-        >
-          <Modal.Container>
-            <Modal.Dialog className="sm:max-w-md">
-              <Modal.CloseTrigger />
-              <Modal.Header>
-                <Modal.Heading>{modalTitle}</Modal.Heading>
-              </Modal.Header>
-              <Modal.Body>{modalBody}</Modal.Body>
-              <Modal.Footer>
-                <div className="flex justify-end gap-2 w-full">
-                  {!modalCancelDisabled && (
-                    <CustomButton
-                      variant="secondary"
-                      onPress={() => {
-                        resetModal();
-                        modalForComments.onClose();
-                      }}
-                    >
-                      {modalCancelText}
-                    </CustomButton>
-                  )}
-                  <CustomButton
-                    variant={isConfirmDelete ? "danger" : "primary"}
-                    onPress={() => {
-                      if (isConfirmDelete) {
-                        handleConfirmDelete();
-                      } else {
-                        resetModal();
-                        modalForComments.onClose();
-                      }
-                    }}
-                    isPending={isDeletingComment}
-                    isDisabled={isDeletingComment}
-                  >
-                    {modalOkText}
-                  </CustomButton>
-                </div>
-              </Modal.Footer>
-            </Modal.Dialog>
-          </Modal.Container>
-        </Modal.Backdrop>
+          title={modalTitle}
+          body={modalBody}
+          okText={modalOkText}
+          cancelText={modalCancelText}
+          isCancelDisabled={modalCancelDisabled}
+          okVariant={isConfirmDelete ? "danger" : "primary"}
+          isPending={isDeletingComment}
+          isDisabled={isDeletingComment}
+          onCancel={() => {
+            resetModal();
+            modalForComments.onClose();
+          }}
+          onConfirm={() => {
+            if (isConfirmDelete) {
+              void handleConfirmDelete();
+              return;
+            }
+
+            resetModal();
+            modalForComments.onClose();
+          }}
+        />
       )}
     </>
   );

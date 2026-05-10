@@ -28,6 +28,7 @@ import Image from "next/image";
 import { notFound, useRouter } from "next/navigation";
 import { useContext, useMemo, useState } from "react";
 import type { Image as SanityImage } from "sanity";
+import { MessageActionModal } from "./MessageActionModal";
 import MessageComments from "./MessageComments";
 import {
   getMessageValidationError,
@@ -472,60 +473,33 @@ export default function MessagePage(props: MessagePageProps) {
         messageId={_id ?? ""}
       />
 
-      {/*
-        Modal for errors and messages
-      */}
-      <Modal.Backdrop
+      <MessageActionModal
         isOpen={modalForMessages.isOpen}
         onOpenChange={modalForMessages.onOpenChange}
-        variant="blur"
-      >
-        <Modal.Container>
-          <Modal.Dialog className="sm:max-w-md">
-            <Modal.CloseTrigger />
-            <Modal.Header>
-              <Modal.Heading>{modalTitle}</Modal.Heading>
-            </Modal.Header>
-            <Modal.Body>{modalBody}</Modal.Body>
-            <Modal.Footer>
-              <div className="flex justify-end gap-2 w-full">
-                {!modalCancelDisabled && (
-                  <CustomButton
-                    variant="secondary"
-                    onPress={() => {
-                      resetModal();
-                      modalForMessages.onClose();
-                    }}
-                  >
-                    {modalCancelText}
-                  </CustomButton>
-                )}
-                <CustomButton
-                  variant={
-                    modalTitle === "Bekreft sletting" ? "danger" : "primary"
-                  }
-                  isPending={
-                    modalTitle === "Bekreft sletting" && isDeletingMessage
-                  }
-                  onPress={() => {
-                    if (modalTitle === "Bekreft sletting") {
-                      void deleteMessageAfterConfirmation();
-                    } else {
-                      resetModal();
-                      modalForMessages.onClose();
-                      // Refresh before navigating to ensure messageboard is up to date
-                      router.refresh();
-                      router.push(modalOkUrl);
-                    }
-                  }}
-                >
-                  {modalOkText}
-                </CustomButton>
-              </div>
-            </Modal.Footer>
-          </Modal.Dialog>
-        </Modal.Container>
-      </Modal.Backdrop>
+        title={modalTitle}
+        body={modalBody}
+        okText={modalOkText}
+        cancelText={modalCancelText}
+        isCancelDisabled={modalCancelDisabled}
+        okVariant={modalTitle === "Bekreft sletting" ? "danger" : "primary"}
+        isPending={modalTitle === "Bekreft sletting" && isDeletingMessage}
+        onCancel={() => {
+          resetModal();
+          modalForMessages.onClose();
+        }}
+        onConfirm={() => {
+          if (modalTitle === "Bekreft sletting") {
+            void deleteMessageAfterConfirmation();
+            return;
+          }
+
+          resetModal();
+          modalForMessages.onClose();
+          // Refresh before navigating to ensure messageboard is up to date
+          router.refresh();
+          router.push(modalOkUrl);
+        }}
+      />
 
       <Modal.Backdrop
         isOpen={showAbortEditConfirm}

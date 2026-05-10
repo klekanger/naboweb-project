@@ -76,6 +76,7 @@ async function fetchUsers(page: number = 1, searchQuery?: string) {
   }
 }
 
+// fallow-ignore-next-line unused-export
 export async function UserAdminContent({
   searchParams,
 }: {

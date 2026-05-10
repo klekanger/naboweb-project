@@ -10,7 +10,7 @@ type MessageContextMessage = Omit<MessageType, "messageImage"> & {
   messageImage: SanityImageAsset | null;
 };
 
-export function getMessagePortableTextPlainText(
+function getMessagePortableTextPlainText(
   bodyText: PortableTextBlock[] | undefined | null,
 ) {
   if (!Array.isArray(bodyText) || bodyText.length === 0) {

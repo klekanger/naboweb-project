@@ -26,8 +26,7 @@
     "react-dom": "19.2.5",
     "react-player": "^3.4.0",
     "react-tweet": "^3.2.1",
-    "sanity": "^5.23.0",
-    "styled-components": "^6.4.0"
+    "sanity": "^5.23.0"
   },
   "devDependencies": {
     "@sanity/eslint-config-studio": "^6.0.0",
