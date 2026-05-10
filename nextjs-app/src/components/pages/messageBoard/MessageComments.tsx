@@ -8,6 +8,10 @@ import { MessageSquare, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useModalState } from "@/hooks/useModalState";
+import {
+  readMessageApiResponse,
+  showMessageErrorModal,
+} from "./messageSubmitUtils";
 
 interface CommentFormData {
   title: string;
@@ -79,9 +83,9 @@ export default function MessageComments({
         }),
       });
 
-      const data = await response.json();
+      const data = await readMessageApiResponse(response);
 
-      if ("success" in data) {
+      if (data && typeof data === "object" && "success" in data) {
         setModalTitle("Kommentaren ble lagt til");
         setModalBody("");
         setModalOkText("Ok");
@@ -90,15 +94,13 @@ export default function MessageComments({
 
         await revalidateMessageboard();
       }
-
-      if ("error" in data) {
-        throw new Error(data.error?.message ?? "Noe gikk galt");
-      }
     } catch (error: any) {
-      console.error(error);
-      setModalTitle("Det oppsto en feil");
-      setModalBody(`${error?.message ?? "Ukjent feil"}`);
-      modalForComments.onOpen();
+      showMessageErrorModal({
+        error,
+        setModalTitle,
+        setModalBody,
+        openModal: modalForComments.onOpen,
+      });
     } finally {
       setIsSubmitting(false);
       setIsCreatingComment(false);
@@ -132,9 +134,9 @@ export default function MessageComments({
         }),
       });
 
-      const data = await response.json();
+      const data = await readMessageApiResponse(response);
 
-      if ("success" in data) {
+      if (data && typeof data === "object" && "success" in data) {
         setModalTitle("Kommentaren ble oppdatert");
         setModalBody("Siden vil bli oppdatert.");
         setModalCancelDisabled(true);
@@ -142,15 +144,13 @@ export default function MessageComments({
 
         await revalidateMessageboard();
       }
-
-      if ("error" in data) {
-        throw new Error(data.error?.message ?? "Noe gikk galt");
-      }
     } catch (error: any) {
-      console.error(error);
-      setModalTitle("Det oppsto en feil");
-      setModalBody(`${error?.message ?? "Ukjent feil"}`);
-      modalForComments.onOpen();
+      showMessageErrorModal({
+        error,
+        setModalTitle,
+        setModalBody,
+        openModal: modalForComments.onOpen,
+      });
     } finally {
       setIsSubmitting(false);
       setEditingCommentKey("");
@@ -184,9 +184,9 @@ export default function MessageComments({
         }),
       });
 
-      const data = await response.json();
+      const data = await readMessageApiResponse(response);
 
-      if ("success" in data) {
+      if (data && typeof data === "object" && "success" in data) {
         setModalTitle("Kommentaren ble slettet");
         setModalBody("");
         setModalOkText("Ok");
@@ -195,14 +195,13 @@ export default function MessageComments({
 
         await revalidateMessageboard();
       }
-
-      if ("error" in data) {
-        throw new Error(data.error?.message ?? "Noe gikk galt");
-      }
     } catch (error: any) {
-      console.error(error);
-      setModalTitle("Det oppsto en feil");
-      setModalBody(`${error?.message ?? "Ukjent feil"}`);
+      showMessageErrorModal({
+        error,
+        setModalTitle,
+        setModalBody,
+        openModal: () => {},
+      });
       setIsConfirmDelete(false);
     } finally {
       setDeletingCommentKey("");

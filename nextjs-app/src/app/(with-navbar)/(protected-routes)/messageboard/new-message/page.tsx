@@ -9,6 +9,8 @@ import { useModalState } from "@/hooks/useModalState";
 import { currentUserRoles } from "@/lib/currentUserRoles";
 import {
   getMessageValidationError,
+  readMessageApiResponse,
+  showMessageErrorModal,
   uploadMessageImage,
 } from "@/components/pages/messageBoard/messageSubmitUtils";
 import { useUser } from "@clerk/nextjs";
@@ -147,9 +149,9 @@ export default function NewMessage() {
         }),
       });
 
-      const data = await response.json();
+      const data = await readMessageApiResponse(response);
 
-      if ("success" in data) {
+      if (data && typeof data === "object" && "success" in data) {
         resetMessageEditorContext();
         setModalTitle("Innlegget ble opprettet");
         setModalBody("Du blir nå tatt tilbake til oppslagstavlen.");
@@ -161,14 +163,13 @@ export default function NewMessage() {
         router.refresh();
       }
 
-      if ("error" in data) {
-        throw new Error(data.error?.message ?? "Noe gikk galt");
-      }
     } catch (error: any) {
-      console.error(error);
-      setModalTitle("Det oppsto en feil");
-      setModalBody(`${error?.message ?? "Ukjent feil"}`);
-      modalForMessages.onOpen();
+      showMessageErrorModal({
+        error,
+        setModalTitle,
+        setModalBody,
+        openModal: modalForMessages.onOpen,
+      });
       return;
     } finally {
       setIsSubmittingMessage(false);

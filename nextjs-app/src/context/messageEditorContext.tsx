@@ -4,7 +4,7 @@ import type { MessageType } from "@/types/types";
 import { type SanityImageAsset } from "@/types/sanity.types";
 import type { PortableTextBlock } from "@portabletext/types";
 import { usePathname } from "next/navigation";
-import { createContext, useLayoutEffect, useRef, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 
 type MessageContextMessage = Omit<MessageType, "messageImage"> & {
   messageImage: SanityImageAsset | null;
@@ -87,15 +87,20 @@ export default function MessageEditorProvider({
   const prevPathnameRef = useRef<string | null>(null);
   const [newMessageEditorMountKey, setNewMessageEditorMountKey] = useState(1);
 
-  useLayoutEffect(() => {
-    const prev = prevPathnameRef.current;
+  useEffect(() => {
+    const previousPathname = prevPathnameRef.current;
     prevPathnameRef.current = pathname;
+
     if (
       pathname === NEW_MESSAGE_PATH &&
-      prev !== null &&
-      prev !== NEW_MESSAGE_PATH
+      previousPathname !== null &&
+      previousPathname !== NEW_MESSAGE_PATH
     ) {
-      setNewMessageEditorMountKey((k) => k + 1);
+      const timeoutId = window.setTimeout(() => {
+        setNewMessageEditorMountKey((key) => key + 1);
+      }, 0);
+
+      return () => window.clearTimeout(timeoutId);
     }
   }, [pathname]);
 

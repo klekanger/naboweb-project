@@ -31,6 +31,8 @@ import type { Image as SanityImage } from "sanity";
 import MessageComments from "./MessageComments";
 import {
   getMessageValidationError,
+  readMessageApiResponse,
+  showMessageErrorModal,
   uploadMessageImage,
 } from "./messageSubmitUtils";
 
@@ -188,9 +190,9 @@ export default function MessagePage(props: MessagePageProps) {
         }),
       });
 
-      const data = await response.json();
+      const data = await readMessageApiResponse(response);
 
-      if ("success" in data) {
+      if (data && typeof data === "object" && "success" in data) {
         setModalTitle("Innlegget ble oppdatert");
         setModalBody("Du blir nå tatt tilbake til oppslagstavlen.");
         setModalOkUrl(`/messageboard`);
@@ -215,15 +217,14 @@ export default function MessagePage(props: MessagePageProps) {
         modalForMessages.onOpen();
       }
 
-      if ("error" in data) {
-        throw new Error(data.error?.message ?? "Noe gikk galt");
-      }
     } catch (error: any) {
-      console.error(error);
-      setModalTitle("Det oppsto en feil");
-      setModalBody(`${error?.message ?? "Ukjent feil"}`);
+      showMessageErrorModal({
+        error,
+        setModalTitle,
+        setModalBody,
+        openModal: modalForMessages.onOpen,
+      });
       setModalOkUrl("");
-      modalForMessages.onOpen();
       return;
     } finally {
       setIsSubmittingMessage(false);
@@ -260,9 +261,9 @@ export default function MessagePage(props: MessagePageProps) {
         }),
       });
 
-      const data = await response.json();
+      const data = await readMessageApiResponse(response);
 
-      if ("success" in data) {
+      if (data && typeof data === "object" && "success" in data) {
         // Navigate immediately to avoid 404 (message no longer exists)
         // Close any open modals first
         modalForMessages.onClose();
@@ -270,13 +271,12 @@ export default function MessagePage(props: MessagePageProps) {
         router.push("/messageboard");
       }
 
-      if ("error" in data) {
-        throw new Error(data.error?.message ?? "Noe gikk galt");
-      }
     } catch (error: any) {
       console.error("Error deleting message:", error);
       setModalTitle("Feil ved sletting");
-      setModalBody(error?.message ?? "Kunne ikke slette innlegget");
+      setModalBody(
+        error instanceof Error ? error.message : "Kunne ikke slette innlegget",
+      );
       setModalOkText("OK");
       setModalCancelDisabled(true);
       modalForMessages.onOpen();

@@ -49,3 +49,36 @@ export async function uploadMessageImage(
 
   return null;
 }
+
+export async function readMessageApiResponse(response: Response) {
+  const data: unknown = await response.json();
+
+  if (data && typeof data === "object" && "error" in data) {
+    const error = (data as { error?: { message?: string } }).error;
+    throw new Error(error?.message ?? "Noe gikk galt");
+  }
+
+  return data;
+}
+
+export function showMessageErrorModal({
+  error,
+  setModalTitle,
+  setModalBody,
+  openModal,
+  title = "Det oppsto en feil",
+  fallbackMessage = "Ukjent feil",
+}: {
+  error: unknown;
+  setModalTitle: (title: string) => void;
+  setModalBody: (body: string) => void;
+  openModal: () => void;
+  title?: string;
+  fallbackMessage?: string;
+}) {
+  const message = error instanceof Error ? error.message : fallbackMessage;
+  console.error(error);
+  setModalTitle(title);
+  setModalBody(message);
+  openModal();
+}
