@@ -83,7 +83,7 @@ All queries live in `src/sanity/lib/queries.ts`. Use `defineQuery` from `groq` o
 
 ### Email Alerts + Cron
 
-`/api/send-email-alerts` detects `vercel-cron` user-agent for auth bypass. Sends batch emails via AWS SES (nodemailer). Upstash Redis tracks last run time and is also kept alive by `/api/ping-upstash` to prevent free-tier deletion.
+`/api/send-email-alerts` requires `Authorization: Bearer ${CRON_SECRET}` (Vercel cron) or `Bearer ${EMAIL_SECRET_TOKEN}` (manual). Sends batch emails via AWS SES (nodemailer). Upstash Redis tracks last run time and is also kept alive by `/api/ping-upstash` to prevent free-tier deletion.
 
 ### Testing
 
