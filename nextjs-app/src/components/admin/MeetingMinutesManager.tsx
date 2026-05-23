@@ -380,7 +380,7 @@ export default function MeetingMinutesManager({
           onChange={(v) => setForm((f) => ({ ...f, meetingPlace: v }))}
         >
           <Label>Møtested</Label>
-          <Input type="text" placeholder="F.eks. Beboerhuset" />
+          <Input type="text" placeholder="F.eks. Askimhallen" />
         </TextField>
       </div>
 
@@ -416,10 +416,7 @@ export default function MeetingMinutesManager({
         {form.uploadedFiles.length > 0 && (
           <ul className="space-y-1 mt-2">
             {form.uploadedFiles.map((f) => (
-              <li
-                key={f.assetId}
-                className="flex items-center gap-2 text-sm"
-              >
+              <li key={f.assetId} className="flex items-center gap-2 text-sm">
                 <CheckCircle className="h-3 w-3 text-green-600 shrink-0" />
                 <span className="flex-1 truncate">{f.fileName}</span>
                 <button
@@ -548,7 +545,9 @@ export default function MeetingMinutesManager({
                           ← Forrige side
                         </span>
                       ) : (
-                        <Link href={adminMeetingMinutesPageHref(pageNumber - 1)}>
+                        <Link
+                          href={adminMeetingMinutesPageHref(pageNumber - 1)}
+                        >
                           ← Forrige side
                         </Link>
                       )}
@@ -564,7 +563,9 @@ export default function MeetingMinutesManager({
                           Neste side →
                         </span>
                       ) : (
-                        <Link href={adminMeetingMinutesPageHref(pageNumber + 1)}>
+                        <Link
+                          href={adminMeetingMinutesPageHref(pageNumber + 1)}
+                        >
                           Neste side →
                         </Link>
                       )}
@@ -597,7 +598,10 @@ export default function MeetingMinutesManager({
               <Modal.Heading>Ikke lagrede endringer</Modal.Heading>
             </Modal.Header>
             <Modal.Body>
-              <p>Du har endringer som ikke er lagret. Vil du avslutte redigeringen?</p>
+              <p>
+                Du har endringer som ikke er lagret. Vil du avslutte
+                redigeringen?
+              </p>
             </Modal.Body>
             <Modal.Footer className="flex flex-wrap justify-end gap-2">
               <CustomButton
