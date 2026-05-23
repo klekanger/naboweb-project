@@ -130,6 +130,7 @@ export default function MeetingMinutesManager({
   }, [initialMinutes]);
 
   useEffect(() => {
+    if (isDirty) return;
     if (pageNumber >= totalPages) return;
 
     const connection = (navigator as NavigatorWithConnection).connection;
@@ -141,7 +142,7 @@ export default function MeetingMinutesManager({
     }, 250);
 
     return () => window.clearTimeout(timeoutId);
-  }, [pageNumber, router, totalPages]);
+  }, [isDirty, pageNumber, router, totalPages]);
 
   const handleFileUpload = async (files: FileList) => {
     setIsUploading(true);
@@ -539,16 +540,34 @@ export default function MeetingMinutesManager({
                 <ul className="flex justify-between">
                   {pageNumber > 1 && (
                     <li className="mr-2 rounded-xl bg-brand-primary px-8 py-2 shadow-md">
-                      <Link href={adminMeetingMinutesPageHref(pageNumber - 1)}>
-                        ← Forrige side
-                      </Link>
+                      {isDirty ? (
+                        <span
+                          aria-disabled="true"
+                          className="opacity-50 cursor-not-allowed pointer-events-none"
+                        >
+                          ← Forrige side
+                        </span>
+                      ) : (
+                        <Link href={adminMeetingMinutesPageHref(pageNumber - 1)}>
+                          ← Forrige side
+                        </Link>
+                      )}
                     </li>
                   )}
                   {pageNumber < totalPages && (
                     <li className="ml-2 rounded-xl bg-brand-primary px-8 py-2 shadow-md">
-                      <Link href={adminMeetingMinutesPageHref(pageNumber + 1)}>
-                        Neste side →
-                      </Link>
+                      {isDirty ? (
+                        <span
+                          aria-disabled="true"
+                          className="opacity-50 cursor-not-allowed pointer-events-none"
+                        >
+                          Neste side →
+                        </span>
+                      ) : (
+                        <Link href={adminMeetingMinutesPageHref(pageNumber + 1)}>
+                          Neste side →
+                        </Link>
+                      )}
                     </li>
                   )}
                 </ul>
