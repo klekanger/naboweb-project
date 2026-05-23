@@ -21,7 +21,7 @@ export function urlForOpenGraphImage(image: Image | undefined) {
   return urlForImage(image)?.width(1200).height(627).fit("crop").url();
 }
 
-export function resolveHref(
+function resolveHref(
   documentType?: string,
   slug?: string,
 ): string | undefined {
@@ -38,7 +38,7 @@ export function resolveHref(
   }
 }
 
-export function toPreviewText(blocks: { _type: string; children: any[] }[]) {
+function toPreviewText(blocks: { _type: string; children: any[] }[]) {
   return (
     blocks
       // loop through each block

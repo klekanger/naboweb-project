@@ -11,7 +11,8 @@
     ]
   },
   "ignorePatterns": [
-    "nextjs-app/src/app/actions/**"
+    "nextjs-app/src/app/actions/**",
+    "nextjs-app/src/types/sanity.types.ts"
   ],
   "boundaries": {
     "preset": "layered"

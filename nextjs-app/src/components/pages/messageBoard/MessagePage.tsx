@@ -28,9 +28,12 @@ import Image from "next/image";
 import { notFound, useRouter } from "next/navigation";
 import { useContext, useMemo, useState } from "react";
 import type { Image as SanityImage } from "sanity";
+import { MessageActionModal } from "./MessageActionModal";
 import MessageComments from "./MessageComments";
 import {
   getMessageValidationError,
+  readMessageApiResponse,
+  showMessageErrorModal,
   uploadMessageImage,
 } from "./messageSubmitUtils";
 
@@ -188,9 +191,9 @@ export default function MessagePage(props: MessagePageProps) {
         }),
       });
 
-      const data = await response.json();
+      const data = await readMessageApiResponse(response);
 
-      if ("success" in data) {
+      if (data && typeof data === "object" && "success" in data) {
         setModalTitle("Innlegget ble oppdatert");
         setModalBody("Du blir nå tatt tilbake til oppslagstavlen.");
         setModalOkUrl(`/messageboard`);
@@ -215,15 +218,14 @@ export default function MessagePage(props: MessagePageProps) {
         modalForMessages.onOpen();
       }
 
-      if ("error" in data) {
-        throw new Error(data.error?.message ?? "Noe gikk galt");
-      }
     } catch (error: any) {
-      console.error(error);
-      setModalTitle("Det oppsto en feil");
-      setModalBody(`${error?.message ?? "Ukjent feil"}`);
+      showMessageErrorModal({
+        error,
+        setModalTitle,
+        setModalBody,
+        openModal: modalForMessages.onOpen,
+      });
       setModalOkUrl("");
-      modalForMessages.onOpen();
       return;
     } finally {
       setIsSubmittingMessage(false);
@@ -260,9 +262,9 @@ export default function MessagePage(props: MessagePageProps) {
         }),
       });
 
-      const data = await response.json();
+      const data = await readMessageApiResponse(response);
 
-      if ("success" in data) {
+      if (data && typeof data === "object" && "success" in data) {
         // Navigate immediately to avoid 404 (message no longer exists)
         // Close any open modals first
         modalForMessages.onClose();
@@ -270,13 +272,12 @@ export default function MessagePage(props: MessagePageProps) {
         router.push("/messageboard");
       }
 
-      if ("error" in data) {
-        throw new Error(data.error?.message ?? "Noe gikk galt");
-      }
     } catch (error: any) {
       console.error("Error deleting message:", error);
       setModalTitle("Feil ved sletting");
-      setModalBody(error?.message ?? "Kunne ikke slette innlegget");
+      setModalBody(
+        error instanceof Error ? error.message : "Kunne ikke slette innlegget",
+      );
       setModalOkText("OK");
       setModalCancelDisabled(true);
       modalForMessages.onOpen();
@@ -472,60 +473,33 @@ export default function MessagePage(props: MessagePageProps) {
         messageId={_id ?? ""}
       />
 
-      {/*
-        Modal for errors and messages
-      */}
-      <Modal.Backdrop
+      <MessageActionModal
         isOpen={modalForMessages.isOpen}
         onOpenChange={modalForMessages.onOpenChange}
-        variant="blur"
-      >
-        <Modal.Container>
-          <Modal.Dialog className="sm:max-w-md">
-            <Modal.CloseTrigger />
-            <Modal.Header>
-              <Modal.Heading>{modalTitle}</Modal.Heading>
-            </Modal.Header>
-            <Modal.Body>{modalBody}</Modal.Body>
-            <Modal.Footer>
-              <div className="flex justify-end gap-2 w-full">
-                {!modalCancelDisabled && (
-                  <CustomButton
-                    variant="secondary"
-                    onPress={() => {
-                      resetModal();
-                      modalForMessages.onClose();
-                    }}
-                  >
-                    {modalCancelText}
-                  </CustomButton>
-                )}
-                <CustomButton
-                  variant={
-                    modalTitle === "Bekreft sletting" ? "danger" : "primary"
-                  }
-                  isPending={
-                    modalTitle === "Bekreft sletting" && isDeletingMessage
-                  }
-                  onPress={() => {
-                    if (modalTitle === "Bekreft sletting") {
-                      void deleteMessageAfterConfirmation();
-                    } else {
-                      resetModal();
-                      modalForMessages.onClose();
-                      // Refresh before navigating to ensure messageboard is up to date
-                      router.refresh();
-                      router.push(modalOkUrl);
-                    }
-                  }}
-                >
-                  {modalOkText}
-                </CustomButton>
-              </div>
-            </Modal.Footer>
-          </Modal.Dialog>
-        </Modal.Container>
-      </Modal.Backdrop>
+        title={modalTitle}
+        body={modalBody}
+        okText={modalOkText}
+        cancelText={modalCancelText}
+        isCancelDisabled={modalCancelDisabled}
+        okVariant={modalTitle === "Bekreft sletting" ? "danger" : "primary"}
+        isPending={modalTitle === "Bekreft sletting" && isDeletingMessage}
+        onCancel={() => {
+          resetModal();
+          modalForMessages.onClose();
+        }}
+        onConfirm={() => {
+          if (modalTitle === "Bekreft sletting") {
+            void deleteMessageAfterConfirmation();
+            return;
+          }
+
+          resetModal();
+          modalForMessages.onClose();
+          // Refresh before navigating to ensure messageboard is up to date
+          router.refresh();
+          router.push(modalOkUrl);
+        }}
+      />
 
       <Modal.Backdrop
         isOpen={showAbortEditConfirm}

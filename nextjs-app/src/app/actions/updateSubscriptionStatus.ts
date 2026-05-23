@@ -1,7 +1,5 @@
 "use server";
 
-import { clientWithWriteAccess } from "@/sanity/lib/client";
-import { userSubscriptionStatusQuery } from "@/sanity/lib/queries";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 
 type UpdateSubscriptionParams = {
@@ -28,13 +26,22 @@ export async function updateSubscriptionStatus({
   isSubscribed,
 }: UpdateSubscriptionParams): Promise<UpdateSubscriptionResponse> {
   const user = await currentUser();
-  const userRoles = (user?.publicMetadata as { roles: string[] }) ?? [];
+  const userRoles = (user?.publicMetadata as { roles?: string[] }) ?? {};
+  const roles = userRoles.roles ?? [];
 
-  if (!user || !userRoles.roles.includes("user")) {
+  if (!user || !roles.includes("user")) {
     console.error("Authorization failed:", { user, userRoles });
     return {
       error: { message: "Unauthorized" },
       status: 401,
+    };
+  }
+
+  const isAdmin = roles.includes("admin");
+  if (!isAdmin && userId !== user.id) {
+    return {
+      error: { message: "Unauthorized" },
+      status: 403,
     };
   }
 

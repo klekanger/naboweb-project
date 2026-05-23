@@ -21,12 +21,12 @@
     "@sanity/icons": "^3.7.4",
     "@sanity/locale-nb-no": "^1.1.33",
     "@sanity/ui": "^3.1.14",
-    "@sanity/vision": "^5.23.0",
+    "@sanity/vision": "^5.26.0",
     "react": "19.2.5",
     "react-dom": "19.2.5",
     "react-player": "^3.4.0",
     "react-tweet": "^3.2.1",
-    "sanity": "^5.23.0",
+    "sanity": "^5.26.0",
     "styled-components": "^6.4.0"
   },
   "devDependencies": {

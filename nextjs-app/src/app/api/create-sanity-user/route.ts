@@ -1,3 +1,4 @@
+import { getClerkPrimaryEmail } from "@/lib/clerk-primary-email";
 import { client, clientWithWriteAccess } from "@/sanity/lib/client";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { type NextRequest, NextResponse } from "next/server";
@@ -24,10 +25,10 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect(new URL("/", requestUrl));
     }
 
-    const { id, firstName, lastName, emailAddresses } = user;
+    const { id, firstName, lastName } = user;
+    const email = getClerkPrimaryEmail(user);
 
-    // Validate email exists
-    if (!emailAddresses || emailAddresses.length === 0) {
+    if (!email) {
       console.error("User has no email addresses");
       return NextResponse.redirect(new URL("/", requestUrl));
     }
@@ -38,15 +39,23 @@ export async function GET(req: NextRequest) {
       { id },
     );
 
-    // If the user doesn't exist in Sanity, create it
     if (!existingUser) {
       await clientWithWriteAccess.createIfNotExists({
         _type: "authors",
         _id: id,
         firstName: firstName || "",
         lastName: lastName || "",
-        email: emailAddresses[0].emailAddress,
+        email,
       });
+    } else {
+      await clientWithWriteAccess
+        .patch(id)
+        .set({
+          firstName: firstName || "",
+          lastName: lastName || "",
+          email,
+        })
+        .commit();
     }
 
     const url = req.url?.split("/api/create-sanity-user")[0] || "/";

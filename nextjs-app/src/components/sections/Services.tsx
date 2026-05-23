@@ -11,7 +11,7 @@ import {
 } from "@/components/icons";
 import { type FrontpageServicesQueryResult } from "@/types/sanity.types";
 import type { IconProps } from "@/types/types";
-import { Card, Tooltip } from "@heroui/react";
+import { Button, Card, Tooltip } from "@heroui/react";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { type FunctionComponent, useCallback } from "react";
@@ -29,6 +29,23 @@ type ServicesCardProps = {
   url?: string;
   onNavigate: (url: string | undefined) => void;
 };
+
+function LockedServiceHint() {
+  return (
+    <Tooltip delay={1000}>
+      <Button
+        isIconOnly
+        variant="ghost"
+        aria-label="Krever innlogging"
+        className="min-w-0 h-auto w-auto p-0 pl-[0.5em] text-base bg-transparent"
+        onClick={(e) => e.stopPropagation()}
+      >
+        🔐
+      </Button>
+      <Tooltip.Content>Krever innlogging</Tooltip.Content>
+    </Tooltip>
+  );
+}
 
 function ServicesCard({
   title,
@@ -53,7 +70,6 @@ function ServicesCard({
     <Card
       onClick={() => onNavigate(url)}
       className="w-full p-4 hover:-translate-y-2 h-full cursor-pointer transition-transform shadow-lg border border-gray-200"
-      role="button"
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -66,41 +82,17 @@ function ServicesCard({
         <div className="flex items-center shrink-0">
           {RenderedIcon && <RenderedIcon width={3} height={3} />}
 
-          <h2 className="text-xl font-semibold md:hidden pl-4">
+          <h2 className="text-xl font-semibold pl-4 md:pl-0 md:pt-4">
             <span className="inline-flex items-center">
               {title.toUpperCase()}
-              {locked && (
-                <span className="inline-flex items-center">
-                  <Tooltip delay={1000}>
-                    <Tooltip.Trigger>
-                      <span className="pl-[0.5em] inline-block">🔐</span>
-                    </Tooltip.Trigger>
-                    <Tooltip.Content>Krever innlogging</Tooltip.Content>
-                  </Tooltip>
-                </span>
-              )}
+              {locked ? <LockedServiceHint /> : null}
             </span>
           </h2>
         </div>
 
-        <div className="py-2 md:py-4 prose">
-          <h2 className="hidden md:block text-xl font-semibold">
-            <span className="inline-flex items-center">
-              {title.toUpperCase()}{" "}
-              {locked && (
-                <span className="inline-flex items-center">
-                  <Tooltip delay={1000}>
-                    <Tooltip.Trigger>
-                      <span className="pl-[0.5em] inline-block">🔐</span>
-                    </Tooltip.Trigger>
-                    <Tooltip.Content>Krever innlogging</Tooltip.Content>
-                  </Tooltip>
-                </span>
-              )}
-            </span>
-          </h2>
+        <div className="py-2 md:py-4 prose w-full">
+          <p>{description}</p>
         </div>
-        <p>{description}</p>
       </div>
     </Card>
   );

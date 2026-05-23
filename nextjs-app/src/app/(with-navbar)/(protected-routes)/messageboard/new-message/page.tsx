@@ -1,6 +1,7 @@
 "use client";
 
 import CustomButton from "@/components/CustomButton";
+import { MessageActionModal } from "@/components/pages/messageBoard/MessageActionModal";
 import MessageEditor from "@/components/pages/messageBoard/MessageEditor";
 import {
   MessageEditorContext,
@@ -9,10 +10,12 @@ import { useModalState } from "@/hooks/useModalState";
 import { currentUserRoles } from "@/lib/currentUserRoles";
 import {
   getMessageValidationError,
+  readMessageApiResponse,
+  showMessageErrorModal,
   uploadMessageImage,
 } from "@/components/pages/messageBoard/messageSubmitUtils";
 import { useUser } from "@clerk/nextjs";
-import { Card, Checkbox, Label, Modal, Spinner } from "@heroui/react";
+import { Card, Checkbox, Label, Spinner } from "@heroui/react";
 import { PortableTextBlock } from "@portabletext/types";
 import { MessagesSquare, UploadIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -147,9 +150,9 @@ export default function NewMessage() {
         }),
       });
 
-      const data = await response.json();
+      const data = await readMessageApiResponse(response);
 
-      if ("success" in data) {
+      if (data && typeof data === "object" && "success" in data) {
         resetMessageEditorContext();
         setModalTitle("Innlegget ble opprettet");
         setModalBody("Du blir nå tatt tilbake til oppslagstavlen.");
@@ -161,14 +164,13 @@ export default function NewMessage() {
         router.refresh();
       }
 
-      if ("error" in data) {
-        throw new Error(data.error?.message ?? "Noe gikk galt");
-      }
     } catch (error: any) {
-      console.error(error);
-      setModalTitle("Det oppsto en feil");
-      setModalBody(`${error?.message ?? "Ukjent feil"}`);
-      modalForMessages.onOpen();
+      showMessageErrorModal({
+        error,
+        setModalTitle,
+        setModalBody,
+        openModal: modalForMessages.onOpen,
+      });
       return;
     } finally {
       setIsSubmittingMessage(false);
@@ -246,49 +248,24 @@ export default function NewMessage() {
         </Card.Footer>
       </Card>
 
-      {/*
-        Modal for errors and messages
-      */}
-      <Modal.Backdrop
+      <MessageActionModal
         isOpen={modalForMessages.isOpen}
         onOpenChange={modalForMessages.onOpenChange}
-        variant="blur"
-      >
-        <Modal.Container>
-          <Modal.Dialog className="sm:max-w-md">
-            <Modal.CloseTrigger />
-            <Modal.Header>
-              <Modal.Heading>{modalTitle}</Modal.Heading>
-            </Modal.Header>
-            <Modal.Body>{modalBody}</Modal.Body>
-            <Modal.Footer>
-              <div className="flex justify-end gap-2 w-full">
-                {!modalCancelDisabled && (
-                  <CustomButton
-                    variant="secondary"
-                    onPress={() => {
-                      resetModal();
-                      modalForMessages.onClose();
-                    }}
-                  >
-                    {modalCancelText}
-                  </CustomButton>
-                )}
-                <CustomButton
-                  variant="primary"
-                  onPress={() => {
-                    resetModal();
-                    modalForMessages.onClose();
-                    router.push(modalOkUrl);
-                  }}
-                >
-                  {modalOkText}
-                </CustomButton>
-              </div>
-            </Modal.Footer>
-          </Modal.Dialog>
-        </Modal.Container>
-      </Modal.Backdrop>
+        title={modalTitle}
+        body={modalBody}
+        okText={modalOkText}
+        cancelText={modalCancelText}
+        isCancelDisabled={modalCancelDisabled}
+        onCancel={() => {
+          resetModal();
+          modalForMessages.onClose();
+        }}
+        onConfirm={() => {
+          resetModal();
+          modalForMessages.onClose();
+          router.push(modalOkUrl);
+        }}
+      />
     </>
   );
 }

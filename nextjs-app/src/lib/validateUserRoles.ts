@@ -4,7 +4,6 @@ import { currentUser } from "@clerk/nextjs/server";
 export enum validRoles {
   USER = "user",
   ADMIN = "admin",
-  EDITOR = "editor",
 }
 
 /**

@@ -1,6 +1,10 @@
-import { currentUser } from "@clerk/nextjs/server";
+import {
+  getSanityAdminEditorAuth,
+  simpleErrorResponse,
+  simpleSuccessResponse,
+} from "@/app/api/_utils/routeUtils";
 import { clientWithWriteAccess } from "@/sanity/lib/client";
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextRequest } from "next/server";
 import { revalidateTag } from "next/cache";
 
 function revalidateDocs() {
@@ -8,17 +12,13 @@ function revalidateDocs() {
 }
 
 export async function POST(request: NextRequest) {
-  const user = await currentUser();
-  const roles = (user?.publicMetadata?.roles as string[]) || [];
-
-  if (!roles.includes("admin") && !roles.includes("editor")) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
+  const auth = await getSanityAdminEditorAuth();
+  if ("errorResponse" in auth) return auth.errorResponse;
 
   const { title, description, tags, assetId } = await request.json();
 
   if (!title || !assetId) {
-    return NextResponse.json({ error: "title and assetId are required" }, { status: 400 });
+    return simpleErrorResponse("title and assetId are required", 400);
   }
 
   try {
@@ -34,25 +34,21 @@ export async function POST(request: NextRequest) {
     });
 
     revalidateDocs();
-    return NextResponse.json({ success: true, _id: result._id });
+    return simpleSuccessResponse({ _id: result._id });
   } catch (error) {
     console.error("Document creation failed:", error);
-    return NextResponse.json({ error: "Noe gikk galt ved oppretting av dokumentet." }, { status: 500 });
+    return simpleErrorResponse("Noe gikk galt ved oppretting av dokumentet.", 500);
   }
 }
 
 export async function PATCH(request: NextRequest) {
-  const user = await currentUser();
-  const roles = (user?.publicMetadata?.roles as string[]) || [];
-
-  if (!roles.includes("admin") && !roles.includes("editor")) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
+  const auth = await getSanityAdminEditorAuth();
+  if ("errorResponse" in auth) return auth.errorResponse;
 
   const { _id, title, description, tags, assetId } = await request.json();
 
   if (!_id) {
-    return NextResponse.json({ error: "_id is required" }, { status: 400 });
+    return simpleErrorResponse("_id is required", 400);
   }
 
   const patch: Record<string, unknown> = { title, description, tags };
@@ -67,33 +63,29 @@ export async function PATCH(request: NextRequest) {
   try {
     await clientWithWriteAccess.patch(_id).set(patch).commit();
     revalidateDocs();
-    return NextResponse.json({ success: true });
+    return simpleSuccessResponse();
   } catch (error) {
     console.error("Document update failed:", error);
-    return NextResponse.json({ error: "Noe gikk galt ved oppdatering av dokumentet." }, { status: 500 });
+    return simpleErrorResponse("Noe gikk galt ved oppdatering av dokumentet.", 500);
   }
 }
 
 export async function DELETE(request: NextRequest) {
-  const user = await currentUser();
-  const roles = (user?.publicMetadata?.roles as string[]) || [];
-
-  if (!roles.includes("admin") && !roles.includes("editor")) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
+  const auth = await getSanityAdminEditorAuth();
+  if ("errorResponse" in auth) return auth.errorResponse;
 
   const { _id } = await request.json();
 
   if (!_id) {
-    return NextResponse.json({ error: "_id is required" }, { status: 400 });
+    return simpleErrorResponse("_id is required", 400);
   }
 
   try {
     await clientWithWriteAccess.delete(_id);
     revalidateDocs();
-    return NextResponse.json({ success: true });
+    return simpleSuccessResponse();
   } catch (error) {
     console.error("Document deletion failed:", error);
-    return NextResponse.json({ error: "Noe gikk galt ved sletting av dokumentet." }, { status: 500 });
+    return simpleErrorResponse("Noe gikk galt ved sletting av dokumentet.", 500);
   }
 }

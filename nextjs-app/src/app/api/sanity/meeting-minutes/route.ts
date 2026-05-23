@@ -1,6 +1,10 @@
-import { currentUser } from "@clerk/nextjs/server";
+import {
+  getSanityAdminEditorAuth,
+  simpleErrorResponse,
+  simpleSuccessResponse,
+} from "@/app/api/_utils/routeUtils";
 import { clientWithWriteAccess } from "@/sanity/lib/client";
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextRequest } from "next/server";
 import { revalidateTag } from "next/cache";
 
 function revalidateMinutes() {
@@ -8,21 +12,14 @@ function revalidateMinutes() {
 }
 
 export async function POST(request: NextRequest) {
-  const user = await currentUser();
-  const roles = (user?.publicMetadata?.roles as string[]) || [];
-
-  if (!roles.includes("admin") && !roles.includes("editor")) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
+  const auth = await getSanityAdminEditorAuth();
+  if ("errorResponse" in auth) return auth.errorResponse;
 
   const { title, description, meetingDate, meetingPlace, tags, assetIds } =
     await request.json();
 
   if (!title || !assetIds || assetIds.length === 0) {
-    return NextResponse.json(
-      { error: "title and at least one file are required" },
-      { status: 400 },
-    );
+    return simpleErrorResponse("title and at least one file are required", 400);
   }
 
   try {
@@ -41,29 +38,22 @@ export async function POST(request: NextRequest) {
     });
 
     revalidateMinutes();
-    return NextResponse.json({ success: true, _id: result._id });
+    return simpleSuccessResponse({ _id: result._id });
   } catch (error) {
     console.error("Meeting minutes creation failed:", error);
-    return NextResponse.json(
-      { error: "Noe gikk galt ved oppretting av referatet." },
-      { status: 500 },
-    );
+    return simpleErrorResponse("Noe gikk galt ved oppretting av referatet.", 500);
   }
 }
 
 export async function PATCH(request: NextRequest) {
-  const user = await currentUser();
-  const roles = (user?.publicMetadata?.roles as string[]) || [];
-
-  if (!roles.includes("admin") && !roles.includes("editor")) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
+  const auth = await getSanityAdminEditorAuth();
+  if ("errorResponse" in auth) return auth.errorResponse;
 
   const { _id, title, description, meetingDate, meetingPlace, tags, assetIds } =
     await request.json();
 
   if (!_id) {
-    return NextResponse.json({ error: "_id is required" }, { status: 400 });
+    return simpleErrorResponse("_id is required", 400);
   }
 
   const patch: Record<string, unknown> = {
@@ -85,39 +75,29 @@ export async function PATCH(request: NextRequest) {
   try {
     await clientWithWriteAccess.patch(_id).set(patch).commit();
     revalidateMinutes();
-    return NextResponse.json({ success: true });
+    return simpleSuccessResponse();
   } catch (error) {
     console.error("Meeting minutes update failed:", error);
-    return NextResponse.json(
-      { error: "Noe gikk galt ved oppdatering av referatet." },
-      { status: 500 },
-    );
+    return simpleErrorResponse("Noe gikk galt ved oppdatering av referatet.", 500);
   }
 }
 
 export async function DELETE(request: NextRequest) {
-  const user = await currentUser();
-  const roles = (user?.publicMetadata?.roles as string[]) || [];
-
-  if (!roles.includes("admin") && !roles.includes("editor")) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
+  const auth = await getSanityAdminEditorAuth();
+  if ("errorResponse" in auth) return auth.errorResponse;
 
   const { _id } = await request.json();
 
   if (!_id) {
-    return NextResponse.json({ error: "_id is required" }, { status: 400 });
+    return simpleErrorResponse("_id is required", 400);
   }
 
   try {
     await clientWithWriteAccess.delete(_id);
     revalidateMinutes();
-    return NextResponse.json({ success: true });
+    return simpleSuccessResponse();
   } catch (error) {
     console.error("Meeting minutes deletion failed:", error);
-    return NextResponse.json(
-      { error: "Noe gikk galt ved sletting av referatet." },
-      { status: 500 },
-    );
+    return simpleErrorResponse("Noe gikk galt ved sletting av referatet.", 500);
   }
 }

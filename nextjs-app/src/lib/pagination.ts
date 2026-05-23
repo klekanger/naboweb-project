@@ -16,6 +16,18 @@ export function totalPagesFromCount(totalCount: number, pageSize: number): numbe
   return Math.max(1, Math.ceil(totalCount / pageSize));
 }
 
+/** Parse a `?page=` search param; invalid or missing values resolve to page 1. */
+export function pageNumberFromSearchParam(
+  value: string | string[] | undefined,
+): number {
+  if (!value) return 1;
+  if (Array.isArray(value)) return 1;
+  if (!/^\d+$/.test(value)) return 1;
+  const pageNumber = Number(value);
+  if (pageNumber < 1) return 1;
+  return pageNumber;
+}
+
 /** Clerk-style list pagination (user admin, tables). */
 export function calculatePaginationData(
   currentPage: number,
