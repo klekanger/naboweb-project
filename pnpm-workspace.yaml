@@ -1,3 +1,19 @@
 packages:
   - "studio"
   - "nextjs-app"
+overrides:
+  '@types/react': 19.2.14
+  '@types/react-dom': 19.2.3
+  basic-ftp: '>=5.2.0'
+  fast-xml-parser: '>=5.5.7'
+  follow-redirects: '>=1.16.0'
+patchedDependencies:
+  next-themes@0.4.6: patches/next-themes@0.4.6.patch
+publicHoistPattern:
+  - '*@heroui/*'
+strictPeerDependencies: false
+shamefullyHoist: false
+packageConfigs:
+  '@naboweb/nextjs-app':
+    publicHoistPattern:
+      - '*@heroui/*'
