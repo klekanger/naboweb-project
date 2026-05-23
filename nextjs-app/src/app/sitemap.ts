@@ -51,7 +51,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const blogCollectionPages: MetadataRoute.Sitemap = Array.from({
     length: totalBlogCollectionPages,
   }).map((_, i) => ({
-    url: `${SITE_URL}/blog-collection/${i + 1}`,
+    url:
+      i === 0
+        ? `${SITE_URL}/blog-collection`
+        : `${SITE_URL}/blog-collection/${i + 1}`,
     lastModified: new Date(),
   }));
 

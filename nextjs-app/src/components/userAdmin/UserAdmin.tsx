@@ -346,7 +346,7 @@ export default function UserAdmin({
                       </Checkbox>
                     </div>
                     <Description className="mt-4">
-                      Alle må ha rollen 'Bruker' for å få tilgang til systemet.
+                      Alle må ha rollen &apos;Bruker&apos; for å få tilgang til systemet.
                       Redaktører kan opprette og redigere innhold, mens
                       administratorer har tilgang til alle funksjoner.
                     </Description>
@@ -378,19 +378,7 @@ export default function UserAdmin({
 
                   <div className="flex justify-center lg:justify-start gap-4 pb-8">
                     <CustomButton
-                      variant="primary"
-                      isDisabled={isCreatingUser}
-                      onPress={() => {
-                        if (formRef.current && !isCreatingUser) {
-                          formRef.current.requestSubmit();
-                        }
-                      }}
-                      className="mt-8"
-                    >
-                      {isCreatingUser ? "Jobber..." : "Legg til"}
-                    </CustomButton>
-                    <CustomButton
-                      variant="danger"
+                      variant="secondary"
                       isDisabled={isCreatingUser}
                       className="mt-8"
                       onPress={() => {
@@ -404,6 +392,18 @@ export default function UserAdmin({
                       }}
                     >
                       Avbryt
+                    </CustomButton>
+                    <CustomButton
+                      variant="primary"
+                      isDisabled={isCreatingUser}
+                      onPress={() => {
+                        if (formRef.current && !isCreatingUser) {
+                          formRef.current.requestSubmit();
+                        }
+                      }}
+                      className="mt-8"
+                    >
+                      {isCreatingUser ? "Jobber..." : "Legg til"}
                     </CustomButton>
                   </div>
                 </form>
@@ -489,8 +489,11 @@ export default function UserAdmin({
                 gjøre dette.
               </p>
             </Modal.Body>
-            <Modal.Footer>
-              <CustomButton variant="danger" onPress={modalCreateUser.onClose}>
+            <Modal.Footer className="flex flex-wrap justify-end gap-2">
+              <CustomButton
+                variant="secondary"
+                onPress={modalCreateUser.onClose}
+              >
                 Avbryt
               </CustomButton>
               <CustomButton

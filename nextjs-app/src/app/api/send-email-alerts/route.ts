@@ -14,6 +14,14 @@ import { emailTemplate } from "./email-template";
 import nodemailer from "nodemailer";
 import { SITE_NAME } from "@/lib/constants";
 import { validateEnvironmentVariables } from "./validateEnvironmentVariables";
+import { authorizeEmailAlertsRequest } from "./authorize-email-alerts-request";
+import { getClerkEmailSubscribers } from "./get-clerk-email-subscribers";
+import {
+  buildSanityAuthorEmailSet,
+  filterSubscribersWithSanityAuthor,
+  SANITY_AUTHOR_EMAILS_QUERY,
+} from "./filter-subscribers-with-sanity-author";
+import { chunkArray, SES_BCC_RECIPIENT_LIMIT } from "./email-batch";
 
 const client = createClient({
   projectId,
@@ -42,22 +50,18 @@ function createEmailTransporter(
 async function processEmailAlerts(request: Request) {
   try {
     const envVars = validateEnvironmentVariables();
-    const headersList = request.headers;
+    const auth = authorizeEmailAlertsRequest(request, {
+      emailSecretToken: envVars.EMAIL_SECRET_TOKEN,
+      cronSecret: envVars.CRON_SECRET,
+    });
 
-    // For Vercel cron jobs, check if this is a cron request (which doesn't need auth)
-    const isVercelCron =
-      headersList.get("user-agent")?.includes("vercel-cron") ||
-      headersList.get("vercel-cron") === "1";
-
-    // If not a Vercel cron job, check authorization
-    if (!isVercelCron) {
-      const authHeader = headersList.get("authorization");
-      if (authHeader !== `Bearer ${envVars.EMAIL_SECRET_TOKEN}`) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      }
+    if (!auth.authorized) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const overrideDate = headersList.get("overrideDate"); // We can override the last run date to send emails
+    const overrideDate = auth.isManualAuth
+      ? request.headers.get("overrideDate")
+      : null;
     const baseUrl = envVars.NEXT_PUBLIC_BASE_URL;
 
     // Get the last run timestamp, default to 24 hours ago if not found
@@ -65,14 +69,7 @@ async function processEmailAlerts(request: Request) {
       (await redis.get("lastEmailAlertRun")) ||
       new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
-    // Query for subscribed authors
-    const subscribers = await client.fetch(`
-      *[_type == "authors" && emailSubscription == true]{
-        firstName,
-        lastName,
-        email
-      }
-    `);
+    const contentLastRunTime = overrideDate || lastRunTime;
 
     // Query for new bulletin board messages
     const messages = await client.fetch(
@@ -88,18 +85,18 @@ async function processEmailAlerts(request: Request) {
       }}
       }`,
       {
-        lastRunTime: overrideDate || lastRunTime,
+        lastRunTime: contentLastRunTime,
       },
     );
 
-    // Query for new comments to messages
+    // Query for new published comments on messages updated since last run
     const messagesWithNewComments = await client.fetch(
-      `*[_type == "message" && comments != null && count(comments) > 0 && dateTime(_updatedAt) > dateTime($lastRunTime)]{
+      `*[_type == "message" && count(comments[dateTime(_createdAt) > dateTime($lastRunTime) && published == true]) > 0]{
         _id,
         title,
         _createdAt,
         _updatedAt,
-        comments[]{
+        "comments": comments[dateTime(_createdAt) > dateTime($lastRunTime) && published == true]{
           published, 
           commentTitle, 
           commentText,
@@ -111,7 +108,7 @@ async function processEmailAlerts(request: Request) {
           }
         }
       }`,
-      { lastRunTime: overrideDate || lastRunTime },
+      { lastRunTime: contentLastRunTime },
     );
 
     // Query for new blog posts
@@ -125,7 +122,7 @@ async function processEmailAlerts(request: Request) {
         _updatedAt
       }`,
       {
-        lastRunTime: overrideDate || lastRunTime,
+        lastRunTime: contentLastRunTime,
       },
     );
 
@@ -140,7 +137,7 @@ async function processEmailAlerts(request: Request) {
         meetingDate,
         meetingPlace,
       }`,
-      { lastRunTime: overrideDate || lastRunTime },
+      { lastRunTime: contentLastRunTime },
     );
 
     // Query for new documents
@@ -155,7 +152,7 @@ async function processEmailAlerts(request: Request) {
           asset->{url, _id, originalFilename}
         }
       }`,
-      { lastRunTime: overrideDate || lastRunTime },
+      { lastRunTime: contentLastRunTime },
     );
 
     // Check if there is any new content
@@ -186,29 +183,33 @@ async function processEmailAlerts(request: Request) {
       baseUrl,
     });
 
-    // Filter out subscribers without email addresses
-    const validSubscribers = subscribers.filter(
-      (subscriber: { email: string | null }) => subscriber.email,
+    const clerkSubscribers = await getClerkEmailSubscribers();
+    const sanityAuthors = await client.fetch<{ email?: string }[]>(
+      SANITY_AUTHOR_EMAILS_QUERY,
+    );
+    const sanityAuthorEmails = buildSanityAuthorEmailSet(sanityAuthors);
+    const subscribers = filterSubscribersWithSanityAuthor(
+      clerkSubscribers,
+      sanityAuthorEmails,
     );
 
-    if (validSubscribers.length === 0) {
+    if (subscribers.length === 0) {
       return NextResponse.json({
         success: {
-          message: "No subscribers with valid email addresses found.",
+          message: "No subscribers matched a Sanity author email.",
         },
         status: 200,
       });
     }
 
     const transporter = createEmailTransporter(envVars);
+    const bccAddresses = subscribers.map((subscriber) => subscriber.email);
+    const subject = `Nytt innhold på nettsidene til ${SITE_NAME}`;
 
-    // Send one email to all subscribers using BCC
-    await sendEmail({
+    await sendEmailBatched({
       transporter,
-      bcc: validSubscribers.map(
-        (subscriber: { email: string }) => subscriber.email,
-      ),
-      subject: `Nytt innhold på nettsidene til ${SITE_NAME}`,
+      bcc: bccAddresses,
+      subject,
       body: emailContent,
       fromEmail: envVars.AWS_SMTP_FROM_EMAIL,
     });
@@ -217,7 +218,7 @@ async function processEmailAlerts(request: Request) {
 
     return NextResponse.json({
       success: {
-        message: `Sent email to ${validSubscribers.length} subscribers`,
+        message: `Sent email to ${subscribers.length} subscriber${subscribers.length === 1 ? "" : "s"}`,
       },
       status: 200,
     });
@@ -248,6 +249,41 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   return processEmailAlerts(request);
+}
+
+async function sendEmailBatched({
+  transporter,
+  bcc,
+  subject,
+  body,
+  fromEmail,
+}: {
+  transporter: ReturnType<typeof createEmailTransporter>;
+  bcc: string[];
+  subject: string;
+  body: string;
+  fromEmail: string;
+}) {
+  const bccChunks = chunkArray(bcc, SES_BCC_RECIPIENT_LIMIT);
+
+  for (let index = 0; index < bccChunks.length; index++) {
+    const bccChunk = bccChunks[index];
+    try {
+      await sendEmail({
+        transporter,
+        bcc: bccChunk,
+        subject,
+        body,
+        fromEmail,
+      });
+    } catch (error) {
+      console.error(
+        `Failed to send email alert batch ${index + 1}/${bccChunks.length}:`,
+        error,
+      );
+      throw error;
+    }
+  }
 }
 
 // Send email using nodemailer

@@ -1,47 +1,31 @@
 import { clientWithWriteAccess } from "@/sanity/lib/client";
-import { currentUser } from "@clerk/nextjs/server";
+import {
+  badRequestResponse,
+  getCurrentUserWithRoles,
+  serverErrorResponse,
+  unauthorizedResponse,
+} from "@/app/api/_utils/routeUtils";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    const user = await currentUser();
+    const { user, userRoles } = await getCurrentUserWithRoles();
 
     if (!user) {
-      return NextResponse.json({
-        error: { message: "Unauthorized" },
-        status: 401,
-      });
-    }
-
-    const userRoles = (user?.publicMetadata as { roles: string[] }) ?? [];
-    const isAdmin = userRoles.roles.includes("admin");
-    const isUser = userRoles.roles.includes("user");
-
-    // Allow access if user is admin OR has user role
-    if (!(isAdmin || isUser)) {
-      return NextResponse.json({
-        error: { message: "Unauthorized" },
-        status: 401,
-      });
+      return unauthorizedResponse();
     }
 
     const { id, userId } = await request.json();
 
     if (!id) {
-      return NextResponse.json(
-        { error: { message: "Message ID is required" } },
-        { status: 400 },
-      );
+      return badRequestResponse("Message ID is required");
     }
 
     // Allow admins to delete any message, but regular users can only delete their own
-    if (!(isAdmin || user.id === userId)) {
-      return NextResponse.json({
-        error: {
-          message: "Unauthorized (user can only delete their own messages)",
-        },
-        status: 401,
-      });
+    if (!(userRoles.isAdmin || user.id === userId)) {
+      return unauthorizedResponse(
+        "Unauthorized (user can only delete their own messages)",
+      );
     }
 
     // Delete the message from Sanity
@@ -50,9 +34,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error("Error deleting message:", error);
-    return NextResponse.json(
-      { error: { message: error?.message ?? "Failed to delete message" } },
-      { status: 500 },
-    );
+    return serverErrorResponse(error?.message ?? "Failed to delete message");
   }
 }

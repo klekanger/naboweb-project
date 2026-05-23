@@ -47,10 +47,11 @@ next-env.d.ts
 # other
 gartnerihagen-auth0-brukere.js
 .cursorrules
-
+.pnpm-store
 
 # debug files
 email-content.html
 .vscode/settings.json
 .env*.local
 .vscode/settings.json
+.fallow/

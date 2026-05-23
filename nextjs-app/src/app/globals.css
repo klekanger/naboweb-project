@@ -4,7 +4,6 @@
 
 @plugin "@tailwindcss/typography";
 @source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
-@custom-variant dark (&:is(.dark *));
 
 @theme {
   /* Brand colors */
@@ -16,7 +15,7 @@
   --color-brand-secondary: #005600;
   --color-brand-success: #7FA1F6;
   --color-brand-warning: #F8BD5F;
-  --color-brand-danger: #FF7E7E;
+  --color-brand-danger: #bc4749;
 }
 
 /* HeroUI v3 Semantic Color Variables - Light Theme */
@@ -44,9 +43,10 @@
   --danger: #BC4749;
   --danger-foreground: #F6F7FD;
 
-  /* Default color */
-  --default: #6c757d;
-  --default-foreground: #F6F7FD;
+  /* HeroUI default surface color. Keep this light so default controls such as CloseButton are legible. */
+  --default: oklch(94% 0.001 286.375);
+  --default-foreground: #090A24;
+  --muted: oklch(0.5517 0.0138 285.94);
 }
 
 
@@ -96,11 +96,11 @@ body {
 
 
 .rich-image {
-  @apply mt-8 border border-slate-300 md:mt-16 rounded-xl !mb-0;
+  @apply mt-8 border border-slate-300 md:mt-16 rounded-xl mb-0!;
 }
 
 .rich-image-caption {
-  @apply rounded-b-xl bg-slate-200 mx-4 px-4 py-2 text-left text-sm text-brand-black md:mb-4 !mt-0;
+  @apply rounded-b-xl bg-slate-200 mx-4 px-4 py-2 text-left text-sm text-brand-black md:mb-4 mt-0!;
 }
 
 
@@ -140,7 +140,7 @@ body {
 }
 
 .tiptap {
-  @apply bg-default/10 pt-0 mt-0 overflow-auto;
+  @apply bg-brand-black/5 pt-0 mt-0 overflow-auto;
 }
 
 .tiptap :first-child {
@@ -219,25 +219,48 @@ body {
   }
 
   .input-group {
-    @apply bg-default/10 h-10;
+    @apply bg-brand-black/5 h-10;
 
     @media (hover: hover) {
 
       &:hover:not(:focus-within),
       &[data-hovered="true"]:not([data-focus-within="true"]) {
-        @apply bg-default/20;
+        @apply bg-brand-black/10;
       }
     }
   }
 
+  /* HeroUI field controls: match CustomButton default height (h-10) */
+  .select__trigger {
+    @apply min-h-10 h-10 items-center;
+  }
+
+  .date-input-group,
+  .number-field__group,
+  .search-field__group {
+    @apply h-10;
+  }
+
   .input {
-    @apply bg-default/10 h-10;
+    @apply bg-brand-black/5 h-10;
 
     @media (hover: hover) {
 
       &:hover:not(:focus):not(:focus-visible),
       &[data-hovered="true"]:not([data-focused="true"]):not([data-focus-visible="true"]) {
-        @apply bg-default/20;
+        @apply bg-brand-black/10;
+      }
+    }
+  }
+
+  .textarea {
+    @apply bg-brand-black/5;
+
+    @media (hover: hover) {
+
+      &:hover:not(:focus):not(:focus-visible),
+      &[data-hovered="true"]:not([data-focused="true"]):not([data-focus-visible="true"]) {
+        @apply bg-brand-black/10;
       }
     }
   }

@@ -1,10 +1,23 @@
 "use client";
+import { isHeicLikeFile, prepareImageUploadFile } from "@/lib/prepareImageUploadFile";
 import { urlForImage } from "@/sanity/lib/utils";
 import { cn } from "@heroui/react";
 import { Upload as UploadIcon, XIcon } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import type { Image as SanityImage } from "sanity";
+
+const ALLOWED_MIME_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/heic",
+  "image/heif",
+]);
+
+const isAllowedFile = (file: File) =>
+  ALLOWED_MIME_TYPES.has(file.type) ||
+  (file.type === "" && isHeicLikeFile(file));
 
 export default function ImageUploader({
   onImageSelect,
@@ -17,88 +30,97 @@ export default function ImageUploader({
   messageImage?: SanityImage;
   editMode?: boolean;
 }) {
-  const [uploadImagePreview, setUploadImage] = useState<string | null>(null);
+  const [userFilePreview, setUserFilePreview] = useState<string | null>(null);
+
+  const sanityPreviewUrl = useMemo(
+    () =>
+      editMode && messageImage
+        ? urlForImage(messageImage)?.width(800).height(600).fit("max").url() ??
+          null
+        : null,
+    [editMode, messageImage],
+  );
+
+  const uploadImagePreview = userFilePreview ?? sanityPreviewUrl;
+  const [isConvertingHeic, setIsConvertingHeic] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const setPreviewImage = (file: File[] | FileList | null) => {
-    if (!file) {
-      console.error("No file provided");
-      setUploadImage(null);
-      onImageSelect(null);
-      return;
-    }
-
-    // When dragging and dropping, file is a FileList - convert to array
-    if (file instanceof FileList) {
-      file = Array.from(file);
-    }
-
-    // Validate file type
-    if (
-      !file.every((f) =>
-        ["image/jpeg", "image/png", "image/webp"].includes(f.type),
-      )
-    ) {
-      console.error("Unsupportet image type");
-      setError("Bildeformatet må være JPG, PNG eller WEBP");
-      setUploadImage(null);
-      onImageSelect(null);
-      return;
-    } else {
-      setError(null);
-    }
-
-    // Run callback with the image file
-    onImageSelect(file);
-
-    // Set preview image
-
+  const readPreviewDataUrl = (f: File) => {
     const reader = new FileReader();
     reader.onload = (e) => {
-      if (e.target?.result && isValidImage(e.target.result as string)) {
-        setUploadImage(e.target.result as string);
+      const result = e.target?.result;
+      if (result && typeof result === "string" && /^data:image\/\w+;base64,/.test(result)) {
+        setUserFilePreview(result);
       } else {
-        console.log("Not an image");
-        setUploadImage(null);
+        setUserFilePreview(null);
       }
     };
-
-    // Check if there are files to read
-    if (file.length > 0) {
-      reader.readAsDataURL(file[0]);
-    }
+    reader.readAsDataURL(f);
   };
 
-  // Set preview image if in edit mode and message image is provided
-  // We want to show the image already uploaded in the editor
-  useEffect(() => {
-    if (editMode && messageImage) {
-      const imageUrl =
-        urlForImage(messageImage)?.width(800).height(600).fit("max").url() ??
-        null;
-      setUploadImage(imageUrl);
+  const processSelectedFiles = async (file: File[] | FileList | null) => {
+    if (!file) {
+      setUserFilePreview(null);
+      onImageSelect(null);
+      return;
     }
-  }, [messageImage, editMode]);
 
-  const isValidImage = (file: string) => {
-    const imageType = /^data:image\/(\w+);base64,/;
-    return imageType.test(file);
+    let list = file instanceof FileList ? Array.from(file) : file;
+
+    if (!list.every(isAllowedFile)) {
+      setError("Bildeformatet må være JPG, PNG, WEBP eller HEIC");
+      setUserFilePreview(null);
+      onImageSelect(null);
+      return;
+    }
+
+    setError(null);
+
+    if (list.length === 0) {
+      setUserFilePreview(null);
+      onImageSelect(null);
+      return;
+    }
+
+    let toUse = list;
+    if (isHeicLikeFile(list[0])) {
+      setIsConvertingHeic(true);
+      try {
+        const converted = await prepareImageUploadFile(list[0]);
+        toUse = [converted];
+      } catch {
+        setError(
+          "Kunne ikke konvertere HEIC-bildet i nettleseren. Prøv JPG eller WEBP.",
+        );
+        setUserFilePreview(null);
+        onImageSelect(null);
+        return;
+      } finally {
+        setIsConvertingHeic(false);
+      }
+    }
+
+    onImageSelect(toUse);
+    readPreviewDataUrl(toUse[0]);
   };
 
   const handleDrop = (event: React.DragEvent) => {
     event.preventDefault();
-    const file = event.dataTransfer.files;
-
-    setPreviewImage(file);
+    void processSelectedFiles(event.dataTransfer.files);
   };
 
-  // check if file is an image
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
-    const file = Array.from(event.target.files || []);
+    void processSelectedFiles(Array.from(event.target.files || []));
+  };
 
-    setPreviewImage(file);
+  const clearSelection = () => {
+    setDragOver(false);
+    setUserFilePreview(null);
+    onImageSelect(null);
+    setError(null);
+    setIsConvertingHeic(false);
   };
 
   return (
@@ -111,13 +133,12 @@ export default function ImageUploader({
               alt={"Bilde for opplasting"}
               width={800}
               height={600}
-              className="object-cover rounded-xl aspect-[4/3]"
+              className="object-cover rounded-xl aspect-4/3"
             />
             <button
               onClick={(event) => {
                 event.preventDefault();
-                setDragOver(false);
-                setPreviewImage(null);
+                clearSelection();
               }}
               className="absolute top-2 right-2 bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity"
             >
@@ -135,31 +156,41 @@ export default function ImageUploader({
               setDragOver(false);
             }}
             onDrop={handleDrop}
-            className={`border-2 border-dashed border-slate-300 rounded-lg p-8 flex flex-col items-center justify-center transition-colors hover:border-primary ${dragOver ? "bg-default-100" : ""}`}
+            className={`border-2 border-dashed border-slate-300 rounded-lg p-8 flex flex-col items-center justify-center transition-colors hover:border-primary ${dragOver ? "bg-default-100" : ""} ${isConvertingHeic ? "pointer-events-none opacity-70" : ""}`}
           >
             <UploadIcon className="w-8 h-8 text-muted-foreground mb-2" />
             <div className="prose lg:prose-lg text-center">
-              Dra inn et bilde her, eller{" "}
-              <label
-                htmlFor="file-input"
-                className="text-primary underline cursor-pointer"
-              >
-                velg fil
-              </label>
+              {isConvertingHeic ? (
+                <div className="text-sm text-foreground/80">
+                  Konverterer HEIC-bilde…
+                </div>
+              ) : (
+                <>
+                  Dra inn et bilde her, eller{" "}
+                  <label
+                    htmlFor="file-input"
+                    className="text-primary underline cursor-pointer"
+                  >
+                    velg fil
+                  </label>
+                </>
+              )}
               <div className="text-xs my-0">
                 Bildet beskjæres automatisk til 4/3 breddeformat.
               </div>
               {error ? (
                 <div className="text-xs text-red-500">{error}</div>
               ) : (
-                <div className="text-xs h-[1rem]"></div>
+                <div className="text-xs h-4"></div>
               )}
             </div>
             <input
               id="file-input"
               type="file"
+              accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
+              disabled={isConvertingHeic}
               onChange={handleFileSelect}
-              onDragOver={handleDrop}
+              onDragOver={(e) => e.preventDefault()}
               className="hidden"
             />
           </div>

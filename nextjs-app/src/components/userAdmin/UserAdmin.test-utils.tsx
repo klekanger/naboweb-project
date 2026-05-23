@@ -48,7 +48,7 @@ export const createMockUserAdminContext = (overrides: Partial<any> = {}) => ({
 });
 
 // Mock user data factory functions
-export const createMockUser = (
+const createMockUser = (
   overrides: Partial<UserWithEmails> = {},
 ): UserWithEmails => ({
   id: "user-123",
@@ -56,7 +56,7 @@ export const createMockUser = (
   lastName: "Doe",
   email: "john.doe@example.com",
   roles: ["user"],
-  createdAt: new Date("2023-01-01"),
+  createdAt: new Date("2023-01-01").getTime(),
   imageUrl: "https://example.com/avatar.jpg",
   ...overrides,
 });
@@ -85,7 +85,7 @@ export const createMockPagination = (
 });
 
 // Mock NewUser data factory
-export const createMockNewUser = (
+const createMockNewUser = (
   overrides: Partial<NewUser> = {},
 ): NewUser => ({
   email: "new.user@example.com",
@@ -123,7 +123,7 @@ export const renderUserAdminWithContext = (
 };
 
 // Test scenario helpers for different states
-export const createTestScenarios = () => ({
+const createTestScenarios = () => ({
   // Menu selection scenarios
   showUsersMenu: {
     contextOverrides: { selectedMenu: SidebarMenu.USERS },
@@ -210,7 +210,7 @@ export const createTestScenarios = () => ({
 });
 
 // Mock server actions
-export const mockServerActions = {
+const mockServerActions = {
   createNewUser: vi.fn(),
   updateUser: vi.fn(),
   deleteUser: vi.fn(),
@@ -219,7 +219,7 @@ export const mockServerActions = {
 };
 
 // Mock Norwegian error messages
-export const mockNorwegianErrors = [
+const mockNorwegianErrors = [
   {
     code: "form_password_not_strong_enough",
     message: "Passordet er ikke sterkt nok",
@@ -267,7 +267,7 @@ export const mockNorwegianErrors = [
 ];
 
 // Helper to create mock successful server response
-export const createMockSuccessResponse = (userData: Partial<any> = {}) => ({
+const createMockSuccessResponse = (userData: Partial<any> = {}) => ({
   success: {
     message: "Bruker opprettet",
     email: "test@example.com",
@@ -281,7 +281,7 @@ export const createMockSuccessResponse = (userData: Partial<any> = {}) => ({
 });
 
 // Helper to create mock error server response
-export const createMockErrorResponse = (errorData: Partial<any> = {}) => ({
+const createMockErrorResponse = (errorData: Partial<any> = {}) => ({
   error: {
     message: "form_password_not_strong_enough",
     code: "form_password_not_strong_enough",
@@ -292,7 +292,7 @@ export const createMockErrorResponse = (errorData: Partial<any> = {}) => ({
 });
 
 // Accessibility test helpers
-export const accessibilityQueries = {
+const accessibilityQueries = {
   getFormInputByLabel: (container: HTMLElement, labelText: string) => {
     const label = container.querySelector(`label:contains("${labelText}")`);
     return label?.querySelector("input");
@@ -307,13 +307,7 @@ export const accessibilityQueries = {
 
 // Norwegian text content helpers
 export const norwegianTextContent = {
-  menuItems: [
-    "Vis brukere",
-    "Inviter bruker",
-    "Ny bruker",
-    "Endre bruker",
-    "Superbrukere",
-  ],
+  menuItems: ["Vis brukere", "Ny bruker", "Endre bruker", "Superbrukere"],
   formLabels: ["Fornavn", "Etternavn", "E-post", "Passord"],
   buttons: ["Legg til", "Avbryt", "Tilbake", "Opprett"],
   errorMessages: [

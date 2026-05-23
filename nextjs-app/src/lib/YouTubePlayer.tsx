@@ -5,7 +5,7 @@ import ReactPlayer from "react-player";
 export default function YouTubePlayer({ url }: { url: string }) {
   return (
     <ReactPlayer
-      url={url}
+      src={url}
       width="100%"
       height="100%"
       style={{

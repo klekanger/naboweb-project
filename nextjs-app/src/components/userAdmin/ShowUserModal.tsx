@@ -90,7 +90,7 @@ export default function ShowUserModal({
             </section>
           </Modal.Body>
           <Modal.Footer>
-            <CustomButton variant="primary" onPress={onClose}>
+            <CustomButton variant="secondary" onPress={onClose}>
               Tilbake
             </CustomButton>
           </Modal.Footer>

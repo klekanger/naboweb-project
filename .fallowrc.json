@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "entry": [
+    "src/index.{js,jsx,mjs}",
+    "src/main.{js,jsx,mjs}"
+  ],
+  "workspaces": {
+    "packages": [
+      "studio",
+      "nextjs-app"
+    ]
+  },
+  "ignorePatterns": [
+    "nextjs-app/src/app/actions/**",
+    "nextjs-app/src/types/sanity.types.ts"
+  ],
+  "boundaries": {
+    "preset": "layered"
+  },
+  "rules": {
+    "boundary-violation": "warn",
+    "circular-dependencies": "warn",
+    "unused-files": "warn",
+    "unused-exports": "warn"
+  }
+}

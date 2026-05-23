@@ -1,0 +1,22 @@
+"use client";
+
+import dynamic from "next/dynamic";
+import type { BlogPostData } from "./BlogEditor";
+
+const BlogEditor = dynamic(() => import("./BlogEditor"), { ssr: false });
+
+type Props = {
+  mode: "create" | "edit";
+  initialData?: BlogPostData;
+  currentAuthorId: string;
+  authorDisplayName: string;
+  currentUserEmail?: string;
+  currentAuthorPortraitUrl?: string | null;
+  isAdmin: boolean;
+  onEditDirtyChange?: (isDirty: boolean) => void;
+  onRegisterDiscardChanges?: (discardChanges: () => void) => void;
+};
+
+export default function BlogEditorClient(props: Props) {
+  return <BlogEditor {...props} />;
+}

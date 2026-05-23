@@ -34,6 +34,7 @@ export const clientWithWriteAccess = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn,
+  // Mutations must not use the API CDN endpoint
+  useCdn: false,
   token: process.env.SANITY_API_WRITE_TOKEN,
 });

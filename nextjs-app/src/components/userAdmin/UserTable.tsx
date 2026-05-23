@@ -18,6 +18,7 @@ import CustomSearchInput from "../CustomSearchInput";
 import { MoreVertical } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, {
+  startTransition,
   useCallback,
   useContext,
   useEffect,
@@ -62,7 +63,9 @@ export default function UserTable({
   const [localUsers, setLocalUsers] = useState(users);
   // Keep localUsers in sync with users prop
   useEffect(() => {
-    setLocalUsers(users);
+    startTransition(() => {
+      setLocalUsers(users);
+    });
   }, [users]);
   const router = useRouter();
   const { setSelectedMenu, setSelectedUser } = useContext(UserAdminContext);
@@ -86,7 +89,9 @@ export default function UserTable({
   const [isPaginating, setIsPaginating] = useState(false);
 
   useEffect(() => {
-    setIsPaginating(false);
+    startTransition(() => {
+      setIsPaginating(false);
+    });
   }, [pagination?.currentPage, users]);
 
   const showUserWithIdModal = async (id: string) => {
@@ -106,12 +111,10 @@ export default function UserTable({
     modalErrorMessage.onOpen();
   };
 
-  if (!localUsers) {
-    return null;
-  }
+  const safeUsers = useMemo(() => localUsers ?? [], [localUsers]);
 
   const sortedUsers = useMemo(() => {
-    let sortedUsers = [...localUsers];
+    let sortedUsers = [...safeUsers];
     // Sort users by last name, then first name
     sortedUsers.sort((a, b) => {
       const nameA = `${a.lastName} ${a.firstName}`.toLowerCase();
@@ -121,7 +124,7 @@ export default function UserTable({
       return 0;
     });
     return sortedUsers;
-  }, [localUsers]);
+  }, [safeUsers]);
 
   const onGlobalSearchChange = useCallback(
     (value?: string) => {
@@ -260,10 +263,13 @@ export default function UserTable({
     onGlobalSearchChange,
     handleGlobalSearch,
     handleGlobalSearchKeyPress,
-    onGlobalSearchClear,
     sortedUsers.length,
     isSearchResult,
   ]);
+
+  if (!localUsers) {
+    return null;
+  }
 
   return (
     <div className={rest?.className ?? ""}>
@@ -364,7 +370,7 @@ export default function UserTable({
                         <Dropdown>
                           <Dropdown.Trigger>
                             <div
-                              className="inline-flex items-center justify-center min-w-0 w-auto h-auto p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                              className="inline-flex items-center justify-center min-w-0 w-auto h-auto p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer"
                               aria-label="Meny for brukeroperasjoner"
                             >
                               <MoreVertical className="h-4 w-4 text-gray-400" />

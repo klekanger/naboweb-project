@@ -333,3 +333,188 @@ export const messageSlugs = defineQuery(`
 export const meetingMinutesIds = defineQuery(`
   *[_type == "fileMeetingMinutes"]{_id}
 `);
+
+// Admin queries
+
+export const documentMenuAdminQuery = defineQuery(`
+  *[_type=="documentMenu"][0] {
+    _id,
+    button1Text,
+    button2Text,
+    button3Text,
+    button4Text,
+    "file1": button1File->{_id, title, "url": otherDocument.asset->url},
+    "file2": button2File->{_id, title, "url": otherDocument.asset->url},
+    "file3": button3File->{_id, title, "url": otherDocument.asset->url},
+    "file4": button4File->{_id, title, "url": otherDocument.asset->url},
+  }
+`);
+
+/** First chunk of files for combobox before user types a search (bounded). */
+export const fileOtherDocumentsBrowseQuery = defineQuery(`
+  *[
+    _type == "fileOtherDocuments" &&
+    defined(title)
+  ] | order(title asc) [0...$END] {
+    _id,
+    title,
+    "url": otherDocument.asset->url
+  }
+`);
+
+/** Bounded title search for admin document-menu picker (server-backed combobox). */
+export const fileOtherDocumentsSearchQuery = defineQuery(`
+  *[
+    _type == "fileOtherDocuments" &&
+    defined(title) &&
+    lower(title) match $SEARCH_PATTERN
+  ] | order(title asc) [0...$END] {
+    _id,
+    title,
+    "url": otherDocument.asset->url
+  }
+`);
+
+export const settingsAdminQuery = defineQuery(`
+  *[
+    _type == "settings" &&
+    _id == "settings"
+  ][0] {
+    _id,
+    companyName,
+    addressLine1,
+    addressLine2,
+    companyDescription,
+    phone,
+    email,
+    organisationNumber,
+    metaTitle,
+    metaDescription,
+    metaKeywords,
+    "metaOgImageAssetId": metaOgImage.asset->_id,
+    "metaOgImageUrl": metaOgImage.asset->url,
+    menuItem1{
+      title,
+      "menuLink": menuLink->{
+        _id,
+        title,
+        "slug": slug.current
+      }
+    },
+    menuItem2{
+      title,
+      "menuLink": menuLink->{
+        _id,
+        title,
+        "slug": slug.current
+      }
+    }
+  }
+`);
+
+export const pagesBrowseQuery = defineQuery(`
+  *[
+    _type == "page" &&
+    defined(title)
+  ] | order(title asc) [0...$END] {
+    _id,
+    title,
+    "slug": slug.current
+  }
+`);
+
+export const pagesSearchQuery = defineQuery(`
+  *[
+    _type == "page" &&
+    defined(title) &&
+    lower(title) match $SEARCH_PATTERN
+  ] | order(title asc) [0...$END] {
+    _id,
+    title,
+    "slug": slug.current
+  }
+`);
+
+export const allAuthorsQuery = defineQuery(`
+  *[_type=="authors"] | order(firstName asc) {
+    _id,
+    firstName,
+    lastName
+  }
+`);
+
+export const blogPostsAdminPagedQuery = defineQuery(`
+  *[_type=="blogPost"] | order(_createdAt desc) [$start...$end] {
+    _id,
+    _createdAt,
+    _updatedAt,
+    title,
+    "slug": slug.current,
+    privatePost,
+    excerpt
+  }
+`);
+
+export const countOtherDocumentsAdminQuery = defineQuery(`
+  count(*[_type=="fileOtherDocuments"])
+`);
+
+export const otherDocumentsAdminPagedQuery = defineQuery(`
+  *[_type=="fileOtherDocuments"] | order(_createdAt desc) [$start...$end] {
+    _id,
+    _createdAt,
+    _updatedAt,
+    title,
+    description,
+    tags,
+    "document": otherDocument{
+      asset->{url, _id, originalFilename, extension, size}
+    }
+  }
+`);
+
+export const allOtherDocumentsAdminQuery = defineQuery(`
+  *[_type=="fileOtherDocuments"] | order(_createdAt desc) {
+    _id,
+    _createdAt,
+    _updatedAt,
+    title,
+    description,
+    tags,
+    "document": otherDocument{
+      asset->{url, _id, originalFilename, extension, size}
+    }
+  }
+`);
+
+export const allMeetingMinutesAdminQuery = defineQuery(`
+  *[_type=="fileMeetingMinutes"] | order(_createdAt desc) | order(meetingDate desc) {
+    _id,
+    _createdAt,
+    _updatedAt,
+    title,
+    description,
+    meetingDate,
+    meetingPlace,
+    tags,
+    meetingDocuments[]{asset->{url, _id, originalFilename, extension, size}}
+  }
+`);
+
+export const countMeetingMinutesAdminQuery = defineQuery(`
+  count(*[_type=="fileMeetingMinutes"])
+`);
+
+export const meetingMinutesAdminPagedQuery = defineQuery(`
+  *[_type=="fileMeetingMinutes"] | order(_createdAt desc) | order(meetingDate desc) [$start...$end] {
+    _id,
+    _createdAt,
+    _updatedAt,
+    title,
+    description,
+    meetingDate,
+    meetingPlace,
+    tags,
+    meetingDocuments[]{asset->{url, _id, originalFilename, extension, size}}
+  }
+`);

@@ -1,3 +1,4 @@
+// fallow-ignore-file unused-file
 import { useUser } from "@clerk/nextjs";
 import { inviteUser } from "@/app/actions/inviteUser";
 import { UserAdminContext } from "@/context/userAdminContext";
@@ -191,7 +192,7 @@ export default function InviteUser() {
             </Checkbox>
           </div>
           <Description className="mt-4">
-            Alle må ha rollen 'Bruker' for å få tilgang til systemet. Redaktører
+            Alle må ha rollen &apos;Bruker&apos; for å få tilgang til systemet. Redaktører
             kan opprette og redigere innhold, mens administratorer har tilgang
             til alle funksjoner.
           </Description>
@@ -228,7 +229,10 @@ export default function InviteUser() {
               <Modal.Heading>{inviteTitle}</Modal.Heading>
             </Modal.Header>
             <Modal.Body>{inviteBody}</Modal.Body>
-            <Modal.Footer>
+            <Modal.Footer className="flex flex-wrap justify-end gap-2">
+              <CustomButton variant="secondary" onPress={modalInviteUser.onClose}>
+                {inviteCancelText}
+              </CustomButton>
               <CustomButton
                 variant="primary"
                 onPress={() => {
@@ -237,9 +241,6 @@ export default function InviteUser() {
                 }}
               >
                 {inviteOkText}
-              </CustomButton>
-              <CustomButton variant="danger" onPress={modalInviteUser.onClose}>
-                {inviteCancelText}
               </CustomButton>
             </Modal.Footer>
           </Modal.Dialog>

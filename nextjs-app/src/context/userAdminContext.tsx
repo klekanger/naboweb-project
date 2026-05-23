@@ -14,7 +14,6 @@ export enum SidebarMenu {
 export enum CreateUserScreenType {
   FORM = 0,
   SUCCESS = 1,
-  EDIT = 2,
 }
 
 type UserAdminContextType = {

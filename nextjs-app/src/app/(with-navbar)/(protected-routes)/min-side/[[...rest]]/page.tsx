@@ -2,12 +2,11 @@ import UserOverview from "@/components/UserOverview";
 import { UserWithRoles } from "@/types/types";
 import { UserProfile } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";
-import type { UserData } from "@clerk/types";
 import { Suspense } from "react";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 
 async function MinSideContent() {
-  const user = (await currentUser()) as UserData;
+  const user = await currentUser();
 
   return (
     <>

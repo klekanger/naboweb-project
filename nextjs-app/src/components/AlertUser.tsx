@@ -15,7 +15,7 @@ export default function AlertUser({
   if (!alertMessage || !alertTitle) return null;
 
   return (
-    <Card className="max-w-[400px] bg-brand-dark-warning text-brand-black dark:bg-brand-dark-warning">
+    <Card className="max-w-[400px] bg-brand-dark-warning text-brand-black">
       <div className="text-brand-primaryLight flex gap-3 p-4">
         <AlertCircle size={24} />
         <span className="text-xl font-semibold">{alertTitle}</span>

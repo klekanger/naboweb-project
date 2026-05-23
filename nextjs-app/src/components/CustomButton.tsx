@@ -76,7 +76,8 @@ const CustomButton = forwardRef<
   }
 
   // Merge default styling with provided className
-  const mergedClassName = `rounded-xl p-4 h-10 ${className || ""}`.trim();
+  const mergedClassName =
+    `rounded-xl p-4 h-10 w-24 min-w-fit ${className || ""}`.trim();
 
   // When isPending is true, use render prop pattern to show spinner
   const buttonChildren = isPending

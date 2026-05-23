@@ -64,22 +64,12 @@ export default function MeetingMinutes({
   const hasSearchFilter = Boolean(filterValue);
   const [detailView, setDetailView] = useState(false);
 
-  if (!documents) {
-    return (
-      <>
-        <p className="pb-4">Ingen dokumenter</p>
-        <CustomButton href="/information/1">
-          <ArrowBigLeft className="h-5 w-5 mt-1.5" />
-          Gå tilbake
-        </CustomButton>
-      </>
-    );
-  }
+  const safeDocuments = useMemo(() => documents ?? [], [documents]);
 
-  const pages = Math.ceil(documents.length / rowsPerPage);
+  const pages = Math.ceil(safeDocuments.length / rowsPerPage);
 
   const filteredItems = useMemo(() => {
-    let filteredItems = [...documents];
+    let filteredItems = [...safeDocuments];
 
     if (hasSearchFilter) {
       filteredItems = filteredItems.filter(
@@ -92,7 +82,7 @@ export default function MeetingMinutes({
     }
 
     return filteredItems;
-  }, [documents, filterValue, hasSearchFilter]);
+  }, [safeDocuments, filterValue, hasSearchFilter]);
 
   const itemsToRender = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -128,6 +118,18 @@ export default function MeetingMinutes({
     );
   }, [filterValue, onSearchChange, filteredItems.length]);
 
+  if (!documents) {
+    return (
+      <>
+        <p className="pb-4">Ingen dokumenter</p>
+        <CustomButton href="/information">
+          <ArrowBigLeft className="h-5 w-5 mt-1.5" />
+          Gå tilbake
+        </CustomButton>
+      </>
+    );
+  }
+
   return (
     <>
       <div className="mb-16">
@@ -162,7 +164,7 @@ export default function MeetingMinutes({
                         <Tooltip.Trigger>
                           <Link
                             href={`/information/referater/${item._id}`}
-                            className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80 "
+                            className="hover:text-brand-secondary/80"
                           >
                             <span className="flex ">
                               <FolderOpen className="mr-2 h-auto" size="1em" />
@@ -186,7 +188,7 @@ export default function MeetingMinutes({
                         <Tooltip.Trigger>
                           <Link
                             href={`/information/referater/${item._id}`}
-                            className="hover:text-brand-secondary/80 hover:dark:text-brand-white/80 "
+                            className="hover:text-brand-secondary/80"
                           >
                             <span>
                               {item?.description && item.description.length > 75

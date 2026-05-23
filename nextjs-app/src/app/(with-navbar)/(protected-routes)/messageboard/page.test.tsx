@@ -103,7 +103,7 @@ describe("Message Board Component", () => {
   });
 
   it("renders the message board with messages", () => {
-    render(<MessageBoard messages={mockMessages} />);
+    render(<MessageBoard messages={mockMessages} messageCount={mockMessages.length} />);
 
     expect(screen.getByText("Oppslagstavle")).toBeInTheDocument();
     expect(screen.getByText("Test Message 1")).toBeInTheDocument();
@@ -111,7 +111,7 @@ describe("Message Board Component", () => {
   });
 
   it("shows admin footer message for admin users", () => {
-    render(<MessageBoard messages={mockMessages} />);
+    render(<MessageBoard messages={mockMessages} messageCount={mockMessages.length} />);
 
     expect(
       screen.getByText("Du publiserer som: John Doe eller styret"),
@@ -119,7 +119,7 @@ describe("Message Board Component", () => {
   });
 
   it("handles empty message list", () => {
-    render(<MessageBoard messages={[]} />);
+    render(<MessageBoard messages={[]} messageCount={0} />);
 
     expect(
       screen.getByText(
@@ -129,7 +129,7 @@ describe("Message Board Component", () => {
   });
 
   it("shows correct author for admin messages", () => {
-    render(<MessageBoard messages={mockMessages} />);
+    render(<MessageBoard messages={mockMessages} messageCount={mockMessages.length} />);
 
     // Admin message should show "Styret" as author
     expect(screen.getByText("Styret")).toBeInTheDocument();
@@ -141,14 +141,14 @@ describe("Message Board Component", () => {
       isLoaded: true,
     });
 
-    render(<MessageBoard messages={mockMessages} />);
+    render(<MessageBoard messages={mockMessages} messageCount={mockMessages.length} />);
 
     // Should not show admin footer message
     expect(screen.queryByText(/Du publiserer som:/)).not.toBeInTheDocument();
   });
 
   it("handles both filter conditions together", () => {
-    render(<MessageBoard messages={mockMessages} />);
+    render(<MessageBoard messages={mockMessages} messageCount={mockMessages.length} />);
 
     // Select admin messages
     const checkbox = screen.getByLabelText("Kun innlegg fra styret");
@@ -164,7 +164,7 @@ describe("Message Board Component", () => {
   });
 
   it("renders message comments correctly", () => {
-    render(<MessageBoard messages={mockMessages} />);
+    render(<MessageBoard messages={mockMessages} messageCount={mockMessages.length} />);
 
     // Message 2 has one comment
     const commentCount = screen.getAllByText("1");
@@ -172,7 +172,7 @@ describe("Message Board Component", () => {
   });
 
   it("handles messages with no image", () => {
-    render(<MessageBoard messages={mockMessages} />);
+    render(<MessageBoard messages={mockMessages} messageCount={mockMessages.length} />);
 
     // Messages render even without images
     expect(screen.getByText("Test Message 1")).toBeInTheDocument();
@@ -185,7 +185,7 @@ describe("Message Board Component", () => {
       isLoaded: false,
     });
 
-    render(<MessageBoard messages={mockMessages} />);
+    render(<MessageBoard messages={mockMessages} messageCount={mockMessages.length} />);
 
     // Components should still render without user data
     expect(screen.getByText("Test Message 1")).toBeInTheDocument();

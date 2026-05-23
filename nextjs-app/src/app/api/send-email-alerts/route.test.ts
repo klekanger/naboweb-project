@@ -2,10 +2,6 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { validateEnvironmentVariables } from "./validateEnvironmentVariables";
 
 // Mock all external dependencies at module level
-vi.mock("next/headers", () => ({
-  headers: vi.fn(),
-}));
-
 vi.mock("@upstash/redis", () => ({
   Redis: {
     fromEnv: () => ({
@@ -36,6 +32,7 @@ vi.mock("./email-template", () => ({
 // Test data
 const validEnvVars = {
   EMAIL_SECRET_TOKEN: "test-token",
+  CRON_SECRET: "cron-test-secret",
   NEXT_PUBLIC_BASE_URL: "https://example.com",
   AWS_SMTP_HOST: "smtp.example.com",
   AWS_SMTP_USER: "user@example.com",
@@ -66,6 +63,7 @@ describe("/api/send-email-alerts - Environment Validation", () => {
 
     const result = validateEnvironmentVariables();
     expect(result.EMAIL_SECRET_TOKEN).toBe("test-token");
+    expect(result.CRON_SECRET).toBe("cron-test-secret");
     expect(result.NEXT_PUBLIC_BASE_URL).toBe("https://example.com");
     expect(result.AWS_SMTP_HOST).toBe("smtp.example.com");
     expect(result.AWS_SMTP_USER).toBe("user@example.com");
@@ -120,19 +118,19 @@ describe("/api/send-email-alerts - Environment Validation", () => {
 });
 
 describe("/api/send-email-alerts - Route Authorization Tests", () => {
-  let mockHeaders: any;
+  function postRequest(headersInit?: Record<string, string>) {
+    return new Request("http://test.local/api/send-email-alerts", {
+      method: "POST",
+      headers: headersInit ?? {},
+    });
+  }
 
-  beforeEach(async () => {
+  beforeEach(() => {
     vi.clearAllMocks();
 
-    // Setup environment variables
     Object.entries(validEnvVars).forEach(([key, value]) => {
       process.env[key] = value;
     });
-
-    // Get mock instances
-    const { headers } = await import("next/headers");
-    mockHeaders = headers;
   });
 
   afterEach(() => {
@@ -142,15 +140,10 @@ describe("/api/send-email-alerts - Route Authorization Tests", () => {
   });
 
   it("should return 401 for invalid Bearer token", async () => {
-    mockHeaders.mockResolvedValue({
-      get: vi.fn((key) => {
-        if (key === "authorization") return "Bearer invalid-token";
-        return null;
-      }),
-    });
-
     const { POST } = await import("./route");
-    const response = await POST();
+    const response = await POST(
+      postRequest({ authorization: "Bearer invalid-token" }),
+    );
     const data = await response.json();
 
     expect(response.status).toBe(401);
@@ -158,12 +151,8 @@ describe("/api/send-email-alerts - Route Authorization Tests", () => {
   });
 
   it("should return 401 for missing authorization header", async () => {
-    mockHeaders.mockResolvedValue({
-      get: vi.fn(() => null),
-    });
-
     const { POST } = await import("./route");
-    const response = await POST();
+    const response = await POST(postRequest());
     const data = await response.json();
 
     expect(response.status).toBe(401);
@@ -171,16 +160,12 @@ describe("/api/send-email-alerts - Route Authorization Tests", () => {
   });
 
   it("should return 401 when Bearer is misspelled as Bearex", async () => {
-    mockHeaders.mockResolvedValue({
-      get: vi.fn((key) => {
-        if (key === "authorization")
-          return `Bearex ${validEnvVars.EMAIL_SECRET_TOKEN}`;
-        return null;
-      }),
-    });
-
     const { POST } = await import("./route");
-    const response = await POST();
+    const response = await POST(
+      postRequest({
+        authorization: `Bearex ${validEnvVars.EMAIL_SECRET_TOKEN}`,
+      }),
+    );
     const data = await response.json();
 
     expect(response.status).toBe(401);
@@ -188,16 +173,12 @@ describe("/api/send-email-alerts - Route Authorization Tests", () => {
   });
 
   it("should return 401 for case-sensitive Bearer keyword", async () => {
-    mockHeaders.mockResolvedValue({
-      get: vi.fn((key) => {
-        if (key === "authorization")
-          return `bearer ${validEnvVars.EMAIL_SECRET_TOKEN}`;
-        return null;
-      }),
-    });
-
     const { POST } = await import("./route");
-    const response = await POST();
+    const response = await POST(
+      postRequest({
+        authorization: `bearer ${validEnvVars.EMAIL_SECRET_TOKEN}`,
+      }),
+    );
     const data = await response.json();
 
     expect(response.status).toBe(401);
@@ -221,7 +202,7 @@ describe("/api/send-email-alerts - Route Authorization Tests", () => {
     vi.resetModules();
 
     const { POST } = await import("./route");
-    const response = await POST();
+    const response = await POST(postRequest());
     const data = await response.json();
 
     expect(response.status).toBe(500);
@@ -371,7 +352,7 @@ describe("/api/send-email-alerts - Email Configuration", () => {
 describe("/api/send-email-alerts - Response Messages", () => {
   it("should create correct success responses", () => {
     const scenarios = [
-      { count: 0, message: "No subscribers with valid email addresses found." },
+      { count: 0, message: "No subscribers matched a Sanity author email." },
       { count: 1, message: "Sent email to 1 subscriber" },
       { count: 5, message: "Sent email to 5 subscribers" },
     ];
@@ -379,7 +360,7 @@ describe("/api/send-email-alerts - Response Messages", () => {
     scenarios.forEach(({ count, message }) => {
       let responseMessage;
       if (count === 0) {
-        responseMessage = "No subscribers with valid email addresses found.";
+        responseMessage = "No subscribers matched a Sanity author email.";
       } else {
         responseMessage = `Sent email to ${count} subscriber${count === 1 ? "" : "s"}`;
       }
