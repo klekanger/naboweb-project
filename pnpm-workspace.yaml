@@ -2,18 +2,23 @@ packages:
   - "studio"
   - "nextjs-app"
 overrides:
-  '@types/react': 19.2.14
-  '@types/react-dom': 19.2.3
-  basic-ftp: '>=5.2.0'
-  fast-xml-parser: '>=5.5.7'
-  follow-redirects: '>=1.16.0'
+  "@types/react": 19.2.14
+  "@types/react-dom": 19.2.3
+  basic-ftp: ">=5.2.0"
+  fast-xml-parser: ">=5.5.7"
+  follow-redirects: ">=1.16.0"
 patchedDependencies:
   next-themes@0.4.6: patches/next-themes@0.4.6.patch
 publicHoistPattern:
-  - '*@heroui/*'
+  - "*@heroui/*"
 strictPeerDependencies: false
 shamefullyHoist: false
-packageConfigs:
-  '@naboweb/nextjs-app':
-    publicHoistPattern:
-      - '*@heroui/*'
+minimumReleaseAgeExclude:
+  - "@oclif/core@4.11.4"
+  - date-fns@4.3.0
+  - ws@8.21.0
+allowBuilds:
+  '@clerk/shared': true
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
