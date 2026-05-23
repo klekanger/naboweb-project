@@ -32,6 +32,7 @@ vi.mock("./email-template", () => ({
 // Test data
 const validEnvVars = {
   EMAIL_SECRET_TOKEN: "test-token",
+  CRON_SECRET: "cron-test-secret",
   NEXT_PUBLIC_BASE_URL: "https://example.com",
   AWS_SMTP_HOST: "smtp.example.com",
   AWS_SMTP_USER: "user@example.com",
@@ -62,6 +63,7 @@ describe("/api/send-email-alerts - Environment Validation", () => {
 
     const result = validateEnvironmentVariables();
     expect(result.EMAIL_SECRET_TOKEN).toBe("test-token");
+    expect(result.CRON_SECRET).toBe("cron-test-secret");
     expect(result.NEXT_PUBLIC_BASE_URL).toBe("https://example.com");
     expect(result.AWS_SMTP_HOST).toBe("smtp.example.com");
     expect(result.AWS_SMTP_USER).toBe("user@example.com");
@@ -350,7 +352,7 @@ describe("/api/send-email-alerts - Email Configuration", () => {
 describe("/api/send-email-alerts - Response Messages", () => {
   it("should create correct success responses", () => {
     const scenarios = [
-      { count: 0, message: "No subscribers with valid email addresses found." },
+      { count: 0, message: "No subscribers matched a Sanity author email." },
       { count: 1, message: "Sent email to 1 subscriber" },
       { count: 5, message: "Sent email to 5 subscribers" },
     ];
@@ -358,7 +360,7 @@ describe("/api/send-email-alerts - Response Messages", () => {
     scenarios.forEach(({ count, message }) => {
       let responseMessage;
       if (count === 0) {
-        responseMessage = "No subscribers with valid email addresses found.";
+        responseMessage = "No subscribers matched a Sanity author email.";
       } else {
         responseMessage = `Sent email to ${count} subscriber${count === 1 ? "" : "s"}`;
       }
