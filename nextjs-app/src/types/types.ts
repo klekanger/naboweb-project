@@ -172,7 +172,17 @@ export type UserTableProps = {
 
 export type UserAdminProps = {
   users: UserWithEmails[];
+  /**
+   * All users with the "admin" or "editor" role, fetched independently of the
+   * paginated `users` list so the overview is never limited to the current page.
+   */
+  superUsers: UserWithEmails[];
   pagination?: PaginationData;
+};
+
+export type ShowRolesTableProps = {
+  users: UserWithEmails[];
+  className?: string;
 };
 
 export type UserWithRoles = User & {

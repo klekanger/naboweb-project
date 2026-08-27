@@ -32,6 +32,7 @@ import UserTable from "./UserTable";
 
 export default function UserAdmin({
   users,
+  superUsers,
   pagination,
   isSearchResult = false,
 }: UserAdminProps & { isSearchResult?: boolean }) {
@@ -464,8 +465,7 @@ export default function UserAdmin({
           {/* SHOW USERS WITH ADMIN OR OTHER SUPER USER ROLES */}
           {selectedMenu === 4 && (
             <AssignRolesTable
-              users={users}
-              pagination={pagination}
+              users={superUsers}
               className="px-4 pt-4 bg-white"
             />
           )}

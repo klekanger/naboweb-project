@@ -1,12 +1,15 @@
 "use client";
 
 import { SidebarMenu, UserAdminContext } from "@/context/userAdminContext";
-import { UserTableProps, UserWithEmails } from "@/types/types";
+import { ShowRolesTableProps } from "@/types/types";
 import { Tooltip } from "@heroui/react";
 import { Crown, Edit } from "lucide-react";
 import { useContext } from "react";
 
-export default function ShowRolesTable({ users, ...rest }: UserTableProps) {
+export default function ShowRolesTable({
+  users,
+  ...rest
+}: ShowRolesTableProps) {
   const { setSelectedMenu, setSelectedUser } = useContext(UserAdminContext);
 
   if (!users) {
@@ -58,8 +61,7 @@ export default function ShowRolesTable({ users, ...rest }: UserTableProps) {
                   key={user?.id}
                   className={`text-left cursor-pointer ${index === 0 ? "[&>td]:pt-4" : ""}`}
                   onClick={() => {
-                    const userToEdit = users.find((u) => u.id === user.id);
-                    setSelectedUser(userToEdit as UserWithEmails);
+                    setSelectedUser(user);
                     setSelectedMenu(SidebarMenu.EDIT_USER);
                   }}
                 >
@@ -108,8 +110,7 @@ export default function ShowRolesTable({ users, ...rest }: UserTableProps) {
                   key={user?.id}
                   className={`text-left cursor-pointer ${index === 0 ? "[&>td]:pt-4" : ""}`}
                   onClick={() => {
-                    const userToEdit = users.find((u) => u.id === user.id);
-                    setSelectedUser(userToEdit as UserWithEmails);
+                    setSelectedUser(user);
                     setSelectedMenu(SidebarMenu.EDIT_USER);
                   }}
                 >

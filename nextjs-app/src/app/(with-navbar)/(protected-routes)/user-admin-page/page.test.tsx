@@ -25,6 +25,9 @@ const UserAdminMock = vi.fn().mockImplementation((props: UserAdminProps) => {
     <div data-testid="user-admin-mock">
       <span data-testid="user-count">{props.users.length}</span>
       <span data-testid="current-page">{props.pagination?.currentPage}</span>
+      <span data-testid="super-user-emails">
+        {props.superUsers.map((user) => user.email).join(",")}
+      </span>
     </div>
   );
 });
@@ -204,6 +207,53 @@ describe("User Admin Page", () => {
         query: "Fredrik",
         limit: 50,
       });
+    });
+  });
+
+  describe("Superusers", () => {
+    beforeEach(() => {
+      validateUserRolesMock.mockResolvedValue(true);
+    });
+
+    it("includes superusers that fall outside the current page", async () => {
+      const testDate = new Date("2022-01-01").getTime();
+      // 34 users in total, only the first 30 fit on page 1. The admin at index
+      // 33 must still show up in the superuser overview.
+      const allUsers = Array.from({ length: 34 }, (_, i) => ({
+        id: `user-${i}`,
+        firstName: `User${i}`,
+        lastName: `Test${String(i).padStart(2, "0")}`,
+        emailAddresses: [{ emailAddress: `user${i}@example.com` }],
+        createdAt: testDate,
+        publicMetadata: {
+          roles: i === 33 ? ["user", "admin"] : ["user"],
+        },
+        imageUrl: "",
+      }));
+
+      mockGetUserList.mockImplementation(
+        ({ limit, offset = 0 }: { limit: number; offset?: number }) => {
+          return Promise.resolve({
+            data: allUsers.slice(offset, offset + limit),
+            totalCount: allUsers.length,
+          });
+        },
+      );
+
+      const result = await UserAdminContent({
+        searchParams: Promise.resolve({}),
+      });
+      await act(async () => {
+        render(result);
+      });
+
+      // The paginated table is still limited to one page
+      const userCount = await screen.findByTestId("user-count");
+      expect(userCount?.textContent).toBe("30");
+
+      // ...but the superuser list is fetched separately across all users
+      const superUserEmails = await screen.findByTestId("super-user-emails");
+      expect(superUserEmails?.textContent).toBe("user33@example.com");
     });
   });
 

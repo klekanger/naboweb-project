@@ -72,6 +72,18 @@ export const createMockUsers = (count: number = 3): UserWithEmails[] => {
   );
 };
 
+export const createMockSuperUsers = (count: number = 2): UserWithEmails[] => {
+  return Array.from({ length: count }, (_, index) =>
+    createMockUser({
+      id: `superuser-${index + 1}`,
+      firstName: `Super${index + 1}`,
+      lastName: `Superlastname${index + 1}`,
+      email: `superuser${index + 1}@example.com`,
+      roles: ["user", "editor", "admin"],
+    }),
+  );
+};
+
 // Mock pagination data for testing
 export const createMockPagination = (
   overrides: Partial<PaginationData> = {},
@@ -103,6 +115,7 @@ export const renderUserAdminWithContext = (
 ) => {
   const defaultProps: UserAdminProps = {
     users: createMockUsers(),
+    superUsers: createMockSuperUsers(),
     pagination: createMockPagination(),
     ...props,
   };

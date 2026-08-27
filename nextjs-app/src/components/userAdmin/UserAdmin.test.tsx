@@ -8,6 +8,7 @@ import {
   norwegianTextContent,
   createMockUserAdminContext,
   createMockUsers,
+  createMockSuperUsers,
   createMockPagination,
 } from "./UserAdmin.test-utils";
 import { UserAdminContext } from "../../context/userAdminContext";
@@ -259,6 +260,7 @@ describe("UserAdmin Component - Rendering Tests", () => {
           >
             <UserAdmin
               users={createMockUsers()}
+              superUsers={createMockSuperUsers()}
               pagination={createMockPagination()}
             />
           </UserAdminContext.Provider>,
