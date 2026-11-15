@@ -62,3 +62,22 @@ pnpm typegen
 # or
 pnpm --filter @naboweb/studio typegen
 ```
+
+## License
+
+This project is **source-available**, licensed under the [Source-Available License 1.0](LICENSE).
+
+You are free to use, copy, fork, modify, and share this software, including for internal use within commercial organizations.
+
+**You may not:**
+- Sell the software or modified versions.
+- Incorporate the source code into commercial software products.
+- Offer the software as a paid service or SaaS product.
+
+Commercial use of the software within your own organization is permitted.
+
+Commercial licensing is available upon request.
+
+See [LICENSE](LICENSE.md) for the full terms.
+
+**Note:** This project is source-available, not open source as defined by the Open Source Initiative.
