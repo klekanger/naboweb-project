@@ -42,6 +42,17 @@ This is a pnpm monorepo containing:
 pnpm install
 ```
 
+### Environment Variables
+
+Copy the example files and fill in your own values. Each file has comments on where to find every value (Sanity, Clerk, Upstash, AWS SES):
+
+```bash
+cp nextjs-app/.env.example nextjs-app/.env.local
+cp studio/.env.example studio/.env.local
+```
+
+The Sanity project ID and dataset must be the same in both files.
+
 ### Development
 
 Run the Next.js app:
