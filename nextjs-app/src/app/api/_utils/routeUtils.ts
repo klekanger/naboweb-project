@@ -52,7 +52,16 @@ export function serverErrorResponse(
   );
 }
 
-export async function getSanityAdminEditorAuth() {
+type SanityAdminEditorAuth =
+  | { errorResponse: NextResponse }
+  | {
+      clerkUserId: string;
+      isAdmin: boolean;
+      roles: string[];
+      user: NonNullable<Awaited<ReturnType<typeof currentUser>>>;
+    };
+
+export async function getSanityAdminEditorAuth(): Promise<SanityAdminEditorAuth> {
   const user = await currentUser();
   const roles = (user?.publicMetadata?.roles as string[]) || [];
 

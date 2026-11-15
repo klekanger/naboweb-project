@@ -1858,6 +1858,25 @@ export type COMMENT_OWNERSHIP_QUERY_RESULT = {
   } | null;
 } | null;
 
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
+// Variable: CMS_DOCUMENT_REVISION_QUERY
+// Query: *[    _type == $type    && _id == $id  ][0] {    _id,    _rev  }
+export type CMS_DOCUMENT_REVISION_QUERY_RESULT = {
+  _id: string;
+  _rev: string;
+} | null;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
+// Variable: BLOG_POST_FOR_UPDATE_QUERY
+// Query: *[    _type == "blogPost"    && _id == $id  ][0] {    _id,    _rev,    privatePost,    "slug": slug.current,    "authorIds": coalesce(author[]._ref, [])  }
+export type BLOG_POST_FOR_UPDATE_QUERY_RESULT = {
+  _id: string;
+  _rev: string;
+  privatePost: boolean;
+  slug: string;
+  authorIds: Array<string> | Array<never>;
+} | null;
+
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
@@ -1907,5 +1926,7 @@ declare module "@sanity/client" {
     '\n  *[_type=="fileMeetingMinutes"] | order(_createdAt desc) | order(meetingDate desc) [$start...$end] {\n    _id,\n    _createdAt,\n    _updatedAt,\n    title,\n    description,\n    meetingDate,\n    meetingPlace,\n    tags,\n    meetingDocuments[]{asset->{url, _id, originalFilename, extension, size}}\n  }\n': MeetingMinutesAdminPagedQueryResult;
     '\n  *[\n    _type == "message"\n    && _id == $id\n  ][0] {\n    _id,\n    _rev,\n    "authorId": author._ref\n  }\n': MESSAGE_OWNERSHIP_QUERY_RESULT;
     '\n  *[\n    _type == "message"\n    && _id == $id\n  ][0] {\n    _id,\n    _rev,\n    "comment": comments[_key == $key][0] {\n      _key,\n      "authorId": commentAuthor._ref\n    }\n  }\n': COMMENT_OWNERSHIP_QUERY_RESULT;
+    "\n  *[\n    _type == $type\n    && _id == $id\n  ][0] {\n    _id,\n    _rev\n  }\n": CMS_DOCUMENT_REVISION_QUERY_RESULT;
+    '\n  *[\n    _type == "blogPost"\n    && _id == $id\n  ][0] {\n    _id,\n    _rev,\n    privatePost,\n    "slug": slug.current,\n    "authorIds": coalesce(author[]._ref, [])\n  }\n': BLOG_POST_FOR_UPDATE_QUERY_RESULT;
   }
 }

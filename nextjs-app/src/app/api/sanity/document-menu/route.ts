@@ -1,38 +1,66 @@
-import { currentUser } from "@clerk/nextjs/server";
+import {
+  getSanityAdminEditorAuth,
+  simpleErrorResponse,
+  simpleSuccessResponse,
+} from "@/app/api/_utils/routeUtils";
+import {
+  CMS_CONFLICT_MESSAGE,
+  getCmsDocument,
+  isBoundedString,
+  isDocumentId,
+  readJsonObject,
+} from "@/app/api/_utils/cmsDocuments";
+import { isRevisionConflict } from "@/app/api/_utils/messageAccess";
 import { clientWithWriteAccess } from "@/sanity/lib/client";
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextRequest } from "next/server";
 import { revalidateTag } from "next/cache";
 
-type ButtonUpdate = {
-  text: string;
-  fileId: string;
-};
+const MAX_BUTTON_TEXT = 100;
 
-type DocumentMenuPatchBody = {
-  documentMenuId: string;
-  buttons: [ButtonUpdate, ButtonUpdate, ButtonUpdate, ButtonUpdate];
-};
+type ButtonUpdate = { text: string; fileId: string };
+
+const isButton = (b: unknown): b is ButtonUpdate =>
+  typeof b === "object" &&
+  b !== null &&
+  isBoundedString((b as ButtonUpdate).text, MAX_BUTTON_TEXT) &&
+  isDocumentId((b as ButtonUpdate).fileId);
 
 export async function PATCH(request: NextRequest) {
-  const user = await currentUser();
-  const roles = (user?.publicMetadata?.roles as string[]) || [];
+  const auth = await getSanityAdminEditorAuth();
+  if ("errorResponse" in auth) return auth.errorResponse;
 
-  if (!roles.includes("admin") && !roles.includes("editor")) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const body = await readJsonObject(request);
+  if (!body) return simpleErrorResponse("Invalid request body", 400);
+
+  const { buttons } = body;
+  if (!Array.isArray(buttons) || buttons.length !== 4 || !buttons.every(isButton)) {
+    return simpleErrorResponse("Invalid request body", 400);
   }
 
-  const body: DocumentMenuPatchBody = await request.json();
-  const { documentMenuId, buttons } = body;
+  // Only the documentMenu singleton may be patched here.
+  const { doc, errorResponse } = await getCmsDocument(
+    "documentMenu",
+    body.documentMenuId,
+  );
+  if (errorResponse) return errorResponse;
 
-  if (!documentMenuId || !buttons || buttons.length !== 4) {
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  // Every button must point to an existing "other document".
+  const fileIds = [...new Set(buttons.map((b) => b.fileId))];
+  const validFileCount = await clientWithWriteAccess.fetch<number>(
+    `count(*[_type == "fileOtherDocuments" && _id in $ids])`,
+    { ids: fileIds },
+    { perspective: "published" },
+  );
+  if (validFileCount !== fileIds.length) {
+    return simpleErrorResponse("Ugyldig fil valgt", 400);
   }
 
   const [b1, b2, b3, b4] = buttons;
 
   try {
     await clientWithWriteAccess
-      .patch(documentMenuId)
+      .patch(doc._id)
+      .ifRevisionId(doc._rev)
       .set({
         button1Text: b1.text,
         button1File: { _ref: b1.fileId, _type: "reference" },
@@ -47,12 +75,12 @@ export async function PATCH(request: NextRequest) {
 
     revalidateTag("documentMenu", "max");
 
-    return NextResponse.json({ success: true });
+    return simpleSuccessResponse();
   } catch (error) {
+    if (isRevisionConflict(error)) {
+      return simpleErrorResponse(CMS_CONFLICT_MESSAGE, 409);
+    }
     console.error("Document menu update failed:", error);
-    return NextResponse.json(
-      { error: "Noe gikk galt ved lagring av dokumentmenyen." },
-      { status: 500 },
-    );
+    return simpleErrorResponse("Noe gikk galt ved lagring av dokumentmenyen.", 500);
   }
 }
