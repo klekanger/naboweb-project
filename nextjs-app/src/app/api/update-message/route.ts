@@ -1,10 +1,19 @@
 import { clientWithWriteAccess } from "@/sanity/lib/client";
 import {
   badRequestResponse,
+  conflictResponse,
   getCurrentUserWithRoles,
   serverErrorResponse,
 } from "@/app/api/_utils/routeUtils";
-import { getMessageForMutation } from "@/app/api/_utils/messageAccess";
+import {
+  getMessageForMutation,
+  isRevisionConflict,
+  MESSAGE_CHANGED_MESSAGE,
+} from "@/app/api/_utils/messageAccess";
+import {
+  messageImageField,
+  parseMessageInput,
+} from "@/app/api/_utils/messageInput";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -12,7 +21,7 @@ export async function POST(request: NextRequest) {
     const currentUser = await getCurrentUserWithRoles();
     const body = await request.json().catch(() => null);
 
-    if (!body || typeof body !== "object") {
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
       return badRequestResponse("Missing data");
     }
 
@@ -24,36 +33,29 @@ export async function POST(request: NextRequest) {
       return errorResponse;
     }
 
-    const { title, bodyText, image, fromAdmin } = body;
-
-    if (typeof title !== "string" || title.trim().length === 0) {
-      return badRequestResponse("Title is required");
+    const input = parseMessageInput(body);
+    if (!input.value) {
+      return badRequestResponse(input.error);
     }
-    if (!Array.isArray(bodyText)) {
-      return badRequestResponse("bodyText must be an array");
-    }
-    if (image != null && typeof image !== "string") {
-      return badRequestResponse("image must be an asset id");
-    }
+    const { title, bodyText, image } = input.value;
 
     // Patch only the editable fields. The author is never changed here, and
     // comments and other stored fields are kept.
     const fields: Record<string, unknown> = { title, bodyText };
 
     // Only admins may mark a message as coming from the board.
-    if (currentUser.userRoles.isAdmin && typeof fromAdmin === "boolean") {
-      fields.fromAdmin = fromAdmin;
+    if (currentUser.userRoles.isAdmin && typeof body.fromAdmin === "boolean") {
+      fields.fromAdmin = body.fromAdmin;
     }
 
     if (image) {
-      fields.messageImage = {
-        _type: "image",
-        asset: { _type: "reference", _ref: image },
-      };
+      fields.messageImage = messageImageField(image);
     }
 
+    // ifRevisionId ties the write to the version the ownership check saw.
     const result = await clientWithWriteAccess
       .patch(message._id)
+      .ifRevisionId(message._rev)
       .set(fields)
       .commit();
 
@@ -61,12 +63,15 @@ export async function POST(request: NextRequest) {
       success: {
         message: "Message updated",
         id: message._id,
-        transactionId: result?._rev ?? "-",
+        rev: result?._rev ?? null,
         title,
       },
       status: 200,
     });
   } catch (error) {
+    if (isRevisionConflict(error)) {
+      return conflictResponse(MESSAGE_CHANGED_MESSAGE);
+    }
     console.error("Error updating message:", error);
     return serverErrorResponse("Error: Message could not be updated");
   }

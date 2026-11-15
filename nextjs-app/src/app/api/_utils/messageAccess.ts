@@ -1,8 +1,14 @@
 import { clientWithWriteAccess } from "@/sanity/lib/client";
 import { MESSAGE_OWNERSHIP_QUERY } from "@/sanity/lib/queries";
 import type { MESSAGE_OWNERSHIP_QUERY_RESULT } from "@/types/sanity.types";
-import type { getCurrentUserWithRoles } from "@/app/api/_utils/routeUtils";
-import { NextResponse } from "next/server";
+import {
+  badRequestResponse,
+  forbiddenResponse,
+  notFoundResponse,
+  unauthorizedResponse,
+  type getCurrentUserWithRoles,
+} from "@/app/api/_utils/routeUtils";
+import type { NextResponse } from "next/server";
 
 type CurrentUser = Awaited<ReturnType<typeof getCurrentUserWithRoles>>;
 
@@ -16,17 +22,18 @@ type MessageAccessResult =
  * Loads a published message by id and checks that the signed-in user may
  * change it: admins may change any message, other users only their own.
  * Ownership comes from the stored author reference, never from the request.
+ * The returned _rev must be used to guard the following write.
  */
 export async function getMessageForMutation(
   id: unknown,
   { user, userRoles }: CurrentUser,
 ): Promise<MessageAccessResult> {
   if (!user || !userRoles.isUser) {
-    return { errorResponse: errorJson("Unauthorized", 401) };
+    return { errorResponse: unauthorizedResponse() };
   }
 
   if (typeof id !== "string" || id.length === 0) {
-    return { errorResponse: errorJson("Message ID is required", 400) };
+    return { errorResponse: badRequestResponse("Message ID is required") };
   }
 
   const message = await clientWithWriteAccess.fetch(
@@ -36,14 +43,13 @@ export async function getMessageForMutation(
   );
 
   if (!message) {
-    return { errorResponse: errorJson("Message not found", 404) };
+    return { errorResponse: notFoundResponse("Message not found") };
   }
 
   if (!userRoles.isAdmin && message.authorId !== user.id) {
     return {
-      errorResponse: errorJson(
+      errorResponse: forbiddenResponse(
         "Unauthorized (user can only change their own messages)",
-        403,
       ),
     };
   }
@@ -51,6 +57,14 @@ export async function getMessageForMutation(
   return { message };
 }
 
-function errorJson(message: string, status: number) {
-  return NextResponse.json({ error: { message } }, { status });
+export const MESSAGE_CHANGED_MESSAGE =
+  "Innlegget ble endret av noen andre i mellomtiden. Last inn siden og prøv igjen.";
+
+export function isRevisionConflict(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "statusCode" in error &&
+    (error as { statusCode?: number }).statusCode === 409
+  );
 }

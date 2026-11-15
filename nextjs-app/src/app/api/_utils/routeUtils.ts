@@ -29,6 +29,18 @@ export function badRequestResponse(message: string) {
   return NextResponse.json({ error: { message } }, { status: 400 });
 }
 
+export function forbiddenResponse(message = "Forbidden") {
+  return NextResponse.json({ error: { message } }, { status: 403 });
+}
+
+export function notFoundResponse(message = "Not found") {
+  return NextResponse.json({ error: { message } }, { status: 404 });
+}
+
+export function conflictResponse(message: string) {
+  return NextResponse.json({ error: { message } }, { status: 409 });
+}
+
 export function serverErrorResponse(
   message: string,
   longMessage?: unknown,

@@ -527,7 +527,7 @@ export const MESSAGE_OWNERSHIP_QUERY = defineQuery(`
     && _id == $id
   ][0] {
     _id,
-    "authorId": author._ref,
-    fromAdmin
+    _rev,
+    "authorId": author._ref
   }
 `);

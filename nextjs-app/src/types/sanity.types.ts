@@ -1839,11 +1839,11 @@ export type MeetingMinutesAdminPagedQueryResult = Array<{
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: MESSAGE_OWNERSHIP_QUERY
-// Query: *[    _type == "message"    && _id == $id  ][0] {    _id,    "authorId": author._ref,    fromAdmin  }
+// Query: *[    _type == "message"    && _id == $id  ][0] {    _id,    _rev,    "authorId": author._ref  }
 export type MESSAGE_OWNERSHIP_QUERY_RESULT = {
   _id: string;
+  _rev: string;
   authorId: string | null;
-  fromAdmin: boolean | null;
 } | null;
 
 // Query TypeMap
@@ -1893,6 +1893,6 @@ declare module "@sanity/client" {
     '\n  *[_type=="fileMeetingMinutes"] | order(_createdAt desc) | order(meetingDate desc) {\n    _id,\n    _createdAt,\n    _updatedAt,\n    title,\n    description,\n    meetingDate,\n    meetingPlace,\n    tags,\n    meetingDocuments[]{asset->{url, _id, originalFilename, extension, size}}\n  }\n': AllMeetingMinutesAdminQueryResult;
     '\n  count(*[_type=="fileMeetingMinutes"])\n': CountMeetingMinutesAdminQueryResult;
     '\n  *[_type=="fileMeetingMinutes"] | order(_createdAt desc) | order(meetingDate desc) [$start...$end] {\n    _id,\n    _createdAt,\n    _updatedAt,\n    title,\n    description,\n    meetingDate,\n    meetingPlace,\n    tags,\n    meetingDocuments[]{asset->{url, _id, originalFilename, extension, size}}\n  }\n': MeetingMinutesAdminPagedQueryResult;
-    '\n  *[\n    _type == "message"\n    && _id == $id\n  ][0] {\n    _id,\n    "authorId": author._ref,\n    fromAdmin\n  }\n': MESSAGE_OWNERSHIP_QUERY_RESULT;
+    '\n  *[\n    _type == "message"\n    && _id == $id\n  ][0] {\n    _id,\n    _rev,\n    "authorId": author._ref\n  }\n': MESSAGE_OWNERSHIP_QUERY_RESULT;
   }
 }

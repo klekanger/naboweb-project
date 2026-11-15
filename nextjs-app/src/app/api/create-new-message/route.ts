@@ -5,46 +5,48 @@ import {
   serverErrorResponse,
   unauthorizedResponse,
 } from "@/app/api/_utils/routeUtils";
+import {
+  messageImageField,
+  parseMessageInput,
+} from "@/app/api/_utils/messageInput";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-  const { user, userRoles } = await getCurrentUserWithRoles();
+  try {
+    const { user, userRoles } = await getCurrentUserWithRoles();
 
-  if (!user || !userRoles.isUser) {
-    return unauthorizedResponse();
-  }
+    if (!user || !userRoles.isUser) {
+      return unauthorizedResponse();
+    }
 
-  const res = await request.json();
-  if (!res) {
-    return badRequestResponse("Missing data");
-  }
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return badRequestResponse("Missing data");
+    }
 
-  const { title, bodyText, userId, image, fromAdmin } = res;
+    const input = parseMessageInput(body);
+    if (!input.value) {
+      return badRequestResponse(input.error);
+    }
+    const { title, bodyText, image } = input.value;
 
-  // Create a new message in Sanity
-
-  const messageData: any = {
-    _type: "message",
-    title,
-    bodyText,
-    fromAdmin,
-    author: {
-      _type: "reference",
-      _ref: userId,
-    },
-  };
-
-  if (image) {
-    messageData.messageImage = {
-      _type: "image",
-      asset: {
+    const messageData: { _type: "message"; [field: string]: unknown } = {
+      _type: "message",
+      title,
+      bodyText,
+      // Only admins may post as the board.
+      fromAdmin: userRoles.isAdmin && body.fromAdmin === true,
+      // The author is always the signed-in user, never an id from the request.
+      author: {
         _type: "reference",
-        _ref: image,
+        _ref: user.id,
       },
     };
-  }
 
-  try {
+    if (image) {
+      messageData.messageImage = messageImageField(image);
+    }
+
     const result = await clientWithWriteAccess.create(messageData);
 
     return NextResponse.json(
@@ -61,7 +63,7 @@ export async function POST(request: NextRequest) {
       },
     );
   } catch (error) {
-    console.error("Error: ", error);
-    return serverErrorResponse("Error: Message could not be created", error);
+    console.error("Error creating message:", error);
+    return serverErrorResponse("Error: Message could not be created");
   }
 }
