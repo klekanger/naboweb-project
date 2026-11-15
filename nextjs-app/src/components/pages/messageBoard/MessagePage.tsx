@@ -180,12 +180,6 @@ export default function MessagePage(props: MessagePageProps) {
           _id: _id,
           title: message.title,
           bodyText: (message.bodyText ?? []) as PortableTextBlock[],
-          author: {
-            firstName: author?.firstName ?? "", // If the message has an author, use that. Otherwise, use the current user's first name.
-            lastName: author?.lastName ?? "", // If the message has an author, use that. Otherwise, use the current user's last name.
-          },
-          userId: author?._id ?? null,
-          isAdmin: isAdmin,
           image: imageRef ?? null,
           fromAdmin: message.fromAdmin,
         }),
@@ -258,7 +252,6 @@ export default function MessagePage(props: MessagePageProps) {
         },
         body: JSON.stringify({
           id: _id,
-          userId: author?._id ?? null,
         }),
       });
 

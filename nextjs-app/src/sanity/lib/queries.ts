@@ -518,3 +518,16 @@ export const meetingMinutesAdminPagedQuery = defineQuery(`
     meetingDocuments[]{asset->{url, _id, originalFilename, extension, size}}
   }
 `);
+
+// Used by messageboard API routes to authorize edits and deletes against the
+// stored author, never against ids sent by the client.
+export const MESSAGE_OWNERSHIP_QUERY = defineQuery(`
+  *[
+    _type == "message"
+    && _id == $id
+  ][0] {
+    _id,
+    "authorId": author._ref,
+    fromAdmin
+  }
+`);

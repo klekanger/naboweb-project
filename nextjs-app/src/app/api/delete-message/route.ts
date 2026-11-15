@@ -1,39 +1,29 @@
 import { clientWithWriteAccess } from "@/sanity/lib/client";
 import {
-  badRequestResponse,
   getCurrentUserWithRoles,
   serverErrorResponse,
-  unauthorizedResponse,
 } from "@/app/api/_utils/routeUtils";
+import { getMessageForMutation } from "@/app/api/_utils/messageAccess";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    const { user, userRoles } = await getCurrentUserWithRoles();
+    const currentUser = await getCurrentUserWithRoles();
+    const body = await request.json().catch(() => null);
 
-    if (!user) {
-      return unauthorizedResponse();
+    const { message, errorResponse } = await getMessageForMutation(
+      body?.id,
+      currentUser,
+    );
+    if (errorResponse) {
+      return errorResponse;
     }
 
-    const { id, userId } = await request.json();
-
-    if (!id) {
-      return badRequestResponse("Message ID is required");
-    }
-
-    // Allow admins to delete any message, but regular users can only delete their own
-    if (!(userRoles.isAdmin || user.id === userId)) {
-      return unauthorizedResponse(
-        "Unauthorized (user can only delete their own messages)",
-      );
-    }
-
-    // Delete the message from Sanity
-    await clientWithWriteAccess.delete(id);
+    await clientWithWriteAccess.delete(message._id);
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error deleting message:", error);
-    return serverErrorResponse(error?.message ?? "Failed to delete message");
+    return serverErrorResponse("Failed to delete message");
   }
 }
