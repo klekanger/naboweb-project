@@ -6,7 +6,7 @@ export const MAX_TITLE_LENGTH = 200;
 export const MAX_BLOCKS = 300;
 export const MAX_TEXT_LENGTH = 20_000;
 
-const KEY_PATTERN = /^[A-Za-z0-9_-]{1,64}$/;
+export const KEY_PATTERN = /^[A-Za-z0-9_-]{1,64}$/;
 const IMAGE_ASSET_ID_PATTERN = /^image-[A-Za-z0-9]+-\d+x\d+-[a-z0-9]+$/;
 const STYLES = new Set(["normal", "h2"]);
 const DECORATORS = new Set(["strong", "em", "underline"]);

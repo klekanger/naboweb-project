@@ -1,58 +1,49 @@
 import { clientWithWriteAccess } from "@/sanity/lib/client";
 import {
   badRequestResponse,
+  conflictResponse,
   getCurrentUserWithRoles,
   serverErrorResponse,
-  unauthorizedResponse,
 } from "@/app/api/_utils/routeUtils";
+import {
+  COMMENT_CHANGED_MESSAGE,
+  getCommentForMutation,
+  parseCommentInput,
+} from "@/app/api/_utils/commentAccess";
+import { isRevisionConflict } from "@/app/api/_utils/messageAccess";
 import { type NextRequest, NextResponse } from "next/server";
 
-type EditCommentRequest = {
-  messageId: string;
-  commentKey: string;
-  title: string;
-  bodyText: string;
-  userId: string;
-};
-
 export async function POST(request: NextRequest) {
-  const { user, userRoles } = await getCurrentUserWithRoles();
-
-  if (!user || !userRoles.isUser) {
-    return unauthorizedResponse();
-  }
-
-  const res = (await request.json()) as EditCommentRequest;
-
-  if (!res) {
-    return badRequestResponse("Missing data");
-  }
-
-  const { messageId, commentKey, title, bodyText, userId } = res;
-
-  if (user.id !== userId) {
-    return unauthorizedResponse("Unauthorized (user can only edit their own comments)");
-  }
-
-  if (!messageId || messageId === "") {
-    return badRequestResponse(
-      "Missing messageId. Required for updating comment in Sanity.",
-    );
-  }
-
-  if (!commentKey || commentKey === "") {
-    return badRequestResponse(
-      "Missing commentKey. Required for updating comment in Sanity.",
-    );
-  }
-
   try {
-    // Update the specific comment in the message document
+    const currentUser = await getCurrentUserWithRoles();
+    const body = await request.json().catch(() => null);
+
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return badRequestResponse("Missing data");
+    }
+
+    // Only the comment's author may edit it, admins included.
+    const { comment, errorResponse } = await getCommentForMutation(
+      { messageId: body.messageId, commentKey: body.commentKey },
+      currentUser,
+      { allowAdmin: false },
+    );
+    if (errorResponse) {
+      return errorResponse;
+    }
+
+    const input = parseCommentInput(body);
+    if (!input.value) {
+      return badRequestResponse(input.error);
+    }
+
+    const path = `comments[_key=="${comment.commentKey}"]`;
     const result = await clientWithWriteAccess
-      .patch(messageId)
+      .patch(comment.messageId)
+      .ifRevisionId(comment.messageRev)
       .set({
-        [`comments[_key=="${commentKey}"].commentTitle`]: title,
-        [`comments[_key=="${commentKey}"].commentText`]: bodyText,
+        [`${path}.commentTitle`]: input.value.title,
+        [`${path}.commentText`]: input.value.bodyText,
       })
       .commit();
 
@@ -64,7 +55,10 @@ export async function POST(request: NextRequest) {
       status: 200,
     });
   } catch (error) {
-    console.error("Error: ", error);
-    return serverErrorResponse("Error: Comment could not be updated", error);
+    if (isRevisionConflict(error)) {
+      return conflictResponse(COMMENT_CHANGED_MESSAGE);
+    }
+    console.error("Error updating comment:", error);
+    return serverErrorResponse("Error: Comment could not be updated");
   }
 }

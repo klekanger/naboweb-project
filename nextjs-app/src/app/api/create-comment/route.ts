@@ -2,50 +2,61 @@ import { clientWithWriteAccess } from "@/sanity/lib/client";
 import {
   badRequestResponse,
   getCurrentUserWithRoles,
+  notFoundResponse,
   serverErrorResponse,
   unauthorizedResponse,
 } from "@/app/api/_utils/routeUtils";
+import { parseCommentInput } from "@/app/api/_utils/commentAccess";
+import { MESSAGE_OWNERSHIP_QUERY } from "@/sanity/lib/queries";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-  const { user, userRoles } = await getCurrentUserWithRoles();
-
-  if (!user || !userRoles.isUser) {
-    return unauthorizedResponse();
-  }
-
-  const res = await request.json();
-
-  if (!res) {
-    return badRequestResponse("Missing data");
-  }
-
-  const { title, bodyText, userId, _id } = res;
-
-  if (user.id !== userId) {
-    return unauthorizedResponse("Unauthorized (user can only edit their own posts)");
-  }
-
-  if (!_id || _id === "") {
-    return badRequestResponse("Missing _id. Required for updating post in Sanity.");
-  }
-
   try {
-    // Create a new comment object
+    const { user, userRoles } = await getCurrentUserWithRoles();
+
+    if (!user || !userRoles.isUser) {
+      return unauthorizedResponse();
+    }
+
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return badRequestResponse("Missing data");
+    }
+
+    const { _id } = body;
+    if (typeof _id !== "string" || _id.length === 0) {
+      return badRequestResponse("Message ID is required");
+    }
+
+    const input = parseCommentInput(body);
+    if (!input.value) {
+      return badRequestResponse(input.error);
+    }
+
+    // Only published messages can be commented on.
+    const message = await clientWithWriteAccess.fetch(
+      MESSAGE_OWNERSHIP_QUERY,
+      { id: _id },
+      { perspective: "published" },
+    );
+    if (!message) {
+      return notFoundResponse("Message not found");
+    }
+
     const newComment = {
       _type: "comment",
-      commentTitle: title,
-      commentText: bodyText,
+      commentTitle: input.value.title,
+      commentText: input.value.bodyText,
       published: new Date().toISOString(),
+      // The author is always the signed-in user, never an id from the request.
       commentAuthor: {
         _type: "reference",
-        _ref: userId,
+        _ref: user.id,
       },
     };
 
-    // Update the message document by appending the new comment
     const result = await clientWithWriteAccess
-      .patch(_id)
+      .patch(message._id)
       .setIfMissing({ comments: [] })
       .append("comments", [newComment])
       .commit({
@@ -64,7 +75,7 @@ export async function POST(request: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.error("Error: ", error);
-    return serverErrorResponse("Error: Message could not be created", error);
+    console.error("Error creating comment:", error);
+    return serverErrorResponse("Error: Comment could not be created");
   }
 }

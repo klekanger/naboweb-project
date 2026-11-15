@@ -29,7 +29,6 @@ export default function MessageComments({
   messageId: string;
 }) {
   const userData = useUser();
-  const userId = userData?.user?.id ?? "";
   const router = useRouter();
 
   // State
@@ -80,7 +79,6 @@ export default function MessageComments({
         body: JSON.stringify({
           _id: messageId,
           ...commentData,
-          userId,
         }),
       });
 
@@ -131,7 +129,6 @@ export default function MessageComments({
           messageId,
           commentKey: editingCommentKey,
           ...commentData,
-          userId,
         }),
       });
 
@@ -181,7 +178,6 @@ export default function MessageComments({
         body: JSON.stringify({
           messageId,
           commentKey: deletingCommentKey,
-          userId,
         }),
       });
 
