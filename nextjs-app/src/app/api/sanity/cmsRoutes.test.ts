@@ -269,3 +269,75 @@ describe("/api/sanity/document-menu", () => {
     expect(chain.ifRevisionId).toHaveBeenCalledWith("rev-1");
   });
 });
+
+// Lead 15: deleting a document should also remove its uploaded files from
+// the CDN, unless something else still uses them.
+describe("file cleanup on delete", () => {
+  it("deletes meeting-minutes files that nothing else references", async () => {
+    fetch
+      .mockResolvedValueOnce({ _id: "doc-1", _rev: "rev-1" }) // ownership
+      .mockResolvedValueOnce({ assetIds: ["file-a-pdf", "file-b-pdf"] }) // files
+      .mockResolvedValueOnce(0) // references to file-a
+      .mockResolvedValueOnce(1); // file-b is still used elsewhere
+
+    const res = await minutes.DELETE(req({ _id: "doc-1" }));
+
+    expect(res.status).toBe(200);
+    expect(del).toHaveBeenCalledWith("file-a-pdf");
+    expect(del).not.toHaveBeenCalledWith("file-b-pdf");
+  });
+
+  it("deletes the file of an other document", async () => {
+    fetch
+      .mockResolvedValueOnce({ _id: "doc-1", _rev: "rev-1" })
+      .mockResolvedValueOnce({ assetIds: ["file-c-pdf"] })
+      .mockResolvedValueOnce(0);
+
+    await documents.DELETE(req({ _id: "doc-1" }));
+
+    expect(del).toHaveBeenCalledWith("file-c-pdf");
+  });
+
+  it("keeps the files when the document changed before delete", async () => {
+    fetch
+      .mockResolvedValueOnce({ _id: "doc-1", _rev: "rev-1" })
+      .mockResolvedValueOnce({ assetIds: ["file-a-pdf"] });
+    del.mockResolvedValueOnce({ results: [] });
+
+    const res = await minutes.DELETE(req({ _id: "doc-1" }));
+
+    expect(res.status).toBe(409);
+    expect(del).toHaveBeenCalledTimes(1);
+  });
+
+  it("still succeeds when a file cannot be deleted", async () => {
+    fetch
+      .mockResolvedValueOnce({ _id: "doc-1", _rev: "rev-1" })
+      .mockResolvedValueOnce({ assetIds: ["file-a-pdf"] })
+      .mockResolvedValueOnce(0);
+    del
+      .mockResolvedValueOnce({ results: [{ id: "doc-1", operation: "delete" }] })
+      .mockResolvedValueOnce({ results: [] }) // draft
+      .mockRejectedValueOnce(new Error("asset is referenced"));
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const res = await documents.DELETE(req({ _id: "doc-1" }));
+
+    expect(res.status).toBe(200);
+    consoleError.mockRestore();
+  });
+
+  it("does not touch images when a blog post is deleted", async () => {
+    fetch.mockResolvedValueOnce({
+      _id: "post-1",
+      _rev: "rev-1",
+      privatePost: false,
+      slug: "dugnad",
+      authorIds: [],
+    });
+
+    await blog.DELETE(req({ _id: "post-1" }));
+
+    expect(del).toHaveBeenCalledTimes(2); // the post and its draft
+  });
+});

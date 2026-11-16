@@ -10,6 +10,8 @@ export type ClerkUserForEmailSubscription = {
   emailAddresses: ReadonlyArray<{ id: string; emailAddress: string }>;
   primaryEmailAddressId?: string | null;
   publicMetadata: unknown;
+  banned?: boolean;
+  locked?: boolean;
 };
 
 export type EmailSubscriber = {
@@ -23,6 +25,20 @@ export function isEmailSubscriber(user: ClerkUserForEmailSubscription): boolean 
   return metadata.emailSubscription === true;
 }
 
+/**
+ * Alerts contain resident-only content (private posts, meeting minutes,
+ * messages), so a recipient must still be a resident: the "user" role is
+ * assigned and the account is not banned or locked. A subscription flag left
+ * behind after an admin removes the role must not keep the emails coming.
+ */
+export function isActiveResident(user: ClerkUserForEmailSubscription): boolean {
+  if (user.banned || user.locked) {
+    return false;
+  }
+  const roles = (user.publicMetadata as { roles?: unknown } | null)?.roles;
+  return Array.isArray(roles) && roles.includes("user");
+}
+
 export function getSubscriberEmail(
   user: ClerkUserForEmailSubscription,
 ): string | null {
@@ -32,7 +48,7 @@ export function getSubscriberEmail(
 export function mapUserToEmailSubscriber(
   user: ClerkUserForEmailSubscription,
 ): EmailSubscriber | null {
-  if (!isEmailSubscriber(user)) {
+  if (!isEmailSubscriber(user) || !isActiveResident(user)) {
     return null;
   }
 

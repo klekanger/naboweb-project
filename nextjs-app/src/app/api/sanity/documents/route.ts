@@ -139,7 +139,7 @@ export async function DELETE(request: NextRequest) {
   if (errorResponse) return errorResponse;
 
   try {
-    if (!(await deleteCmsDocument(DOC_TYPE, doc))) {
+    if (!(await deleteCmsDocument(DOC_TYPE, doc, { deleteFileAssets: true }))) {
       return simpleErrorResponse(CMS_CONFLICT_MESSAGE, 409);
     }
     revalidateDocs();

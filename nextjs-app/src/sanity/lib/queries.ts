@@ -174,6 +174,8 @@ export const privateBlogBySlugQuery = defineQuery(`
   }
 `);
 
+// The front page is public, so posts that were made private after they were
+// added to the showcase are filtered out here.
 export const showcaseQuery = defineQuery(`
   *[_type=="frontpage-showcase"][0]{
     "enableShowcase": coalesce(enableShowcase, true),
@@ -181,7 +183,7 @@ export const showcaseQuery = defineQuery(`
     _createdAt,
     _updatedAt,
     showcaseTitle,
-    showcaseBlogposts[]->{
+    "showcaseBlogposts": showcaseBlogposts[@->privatePost != true]->{
       _id, 
       title, 
       excerpt, 
@@ -545,6 +547,23 @@ export const CMS_DOCUMENT_REVISION_QUERY = defineQuery(`
     _id,
     _rev
   }
+`);
+
+// File assets uploaded for an "other document" or for meeting minutes. Used
+// to delete the files from the Sanity CDN when the document is deleted.
+export const CMS_DOCUMENT_FILE_ASSETS_QUERY = defineQuery(`
+  *[
+    _type == $type
+    && _id == $id
+  ][0] {
+    "assetIds": coalesce(meetingDocuments[].asset._ref, [])
+      + select(defined(otherDocument.asset._ref) => [otherDocument.asset._ref], [])
+  }
+`);
+
+// Used to check that nothing else still points at a file before deleting it.
+export const COUNT_REFERENCES_QUERY = defineQuery(`
+  count(*[references($id)])
 `);
 
 // Used by the blog API route to read the stored privatePost flag and authors

@@ -13,6 +13,28 @@ export function escapeHtmlText(str: string | null | undefined): string {
     .replace(/'/g, "&#39;");
 }
 
+/**
+ * Builds an escaped href for a link on the site. Each path segment is
+ * URL-encoded, so CMS values such as a slug or id cannot add attributes,
+ * markup or extra path parts to the link.
+ */
+export function siteHref(baseUrl: string, ...segments: string[]): string {
+  const path = segments.map((s) => encodeURIComponent(s)).join("/");
+  return escapeHtmlText(`${baseUrl}/${path}`);
+}
+
+const SANITY_CDN_ORIGIN = "https://cdn.sanity.io";
+
+/** Builds an escaped href for a Sanity file URL; anything else becomes "". */
+export function sanityAssetHref(url: string | null | undefined): string {
+  if (!url) return "";
+  try {
+    return new URL(url).origin === SANITY_CDN_ORIGIN ? escapeHtmlText(url) : "";
+  } catch {
+    return "";
+  }
+}
+
 export interface Content {
   messages: {
     title: string;
@@ -237,7 +259,7 @@ export const emailTemplate = ({
         <div class="header">
           <h1 style="margin: 0; color: #212529;">Nytt innhold er publisert på nettsiden til ${SITE_NAME}</h1>
         <p>Her kommer en oversikt over nytt innhold som er publisert.</p>
-        <p>Hvis du ikke ønsker å motta disse varslingene, logg deg inn på <a href="${process.env.NEXT_PUBLIC_BASE_URL}/min-side">Min side</a> og skru av e-post-varsling. Du kan også
+        <p>Hvis du ikke ønsker å motta disse varslingene, logg deg inn på <a href="${siteHref(baseUrl, "min-side")}">Min side</a> og skru av e-post-varsling. Du kan også
         ta kontakt med styret.</p>
         </div>
         <div class="content">
@@ -250,7 +272,7 @@ export const emailTemplate = ({
               .map(
                 (message) => `
               <div class="item">
-                <a href="${baseUrl}/messageboard/${message._id}" style="text-decoration: none; color: inherit;">
+                <a href="${siteHref(baseUrl, "messageboard", message._id)}" style="text-decoration: none; color: inherit;">
                   <div class="item-title">${escapeHtmlText(message.title)}</div> 
                   <div class="item-byline">
                     <span>Av: ${escapeHtmlText(message.author?.firstName)} ${escapeHtmlText(message.author?.lastName) || "-"}</span>
@@ -275,7 +297,7 @@ export const emailTemplate = ({
               .map(
                 (comment) => `
               <div class="item">
-                <a href="${baseUrl}/messageboard/${comment.parentMessageId}" style="text-decoration: none; color: inherit;">
+                <a href="${siteHref(baseUrl, "messageboard", comment.parentMessageId)}" style="text-decoration: none; color: inherit;">
                 <div class="item-title">Kommentar til: <span class="item-title-light">${escapeHtmlText(comment.parentMessageTitle)}</span></div>
                 <div class="item-subtitle">${escapeHtmlText(comment.commentTitle)}</div>
                   <div class="item-text">${escapeHtmlText(comment.commentText)}</div>
@@ -302,7 +324,7 @@ export const emailTemplate = ({
               .map(
                 (post) => `
               <div class="item">
-                <a href="${baseUrl}${post.privatePost ? `/information/post/${post.slug.current}` : `/blog/${post.slug.current}`}" style="text-decoration: none; color: inherit;">
+                <a href="${post.privatePost ? siteHref(baseUrl, "information", "post", post.slug.current) : siteHref(baseUrl, "blog", post.slug.current)}" style="text-decoration: none; color: inherit;">
                   <div class="item-title">${escapeHtmlText(post.title)}</div>
                   ${post.excerpt ? `<div class="item-meta">${escapeHtmlText(toPlainText(post.excerpt))}</div>` : ""}
                   <div class="item-byline">
@@ -327,7 +349,7 @@ export const emailTemplate = ({
               .map(
                 (meeting) => `
               <div class="item">
-                <a href="${baseUrl}/information/referater/${meeting._id}" style="text-decoration: none; color: inherit;">
+                <a href="${siteHref(baseUrl, "information", "referater", meeting._id)}" style="text-decoration: none; color: inherit;">
                   <div class="item-title">${escapeHtmlText(meeting.title)} | ${new Date(meeting.meetingDate).toLocaleDateString("nb-NO")} | ${escapeHtmlText(meeting.meetingPlace)}</div>
                   ${meeting.description ? `<div class="item-meta">${escapeHtmlText(meeting.description)}</div>` : ""}
                   <div class="item-byline">
@@ -352,7 +374,7 @@ export const emailTemplate = ({
               .map(
                 (file) => `
               <div class="item">
-                <a href="${file.document?.asset?.url || ""}" style="text-decoration: none; color: inherit;">
+                <a href="${sanityAssetHref(file.document?.asset?.url)}" style="text-decoration: none; color: inherit;">
                  <div class="item-title">${escapeHtmlText(file.title)}</div>
                 ${file.description ? `<div class="item-meta">${escapeHtmlText(file.description)}</div>` : ""}
                   <div class="item-byline">
