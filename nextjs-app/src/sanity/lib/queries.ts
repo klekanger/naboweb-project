@@ -547,3 +547,30 @@ export const COMMENT_OWNERSHIP_QUERY = defineQuery(`
     }
   }
 `);
+
+// Used by CMS API routes to bind a client-supplied _id to the expected
+// document type before writing with the write token.
+export const CMS_DOCUMENT_REVISION_QUERY = defineQuery(`
+  *[
+    _type == $type
+    && _id == $id
+  ][0] {
+    _id,
+    _rev
+  }
+`);
+
+// Used by the blog API route to read the stored privatePost flag and authors
+// with the write client, so drafts or stale caches cannot hide them.
+export const BLOG_POST_FOR_UPDATE_QUERY = defineQuery(`
+  *[
+    _type == "blogPost"
+    && _id == $id
+  ][0] {
+    _id,
+    _rev,
+    privatePost,
+    "slug": slug.current,
+    "authorIds": coalesce(author[]._ref, [])
+  }
+`);
