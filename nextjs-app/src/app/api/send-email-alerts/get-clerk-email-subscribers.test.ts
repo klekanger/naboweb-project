@@ -25,24 +25,34 @@ function createClerkUser(
     emailSubscription: boolean;
     firstName: string;
     lastName: string;
+    roles: unknown;
+    banned: boolean;
+    locked: boolean;
   }> & { emailSubscription?: boolean } = {},
 ): ClerkUserForEmailSubscription {
   const {
     email = "user@example.com",
     firstName = "Ola",
     lastName = "Nordmann",
+    banned = false,
+    locked = false,
   } = overrides;
+  // Default to a resident; an explicit `roles: undefined` leaves roles out.
+  const roles = "roles" in overrides ? overrides.roles : ["user"];
 
-  const publicMetadata =
-    "emailSubscription" in overrides
-      ? { emailSubscription: overrides.emailSubscription }
-      : { emailSubscription: true };
+  const publicMetadata = {
+    emailSubscription:
+      "emailSubscription" in overrides ? overrides.emailSubscription : true,
+    ...(roles === undefined ? {} : { roles }),
+  };
 
   return {
     firstName,
     lastName,
     emailAddresses: [{ id: "email_id_1", emailAddress: email }],
     publicMetadata,
+    banned,
+    locked,
   };
 }
 
@@ -108,6 +118,24 @@ describe("get-clerk-email-subscribers", () => {
         createClerkUser({ emailSubscription: false }),
       ),
     ).toBeNull();
+  });
+
+  // Lead 14: alerts contain resident-only content.
+  it.each([
+    ["the user role was removed", { roles: ["editor"] }],
+    ["there are no roles", { roles: [] }],
+    ["roles metadata is missing", { roles: undefined }],
+    ["roles is not a list", { roles: "user" }],
+    ["the account is banned", { banned: true }],
+    ["the account is locked", { locked: true }],
+  ])("mapUserToEmailSubscriber skips a subscriber when %s", (_label, overrides) => {
+    expect(mapUserToEmailSubscriber(createClerkUser(overrides))).toBeNull();
+  });
+
+  it("mapUserToEmailSubscriber keeps residents with extra roles", () => {
+    expect(
+      mapUserToEmailSubscriber(createClerkUser({ roles: ["user", "admin"] })),
+    ).not.toBeNull();
   });
 
   it("dedupeEmailSubscribers removes duplicate emails case-insensitively", () => {

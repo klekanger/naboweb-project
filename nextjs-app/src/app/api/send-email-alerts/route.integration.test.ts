@@ -67,7 +67,8 @@ function createSubscribedClerkUser(
     firstName: "Test",
     lastName: "User",
     emailAddresses: [{ id: `email_${id}`, emailAddress: email }],
-    publicMetadata: { emailSubscription: true },
+    // A resident: alerts only go to accounts with the "user" role.
+    publicMetadata: { emailSubscription: true, roles: ["user"] },
   };
 }
 
@@ -191,7 +192,7 @@ describe("/api/send-email-alerts - integration", () => {
       data: [
         {
           ...createSubscribedClerkUser("user_unsub", "unsub@example.com"),
-          publicMetadata: { emailSubscription: false },
+          publicMetadata: { emailSubscription: false, roles: ["user"] },
         },
       ],
     });

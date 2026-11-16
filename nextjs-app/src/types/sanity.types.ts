@@ -1228,7 +1228,7 @@ export type PrivateBlogBySlugQueryResult = {
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: showcaseQuery
-// Query: *[_type=="frontpage-showcase"][0]{    "enableShowcase": coalesce(enableShowcase, true),    _id,    _createdAt,    _updatedAt,    showcaseTitle,    showcaseBlogposts[]->{      _id,       title,       excerpt,       featuredImage{..., "lqip": asset->metadata.lqip},       slug    },  }
+// Query: *[_type=="frontpage-showcase"][0]{    "enableShowcase": coalesce(enableShowcase, true),    _id,    _createdAt,    _updatedAt,    showcaseTitle,    "showcaseBlogposts": showcaseBlogposts[@->privatePost != true]->{      _id,       title,       excerpt,       featuredImage{..., "lqip": asset->metadata.lqip},       slug    },  }
 export type ShowcaseQueryResult = {
   enableShowcase: boolean | true;
   _id: string;
@@ -1846,6 +1846,26 @@ export type CMS_DOCUMENT_REVISION_QUERY_RESULT = {
 } | null;
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
+// Variable: CMS_DOCUMENT_FILE_ASSETS_QUERY
+// Query: *[    _type == $type    && _id == $id  ][0] {    "assetIds": coalesce(meetingDocuments[].asset._ref, [])      + select(defined(otherDocument.asset._ref) => [otherDocument.asset._ref], [])  }
+export type CMS_DOCUMENT_FILE_ASSETS_QUERY_RESULT =
+  | {
+      assetIds: Array<never>;
+    }
+  | {
+      assetIds: Array<never> | Array<string | null>;
+    }
+  | {
+      assetIds: Array<never> | Array<string>;
+    }
+  | null;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
+// Variable: COUNT_REFERENCES_QUERY
+// Query: count(*[references($id)])
+export type COUNT_REFERENCES_QUERY_RESULT = number;
+
+// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: BLOG_POST_FOR_UPDATE_QUERY
 // Query: *[    _type == "blogPost"    && _id == $id  ][0] {    _id,    _rev,    privatePost,    "slug": slug.current,    "authorIds": coalesce(author[]._ref, [])  }
 export type BLOG_POST_FOR_UPDATE_QUERY_RESULT = {
@@ -1873,7 +1893,7 @@ declare module "@sanity/client" {
     '\n  *[_type=="blogPost" && slug.current == $slug && privatePost != true][0]{\n    _id,\n    _createdAt,\n    _updatedAt,\n    privatePost,\n    title,\n    excerpt,\n    featuredImage{..., "lqip": asset->metadata.lqip},\n    bodyText[]{\n      ...,\n      _type == "image" => {\n        ...,\n        "lqip": asset->metadata.lqip\n      }\n    },\n    "slug": slug.current,\n    author[]->{...},\n  }\n': BlogBySlugQueryResult;
     '\n  *[_type=="blogPost" && slug.current == $slug][0]{\n    _id,\n    _createdAt,\n    _updatedAt,\n    privatePost,\n    title,\n    excerpt,\n    featuredImage{..., "lqip": asset->metadata.lqip},\n    bodyText[]{\n      ...,\n      _type == "image" => {\n        ...,\n        "lqip": asset->metadata.lqip\n      }\n    },\n    "slug": slug.current,\n    author[]->{...},\n  }\n': AllBlogBySlugQueryResult;
     '\n  *[_type=="blogPost" && slug.current == $slug && privatePost == true][0]{\n    _id,\n    _createdAt,\n    _updatedAt,\n    privatePost,\n    title,\n    excerpt,\n    featuredImage{..., "lqip": asset->metadata.lqip},\n    bodyText[]{\n      ...,\n      _type == "image" => {\n        ...,\n        "lqip": asset->metadata.lqip\n      }\n    },\n    "slug": slug.current,\n    author[]->{...},\n  }\n': PrivateBlogBySlugQueryResult;
-    '\n  *[_type=="frontpage-showcase"][0]{\n    "enableShowcase": coalesce(enableShowcase, true),\n    _id,\n    _createdAt,\n    _updatedAt,\n    showcaseTitle,\n    showcaseBlogposts[]->{\n      _id, \n      title, \n      excerpt, \n      featuredImage{..., "lqip": asset->metadata.lqip}, \n      slug\n    },\n  }\n': ShowcaseQueryResult;
+    '\n  *[_type=="frontpage-showcase"][0]{\n    "enableShowcase": coalesce(enableShowcase, true),\n    _id,\n    _createdAt,\n    _updatedAt,\n    showcaseTitle,\n    "showcaseBlogposts": showcaseBlogposts[@->privatePost != true]->{\n      _id, \n      title, \n      excerpt, \n      featuredImage{..., "lqip": asset->metadata.lqip}, \n      slug\n    },\n  }\n': ShowcaseQueryResult;
     '\n*[_type=="frontpage-new-user-intro"][0]{\n    "enableNewUserIntro": coalesce(enableNewUserIntro, true),\n    title,\n    introText\n  }\n': NewUserIntroQueryResult;
     '\n  count(*[_type=="blogPost" && privatePost==false])\n': CountPublicBlogPostsQueryResult;
     '\n  count(*[_type=="blogPost" && privatePost==true])\n': CountPrivateBlogPostsQueryResult;
@@ -1903,6 +1923,8 @@ declare module "@sanity/client" {
     '\n  *[\n    _type == "message"\n    && _id == $id\n  ][0] {\n    _id,\n    _rev,\n    "authorId": author._ref\n  }\n': MESSAGE_OWNERSHIP_QUERY_RESULT;
     '\n  *[\n    _type == "message"\n    && _id == $id\n  ][0] {\n    _id,\n    _rev,\n    "comment": comments[_key == $key][0] {\n      _key,\n      "authorId": commentAuthor._ref\n    }\n  }\n': COMMENT_OWNERSHIP_QUERY_RESULT;
     "\n  *[\n    _type == $type\n    && _id == $id\n  ][0] {\n    _id,\n    _rev\n  }\n": CMS_DOCUMENT_REVISION_QUERY_RESULT;
+    '\n  *[\n    _type == $type\n    && _id == $id\n  ][0] {\n    "assetIds": coalesce(meetingDocuments[].asset._ref, [])\n      + select(defined(otherDocument.asset._ref) => [otherDocument.asset._ref], [])\n  }\n': CMS_DOCUMENT_FILE_ASSETS_QUERY_RESULT;
+    "\n  count(*[references($id)])\n": COUNT_REFERENCES_QUERY_RESULT;
     '\n  *[\n    _type == "blogPost"\n    && _id == $id\n  ][0] {\n    _id,\n    _rev,\n    privatePost,\n    "slug": slug.current,\n    "authorIds": coalesce(author[]._ref, [])\n  }\n': BLOG_POST_FOR_UPDATE_QUERY_RESULT;
   }
 }

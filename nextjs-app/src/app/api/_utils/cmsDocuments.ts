@@ -3,7 +3,11 @@
 // to the expected _type before the write token touches it.
 
 import { clientWithWriteAccess } from "@/sanity/lib/client";
-import { CMS_DOCUMENT_REVISION_QUERY } from "@/sanity/lib/queries";
+import {
+  CMS_DOCUMENT_FILE_ASSETS_QUERY,
+  CMS_DOCUMENT_REVISION_QUERY,
+  COUNT_REFERENCES_QUERY,
+} from "@/sanity/lib/queries";
 import { simpleErrorResponse } from "@/app/api/_utils/routeUtils";
 import { IMAGE_ASSET_ID_PATTERN } from "@/app/api/_utils/messageInput";
 import type { NextResponse } from "next/server";
@@ -92,8 +96,26 @@ const DELETE_AT_REVISION = `*[
  * Deletes the published document only if it still has the checked type and
  * revision, then removes any Studio draft so publishing it cannot restore the
  * document. Returns false if nothing matched (changed in the meantime).
+ *
+ * With `deleteFileAssets`, the uploaded files are deleted too, so their
+ * cdn.sanity.io URLs stop working. A file still referenced by another
+ * document is kept.
  */
-export async function deleteCmsDocument(type: string, doc: CmsDocument) {
+export async function deleteCmsDocument(
+  type: string,
+  doc: CmsDocument,
+  { deleteFileAssets = false }: { deleteFileAssets?: boolean } = {},
+) {
+  const assetIds = deleteFileAssets
+    ? ((
+        await clientWithWriteAccess.fetch(
+          CMS_DOCUMENT_FILE_ASSETS_QUERY,
+          { type, id: doc._id },
+          { perspective: "published" },
+        )
+      )?.assetIds ?? [])
+    : [];
+
   const result = await clientWithWriteAccess.delete({
     query: DELETE_AT_REVISION,
     params: { type, id: doc._id, rev: doc._rev },
@@ -104,7 +126,29 @@ export async function deleteCmsDocument(type: string, doc: CmsDocument) {
   }
 
   await clientWithWriteAccess.delete(`drafts.${doc._id}`);
+  await deleteUnreferencedFileAssets(assetIds);
   return true;
+}
+
+/**
+ * Deletes file assets that nothing references any more. Failures are logged,
+ * not thrown: the document itself is already gone at this point.
+ */
+async function deleteUnreferencedFileAssets(assetIds: (string | null)[]) {
+  for (const assetId of new Set(assetIds)) {
+    if (!isFileAssetId(assetId)) continue;
+    try {
+      const references = await clientWithWriteAccess.fetch(
+        COUNT_REFERENCES_QUERY,
+        { id: assetId },
+      );
+      if (references === 0) {
+        await clientWithWriteAccess.delete(assetId);
+      }
+    } catch (error) {
+      console.error(`Could not delete file asset ${assetId}:`, error);
+    }
+  }
 }
 
 export const CMS_CONFLICT_MESSAGE =
