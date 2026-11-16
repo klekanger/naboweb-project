@@ -1,4 +1,5 @@
 import { currentUser } from "@clerk/nextjs/server";
+import { rolesOf } from "@/lib/requireRole";
 import { NextResponse } from "next/server";
 
 type UserRoles = {
@@ -9,8 +10,9 @@ type UserRoles = {
 
 export async function getCurrentUserWithRoles() {
   const user = await currentUser();
-  const roles = (user?.publicMetadata as { roles?: string[] } | undefined)
-    ?.roles ?? ["user"];
+  // No roles means no access, the same as the protected pages. A new Clerk
+  // account has no roles until an admin assigns them.
+  const roles = rolesOf(user);
 
   const userRoles: UserRoles = {
     isUser: roles.includes("user"),
@@ -63,7 +65,7 @@ type SanityAdminEditorAuth =
 
 export async function getSanityAdminEditorAuth(): Promise<SanityAdminEditorAuth> {
   const user = await currentUser();
-  const roles = (user?.publicMetadata?.roles as string[]) || [];
+  const roles = rolesOf(user);
 
   if (!user?.id || (!roles.includes("admin") && !roles.includes("editor"))) {
     return {

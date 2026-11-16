@@ -9,7 +9,11 @@ export const RESIDENT_ROLES: Role[] = ["user"];
 export const CMS_ROLES: Role[] = ["admin", "editor"];
 export const ADMIN_ROLES: Role[] = ["admin"];
 
-function rolesOf(user: Awaited<ReturnType<typeof currentUser>>): string[] {
+/**
+ * Reads the roles an admin assigned in Clerk publicMetadata. A missing or
+ * malformed value means no roles: accounts never get a role by default.
+ */
+export function rolesOf(user: Awaited<ReturnType<typeof currentUser>>): string[] {
   const roles = user?.publicMetadata?.roles;
   return Array.isArray(roles) ? roles.filter((r) => typeof r === "string") : [];
 }
