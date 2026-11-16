@@ -1,62 +1,48 @@
 import { clientWithWriteAccess } from "@/sanity/lib/client";
 import {
   badRequestResponse,
+  conflictResponse,
   getCurrentUserWithRoles,
   serverErrorResponse,
-  unauthorizedResponse,
 } from "@/app/api/_utils/routeUtils";
+import {
+  COMMENT_CHANGED_MESSAGE,
+  getCommentForMutation,
+} from "@/app/api/_utils/commentAccess";
+import { isRevisionConflict } from "@/app/api/_utils/messageAccess";
 import { type NextRequest, NextResponse } from "next/server";
-
-type DeleteCommentRequest = {
-  messageId: string;
-  commentKey: string;
-  userId: string;
-};
 
 export async function POST(request: NextRequest) {
   try {
-    const { user, userRoles } = await getCurrentUserWithRoles();
+    const currentUser = await getCurrentUserWithRoles();
+    const body = await request.json().catch(() => null);
 
-    if (!user) {
-      return unauthorizedResponse();
-    }
-
-    const res = (await request.json()) as DeleteCommentRequest;
-
-    if (!res) {
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
       return badRequestResponse("Missing data");
     }
 
-    const { messageId, commentKey, userId } = res;
-
-    if (!messageId || messageId === "") {
-      return badRequestResponse(
-        "Missing messageId. Required for deleting comment in Sanity.",
-      );
+    // Admins may delete any comment; others only their own.
+    const { comment, errorResponse } = await getCommentForMutation(
+      { messageId: body.messageId, commentKey: body.commentKey },
+      currentUser,
+      { allowAdmin: true },
+    );
+    if (errorResponse) {
+      return errorResponse;
     }
 
-    if (!commentKey || commentKey === "") {
-      return badRequestResponse(
-        "Missing commentKey. Required for deleting comment in Sanity.",
-      );
-    }
-
-    // Allow admins to delete any comment, but regular users can only delete their own
-    if (!(userRoles.isAdmin || user.id === userId)) {
-      return unauthorizedResponse(
-        "Unauthorized (user can only delete their own comments)",
-      );
-    }
-
-    // Remove the specific comment from the message document
-    const result = await clientWithWriteAccess
-      .patch(messageId)
-      .unset([`comments[_key=="${commentKey}"]`])
+    await clientWithWriteAccess
+      .patch(comment.messageId)
+      .ifRevisionId(comment.messageRev)
+      .unset([`comments[_key=="${comment.commentKey}"]`])
       .commit();
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error) {
+    if (isRevisionConflict(error)) {
+      return conflictResponse(COMMENT_CHANGED_MESSAGE);
+    }
     console.error("Error deleting comment:", error);
-    return serverErrorResponse(error?.message ?? "Failed to delete comment");
+    return serverErrorResponse("Failed to delete comment");
   }
 }

@@ -518,3 +518,32 @@ export const meetingMinutesAdminPagedQuery = defineQuery(`
     meetingDocuments[]{asset->{url, _id, originalFilename, extension, size}}
   }
 `);
+
+// Used by messageboard API routes to authorize edits and deletes against the
+// stored author, never against ids sent by the client.
+export const MESSAGE_OWNERSHIP_QUERY = defineQuery(`
+  *[
+    _type == "message"
+    && _id == $id
+  ][0] {
+    _id,
+    _rev,
+    "authorId": author._ref
+  }
+`);
+
+// Used by comment API routes to authorize edits and deletes against the
+// stored comment author. $key is validated before it is used in patch paths.
+export const COMMENT_OWNERSHIP_QUERY = defineQuery(`
+  *[
+    _type == "message"
+    && _id == $id
+  ][0] {
+    _id,
+    _rev,
+    "comment": comments[_key == $key][0] {
+      _key,
+      "authorId": commentAuthor._ref
+    }
+  }
+`);

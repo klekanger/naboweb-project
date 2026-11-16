@@ -1,109 +1,78 @@
 import { clientWithWriteAccess } from "@/sanity/lib/client";
 import {
   badRequestResponse,
+  conflictResponse,
   getCurrentUserWithRoles,
   serverErrorResponse,
-  unauthorizedResponse,
 } from "@/app/api/_utils/routeUtils";
+import {
+  getMessageForMutation,
+  isRevisionConflict,
+  MESSAGE_CHANGED_MESSAGE,
+} from "@/app/api/_utils/messageAccess";
+import {
+  messageImageField,
+  parseMessageInput,
+} from "@/app/api/_utils/messageInput";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-  const { user, userRoles } = await getCurrentUserWithRoles();
-
-  if (!user || !userRoles.isUser) {
-    return unauthorizedResponse();
-  }
-
-  const res = await request.json();
-  if (!res) {
-    return badRequestResponse("Missing data");
-  }
-
-  const { title, bodyText, userId, image, fromAdmin, _id, isAdmin } = res;
-
-  if (user.id !== userId && !isAdmin) {
-    return unauthorizedResponse(
-      "Unauthorized (user can only edit their own posts)",
-    );
-  }
-
-  if (!_id) {
-    return badRequestResponse("Missing _id. Required for updating post in Sanity.");
-  }
-
   try {
-    // First get the existing document to ensure it exists
-    const existingMessage = await clientWithWriteAccess.getDocument(_id);
+    const currentUser = await getCurrentUserWithRoles();
+    const body = await request.json().catch(() => null);
 
-    if (!existingMessage) {
-      return NextResponse.json({
-        error: { message: "Message not found" },
-        status: 404,
-      });
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return badRequestResponse("Missing data");
     }
 
-    // Create the update document
-    const updateDoc: {
-      _id: string;
-      _type: string;
-      title: any;
-      bodyText: any;
-      fromAdmin: boolean;
-      author: {
-        _type: string;
-        _ref: string;
-      };
-      messageImage?: {
-        _type: string;
-        asset: {
-          _type: string;
-          _ref: string;
-        };
-      };
-    } = {
-      _id,
-      _type: "message",
-      title,
-      bodyText,
-      fromAdmin,
-      author: {
-        _type: "reference",
-        _ref: userId,
-      },
-    };
+    const { message, errorResponse } = await getMessageForMutation(
+      body._id,
+      currentUser,
+    );
+    if (errorResponse) {
+      return errorResponse;
+    }
 
-    // Handle image - either new image or preserve existing
+    const input = parseMessageInput(body);
+    if (!input.value) {
+      return badRequestResponse(input.error);
+    }
+    const { title, bodyText, image } = input.value;
+
+    // Patch only the editable fields. The author is never changed here, and
+    // comments and other stored fields are kept.
+    const fields: Record<string, unknown> = { title, bodyText };
+
+    // Only admins may mark a message as coming from the board.
+    if (currentUser.userRoles.isAdmin && typeof body.fromAdmin === "boolean") {
+      fields.fromAdmin = body.fromAdmin;
+    }
+
     if (image) {
-      // New image uploaded
-      updateDoc.messageImage = {
-        _type: "image",
-        asset: {
-          _type: "reference",
-          _ref: image,
-        },
-      };
-    } else if (existingMessage.messageImage) {
-      // No new image, preserve existing image
-      updateDoc.messageImage = existingMessage.messageImage;
+      fields.messageImage = messageImageField(image);
     }
 
-    // Update using transaction
-    const transaction = clientWithWriteAccess.transaction();
-    transaction.createOrReplace(updateDoc);
-
-    const result = await transaction.commit();
+    // ifRevisionId ties the write to the version the ownership check saw.
+    const result = await clientWithWriteAccess
+      .patch(message._id)
+      .ifRevisionId(message._rev)
+      .set(fields)
+      .commit();
 
     return NextResponse.json({
       success: {
         message: "Message updated",
-        id: _id,
-        transactionId: result?.transactionId ?? "-",
-        title: title,
+        id: message._id,
+        rev: result?._rev ?? null,
+        title,
       },
       status: 200,
     });
   } catch (error) {
-    console.error("Error: ", error);
-    return serverErrorResponse("Error: Message could not be updated", error);
+    if (isRevisionConflict(error)) {
+      return conflictResponse(MESSAGE_CHANGED_MESSAGE);
+    }
+    console.error("Error updating message:", error);
+    return serverErrorResponse("Error: Message could not be updated");
   }
 }

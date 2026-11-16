@@ -140,11 +140,6 @@ export default function NewMessage() {
         body: JSON.stringify({
           title: message.title,
           bodyText: (message.bodyText ?? []) as PortableTextBlock[],
-          author: {
-            firstName: firstName ?? "",
-            lastName: lastName ?? "",
-          },
-          userId: id,
           image: imageRef ?? null,
           fromAdmin: message.fromAdmin,
         }),
