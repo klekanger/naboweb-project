@@ -17,6 +17,7 @@ import DraftModeToast from "@/components/DraftModeToast";
 import PlausibleRouteTracker from "@/components/PlausibleRouteTracker";
 import { Suspense } from "react";
 import Script from "next/script";
+import { serializeJsonLd } from "@/lib/jsonLd";
 
 const openSans = Open_Sans({
   subsets: ["latin"],
@@ -72,7 +73,7 @@ async function ClerkBodyContent({ children }: { children: React.ReactNode }) {
         <script
           type="application/ld+json"
           // JSON-LD is not executed as JS; this is the recommended way to embed it in Next.js.
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(siteJsonLd) }}
         />
         <Providers>
           {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}
@@ -127,7 +128,7 @@ export default async function RootLayout({
               <script
                 type="application/ld+json"
                 // JSON-LD is not executed as JS; this is the recommended way to embed it in Next.js.
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
+                dangerouslySetInnerHTML={{ __html: serializeJsonLd(siteJsonLd) }}
               />
               <Providers>
                 <Toaster />

@@ -9,6 +9,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
+import { serializeJsonLd } from "@/lib/jsonLd";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -167,8 +168,8 @@ export default async function PageSlugRoute(props: Props) {
     <>
       <script
         type="application/ld+json"
-        // JSON-LD is not executed as JS; this is the recommended way to embed it in Next.js.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        // serializeJsonLd escapes "<" etc. so CMS text cannot close the tag.
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       <Article
         title={data?.title ?? ""}
