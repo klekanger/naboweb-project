@@ -1,3 +1,4 @@
+import { CMS_ROLES, requireRoleOrRedirect } from "@/lib/requireRole";
 import AdminEditPageShell from "@/components/admin/AdminEditPageShell";
 import DocumentsManager from "@/components/admin/DocumentsManager";
 import { getAdminPagedItems } from "@/lib/admin-pagination";
@@ -15,6 +16,9 @@ export default async function AdminDocumentsPage({
 }: {
   searchParams: SearchParams;
 }) {
+  // Check the role here, not only in the layout, and before fetching data.
+  await requireRoleOrRedirect(CMS_ROLES);
+
   const { items: documents, pageNumber, totalPages } =
     await getAdminPagedItems<DocumentItem>({
       searchParams,

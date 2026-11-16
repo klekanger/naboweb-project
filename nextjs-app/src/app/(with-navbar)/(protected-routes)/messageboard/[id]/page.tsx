@@ -1,26 +1,18 @@
 import MessagePage from "@/components/pages/messageBoard/MessagePage";
 import { sanityFetch } from "@/sanity/lib/live";
-import { allMessageIdsQuery, messageByIdQuery } from "@/sanity/lib/queries";
+import { messageByIdQuery } from "@/sanity/lib/queries";
+import NotLoggedIn from "@/components/NotLoggedIn";
+import { getUserWithRole, RESIDENT_ROLES } from "@/lib/requireRole";
 import { notFound } from "next/navigation";
 
 type MessagePageParams = {
   params: Promise<{ id: string }>;
 };
 
-export async function generateStaticParams() {
-  const { data } = await sanityFetch({
-    query: allMessageIdsQuery,
-    // Use the published perspective in generateStaticParams
-    perspective: "published",
-    stega: false,
-  });
-
-  return data.map((message) => ({
-    id: message._id,
-  }));
-}
-
 export default async function MessagePageIdRoute(props: MessagePageParams) {
+  // Check the role here, not only in the layout, and before fetching data.
+  if (!(await getUserWithRole(RESIDENT_ROLES))) return <NotLoggedIn />;
+
   const params = await props.params;
 
   const { data } = await sanityFetch({

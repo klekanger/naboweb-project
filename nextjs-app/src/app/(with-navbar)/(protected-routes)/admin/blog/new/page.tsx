@@ -1,10 +1,11 @@
 import BlogEditor from "@/components/admin/BlogEditorClient";
 import BackButton from "@/components/BackButton";
-import { currentUser } from "@clerk/nextjs/server";
+import { CMS_ROLES, requireRoleOrRedirect } from "@/lib/requireRole";
 import { getAuthorPortraitUrlForClerkUser } from "@/sanity/lib/get-author-portrait-url";
 
 export default async function NewBlogPostPage() {
-  const user = await currentUser();
+  // Check the role here, not only in the layout.
+  const user = await requireRoleOrRedirect(CMS_ROLES);
   const roles = (user?.publicMetadata?.roles as string[]) ?? [];
   const currentAuthorPortraitUrl = await getAuthorPortraitUrlForClerkUser(
     user?.id ?? "",

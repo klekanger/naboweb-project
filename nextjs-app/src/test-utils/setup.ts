@@ -9,6 +9,10 @@ import {
 import { cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 
+// "server-only" throws outside a React Server Components build; tests import
+// server modules directly, so replace it with an empty module.
+vi.mock("server-only", () => ({}));
+
 // Setup and cleanup for each test
 beforeEach(() => {
   // Reset all mocks before each test

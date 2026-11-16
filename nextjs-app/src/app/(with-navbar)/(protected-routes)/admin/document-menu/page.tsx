@@ -1,3 +1,4 @@
+import { CMS_ROLES, requireRoleOrRedirect } from "@/lib/requireRole";
 import DocumentMenuEditor from "@/components/admin/DocumentMenuEditor";
 import AdminEditPageShell from "@/components/admin/AdminEditPageShell";
 import { DOCUMENT_MENU_BROWSE_FILE_LIMIT } from "@/lib/document-menu-file-picker";
@@ -31,6 +32,9 @@ function uniqueSeedFilesFromMenu(menu: {
 }
 
 export default async function DocumentMenuPage() {
+  // Check the role here, not only in the layout, and before fetching data.
+  await requireRoleOrRedirect(CMS_ROLES);
+
   const [menuData, browseFileOptions] = await Promise.all([
     client.fetch(documentMenuAdminQuery),
     client.fetch(fileOtherDocumentsBrowseQuery, {

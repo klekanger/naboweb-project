@@ -15,7 +15,8 @@ import {
   countBlogPosts,
   documentMenuQuery,
 } from "@/sanity/lib/queries";
-import { currentUser } from "@clerk/nextjs/server";
+import NotLoggedIn from "@/components/NotLoggedIn";
+import { getUserWithRole, RESIDENT_ROLES } from "@/lib/requireRole";
 import { Info, Pencil, RefreshCw, User } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -26,20 +27,11 @@ type Props = {
   params: Promise<{ page: string[] | undefined }>;
 };
 
-export async function generateStaticParams() {
-  const numberOfBlogPosts = await countBlogPosts({ privatePosts: true });
-  const totalPages = Math.ceil(
-    numberOfBlogPosts / INFORMATION_PRIVATE_BLOG_POSTS_PER_PAGE,
-  );
-
-  const out: { page: string[] | undefined }[] = [{ page: undefined }];
-  for (let i = 2; i <= totalPages; i++) {
-    out.push({ page: [`${i}`] });
-  }
-  return out;
-}
-
 async function PrivateInfoContent(props: Props) {
+  // Check the role here, not only in the layout, and before fetching data.
+  const user = await getUserWithRole(RESIDENT_ROLES);
+  if (!user) return <NotLoggedIn />;
+
   const params = await props.params;
   const segments = params.page;
 
@@ -49,8 +41,7 @@ async function PrivateInfoContent(props: Props) {
 
   const pageNumber = pageNumberFromOptionalCatchAll(segments);
 
-  const user = await currentUser();
-  const { firstName, lastName } = user ?? {};
+  const { firstName, lastName } = user;
   const roles = (user?.publicMetadata?.roles as string[]) || [];
   const isAdmin = roles.includes("admin") || false;
   const isEditor = roles.includes("editor") || false;

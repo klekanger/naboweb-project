@@ -252,10 +252,6 @@ export const messageByIdQuery = defineQuery(`
   }
 `);
 
-export const allMessageIdsQuery = defineQuery(`
-  *[_type == "message"]{_id}
-`);
-
 export const countMessagesQuery = defineQuery(`
   count(*[_type=="message"])
 `);
@@ -320,18 +316,9 @@ export const blogSlugs = defineQuery(`
   {"slug": slug.current}
 `);
 
-export const privateBlogSlugs = defineQuery(`
-  *[_type == "blogPost" && defined(slug.current) && privatePost == true]
-  {"slug": slug.current}
-`);
-
 export const messageSlugs = defineQuery(`
   *[_type == "message" && defined(slug.current)]
   {"slug": slug.current}
-`);
-
-export const meetingMinutesIds = defineQuery(`
-  *[_type == "fileMeetingMinutes"]{_id}
 `);
 
 // Admin queries

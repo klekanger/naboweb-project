@@ -1,5 +1,5 @@
 import BlogEditPageContent from "@/components/admin/BlogEditPageContent";
-import { currentUser } from "@clerk/nextjs/server";
+import { CMS_ROLES, requireRoleOrRedirect } from "@/lib/requireRole";
 import { client } from "@/sanity/lib/client";
 import { getAuthorPortraitUrlForClerkUser } from "@/sanity/lib/get-author-portrait-url";
 import { urlForImage } from "@/sanity/lib/utils";
@@ -12,12 +12,11 @@ type Props = {
 };
 
 export default async function EditBlogPostPage({ params }: Props) {
+  // Check the role here, not only in the layout, and before fetching data.
+  const user = await requireRoleOrRedirect(CMS_ROLES);
   const { slug } = await params;
 
-  const [post, user] = await Promise.all([
-    client.fetch(allBlogBySlugQuery, { slug }),
-    currentUser(),
-  ]);
+  const post = await client.fetch(allBlogBySlugQuery, { slug });
 
   const roles = (user?.publicMetadata?.roles as string[]) ?? [];
   const authorDisplayName =

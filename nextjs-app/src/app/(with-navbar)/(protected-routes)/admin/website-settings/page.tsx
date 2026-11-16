@@ -6,12 +6,13 @@ import {
   settingsAdminQuery,
 } from "@/sanity/lib/queries";
 import type { PagesBrowseQueryResult } from "@/types/sanity.types";
-import { connection } from "next/server";
+import { CMS_ROLES, requireRoleOrRedirect } from "@/lib/requireRole";
 
 const PAGES_BROWSE_LIMIT = 100;
 
 export default async function WebsiteSettingsPage() {
-  await connection();
+  // Check the role here, not only in the layout, and before fetching data.
+  await requireRoleOrRedirect(CMS_ROLES);
 
   const [settings, browsePages] = await Promise.all([
     client.fetch(settingsAdminQuery),

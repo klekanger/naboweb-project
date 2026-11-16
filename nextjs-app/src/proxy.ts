@@ -7,6 +7,7 @@ const isProtectedRoute = createRouteMatcher([
   "/user-admin-page(.*)",
   "/messageboard(.*)",
   "/admin(.*)",
+  "/email-admin(.*)",
 ]);
 
 export default clerkMiddleware(
@@ -21,5 +22,12 @@ export default clerkMiddleware(
 );
 
 export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: [
+    "/((?!.*\\..*|_next).*)",
+    "/",
+    "/(api|trpc)(.*)",
+    // Always run on protected prefixes, even for paths with a dot (for
+    // example slugs or .rsc/.segments requests), which the first entry skips.
+    "/(min-side|information|user-admin-page|messageboard|admin|email-admin)(.*)",
+  ],
 };

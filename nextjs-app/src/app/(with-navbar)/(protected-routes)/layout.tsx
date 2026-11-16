@@ -1,5 +1,5 @@
 import NotLoggedIn from "@/components/NotLoggedIn";
-import { validRoles, validateUserRoles } from "@/lib/validateUserRoles";
+import { getUserWithRole, RESIDENT_ROLES } from "@/lib/requireRole";
 import UserAdminProvider from "@/context/userAdminContext";
 import type { Metadata } from "next";
 
@@ -19,13 +19,9 @@ export default async function ProtectedRouteLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Check user roles before allowing access to any of the protected routes
-  // All users should have at least the "user" role
-  const hasAccess = await validateUserRoles({
-    requiredRoles: [validRoles.USER],
-  });
-
-  if (!hasAccess) return <NotLoggedIn />;
+  // All users should have at least the "user" role. Each page checks the role
+  // again, because Next.js can serve a page without running this layout.
+  if (!(await getUserWithRole(RESIDENT_ROLES))) return <NotLoggedIn />;
 
   return (
     <>
