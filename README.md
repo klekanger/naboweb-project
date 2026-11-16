@@ -4,6 +4,8 @@
 
 🌐 **Website:** [https://naboweb-webpage.vercel.app/](https://naboweb-webpage.vercel.app/) (not maintained anymore)
 
+🏡 **Live example:** [https://gartnerihagen-askim.no/](https://gartnerihagen-askim.no/), the website of Gartnerihagen Boligsameie, an existing *sameie* that runs on NaboWeb
+
 NaboWeb is a website solution built from scratch for condominium associations (*sameier*) and housing cooperatives (*borettslag*). It gives the board (*styret*) one place to keep residents informed and gives prospective buyers a professional first impression. It also cuts down on inquiries to the board. Each site is tailored to its association's design, colours, logo and menus.
 
 This repository powers the website for **Gartnerihagen Boligsameie (v2.0)** and is the codebase behind the NaboWeb product. Read more at [naboweb-webpage.vercel.app](https://naboweb-webpage.vercel.app/), or see the features in action on the [showcase page](https://naboweb-webpage.vercel.app/showcase).
