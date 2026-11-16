@@ -5,6 +5,8 @@ import {
   messageboardQuery,
 } from "@/sanity/lib/queries";
 import { sanityFetch } from "@/sanity/lib/live";
+import NotLoggedIn from "@/components/NotLoggedIn";
+import { getUserWithRole, RESIDENT_ROLES } from "@/lib/requireRole";
 import PaginationControls from "@/components/common/PaginationControls";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -15,6 +17,9 @@ async function MessageBoardContent({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  // Check the role here, not only in the layout, and before fetching data.
+  if (!(await getUserWithRole(RESIDENT_ROLES))) return <NotLoggedIn />;
+
   const { page = "0" } = await searchParams;
   const messagesPerPage = 10;
   const messageCount = await countMessages();

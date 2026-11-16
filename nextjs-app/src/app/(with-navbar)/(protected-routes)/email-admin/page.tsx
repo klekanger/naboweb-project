@@ -1,4 +1,8 @@
-export default function EmailAdminPage() {
+import { ADMIN_ROLES, requireRoleOrRedirect } from "@/lib/requireRole";
+
+export default async function EmailAdminPage() {
+  await requireRoleOrRedirect(ADMIN_ROLES);
+
   return (
     <section className="flex flex-col items-center">
       <h1 className="prose lg:prose-xl text-4xl lg:text-5xl mb-8 font-semibold self-start">

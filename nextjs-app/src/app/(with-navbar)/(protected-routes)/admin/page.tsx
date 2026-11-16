@@ -1,5 +1,5 @@
 import { SANITY_STUDIO_BASE_URL } from "@/lib/sanityStudioUrls";
-import { currentUser } from "@clerk/nextjs/server";
+import { CMS_ROLES, requireRoleOrRedirect } from "@/lib/requireRole";
 import {
   BookOpen,
   Cog,
@@ -80,8 +80,9 @@ const adminSections: AdminSection[] = [
 ];
 
 export default async function AdminPage() {
-  const user = await currentUser();
-  const roles = (user?.publicMetadata?.roles as string[]) || [];
+  // Check the role here, not only in the layout.
+  const user = await requireRoleOrRedirect(CMS_ROLES);
+  const roles = (user.publicMetadata?.roles as string[]) || [];
   const isAdmin = roles.includes("admin");
 
   const visibleSections = adminSections.filter(

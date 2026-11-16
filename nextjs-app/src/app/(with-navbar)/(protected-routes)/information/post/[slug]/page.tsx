@@ -1,6 +1,8 @@
 import Article from "@/components/Article";
 import { sanityFetch } from "@/sanity/lib/live";
-import { privateBlogBySlugQuery, privateBlogSlugs } from "@/sanity/lib/queries";
+import { privateBlogBySlugQuery } from "@/sanity/lib/queries";
+import NotLoggedIn from "@/components/NotLoggedIn";
+import { getUserWithRole, RESIDENT_ROLES } from "@/lib/requireRole";
 import { Authors } from "@/types/sanity.types";
 import { notFound } from "next/navigation";
 import type { Image as SanityImage } from "sanity";
@@ -10,22 +12,12 @@ type Props = {
 };
 
 //
-// Generate all possible routes
-//
-export async function generateStaticParams() {
-  const { data } = await sanityFetch({
-    query: privateBlogSlugs,
-    perspective: "published",
-    stega: false,
-  });
-
-  return data;
-}
-
-//
 // Generate the blog page
 //
 export default async function PrivateBlogRoute(props: Props) {
+  // Check the role here, not only in the layout, and before fetching data.
+  if (!(await getUserWithRole(RESIDENT_ROLES))) return <NotLoggedIn />;
+
   const params = await props.params;
 
   const { data } = await sanityFetch({

@@ -1420,13 +1420,6 @@ export type MessageByIdQueryResult = {
 } | null;
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
-// Variable: allMessageIdsQuery
-// Query: *[_type == "message"]{_id}
-export type AllMessageIdsQueryResult = Array<{
-  _id: string;
-}>;
-
-// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: countMessagesQuery
 // Query: count(*[_type=="message"])
 export type CountMessagesQueryResult = number;
@@ -1562,23 +1555,9 @@ export type BlogSlugsResult = Array<{
 }>;
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
-// Variable: privateBlogSlugs
-// Query: *[_type == "blogPost" && defined(slug.current) && privatePost == true]  {"slug": slug.current}
-export type PrivateBlogSlugsResult = Array<{
-  slug: string;
-}>;
-
-// Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: messageSlugs
 // Query: *[_type == "message" && defined(slug.current)]  {"slug": slug.current}
 export type MessageSlugsResult = Array<never>;
-
-// Source: ../nextjs-app/src/sanity/lib/queries.ts
-// Variable: meetingMinutesIds
-// Query: *[_type == "fileMeetingMinutes"]{_id}
-export type MeetingMinutesIdsResult = Array<{
-  _id: string;
-}>;
 
 // Source: ../nextjs-app/src/sanity/lib/queries.ts
 // Variable: documentMenuAdminQuery
@@ -1901,15 +1880,12 @@ declare module "@sanity/client" {
     '\n  count(*[_type=="blogPost"])\n': CountAllBlogPostsQueryResult;
     '\n  *[_type == "message"] | order(_createdAt desc) [$start...$end] {\n    _id,\n    _updatedAt,\n    _createdAt,\n    title,\n    messageImage,\n    bodyText,\n    tags,\n    comments[]{\n      _key,\n      commentText,\n      commentTitle,\n      commentAuthor->{_id, firstName, lastName}\n    },\n    fromAdmin,\n    author->{_id, firstName, lastName}\n  }\n': MessageboardQueryResult;
     '\n  *[_type == "message" && _id == $id][0] {\n    _id,\n    _updatedAt,\n    _createdAt,\n    title,\n    messageImage,\n    bodyText,\n    tags,\n    comments[]{\n      _key,\n      commentText,\n      commentTitle,\n      commentAuthor->{_id, firstName, lastName},\n      published,\n    },\n    fromAdmin,\n    author->{_id, firstName, lastName},\n  }\n': MessageByIdQueryResult;
-    '\n  *[_type == "message"]{_id}\n': AllMessageIdsQueryResult;
     '\n  count(*[_type=="message"])\n': CountMessagesQueryResult;
     '\n  *[_type=="blogPost" && \n  privatePost==$isPrivate] | order(_createdAt desc) [$start...$end]\n  {\n    _id,\n    _createdAt,\n    _updatedAt,\n    featuredImage{..., "lqip": asset->metadata.lqip},\n    excerpt,\n    privatePost,\n    title,\n    "slug": slug.current\n  }      \n': BlogCollectionQueryResult;
     '\n  *[_type=="blogPost"] | order(_createdAt desc) [$start...$end]\n  {\n    _id,\n    _createdAt,\n    _updatedAt,\n    featuredImage{..., "lqip": asset->metadata.lqip},\n    excerpt,\n    privatePost,\n    title,\n    "slug": slug.current\n  }      \n': AllBlogCollectionQueryResult;
     '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PageSlugsResult;
     '\n  *[_type == "blogPost" && defined(slug.current)]\n  {"slug": slug.current}\n': BlogSlugsResult;
-    '\n  *[_type == "blogPost" && defined(slug.current) && privatePost == true]\n  {"slug": slug.current}\n': PrivateBlogSlugsResult;
     '\n  *[_type == "message" && defined(slug.current)]\n  {"slug": slug.current}\n': MessageSlugsResult;
-    '\n  *[_type == "fileMeetingMinutes"]{_id}\n': MeetingMinutesIdsResult;
     '\n  *[_type=="documentMenu"][0] {\n    _id,\n    button1Text,\n    button2Text,\n    button3Text,\n    button4Text,\n    "file1": button1File->{_id, title, "url": otherDocument.asset->url},\n    "file2": button2File->{_id, title, "url": otherDocument.asset->url},\n    "file3": button3File->{_id, title, "url": otherDocument.asset->url},\n    "file4": button4File->{_id, title, "url": otherDocument.asset->url},\n  }\n': DocumentMenuAdminQueryResult;
     '\n  *[\n    _type == "fileOtherDocuments" &&\n    defined(title)\n  ] | order(title asc) [0...$END] {\n    _id,\n    title,\n    "url": otherDocument.asset->url\n  }\n': FileOtherDocumentsBrowseQueryResult;
     '\n  *[\n    _type == "fileOtherDocuments" &&\n    defined(title) &&\n    lower(title) match $SEARCH_PATTERN\n  ] | order(title asc) [0...$END] {\n    _id,\n    title,\n    "url": otherDocument.asset->url\n  }\n': FileOtherDocumentsSearchQueryResult;

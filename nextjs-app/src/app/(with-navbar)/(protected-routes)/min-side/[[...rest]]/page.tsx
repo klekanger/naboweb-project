@@ -1,12 +1,14 @@
 import UserOverview from "@/components/UserOverview";
 import { UserWithRoles } from "@/types/types";
 import { UserProfile } from "@clerk/nextjs";
-import { currentUser } from "@clerk/nextjs/server";
+import NotLoggedIn from "@/components/NotLoggedIn";
+import { getUserWithRole, RESIDENT_ROLES } from "@/lib/requireRole";
 import { Suspense } from "react";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 
 async function MinSideContent() {
-  const user = await currentUser();
+  const user = await getUserWithRole(RESIDENT_ROLES);
+  if (!user) return <NotLoggedIn />;
 
   return (
     <>

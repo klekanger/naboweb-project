@@ -8,6 +8,7 @@ import { blogPostsAdminPagedQuery, countBlogPosts } from "@/sanity/lib/queries";
 import { Lock, PenLine, Plus } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { CMS_ROLES, requireRoleOrRedirect } from "@/lib/requireRole";
 
 type BlogAdminPost = {
   _id: string;
@@ -26,6 +27,9 @@ function isAdminBlogListPageSlug(slug: string) {
 }
 
 export default async function AdminBlogPagedPage({ params }: Props) {
+  // Check the role here, not only in the layout, and before fetching data.
+  await requireRoleOrRedirect(CMS_ROLES);
+
   const { slug } = await params;
 
   if (!isAdminBlogListPageSlug(slug)) notFound();
