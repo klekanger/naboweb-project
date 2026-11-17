@@ -1,7 +1,8 @@
 "use server";
 
 import { type UpdateUserReturnType, type UpdateUserType } from "@/types/types";
-import { clerkClient, currentUser } from "@clerk/nextjs/server";
+import { clerkClient } from "@clerk/nextjs/server";
+import { ADMIN_ROLES, getUserWithRole } from "@/lib/requireRole";
 
 const client = await clerkClient();
 
@@ -11,10 +12,9 @@ export async function updateUser(
   const { id, firstName, lastName, roles, emailSubscription } = userToUpdate;
 
   let userWhoWasUpdated;
-  const user = await currentUser();
-  const userRoles = (user?.publicMetadata as { roles: string[] }) ?? [];
+  const user = await getUserWithRole(ADMIN_ROLES);
 
-  if (!user || !userRoles.roles.includes("admin")) {
+  if (!user) {
     return {
       error: { message: "Unauthorized" },
       status: 401,

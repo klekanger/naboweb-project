@@ -1,5 +1,6 @@
 "use server";
 
+import { getUserWithRole, RESIDENT_ROLES, rolesOf } from "@/lib/requireRole";
 import { sanityFetch } from "@/sanity/lib/live";
 import { userSubscriptionStatusQuery } from "@/sanity/lib/queries";
 
@@ -17,6 +18,22 @@ export type GetUserSubscriptionStatusReturn = {
 export async function getUserSubscriptionStatus(
   userId: string,
 ): Promise<GetUserSubscriptionStatusReturn> {
+  const user = await getUserWithRole(RESIDENT_ROLES);
+
+  if (!user) {
+    return {
+      error: { message: "Unauthorized" },
+      status: 401,
+    };
+  }
+
+  if (!rolesOf(user).includes("admin") && userId !== user.id) {
+    return {
+      error: { message: "Unauthorized" },
+      status: 403,
+    };
+  }
+
   if (!userId) {
     return {
       error: { message: "User id missing" },
