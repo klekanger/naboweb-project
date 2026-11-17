@@ -1,6 +1,7 @@
 "use server";
 
-import { clerkClient, currentUser } from "@clerk/nextjs/server";
+import { clerkClient } from "@clerk/nextjs/server";
+import { ADMIN_ROLES, getUserWithRole } from "@/lib/requireRole";
 import type { NewUser, CreateNewUserReturnType } from "@/types/types";
 
 const client = await clerkClient();
@@ -8,10 +9,9 @@ const client = await clerkClient();
 export async function createNewUser(
   newUser: NewUser,
 ): Promise<CreateNewUserReturnType> {
-  const user = await currentUser();
-  const userRoles = (user?.publicMetadata as { roles: string[] }) ?? [];
+  const user = await getUserWithRole(ADMIN_ROLES);
 
-  if (!user || !userRoles.roles.includes("admin")) {
+  if (!user) {
     return {
       error: { message: "Unauthorized" },
       status: 401,

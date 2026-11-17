@@ -1,6 +1,6 @@
 "use server";
 
-import { currentUser } from "@clerk/nextjs/server";
+import { CMS_ROLES, getUserWithRole } from "@/lib/requireRole";
 import { DOCUMENT_MENU_MIN_SEARCH_CHARS } from "@/lib/document-menu-file-picker";
 import { buildTitleSearchPattern } from "@/lib/groq-title-search-pattern";
 import { client } from "@/sanity/lib/client";
@@ -25,10 +25,9 @@ export async function searchFileOtherDocuments({
   searchTerm: string;
   limit?: number;
 }): Promise<SearchFileOtherDocumentsResult> {
-  const user = await currentUser();
-  const roles = (user?.publicMetadata?.roles as string[]) ?? [];
+  const user = await getUserWithRole(CMS_ROLES);
 
-  if (!user || (!roles.includes("admin") && !roles.includes("editor"))) {
+  if (!user) {
     return { error: { message: "Unauthorized" }, status: 401 };
   }
 

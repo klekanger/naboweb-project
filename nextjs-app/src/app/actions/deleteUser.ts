@@ -1,6 +1,7 @@
 "use server";
 
-import { currentUser, clerkClient } from "@clerk/nextjs/server";
+import { clerkClient } from "@clerk/nextjs/server";
+import { ADMIN_ROLES, getUserWithRole } from "@/lib/requireRole";
 import { clientWithWriteAccess } from "@/sanity/lib/client";
 import { type DeleteUserReturnType } from "@/types/types";
 
@@ -12,10 +13,9 @@ export async function deleteUser(
   userIDToDelete: string,
 ): Promise<DeleteUserReturnType> {
   let deletedFromClerk;
-  const user = await currentUser();
-  const userRoles = (user?.publicMetadata as { roles: string[] }) ?? [];
+  const user = await getUserWithRole(ADMIN_ROLES);
 
-  if (!user || !userRoles.roles.includes("admin")) {
+  if (!user) {
     return {
       error: { message: "Unauthorized" },
       status: 401,

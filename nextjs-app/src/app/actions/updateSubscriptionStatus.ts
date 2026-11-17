@@ -1,6 +1,7 @@
 "use server";
 
-import { clerkClient, currentUser } from "@clerk/nextjs/server";
+import { clerkClient } from "@clerk/nextjs/server";
+import { getUserWithRole, RESIDENT_ROLES, rolesOf } from "@/lib/requireRole";
 
 type UpdateSubscriptionParams = {
   userId: string;
@@ -25,19 +26,16 @@ export async function updateSubscriptionStatus({
   userId,
   isSubscribed,
 }: UpdateSubscriptionParams): Promise<UpdateSubscriptionResponse> {
-  const user = await currentUser();
-  const userRoles = (user?.publicMetadata as { roles?: string[] }) ?? {};
-  const roles = userRoles.roles ?? [];
+  const user = await getUserWithRole(RESIDENT_ROLES);
 
-  if (!user || !roles.includes("user")) {
-    console.error("Authorization failed:", { user, userRoles });
+  if (!user) {
     return {
       error: { message: "Unauthorized" },
       status: 401,
     };
   }
 
-  const isAdmin = roles.includes("admin");
+  const isAdmin = rolesOf(user).includes("admin");
   if (!isAdmin && userId !== user.id) {
     return {
       error: { message: "Unauthorized" },
